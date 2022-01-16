@@ -1,0 +1,260 @@
+* Learning tasks
+
+** Learnings (~/Documents/repos/perso_stuff or repo 'perso_stuff' github/horamaAI (rurayi@yahoo.fr))
+
+*** TODO install ssh server on myfirstdebianpc
+    - https://devconnected.com/how-to-install-and-enable-ssh-server-on-debian-10/
+
+
+*** TODO cpp modern (file cpp_learnings.org)
+**** current
+     - https://www.youtube.com/watch?v=xDEGpKJ62lI
+
+**** videos
+     - https://www.youtube.com/watch?v=PorfLSr3DDI
+     - https://www.youtube.com/watch?v=MBRoCdtZOYg
+     - https://www.youtube.com/watch?v=zjH2d5VhTD8
+     - https://www.youtube.com/watch?v=fX2W3nNjJIo
+     - https://www.youtube.com/watch?v=xnqTKD8uD64
+     - https://www.youtube.com/watch?v=JfmTagWcqoE
+     - https://www.youtube.com/watch?v=YA-nB2wjVcI
+     - https://www.youtube.com/watch?v=WLDT1lDOsb4
+     - https://www.youtube.com/watch?v=u5EAJTHPJN8
+     - https://www.youtube.com/watch?v=nnY4e4faNp0
+     - https://www.youtube.com/watch?v=3AkPd9Nt2Aw
+     - https://www.youtube.com/watch?v=bSkpMdDe4g4
+     - https://www.youtube.com/watch?v=FJJTYQYB1JQ
+     - https://www.youtube.com/watch?v=2EWejmkKlxs
+     - https://www.youtube.com/watch?v=xVT1y0xWgww
+     - https://www.youtube.com/watch?v=-n9Fkq1e6sg
+     - https://www.youtube.com/watch?v=gPj90zwLphw
+     - https://www.youtube.com/watch?v=9OWGgkuyFV8
+     - https://www.youtube.com/watch?v=zE5IiaViVxk
+     - https://www.youtube.com/watch?v=g-WPhYREFjk
+     - https://www.youtube.com/watch?v=6avJHaC3C2U
+
+**** links
+     - https://ocw.mit.edu/courses/electrical-engineering-and-computer-science/6-096-introduction-to-c-january-iap-2011/lecture-notes/MIT6_096IAP11_lec10.pdf
+     - https://devblogs.microsoft.com/cppblog/clear-functional-c-documentation-with-sphinx-breathe-doxygen-cmake/
+     - https://github.com/AnthonyCalandra/modern-cpp-features
+     - https://ocw.mit.edu/courses/electrical-engineering-and-computer-science/6-s096-effective-programming-in-c-and-c-january-iap-2014/lecture-notes/MIT6_S096IAP14_Lecture3A.pdf
+     - https://ocw.mit.edu/courses/electrical-engineering-and-computer-science/6-s096-effective-programming-in-c-and-c-january-iap-2014/lecture-notes/
+     - file:///home/myfirstdebianpc/Downloads/c++/cpp_indepth_series/Modern_Cpp_Intensive_for_Scientists_Engineers_Programmers.pdf
+     - https://www.tutorialspoint.com/design_pattern/design_pattern_quick_guide.htm
+     - https://refactoring.guru/design-patterns/cpp
+
+**** DONE
+     - 
+
+**** optional
+     - https://www.youtube.com/watch?v=owK_0LGtkOI
+     - https://www.youtube.com/watch?v=Z8NPRfyqNoY
+     - https://www.youtube.com/watch?v=_qaKkHuHYE0
+     - file:///home/myfirstdebianpc/Downloads/c++/cpp-best-practices.pdf
+
+
+
+*** TODO emacs (file emacs_learnings.org)
+https://www.emacswiki.org/emacs/LearningEmacs
+https://cestlaz.github.io/stories/emacs/
+**** current
+     - https://www.youtube.com/watch?v=oJTwQvgfgMM
+     - https://orgmode.org/worg/org-tutorials/org4beginners.html
+
+**** videos
+     - https://www.youtube.com/watch?v=iWV0DXun88M
+     - https://www.youtube.com/watch?v=dSZu4jwvaSs
+     - https://www.youtube.com/watch?v=SzA2YODtgK4
+     - https://www.youtube.com/watch?v=JWD1Fpdd4Pc
+     - https://www.youtube.com/watch?v=Ea_-TaEGa7Y
+     - https://www.youtube.com/watch?v=gfZDwYeBlO4
+     - https://www.youtube.com/watch?v=MBhJBMYfWUo
+     - https://www.youtube.com/watch?v=RlZsCKN6cqc
+     - https://www.youtube.com/watch?v=2z-YBsd5snY
+     - https://www.youtube.com/watch?v=l3rvjWfBzZI
+
+**** links
+     - https://orgmode.org/worg/org-tutorials/orgtutorial_dto.html
+     - https://github.com/hlissner/doom-emacs
+     - https://people.cs.pitt.edu/~milos/courses/cs2740/Lectures/LispTutorial.pdf
+     - https://www.emacswiki.org/emacs/LearnEmacsLisp
+     - https://opensource.com/article/21/5/learn-lisp
+     - https://github.com/jwiegley/use-package
+
+**** DONE
+
+**** optional
+     - https://www.youtube.com/watch?v=InNlNAoExik
+
+
+
+*** TODO emacs as IDE (file emacs_learnings.org)
+**** current
+     - https://www.youtube.com/watch?v=INTu30BHZGk
+     - https://emacs-lsp.github.io/lsp-mode/tutorials/CPP-guide/
+     - https://www.seas.upenn.edu/~chaoliu/2017/09/01/c-cpp-programming-in-emacs/
+
+**** videos
+     - https://www.youtube.com/watch?v=RDrG-_kapaQ
+     - 
+
+**** links
+     - https://www.seas.upenn.edu/~chaoliu/2017/01/03/emacs_configuration/
+     - https://github.com/wuliuxiansheng/Emacs_Configuration
+     - https://github.com/rizsotto/Bear
+     - https://github.com/joaotavora/eglot
+     - https://cestlaz.github.io/posts/using-emacs-32-cpp/
+     - https://github.com/emacs-lsp/lsp-sonarlint
+     - https://www.emacswiki.org/emacs/DebuggingWithEmacs
+     - https://kb.iu.edu/d/aqsy
+     - https://courses.cs.washington.edu/courses/cse378/97au/help/gdb-emacs.html
+     - https://duckduckgo.com/?t=ffab&q=valgrind+emacs&ia=web
+     - https://github.com/emacsmirror/rmsbolt
+       + https://github.com/mkcms/compiler-explorer.el
+
+**** DONE
+
+**** optional
+     - 
+
+
+*** TODO CMAKE (file emacs_learnings.org)
+version 3.22 already installed
+**** current
+     - https://gist.github.com/GuillaumeDua/a2e9cdeaf1a26906e2a92ad07137366f
+     - https://www.youtube.com/watch?v=5FQwQ0QWBTU
+     - https://www.youtube.com/watch?v=4K9C83ZNNAg
+
+**** videos
+     - 
+     - 
+
+**** links
+     - https://www.emacswiki.org/emacs/CompileCommand
+     - https://stackoverflow.com/questions/2123669/configuring-emacs-for-cmake
+     - https://cmake.org/cmake/help/latest/variable/CMAKE_EXPORT_COMPILE_COMMANDS.html
+     - https://cmake.org/cmake/help/latest/guide/tutorial/index.html
+     - https://gcc.gnu.org/onlinedocs/gcc-4.1.0/gcc/Optimize-Options.html
+     - https://valgrind.org/docs/manual/manual.html
+     - https://www.gnu.org/software/make/manual/html_node/index.html#SEC_Contents
+     - https://www.hiroom2.com/2016/09/03/makefile-header-dependencies/
+     - https://github.com/torvalds/linux/blob/master/Documentation/dev-tools/gdb-kernel-debugging.rst
+
+**** DONE
+
+**** optional
+     - 
+
+
+*** TODO hledger, emacs finance and accounting (file emacs_finance_hledger_learnings.org)
+**** current
+     - https://www.youtube.com/watch?v=cjoCNRpLanY
+     - https://hledger.org/start.html
+
+**** videos
+     - https://www.youtube.com/watch?v=8r5Cp66k4PA
+
+**** links
+     - https://github.com/narendraj9/hledger-mode
+     - https://hledger.org/quickstart.html
+     - https://hledger.org/cookbook.html
+     - https://www.ledger-cli.org/3.0/doc/ledger-mode.pdf
+     - https://plaintextaccounting.org/
+     - 
+
+**** DONE
+
+**** optional
+     - https://hledger.org/support.html
+     - https://github.com/awalker4
+
+
+*** TODO US.es
+**** current
+     - https://www.localsolver.com/misc/LocalSolver_EURO_2015.pdf
+
+**** videos
+     -
+
+**** links
+     - file:///home/myfirstdebianpc/Downloads/LocalSolver.pdf
+     - https://www.localsolver.com/docs/last/quickstart/index.html
+     - https://www.localsolver.com/docs/last/exampletour/kmeans.html
+     - https://www.localsolver.com/clientpasco.html
+     - http://iao.hfuu.edu.cn/blogs/science-blog/29-measuring-the-runtime-of-optimization-algorithms
+     - https://matplotlib.org/3.1.0/gallery/statistics/boxplot.html
+     - https://co-enzyme.fr/blog/
+     - scihub
+
+**** optional
+     - https://www.localsolver.com/doccenter.html
+
+
+*** TODO others
+**** Web assembly
+     - https://marcoselvatici.github.io/WASM_tutorial/
+     - https://webassembly.org/getting-started/developers-guide/
+     - https://developer.mozilla.org/en-US/docs/WebAssembly/C_to_wasm
+     - https://training.linuxfoundation.org/training/introduction-to-webassembly-lfd133/
+
+**** Web prgming (Java mainly)
+     - (check for spring with emacs though) https://codelabs.developers.google.com/codelabs/cloud-app-engine-springboot/#0
+     - https://www.baeldung.com/start-here
+     - https://medium.com/eat-sleep-code-repeat/running-your-first-spring-boot-project-in-eclipse-ide-4fbc699d44dd
+     - https://drive.google.com/drive/folders/1BL4kq8RPuqjHapdhnZdxbvjrROqZxedc
+     - https://angular.io/start
+     - https://reactjs.org/tutorial/tutorial.html
+     - https://www.tutorialspoint.com/angular2/angular2_metadata.htm
+     - file:///home/myfirstdebianpc/Downloads/angular.pdf
+     - https://angular.io/guide/cheatsheet
+     - https://www.tutorialspoint.com/angular4/angular4_services.htm
+     - https://www.youtube.com/watch?v=IZEolKjcjks
+     - https://openclassrooms.com/fr/courses/7471261-debutez-avec-angular?archived-source=4668271
+     - protractor angular
+     - https://gradle.org/maven-vs-gradle/
+     - https://tomcat.apache.org/tomcat-10.0-doc/index.html
+
+**** sh and zsh
+     - https://www.youtube.com/watch?v=V8EUdia_kOE
+     - https://www.youtube.com/watch?v=ZtqBQ68cfJc
+     - https://thevaluable.dev/zsh-completion-guide-examples/
+     - https://ryanstutorials.net/bash-scripting-tutorial/
+     - https://www.shellscript.sh/first.html
+     - https://linuxhint.com/debug-bash-script/
+     - https://zsh.sourceforge.io/Doc/Release/Zsh-Line-Editor.html#History-Control
+     - https://openclassrooms.com/fr/courses/7170491-initiez-vous-a-linux?archived-source=43538
+
+**** SC2
+     - https://github.com/N00byEdge/BWEM-community
+     - https://ocw.mit.edu/courses/electrical-engineering-and-computer-science/6-370-the-battlecode-programming-competition-january-iap-2013/syllabus/
+     - http://richoux.github.io/GHOST/
+     - https://github.com/davechurchill/commandcenter/blob/master/src/BaseLocation.cpp
+     - https://github.com/ddumez
+     - https://github.com/SKTBrain/awesome-starcraftAI
+
+**** multicore programming
+     - https://ocw.mit.edu/courses/electrical-engineering-and-computer-science/6-189-multicore-programming-primer-january-iap-2007/syllabus/
+     - https://ocw.mit.edu/courses/electrical-engineering-and-computer-science/6-827-multithreaded-parallelism-languages-and-compilers-fall-2002/lecture-notes/
+     - https://ocw.mit.edu/courses/earth-atmospheric-and-planetary-sciences/12-950-parallel-programming-for-multicore-machines-using-openmp-and-mpi-january-iap-2010/
+     - https://www.codeproject.com/Articles/1239410/Dining-Philosophers-Problem
+     - https://www.thecrazyprogrammer.com/2016/07/bankers-algorithm-in-c.html
+
+**** cryptocurrencies
+     - https://ocw.mit.edu/courses/media-arts-and-sciences/mas-s62-cryptocurrency-engineering-and-design-spring-2018/lecture-notes/
+     - https://training.linuxfoundation.org/training/blockchain-for-business-an-introduction-to-hyperledger-technologies/
+
+**** best practices
+     - https://www.coursera.org/specializations/secure-coding-practices#courses
+
+**** optional
+     - https://training.linuxfoundation.org/training/introduction-to-kubernetes/
+     - https://docs.docker.com/engine/install/debian/
+     - https://training.linuxfoundation.org/training/introduction-to-linux/
+     - https://dl.acm.org/profile/81311486357
+     - https://dblp.org/pid/24/4642.html
+     - https://www.guillaume-bouffard.com/
+     - https://medium.com/@ankit.sinhal/mvc-mvp-and-mvvm-design-pattern-6e169567bbad
+     - https://training.linuxfoundation.org/training/a-beginners-guide-to-linux-kernel-development-lfd103/
+     - https://training.linuxfoundation.org/training/introduction-to-cloud-infrastructure-technologies/
+     - https://training.linuxfoundation.org/training/beginners-guide-open-source-software-development/
+     - https://www.coursera.org/learn/real-time-systems

@@ -1,0 +1,14 @@
+* emacs learnings
+- C- Ctrl
+- M- Meta (Esc or Alt)
+- S- Shift
+- RET- well, return
+
+** emacs IDE
+
+** org mode
+   + M-up/down :: move headline up/down
+   + C-c C-t :: run command org-todo (changes state: TODO to DONE for ex)
+   + M-S-RET :: 
+
+** Hledger (emacs finance)
