@@ -1,0 +1,3 @@
+#-*- mode: org -*-
+#+ My GTD for nice to have projects (add headline on the fly)
+

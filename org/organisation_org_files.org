@@ -1,0 +1,44 @@
+#-*- mode: org -*-
+#+Organisation of myorg files
+
+*Start working :*
+  + punch in :: *<f9> I*
+  + start working on scheduled task(s) :: 
+
+
+
+folders:
+*perso_stuff*:
+|
+- org :: (draft folder really) [to be re-organised]
+  + organisation_org_files.org (this file) :: list structure and
+    content of org files (to be moved, maybe right in previous folder (root))
+  + tasklist.org :: contains a shitton amount of todo lists and
+    valuable links and content [to be re-organised]
+|
+- GTD :: (getting things done, bulk of org files)
+  + tasks_list.org :: contains :
+    - meetings :: headline *Calendar*, tag *MEETING*
+    - diverse tasks :: headline *Calendar*, tag *MISC*
+    - birthdays :: headline *Calendar*, tag *BIRTHDAYS*
+    - us.es :: headline *Tasks*, tag *US.ES*
+    - cpp :: headline *Tasks*, tag *CPP*
+    - note :: headline *Notes*, tag *NOTE*
+  + tasks_list.org_archive :: contains refiled done tasks
+  + journal.org :: personal journal notes
+  + notes.org :: buffer for quick notes, that needs to be reorganised
+    later (quicknotes, 1st draft) 
+  + notorious_commands.org :: journal for commands that needs to be remembered
+  + other_projects.org :: to keep track of non urgent project and
+    notes, "good to have"
+  + us.es_notes.org :: notes specific to us.es
+  + us.es_notes.org_archive ::
+
+
+TODO tasks organisation:
+- todos as 'projects' :: anything (headline, topic, etc.) that contains one
+  or more 'TODOs' *is* a project
+  => make a project (headline for example), and add a common task for
+  several tasks of the same kind (ex: watch videos). List with '[ ]'
+  minimal subtasks => task is completed when all the subtasks are
+  marked as completed

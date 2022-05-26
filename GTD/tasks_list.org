@@ -1,17 +1,73 @@
 #-*- mode: org -*-
-#+Learning notes
+#+tasks list file
 
-* Learnings (~/Documents/repos/perso_stuff or repo 'perso_stuff' github/horamaAI (rurayi@yahoo.fr))
 
-*** TODO interesting
-    - install ssh server on myfirstdebianpc : https://devconnected.com/how-to-install-and-enable-ssh-server-on-debian-10/
-    - dependencies management : https://www.youtube.com/watch?v=7ZdMRLPZhFs
-    - julia tutos: 
-      + https://julialang.univ-nantes.fr/julianantes/documents/
-      + https://www.juliabloggers.com/linear-programming-in-julia-with-glpk-and-jump/?utm_source=ReviveOldPost&utm_medium=social&utm_campaign=ReviveOldPost
+* Calendar
+  :PROPERTIES:
+  :CATEGORY: Calendar
+  :END:
+** Birthdays
+** Appointmens
+** Holidays, days off and vacations
 
-*** TODO cpp modern (file cpp_learnings.org) [0/3]
-**** [ ] videos [0/36]
+* Finances
+  :PROPERTIES:
+  :CATEGORY: Finances
+  :END:
+
+* Habit
+  :PROPERTIES:
+  :CATEGORY: Habit
+  :END:
+
+* Health
+  :PROPERTIES:
+  :CATEGORY: Health
+  :END:
+
+* House
+  :PROPERTIES:
+  :CATEGORY: House
+  :END:
+
+* Notes
+  :PROPERTIES:
+  :CATEGORY: Note
+  :END:
+
+* Organisation
+  :PROPERTIES:
+  :CATEGORY: Default_task
+  :END:
+
+* Recreation
+  :PROPERTIES:
+  :CATEGORY: Recreation
+  :END:
+
+* Source related tasks
+  :PROPERTIES:
+  :CATEGORY: Src_related_task
+  :END:
+
+* Tasks
+  :PROPERTIES:
+  :CATEGORY: Task_tag
+  :END:
+
+* To learn
+  :PROPERTIES:
+  :CATEGORY: To_learn_tag
+  :END:
+** Task todo asap
+*** TODO install ssh server on myfirstdebianpc : https://devconnected.com/how-to-install-and-enable-ssh-server-on-debian-10/
+*** TODO dependencies management : https://www.youtube.com/watch?v=7ZdMRLPZhFs
+** Cpp modern learning (file : cpp_learnings.org) [0/3]
+  :PROPERTIES:
+  :CATEGORY: cpp_learning
+  :END:
+*** TODO videos cpp [0/36]
+    SCHEDULED: <2022-03-23 Wed>
      1. [ ] https://www.youtube.com/watch?v=PorfLSr3DDI
      2. [ ] https://www.youtube.com/watch?v=MBRoCdtZOYg
      3. [ ] https://www.youtube.com/watch?v=zjH2d5VhTD8
@@ -50,7 +106,7 @@
      36. [ ] https://www.youtube.com/watch?v=15QF2q66NhU
      37. [ ] https://www.youtube.com/watch?v=vElZc6zSIXM
 
-**** [ ] links [0/8]
+*** TODO links cpp [0/8]
      1. [ ] https://vittorioromeo.info/
      2. [ ] https://ocw.mit.edu/courses/electrical-engineering-and-computer-science/6-096-introduction-to-c-january-iap-2011/lecture-notes/MIT6_096IAP11_lec10.pdf
      3. [ ] https://devblogs.microsoft.com/cppblog/clear-functional-c-documentation-with-sphinx-breathe-doxygen-cmake/
@@ -61,17 +117,17 @@
      8. [ ] https://www.tutorialspoint.com/design_pattern/design_pattern_quick_guide.htm
      9. [ ] https://refactoring.guru/design-patterns/cpp
 
-**** [ ] optional [0/5]
+*** TODO optional cpp [0/5]
      - [ ] https://www.youtube.com/watch?v=xMBNCtFV8sI
      - [ ] https://www.youtube.com/watch?v=owK_0LGtkOI
      - [ ] https://www.youtube.com/watch?v=Z8NPRfyqNoY
      - [ ] https://www.youtube.com/watch?v=_qaKkHuHYE0
      - [ ] file:///home/myfirstdebianpc/Downloads/c++/cpp-best-practices.pdf
 
-*** NEXT emacs (file emacs_learnings.org) [0/3]
+** emacs in general (file emacs_learnings.org) [0/3]
 https://www.emacswiki.org/emacs/LearningEmacs
 https://cestlaz.github.io/stories/emacs/
-**** [ ] videos [0/11]
+*** NEXT videos [0/11]
   1. [ ] https://www.youtube.com/watch?v=qJhlHmDj7BI
   2. [ ] https://www.youtube.com/watch?v=SzA2YODtgK4
   3. [ ] https://www.youtube.com/watch?v=oJTwQvgfgMM
@@ -84,7 +140,8 @@ https://cestlaz.github.io/stories/emacs/
   10. [ ] https://www.youtube.com/watch?v=MBhJBMYfWUo
   11. [ ] https://www.youtube.com/watch?v=2z-YBsd5snY
 
-**** [ ]  links [1/30]
+*** TODO links [1/30]
+    SCHEDULED: <2022-03-22 Tue>
   1. [X] https://orgmode.org/worg/org-tutorials/org4beginners.html
   2. [ ] for GTDs:
      + http://doc.norang.ca/org-mode.html#HowToUseThisDocument
@@ -131,16 +188,16 @@ https://cestlaz.github.io/stories/emacs/
   29. [ ] https://emacstil.com/til/2021/09/09/fold-heading/
   30. [ ] https://orgmode.org/worg/org-tutorials/index.html
 
-**** [ ] optional
+*** TODO optional
      - https://www.youtube.com/watch?v=InNlNAoExik
      - https://alphapapa.github.io/org-almanac/
 
-*** TODO emacs as IDE (file emacs_learnings.org) [0/3]
-**** TODO videos [0/2]
+** TODO emacs as IDE (file emacs_learnings.org) [0/3]
+*** TODO videos [0/2]
      1. [ ] https://www.youtube.com/watch?v=INTu30BHZGk
      2. [ ] https://www.youtube.com/watch?v=RDrG-_kapaQ
 
-**** TODO links [0/13]
+*** TODO links [0/13]
      1. [ ] https://emacs-lsp.github.io/lsp-mode/tutorials/CPP-guide/
      2. [ ] https://tuhdo.github.io/c-ide.html
      3. [ ] (dead ?) https://www.seas.upenn.edu/~chaoliu/2017/09/01/c-cpp-programming-in-emacs/
@@ -157,21 +214,21 @@ https://cestlaz.github.io/stories/emacs/
      14. [ ] https://duckduckgo.com/?t=ffab&q=valgrind+emacs&ia=web
      15. [ ] https://github.com/emacsmirror/rmsbolt
 	 + https://github.com/mkcms/compiler-explorer.el
-**** TODO optional
+*** TODO optional
      - 
 
-*** TODO CMAKE (file emacs_learnings.org)
+** CMAKE (file emacs_learnings.org)
 version 3.22 already installed
-**** [ ] current
+*** TODO current
      - https://gist.github.com/GuillaumeDua/a2e9cdeaf1a26906e2a92ad07137366f
      - https://www.youtube.com/watch?v=5FQwQ0QWBTU
      - https://www.youtube.com/watch?v=4K9C83ZNNAg
 
-**** [ ] videos
+*** TODO videos
      - 
      - 
 
-****  [ ] links
+***  TODO links
      - https://www.emacswiki.org/emacs/CompileCommand
      - https://stackoverflow.com/questions/2123669/configuring-emacs-for-cmake
      - https://cmake.org/cmake/help/latest/variable/CMAKE_EXPORT_COMPILE_COMMANDS.html
@@ -182,36 +239,36 @@ version 3.22 already installed
      - https://www.hiroom2.com/2016/09/03/makefile-header-dependencies/
      - https://github.com/torvalds/linux/blob/master/Documentation/dev-tools/gdb-kernel-debugging.rst
 
-**** [ ] optional
+*** TODO optional
      - 
 
-*** TODO hledger, emacs finance and accounting (file emacs_finance_hledger_learnings.org)
-**** [ ] current
+** hledger, emacs finance and accounting (file emacs_finance_hledger_learnings.org)
+*** TODO current
      - https://www.youtube.com/watch?v=cjoCNRpLanY
      - https://hledger.org/start.html
 
-**** [ ] videos
+*** TODO videos
      - https://www.youtube.com/watch?v=8r5Cp66k4PA
 
-**** [ ] links
+*** TODO links
      - https://github.com/narendraj9/hledger-mode
      - https://hledger.org/quickstart.html
      - https://hledger.org/cookbook.html
      - https://www.ledger-cli.org/3.0/doc/ledger-mode.pdf
      - https://plaintextaccounting.org/
 
-**** [ ] optional
+*** TODO optional
      - https://hledger.org/support.html
      - https://github.com/awalker4
 
-*** TODO US.es
-**** [ ] current
+** US.es
+*** TODO readings
      - https://www.localsolver.com/misc/LocalSolver_EURO_2015.pdf
 
-**** [ ] videos
+*** TODO videos
      -
 
-**** [ ] links
+*** TODO links
      - file:///home/myfirstdebianpc/Downloads/LocalSolver.pdf
      - https://www.localsolver.com/docs/last/quickstart/index.html
      - https://www.localsolver.com/docs/last/exampletour/kmeans.html
@@ -221,17 +278,20 @@ version 3.22 already installed
      - https://co-enzyme.fr/blog/
      - scihub
 
-**** [ ] optional
+*** TODO optional
      - https://www.localsolver.com/doccenter.html
 
-*** TODO others
-**** [ ] Web assembly
+** Other learning tasks
+*** TODO julia
+    - https://julialang.univ-nantes.fr/julianantes/documents/
+    - https://www.juliabloggers.com/linear-programming-in-julia-with-glpk-and-jump/?utm_source=ReviveOldPost&utm_medium=social&utm_campaign=ReviveOldPost
+*** TODO Web assembly
      - https://marcoselvatici.github.io/WASM_tutorial/
      - https://webassembly.org/getting-started/developers-guide/
      - https://developer.mozilla.org/en-US/docs/WebAssembly/C_to_wasm
      - https://training.linuxfoundation.org/training/introduction-to-webassembly-lfd133/
 
-**** [ ] Web prgming (Java mainly)
+*** TODO Web prgming (Java mainly)
      - (check for spring with emacs though) https://codelabs.developers.google.com/codelabs/cloud-app-engine-springboot/#0
      - https://www.baeldung.com/start-here
      - https://medium.com/eat-sleep-code-repeat/running-your-first-spring-boot-project-in-eclipse-ide-4fbc699d44dd
@@ -248,7 +308,7 @@ version 3.22 already installed
      - https://gradle.org/maven-vs-gradle/
      - https://tomcat.apache.org/tomcat-10.0-doc/index.html
 
-**** [ ] sh and zsh
+*** TODO sh and zsh
      - https://www.youtube.com/watch?v=V8EUdia_kOE
      - https://www.youtube.com/watch?v=ZtqBQ68cfJc
      - https://thevaluable.dev/zsh-completion-guide-examples/
@@ -258,7 +318,7 @@ version 3.22 already installed
      - https://zsh.sourceforge.io/Doc/Release/Zsh-Line-Editor.html#History-Control
      - https://openclassrooms.com/fr/courses/7170491-initiez-vous-a-linux?archived-source=43538
 
-**** [ ] SC2
+*** TODO SC2
      - https://github.com/N00byEdge/BWEM-community
      - https://ocw.mit.edu/courses/electrical-engineering-and-computer-science/6-370-the-battlecode-programming-competition-january-iap-2013/syllabus/
      - http://richoux.github.io/GHOST/
@@ -266,21 +326,21 @@ version 3.22 already installed
      - https://github.com/ddumez
      - https://github.com/SKTBrain/awesome-starcraftAI
 
-**** [ ] multicore programming
+*** TODO multicore programming
      - https://ocw.mit.edu/courses/electrical-engineering-and-computer-science/6-189-multicore-programming-primer-january-iap-2007/syllabus/
      - https://ocw.mit.edu/courses/electrical-engineering-and-computer-science/6-827-multithreaded-parallelism-languages-and-compilers-fall-2002/lecture-notes/
      - https://ocw.mit.edu/courses/earth-atmospheric-and-planetary-sciences/12-950-parallel-programming-for-multicore-machines-using-openmp-and-mpi-january-iap-2010/
      - https://www.codeproject.com/Articles/1239410/Dining-Philosophers-Problem
      - https://www.thecrazyprogrammer.com/2016/07/bankers-algorithm-in-c.html
 
-**** [ ] cryptocurrencies
+*** TODO cryptocurrencies
      - https://ocw.mit.edu/courses/media-arts-and-sciences/mas-s62-cryptocurrency-engineering-and-design-spring-2018/lecture-notes/
      - https://training.linuxfoundation.org/training/blockchain-for-business-an-introduction-to-hyperledger-technologies/
 
-**** [ ] best practices
+*** TODO best practices
      - https://www.coursera.org/specializations/secure-coding-practices#courses
 
-**** [ ] optional
+*** TODO optional
      - https://training.linuxfoundation.org/training/introduction-to-kubernetes/
      - https://docs.docker.com/engine/install/debian/
      - https://training.linuxfoundation.org/training/introduction-to-linux/
@@ -294,8 +354,23 @@ version 3.22 already installed
      - https://www.coursera.org/learn/real-time-systems
 
 
+* Us.es
+  :PROPERTIES:
+  :CATEGORY: Us.es
+  :END:
 
-#+STARTUP: content
-#+STARTUP: lognotestate
-#+SEQ_TODO: TODO STARTED WAITING DELEGATED APPT | DONE DEFERRED CANCELLED
-#+TAGS: { SCHOOL(s) WORK(w) } CALL(c) ERRAND(e)
+* Weekly review
+  What to review:
+  - [ ] Check 'follow-up' folder (physical/virtual folder for stuff
+    that should be dealt with, but not urgently)
+  - [ ] Review weekly agenda =F12 a w //=
+    + review/fix/fill tasks that needs to be done in the week
+  - [ ] Check clocking data for past week =v c=
+  - [ ] Review clock report for past week =R=
+    + [ ] Check where we spent time (too much or too little) and rectify
+    this week
+  - [ ] Look at entire agenda for today  =F12 SPC=
+  - [ ] Review projects =F12 SPC //= and =V= repeatedly to view each project
+  -  start work
+      - daily agenda first - knock off items
+      - then work on NEXT tasks

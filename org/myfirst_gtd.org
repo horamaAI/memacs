@@ -1,0 +1,40 @@
+#-*- mode: org -*-
+#+GTD tutorial (not work)
+
+* Introduction
+Source: John Wiegley
+    http://www.newartisans.com/2007/08/using-org-mode-as-a-day-planner/
+Abstract: steps to manage tasks “day-planner style” using org-mode:
+    1. Rapidly (almost “mindlessly”) create new tasks using 'remember'.
+    2. Sit down each night and schedule/categorize those remembered tasks.
+       + Also, move completed tasks to archive
+    3. Each morning/end of day, start up the agenda view with a 7 day view on the future,
+       + briefly scan to see if my week looks/feels right
+       + At best, maybe push a few tasks around to make things more balanced;
+       + but most of the time, prefer to leave the future alone.
+    4. Switch to daily view and set priorities for the day’s tasks:
+       + Is there anything to defer to another day? (prefer to see less than 15 tasks in this view.)
+    5. Paying special attention to 'A' tasks
+       + do best to complete day’s work load
+       + switching task states frequently is no big deal, but adding notes on what have been done each time, is better.
+    6. During the day, if anything new comes up, use 'remember' to jot down the task and then promptly – intentionally – *forget about it*
+       + Don’t clutter your brain! use temporary note taking when 'remember' isn’t handy.
+
+
+learnings: cpp, cmake, emacs
+research work: 
+    - github refactoring
+    - github further modifs
+    - papers to read
+* TASKS
+#+CATEGORY: Tasks
+** 
+
+* Calendar
+
+* Projects
+
+* Borrowed
+
+* Financial
+

@@ -1,0 +1,3 @@
+#-*- mode: org -*-
+#+us.es notes file, all research work related tasks (codebase refactoring, todos reading, etc.)
+#+FILETAGS: US.ES

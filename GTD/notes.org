@@ -1,0 +1,23 @@
+#-*- mode: org -*-
+#+notes file (buffer file, need refile regularly)
+#+FILETAGS: REFILE
+
+* Calendar
+
+* Tasks
+** TODO finish tutorial http://doc.norang.ca/org-mode.html
+
+* Us.es
+
+* Notes
+
+* org-mode configs
+
+* Most used commands
+
+* Habit
+
+* Organisation
+
+* Source related tasks
+
