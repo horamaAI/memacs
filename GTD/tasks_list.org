@@ -67,44 +67,53 @@
   :CATEGORY: cpp_learning
   :END:
 *** TODO videos cpp [0/36]
-    SCHEDULED: <2022-03-23 Wed>
-     1. [ ] https://www.youtube.com/watch?v=PorfLSr3DDI
-     2. [ ] https://www.youtube.com/watch?v=MBRoCdtZOYg
-     3. [ ] https://www.youtube.com/watch?v=zjH2d5VhTD8
-     4. [ ] https://www.youtube.com/watch?v=fX2W3nNjJIo
-     5. [ ] https://www.youtube.com/watch?v=l3rvjWfBzZI
-     6. [ ] https://www.youtube.com/watch?v=xnqTKD8uD64
-     7. [ ] https://www.youtube.com/watch?v=JfmTagWcqoE
-     8. [ ] https://www.youtube.com/watch?v=YA-nB2wjVcI
-     9. [ ] https://www.youtube.com/watch?v=WLDT1lDOsb4
-     10. [ ] https://www.youtube.com/watch?v=CkGqINHZit0
-     11. [ ] https://www.youtube.com/watch?v=h4Jl1fk3MkQ
-     12. [ ] https://www.youtube.com/watch?v=u5EAJTHPJN8
-     13. [ ] https://www.youtube.com/watch?v=nnY4e4faNp0
-     14. [ ] https://www.youtube.com/watch?v=ZQ-8laAr9Dg
-     15. [ ] https://www.youtube.com/watch?v=R1E1tmeqxBY
-     16. [ ] https://www.youtube.com/watch?v=3AkPd9Nt2Aw
-     17. [ ] https://www.youtube.com/watch?v=bSkpMdDe4g4
-     18. [ ] https://www.youtube.com/watch?v=FJJTYQYB1JQ
-     19. [ ] https://www.youtube.com/watch?v=2EWejmkKlxs
-     20. [ ] https://www.youtube.com/watch?v=xVT1y0xWgww
-     21. [ ] https://www.youtube.com/watch?v=-n9Fkq1e6sg
-     22. [ ] https://www.youtube.com/watch?v=gPj90zwLphw
-     23. [ ] https://www.youtube.com/watch?v=9OWGgkuyFV8
-     24. [ ] https://www.youtube.com/watch?v=zE5IiaViVxk
-     25. [ ] https://www.youtube.com/watch?v=g-WPhYREFjk
-     26. [ ] https://www.youtube.com/watch?v=FXfrojjIo80
-     27. [ ] https://www.youtube.com/watch?v=6avJHaC3C2U
-     28. [ ] https://www.youtube.com/watch?v=WsUnnYEKPnI
-     29. [ ] https://www.youtube.com/watch?v=FrPzW8U7O6o
-     30. [ ] https://www.youtube.com/watch?v=IgNUBw3vcO4
-     31. [ ] https://www.youtube.com/watch?v=15QF2q66NhU
-     32. [ ] https://www.youtube.com/watch?v=xDEGpKJ62lI
-     33. [ ] https://www.youtube.com/watch?v=tckHl8M3VXM
-     34. [ ] https://www.youtube.com/watch?v=yG1OZ69H_-o
-     35. [ ] https://www.youtube.com/watch?v=dQaRLmM7KKk
-     36. [ ] https://www.youtube.com/watch?v=15QF2q66NhU
-     37. [ ] https://www.youtube.com/watch?v=vElZc6zSIXM
+    SCHEDULED: <2022-07-31 Sun>
+     1. [ ] https://youtu.be/YQs6IC-vgmo
+     2. [ ] https://www.youtube.com/watch?v=PorfLSr3DDI
+     3. [ ] https://www.youtube.com/watch?v=MBRoCdtZOYg
+     4. [ ] https://www.youtube.com/watch?v=zjH2d5VhTD8
+     5. [ ] https://www.youtube.com/watch?v=fX2W3nNjJIo
+     6. [ ] https://www.youtube.com/watch?v=l3rvjWfBzZI
+     7. [ ] https://www.youtube.com/watch?v=xnqTKD8uD64
+     8. [ ] https://www.youtube.com/watch?v=JfmTagWcqoE
+     9. [ ] https://www.youtube.com/watch?v=YnWhqhNdYyk
+     10. [ ] https://www.youtube.com/watch?v=5EGw4_NKZlY
+     11. [ ] https://www.youtube.com/watch?v=Fsi3JpYCsUM
+     12. [ ] https://www.youtube.com/watch?v=YA-nB2wjVcI
+     13. [ ] https://www.youtube.com/watch?v=WLDT1lDOsb4
+     14. [ ] https://www.youtube.com/watch?v=CkGqINHZit0
+     15. [ ] https://www.youtube.com/watch?v=h4Jl1fk3MkQ
+     16. [ ] https://www.youtube.com/watch?v=u5EAJTHPJN8
+     17. [ ] https://www.youtube.com/watch?v=nnY4e4faNp0
+     18. [ ] https://www.youtube.com/watch?v=ZQ-8laAr9Dg
+     19. [ ] https://www.youtube.com/watch?v=R1E1tmeqxBY
+     20. [ ] https://www.youtube.com/watch?v=3AkPd9Nt2Aw
+     21. [ ] https://www.youtube.com/watch?v=bSkpMdDe4g4
+     22. [ ] https://www.youtube.com/watch?v=FJJTYQYB1JQ
+     23. [ ] https://www.youtube.com/watch?v=2EWejmkKlxs
+     24. [ ] https://www.youtube.com/watch?v=xVT1y0xWgww
+     25. [ ] https://www.youtube.com/watch?v=-n9Fkq1e6sg
+     26. [ ] https://www.youtube.com/watch?v=gPj90zwLphw
+     27. [ ] https://www.youtube.com/watch?v=9OWGgkuyFV8
+     28. [ ] https://www.youtube.com/watch?v=zE5IiaViVxk
+     29. [ ] https://www.youtube.com/watch?v=g-WPhYREFjk
+     30. [ ] https://www.youtube.com/watch?v=FXfrojjIo80
+     31. [ ] https://www.youtube.com/watch?v=6avJHaC3C2U
+     32. [ ] https://youtu.be/WDIkqP4JbkE
+     33. [ ] https://www.youtube.com/watch?v=X1J-f4LpQ_4
+     34. [ ] https://www.youtube.com/watch?v=iLpt23V2vQE
+     35. [ ] https://www.youtube.com/watch?v=ZAji7PkXaKY&list=PLHTh1InhhwT5o3GwbFYy3sR7HDNRA353e
+     36. [ ] https://www.youtube.com/watch?v=WsUnnYEKPnI
+     37. [ ] https://www.youtube.com/watch?v=FrPzW8U7O6o
+     38. [ ] https://www.youtube.com/watch?v=IgNUBw3vcO4
+     39. [ ] https://www.youtube.com/watch?v=15QF2q66NhU
+     40. [ ] https://www.youtube.com/watch?v=xDEGpKJ62lI
+     41. [ ] https://www.youtube.com/watch?v=tckHl8M3VXM
+     42. [ ] https://www.youtube.com/watch?v=yG1OZ69H_-o
+     43. [ ] https://www.youtube.com/watch?v=dQaRLmM7KKk
+     44. [ ] https://www.youtube.com/watch?v=15QF2q66NhU
+     45. [ ] https://www.youtube.com/watch?v=vElZc6zSIXM
+     46. [ ] https://www.youtube.com/watch?v=MdrfPSUtMVM
 
 *** TODO links cpp [0/8]
      1. [ ] https://vittorioromeo.info/
@@ -141,7 +150,7 @@ https://cestlaz.github.io/stories/emacs/
   11. [ ] https://www.youtube.com/watch?v=2z-YBsd5snY
 
 *** TODO links [1/30]
-    SCHEDULED: <2022-03-22 Tue>
+    SCHEDULED: <2022-07-31 Sun>
   1. [X] https://orgmode.org/worg/org-tutorials/org4beginners.html
   2. [ ] for GTDs:
      + http://doc.norang.ca/org-mode.html#HowToUseThisDocument
@@ -352,7 +361,6 @@ version 3.22 already installed
      - https://training.linuxfoundation.org/training/introduction-to-cloud-infrastructure-technologies/
      - https://training.linuxfoundation.org/training/beginners-guide-open-source-software-development/
      - https://www.coursera.org/learn/real-time-systems
-
 
 * Us.es
   :PROPERTIES:

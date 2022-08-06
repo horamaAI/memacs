@@ -1,20 +1,10 @@
 #-*- mode: org -*-
 #+Organisation of myorg files
 
-*Start working :*
-  + punch in :: *<f9> I*
-  + start working on scheduled task(s) :: 
-
-
-
 folders:
 *perso_stuff*:
 |
-- org :: (draft folder really) [to be re-organised]
-  + organisation_org_files.org (this file) :: list structure and
-    content of org files (to be moved, maybe right in previous folder (root))
-  + tasklist.org :: contains a shitton amount of todo lists and
-    valuable links and content [to be re-organised]
+- organisation_org_files.org (this file) :: list structure and content of org files (to be moved, maybe right in previous folder (root))
 |
 - GTD :: (getting things done, bulk of org files)
   + tasks_list.org :: contains :
@@ -33,6 +23,16 @@ folders:
     notes, "good to have"
   + us.es_notes.org :: notes specific to us.es
   + us.es_notes.org_archive ::
+  + old_task_list.org_trash :: probably trash, old version of gtd
+    manager, delete when sure nothing's lost
+|
+- tutos ::
+  + cpp_learnings.org ::
+  + emacs_finance_hledger_learnings.org ::
+  + emacs_learnings.org ::
+  |
+  + org-mode ::
+    - 
 
 
 TODO tasks organisation:
