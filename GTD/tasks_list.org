@@ -68,63 +68,91 @@
   :END:
 *** TODO videos cpp [0/36]
     SCHEDULED: <2022-07-31 Sun>
-     1. [ ] https://youtu.be/YQs6IC-vgmo
-     2. [ ] https://www.youtube.com/watch?v=PorfLSr3DDI
-     3. [ ] https://www.youtube.com/watch?v=MBRoCdtZOYg
-     4. [ ] https://www.youtube.com/watch?v=zjH2d5VhTD8
-     5. [ ] https://www.youtube.com/watch?v=fX2W3nNjJIo
-     6. [ ] https://www.youtube.com/watch?v=l3rvjWfBzZI
-     7. [ ] https://www.youtube.com/watch?v=xnqTKD8uD64
-     8. [ ] https://www.youtube.com/watch?v=JfmTagWcqoE
-     9. [ ] https://www.youtube.com/watch?v=YnWhqhNdYyk
-     10. [ ] https://www.youtube.com/watch?v=5EGw4_NKZlY
-     11. [ ] https://www.youtube.com/watch?v=Fsi3JpYCsUM
-     12. [ ] https://www.youtube.com/watch?v=YA-nB2wjVcI
-     13. [ ] https://www.youtube.com/watch?v=WLDT1lDOsb4
-     14. [ ] https://www.youtube.com/watch?v=CkGqINHZit0
-     15. [ ] https://www.youtube.com/watch?v=h4Jl1fk3MkQ
-     16. [ ] https://www.youtube.com/watch?v=u5EAJTHPJN8
-     17. [ ] https://www.youtube.com/watch?v=nnY4e4faNp0
-     18. [ ] https://www.youtube.com/watch?v=ZQ-8laAr9Dg
-     19. [ ] https://www.youtube.com/watch?v=R1E1tmeqxBY
-     20. [ ] https://www.youtube.com/watch?v=3AkPd9Nt2Aw
-     21. [ ] https://www.youtube.com/watch?v=bSkpMdDe4g4
-     22. [ ] https://www.youtube.com/watch?v=FJJTYQYB1JQ
-     23. [ ] https://www.youtube.com/watch?v=2EWejmkKlxs
-     24. [ ] https://www.youtube.com/watch?v=xVT1y0xWgww
-     25. [ ] https://www.youtube.com/watch?v=-n9Fkq1e6sg
-     26. [ ] https://www.youtube.com/watch?v=gPj90zwLphw
-     27. [ ] https://www.youtube.com/watch?v=9OWGgkuyFV8
-     28. [ ] https://www.youtube.com/watch?v=zE5IiaViVxk
-     29. [ ] https://www.youtube.com/watch?v=g-WPhYREFjk
-     30. [ ] https://www.youtube.com/watch?v=FXfrojjIo80
-     31. [ ] https://www.youtube.com/watch?v=6avJHaC3C2U
-     32. [ ] https://youtu.be/WDIkqP4JbkE
-     33. [ ] https://www.youtube.com/watch?v=X1J-f4LpQ_4
-     34. [ ] https://www.youtube.com/watch?v=iLpt23V2vQE
-     35. [ ] https://www.youtube.com/watch?v=ZAji7PkXaKY&list=PLHTh1InhhwT5o3GwbFYy3sR7HDNRA353e
-     36. [ ] https://www.youtube.com/watch?v=WsUnnYEKPnI
-     37. [ ] https://www.youtube.com/watch?v=FrPzW8U7O6o
-     38. [ ] https://www.youtube.com/watch?v=IgNUBw3vcO4
-     39. [ ] https://www.youtube.com/watch?v=15QF2q66NhU
-     40. [ ] https://www.youtube.com/watch?v=xDEGpKJ62lI
-     41. [ ] https://www.youtube.com/watch?v=tckHl8M3VXM
-     42. [ ] https://www.youtube.com/watch?v=yG1OZ69H_-o
-     43. [ ] https://www.youtube.com/watch?v=dQaRLmM7KKk
-     44. [ ] https://www.youtube.com/watch?v=15QF2q66NhU
-     45. [ ] https://www.youtube.com/watch?v=vElZc6zSIXM
-     46. [ ] https://www.youtube.com/watch?v=MdrfPSUtMVM
+     1) [ ] essence of c++, bjarne stroustrup :: https://www.youtube.com/watch?v=86xWVb4XIyE
+     2) [ ] cppcon2020 c++ is 40 :: https://www.youtube.com/watch?v=u_ij0YNkFUs
+     3) [ ] avoid Linked Lists, bjarne stroustrup :: https://youtu.be/YQs6IC-vgmo
+     4) [ ] cppcon2021 back to basics :: https://www.youtube.com/watch?v=ZAji7PkXaKY&list=PLHTh1InhhwT5o3GwbFYy3sR7HDNRA353e
+     5) [ ] ref-qualifiers and inheritance :: https://www.youtube.com/watch?v=Fsi3JpYCsUM
+     6) [ ] cppweekly :
+	+ ep326 deducing `this` :: https://www.youtube.com/watch?v=5EGw4_NKZlY
+	+ ep312 stop using constexpr :: https://www.youtube.com/watch?v=4pKtPWcl1Go
+	+ ep259 CRTP :: https://www.youtube.com/watch?v=ZQ-8laAr9Dg
+	+ ep329 LTO makes program faster :: https://www.youtube.com/watch?v=9nzT1AFprYM
+     7) [ ] cppcon2017 learning and teaching modern c++, bjarne :: https://www.youtube.com/watch?v=fX2W3nNjJIo
+     8) [ ] cppcon2018 how to teach c++ :: https://www.youtube.com/watch?v=3AkPd9Nt2Aw
+     9) [ ] cppcon2015 stop teaching c, kate :: https://www.youtube.com/watch?v=YnWhqhNdYyk
+     10) [ ] cppcon2014 essentials of modern c++ style, herb sutter :: https://www.youtube.com/watch?v=xnqTKD8uD64
+     11) [ ] cppcon2017 tools and techniques to stay up-to-date with modern c++ :: https://www.youtube.com/watch?v=xDEGpKJ62lI
+     12) [ ] cppcon2017 algorithms and where to find them :: https://www.youtube.com/watch?v=YA-nB2wjVcI
+     13) [ ] cppcon2021 reaching aims of c++, bjarne stroustrup :: https://www.youtube.com/watch?v=15QF2q66NhU
+     14) [ ] best practices ::
+	 + [ ] cppcon2019 naming, kate gregory :: https://www.youtube.com/watch?v=MBRoCdtZOYg
+	 + [ ] cppp2019 design, kate gregory :: https://www.youtube.com/watch?v=zjH2d5VhTD8
+	 + [ ] worst best practices, jason turner :: https://www.youtube.com/watch?v=KeI03tv9EKE
+     15) [ ] cppcon2016 leak-freedom in c++, herb :: https://www.youtube.com/watch?v=JfmTagWcqoE
+     16) [ ] cppcon2017 c++ performance :: https://www.youtube.com/watch?v=2EWejmkKlxs
+     17) [ ] cppcon2015 gdb :: https://www.youtube.com/watch?v=PorfLSr3DDI
+     18) [ ] cppcon2016 gdb :: https://www.youtube.com/watch?v=-n9Fkq1e6sg
+     19) [ ] cppcon2017 linker :: https://www.youtube.com/watch?v=xVT1y0xWgww
+     20) [ ] cppcon2021 analyzing and improving build times :: https://www.youtube.com/watch?v=Iybb9wnpF00
+     21) [ ] cppcon2021 making the most of your compiler :: https://www.youtube.com/watch?v=tckHl8M3VXM
+     22) [ ] cppcon2017 practical C++17, jason turner :: https://www.youtube.com/watch?v=nnY4e4faNp0
+     23) [ ] cppcon2017 modern c++ c++17 and above, joel :: https://www.youtube.com/watch?v=gPj90zwLphw
+     24) [ ] cppcon2016 stl algorithms :: https://www.youtube.com/watch?v=h4Jl1fk3MkQ
+     25) [ ] cppcon2021 lambdas :: https://www.youtube.com/watch?v=IgNUBw3vcO4
+     26) [ ] 'return x' optimisation ::
+	 + cppnow :: https://www.youtube.com/watch?v=OGKAJD7bmr8
+	 + cppcon2018 :: https://www.youtube.com/watch?v=hA1WNtNyNbo
+     27) [ ] cppcon2021 sums, products, exponents, functors, etc :: https://www.youtube.com/watch?v=FrPzW8U7O6o
+     28) [ ] cppcon2019 sorting algorithms, andrei alexandrescu :: https://www.youtube.com/watch?v=FJJTYQYB1JQ
+     29) [ ] cppcon2021 reporting and handling errors :: https://www.youtube.com/watch?v=dQaRLmM7KKk
+     30) [ ] design ::
+	 + [ ] design patterns, klaus iglberger :: https://www.youtube.com/watch?v=u5EAJTHPJN8
+	 + [ ] SOLID :: https://www.youtube.com/watch?v=glYq-dvgby4
+	 + [ ] cppcon2017 free your functions :: https://www.youtube.com/watch?v=WLDT1lDOsb4
+	 + [ ] cppp2021 aesthetics of code, sy brand :: https://www.youtube.com/watch?v=CkGqINHZit0
+	 + [ ] cppcon2021 classes design :: https://www.youtube.com/watch?v=iLpt23V2vQE
+	 + [ ] cppp2021 classes design ::  https://www.youtube.com/watch?v=X1J-f4LpQ_4
+	 + [ ] cppcon2018 concepts the future of generic programming :: https://www.youtube.com/watch?v=HddFGPTAmtU
+	 + [ ] cppcon2017 design : concepts for customization points :: https://www.youtube.com/watch?v=WsUnnYEKPnI
+	 + [ ] cppcon2021 c++ modules :: https://www.youtube.com/watch?v=9OWGgkuyFV8
+	 + [ ] cppcon2021 metaprogramming :: https://www.youtube.com/watch?v=FXfrojjIo80
+	 + [ ] cppcon2017 generative c++ :: https://www.youtube.com/watch?v=4AfRAVcThyA
+	 + [ ] cppcon2021 branchless programming :: https://www.youtube.com/watch?v=g-WPhYREFjk
+     31) [ ] cppcon2017 compilers, matt godbolt :: https://www.youtube.com/watch?v=bSkpMdDe4g4
+     32) [ ] cppcon2018 more powerful and simpler c++, herb sutter (thoughts) :: https://www.youtube.com/watch?v=80BZxujhY38
+     33) [ ] cppcon2021 package management :: https://www.youtube.com/watch?v=R1E1tmeqxBY
+     34) [ ] cppcon2021 type-and-resource safety, bjarne :: https://www.youtube.com/watch?v=l3rvjWfBzZI
+     35) [ ] cpu caches :: https://youtu.be/WDIkqP4JbkE
+     36) [ ] cache friendly :: https://www.youtube.com/watch?v=yyNWKHoDtMs
+     37) [ ] AI playing video games :: https://www.youtube.com/watch?v=qydj3OZf6hY
+	 - [ ] https://github.com/olafurw/poke-fighting-rust
+	 - [ ] https://github.com/patricia-gallardo/cpp-doom
+     38) [ ] cppcon2016 arguing about undefined behaviour :: https://www.youtube.com/watch?v=yG1OZ69H_-o
+     39) [ ] cppcon2021 new mental model of constexpr :: https://www.youtube.com/watch?v=MdrfPSUtMVM
+     40) [ ] cppcon2016 high performance code 201: hybrid data structures :: https://www.youtube.com/watch?v=vElZc6zSIXM
+     41) [ ] SIMD ::
+	 - cppcon2016 designing C++ portable SIMD support :: https://www.youtube.com/watch?v=2HsLsTRxfbA
+	 - cppcon2021 simd eve of a new era :: https://www.youtube.com/watch?v=WZGNCPBMInI
+	 - cppp2021 simd eve of a new era :: https://www.youtube.com/watch?v=Tqnz4IsmIFY
+	 - cppmeeting2021 simd eve of a new era :: https://www.youtube.com/watch?v=XAqMBLGJeXY
+     42) [ ] cppcon2021 c++ atomics :: https://www.youtube.com/watch?v=zE5IiaViVxk
+     43) [ ] general knowledge :: https://www.youtube.com/watch?v=6avJHaC3C2U
 
 *** TODO links cpp [0/8]
      1. [ ] https://vittorioromeo.info/
      2. [ ] https://ocw.mit.edu/courses/electrical-engineering-and-computer-science/6-096-introduction-to-c-january-iap-2011/lecture-notes/MIT6_096IAP11_lec10.pdf
      3. [ ] https://devblogs.microsoft.com/cppblog/clear-functional-c-documentation-with-sphinx-breathe-doxygen-cmake/
-     4. [ ] https://github.com/AnthonyCalandra/modern-cpp-features
-     5. [ ] https://ocw.mit.edu/courses/electrical-engineering-and-computer-science/6-s096-effective-programming-in-c-and-c-january-iap-2014/lecture-notes/MIT6_S096IAP14_Lecture3A.pdf
-     6. [ ] https://ocw.mit.edu/courses/electrical-engineering-and-computer-science/6-s096-effective-programming-in-c-and-c-january-iap-2014/lecture-notes/
-     7. [ ] file:///home/myfirstdebianpc/Downloads/c++/cpp_indepth_series/Modern_Cpp_Intensive_for_Scientists_Engineers_Programmers.pdf
-     8. [ ] https://www.tutorialspoint.com/design_pattern/design_pattern_quick_guide.htm
-     9. [ ] https://refactoring.guru/design-patterns/cpp
+     4. [ ] https://github.com/lefticus/cpp_weekly
+     5. [ ] https://github.com/AnthonyCalandra/modern-cpp-features
+     6. [ ] https://github.com/cpp-best-practices/cppbestpractices
+     7. [ ] https://github.com/olafurw/talk-cppp-webassembly
+     8. [ ] https://github.com/philsquared/cpponsea-slides/tree/master/2022
+     9. [ ] https://ocw.mit.edu/courses/electrical-engineering-and-computer-science/6-s096-effective-programming-in-c-and-c-january-iap-2014/lecture-notes/MIT6_S096IAP14_Lecture3A.pdf
+     10. [ ] https://ocw.mit.edu/courses/electrical-engineering-and-computer-science/6-s096-effective-programming-in-c-and-c-january-iap-2014/lecture-notes/
+     11. [ ] file:///home/myfirstdebianpc/Downloads/c++/cpp_indepth_series/Modern_Cpp_Intensive_for_Scientists_Engineers_Programmers.pdf
+     12. [ ] https://www.tutorialspoint.com/design_pattern/design_pattern_quick_guide.htm
+     13. [ ] https://refactoring.guru/design-patterns/cpp
 
 *** TODO optional cpp [0/5]
      - [ ] https://www.youtube.com/watch?v=xMBNCtFV8sI
@@ -282,6 +310,7 @@ version 3.22 already installed
      - https://www.localsolver.com/docs/last/quickstart/index.html
      - https://www.localsolver.com/docs/last/exampletour/kmeans.html
      - https://www.localsolver.com/clientpasco.html
+     - https://www.localsolver.com/benchmark/huge-instances-capacitated-vehicle-routing-problem-cvrp
      - http://iao.hfuu.edu.cn/blogs/science-blog/29-measuring-the-runtime-of-optimization-algorithms
      - https://matplotlib.org/3.1.0/gallery/statistics/boxplot.html
      - https://co-enzyme.fr/blog/

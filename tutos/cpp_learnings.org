@@ -1,5 +1,12 @@
 * cpp modern learnings
+** Acronyms
+   + CRTP :: Curiously Recurring Template Pattern
 ** Assembler
+** Best practices
+** Design, metaprogramming
+** Glossary
+   - Generic programming ::
+   - Metaprogramming :: 
 ** Algorithms and stl
 ** CMAKE
 ** Unit testing
