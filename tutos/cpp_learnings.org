@@ -1,12 +1,125 @@
+#-*- mode: org -*-
+#+cpp and modern cpp notes
+
 * cpp modern learnings
+** foreword, UML, and general notes
+   + UML notation ::
+     - visibility :: + Public - Private # Protected ~ Package
+     - relations ::
+       + associations :: two objects are linked (directly, or indirectely), chose one which will implement a public function, and the other linked to it will contain the object as private and 'friend' the former.
+       + realisation/implementation :: when interface is implement
+       + dependency :: indicates that a change to one class, the supplier, might cause a change in the other class, the consumer. The supplier is independent because a change in the consumer does not affect the supplier.
+	 - 
+       + aggregation :: special case of an association meaning “consists of”:
+	 - eg :: student has many teachers
+	 - if container dies, content doesn't die with it :: eg : if
+           teachers leaves, his students stay
+	 - implementation :: 'super object' (professor here) has a list of reference to 'sub' object (class)
+       + generalisation :: process of extracting shared characteristics from two or more classes, and combining them into a generalized superclass.
+	 - whereas *specialization* :: creating new subclasses from an existing class, eg : in inheriting subclasses, add more characteristics from superclasses
+       + composition :: special case of association, xstrong aggregation,  represents a whole–part relationship and is a form of aggregation. A composition association relationship specifies that the lifetime of the part classifier is dependent on the lifetime of the whole classifier.
+	 - in a composition association relationship, data usually flows in only one direction (that is, from the whole classifier to the part classifier).
+	 - eg : composition association relationship connects a Student class with a Schedule class, which means that if you remove the student, the schedule is also removed.
+
 ** Acronyms
+   + RAII :: Resource Acquisition Is Initialization
    + CRTP :: Curiously Recurring Template Pattern
+   + SFINAE :: Substitution failure is not an error
 ** Assembler
 ** Best practices
 ** Design, metaprogramming
+*** Design patterns
+**** Creational patterns :: all about class instantiation
+     - Notes ::
+       + deals with object creation mechanisms, trying to create objects in a manner suitable to the situation. The basic form of object creation could result in design problems or added complexity to the design. Creational design patterns solve this problem by somehow controlling this object creation
+       + often, designs start out using Factory Method (less complicated, more customizable, subclasses proliferate) and evolve toward Abstract Factory, Prototype, or Builder (more flexible, more complex) as the designer discovers where more flexibility is needed.
+     - can be further divided into two parts ::
+       + class-creation patterns :: use inheritance effectively in the instantiation process
+       + object-creation patterns :: use delegation effectively to get the job done
+     - main :: builder, factory, factory method, abstract factory, prototype, singleton
+     - builder :: separates object construction from its representation
+       + pattern allows a client object to construct a complex object by specifying only its type and content, not its details
+       + separates object construction from its representation
+       + this way the construction process can be used to create different representations.
+       + eg ::
+	 - Pizza: Object we want to build
+	 - PizzaBuilder: HawaiianPizzaBuilder, SpicyPizzaBuilder, with unique_ptr<Pizza> m_pizza;
+	   + // hawaiianpizzabuilder and spicypizzabuilder inherits of Pizzabuilder
+	   + // they are also associated to Pizza since in Pizzabuilder from which they inherit they contain the object Pizza
+	 - Cook (also called Director): PizzaBuilder* m_pizzaBuilder; // calls the builder
+	 - Client: Use cook to create and open pizza :: HawaiianPizzaBuilder hawaiianPizzaBuilder; cook.createPizza(&hawaiianPizzaBuilder); etc.
+     - abstract factory :: creates instance of several families of classes
+       + provides an interface for creating families of related or dependent objects without specifying their concrete classes.
+       + provides hierarchy that encapsulates: many possible "platforms", and the construction of a suite of "products".
+       + 'new' operator considered harmful.
+       + Abstract Factory classes are often implemented with Factory Methods, but they can be implemented using Prototype.
+     - factory :: creates an instance of a class from a family of derived classes.
+       + problem :: once added new concrete product call, should also modify the Factory class. Not very flexible and violates open-close principle.
+     - factory method :: defines interface for creating an object, but leaves choice of its type to the subclasses, creation being deferred at run-time.
+       + use of 'static' and avoiding 'new' => object re-use
+       + it refers to the newly created object through a common interface.
+       + similar to Abstract Factory but without the emphasis on families.
+       + Factory Method: creation through inheritance. Prototype: creation through delegation.
+     - object pool :: avoid expensive acquisition and release of resources by recycling objects that are no longer in use
+       + used to manage the object caching.
+       + good option when cost of initializing class instance high, rate of instantiation of class is high, and number of instantiations in use at any one time is low
+     - prototype :: fully initialized instance to be copied or cloned
+       + specify the kinds of objects to create using a prototypical instance, and create new objects by copying this prototype.
+       + 'new' operator considered harmful
+       + whereas factory methods are created through inheritance, prototypes are created through delegation
+       + prototype doesn't require subclassing, but does require "initialize" operation. Factory Method requires subclassing, but doesn't require Initialize
+       + designs that make heavy use of Composite and Decorator patterns often can benefit from Prototype
+       + prototype co-opts one instance of a class for use as a breeder of all future instances
+       + prototypes are useful when object initialization is expensive, and one anticipates few variations on the initialization parameters. In this context, Prototype can avoid expensive "creation from scratch", and support cheap cloning of a pre-initialized prototype
+       + prototype is unique among others creational patterns in that it doesn't require a class – only an object.
+     - singleton :: class of which only a single instance can exist, global scope
+       + declare instance as private static data member
+       + provide a public static member function that encapsulates all initialization code, and provides access to the instance
+       + should be considered only if all three criteria are satisfied ::
+	 - ownership of the single instance cannot be reasonably assigned
+	 - lazy initialization is desirable
+	 - global access is not otherwise provided for
+       + deleting a Singleton class/instance is a non-trivial design problem
+**** Structural patterns
+     - Note :: design Patterns that ease the design by identifying a simple way to realize relationships between entities
+     - main :: adapter, bridge, composite, decorator, facade, flyweight, proxy, CRTP
+     - adapter :: match interfaces of different classes
+       + can be implemented either with inheritance or with aggregation
+       + adapter makes things work after they're designed; Bridge makes them work before they are.
+       + adapter provides a different interface to its subject, proxy provides the same interface, decorator provides an enhanced interface
+       + adapter is meant to change the interface of an existing object. Decorator enhances another object without changing its interface
+       + facade defines a new interface, whereas adapter reuses an old interface
+       + // in my opinion :: VERY UGLY, workaround to avoid refactoring (but refactoring VERY HEAVY though...)
+     - bridge :: separates an object's interface from its implementation
+       + 
+     - composite :: tree structure of simple and composite objects
+     - decorator :: add responsibilities to objects dynamically
+     - facade :: single class that represents an entire subsystem
+     - flyweight :: fine-grained instance used for efficient sharing
+     - private Class Data :: restricts accessor/mutator access
+     - proxy :: object representing another object
+**** Behavioral patterns
+     - Note :: design patterns that identify common communication patterns between objects and realize these patterns. By doing so, these patterns increase flexibility in carrying out this communication
+     - observer :: way of notifying change to a number of classes
+     - chain of responsibility :: way of passing a request between a chain of objects
+     - interpreter :: way to include language elements in a program
+     - strategy :: encapsulates an algorithm inside a class
+     - state :: alter object's behavior when its state changes
+     - visitor :: defines new operation to a class without change
+     - iterator :: sequentially access the elements of a collection
+     - command :: encapsulate command request as an object
+     - mediator :: defines simplified communication between classes
+     - memento :: capture and restore an object's internal state
+     - null Object :: designed to act as a default value of an object
+     - template method :: defer exact steps of an algorithm to a subclass
+
 ** Glossary
-   - Generic programming ::
-   - Metaprogramming :: 
+   - programming :: writing program that creates, transforms, filters, aggregates and otherwise manipulates data.
+   - Metaprogramming :: writing a program that creates, transforms, filters, aggregates and otherwise manipulates *programs*.
+   - Generic programming :: writing a program that creates, transforms, filters, aggregates and otherwise manipulates data, but makes only the minimum assumptions about the structure of the data, thus maximizing reuse across a wide range of datatypes.
+   - Note on difference between metaprogramming and generic programming ::
+     + generic Programming and (static/compile time) metaprogramming are both done with Templates
+     + plus, generic programming uses Metaprogramming to be efficient, i.e. Template Specialization generates specialized (fast) programs from generic ones.
 ** Algorithms and stl
 ** CMAKE
 ** Unit testing

@@ -6,8 +6,7 @@
 
 * Tasks
 ** TODO finish tutorial http://doc.norang.ca/org-mode.html
-
-* Us.es
+** Us.es
 
 * Notes
 
