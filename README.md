@@ -1,3 +1,3 @@
 # perso_stuff
 
-Mainly links for personal learnings and some tasklists maybe
+Mainly notes, links, etc., for personal use, learnings and some tasklists maybe
