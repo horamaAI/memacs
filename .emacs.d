@@ -1,1 +1,0 @@
-/home/myfirstdebianpc/.emacs.d
