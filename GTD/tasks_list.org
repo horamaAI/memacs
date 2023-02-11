@@ -1,5 +1,5 @@
-#-*- mode: org -*-
-#+tasks list file
+# -*- mode: org -*-
+#+title: tasks list file
 
 
 * Current
@@ -9,6 +9,11 @@
 - [ ] empty firefox bookmarks todos :: emacs, running, youtubevids, etc.
 - [ ] check emacs for UML diagrams ::
   + https://github.com/josteink/wsd-mode
+- [ ] create/publish tutorial pages for 1A ::
+  - title :: A curated* and heavily biased** knowledge sharing for 1A*** newcomers
+  - * from just a 2years experience, so not very much and should be taken with a grain of salt
+  - ** from a point of view of a dev in A-squad scrum team, and Sncf Rail display (SRD) component team
+  - *** 1A => Amadeus. If you want to show off and sound smart use acronyms. But more seriously, acronyms are used way too much in 1A (bookmark ghost [add_ghost_link])
 * Calendar
   :PROPERTIES:
   :CATEGORY: Calendar
@@ -29,13 +34,19 @@
   :CATEGORY: cpp_learning
   :END:
 *** TODO videos cpp [0/13]
-    SCHEDULED: <2022-10-14 Fri>
+    SCHEDULED: <2023-01-18 Wed>
      1) [ ] general c++ related talks ::
+	+ [ ] c++weekly, can AI And ChatGPT Replace C++ Programmers ? :: https://www.youtube.com/watch?v=TIDA6pvjEE0
+	+ [ ] Kate Gregory, "Am I A Good Programmer?" :: https://www.youtube.com/watch?v=pdHvC8fDC5E
+	+ [ ] Hiring in C++ :: https://www.youtube.com/watch?v=uqO8y81_RJI
 	+ [ ] essence of c++, bjarne stroustrup :: https://www.youtube.com/watch?v=86xWVb4XIyE
 	+ [ ] cppcon2020 c++ is 40 :: https://www.youtube.com/watch?v=u_ij0YNkFUs
 	+ [ ] cppcon2018 how to teach c++ :: https://www.youtube.com/watch?v=3AkPd9Nt2Aw
 	+ [ ] cppcon2015 stop teaching c, kate :: https://www.youtube.com/watch?v=YnWhqhNdYyk
 	+ [ ] cppcon2021 reaching aims of c++, bjarne stroustrup :: https://www.youtube.com/watch?v=15QF2q66NhU
+	+ [ ] cppcon2022 an C++ be 10x Simpler & Safer?, Herb Sutter :: https://www.youtube.com/watch?v=ELeZAKCN4tY
+	+ [ ] intro to c++ : Modern C++ Quick Start Tutorial - 90 Topics in 20 Minutes :: https://www.youtube.com/watch?v=VpqwCDSfgz0
+	  - [ ] 5 Step Plan For Deeper C++ Knowledge :: https://www.youtube.com/watch?v=287_oG4CNMc
      2) [ ] back to basics sessions ::
 	+ [ ] cppcon2022 back to basics :: TBC
 	+ [ ] cppcon2021 back to basics :: https://www.youtube.com/watch?v=Bt3zcJZIalk&list=PLHTh1InhhwT4TJaHBVWzvBOYhp27UO7mI
@@ -50,7 +61,8 @@
 	+ [ ] cppcon2017 tools and techniques to stay up-to-date with modern c++ :: https://www.youtube.com/watch?v=xDEGpKJ62lI
 	+ [ ] cppcon2014 essentials of modern c++ style, herb sutter :: https://www.youtube.com/watch?v=xnqTKD8uD64
 	+ [ ] cppcon2017 modern c++ c++17 and above, joel :: https://www.youtube.com/watch?v=gPj90zwLphw
-	+ [ ] cppcon2023 what’s New in C++23 :: https://www.youtube.com/watch?v=vbHWDvY59SQ
+	+ [ ] cppcon2022 what’s New in C++23, sy brand :: https://www.youtube.com/watch?v=vbHWDvY59SQ
+	+ [ ] cppcon2022 what's In It For You?, Marc Gregoire :: https://www.youtube.com/watch?v=b0NkuoUkv0M
 	+ [ ] cppcon2017 practical C++17, jason turner :: https://www.youtube.com/watch?v=nnY4e4faNp0
 	+ [ ] dive into c++11, vittorio romeo (see also : http://vittorioromeo.info) :: https://www.youtube.com/watch?v=_4K3tsKa1Uc&list=PLTEcWGdSiQenl4YRPvSqW7UPC6SiGNN7e&index=1
 	  - [ ] git sources :: https://github.com/vittorioromeo/Tutorials
@@ -74,6 +86,7 @@
 	+ [ ] cppcon2017 generative c++ :: https://www.youtube.com/watch?v=4AfRAVcThyA
 	+ [ ] cppcon2021 branchless programming :: https://www.youtube.com/watch?v=g-WPhYREFjk
 	+ [ ] cppcon2016 c++14 reflections :: https://www.youtube.com/watch?v=abdeAew3gmQ
+	+ [ ] stop writing dead programs :: https://www.youtube.com/watch?v=8Ab3ArE8W3s
      6) [ ] debugging and profiling ::
 	+ [ ] cppcon2021 basics of Profiling :: https://www.youtube.com/watch?v=dToaepIXW4s
 	+ [ ] cppcon2022 debugging :: https://www.youtube.com/watch?v=YzIBwqWC6EM
@@ -168,7 +181,7 @@ https://cestlaz.github.io/stories/emacs/
   11. [ ] https://www.youtube.com/watch?v=2z-YBsd5snY
 
 *** TODO links [1/30]
-    SCHEDULED: <2022-10-14 Fri>
+    SCHEDULED: <2023-01-18 Wed>
   1. [X] https://orgmode.org/worg/org-tutorials/org4beginners.html
   2. [ ] for GTDs:
      + http://doc.norang.ca/org-mode.html#HowToUseThisDocument

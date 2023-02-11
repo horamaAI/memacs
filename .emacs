@@ -46,7 +46,7 @@
 	  (org-agenda-skip-entry-if 'scheduled 'deadline 'regexp "
 ]+>")))
        (org-agenda-overriding-header "Unscheduled TODO entries: ")))))
- '(org-agenda-files '("~/Documents/repos/perso_stuff/GTD/"))
+ '(org-agenda-files nil)
  '(org-agenda-ndays 7)
  '(org-agenda-show-all-dates t)
  '(org-agenda-skip-deadline-if-done t)
@@ -226,32 +226,32 @@
 ;; Note: not quite helpful to have lot of capture templates, use minimal to capture quicknote and resume current task, then after refile them properly
 ;; the other benefit of minimal template is when new org file created, not always necessary to configure a new template for it
 (setq org-directory (getenv "HOME" ))
-(setq org-default-notes-file (concat org-directory "/Documents/repos/perso_stuff/GTD/notes.org"))
+(setq org-default-notes-file (concat org-directory "/Documents/repos/org/perso_stuff/GTD/notes.org"))
 
 (setq org-capture-templates
       ;; clock-in means the task is clocked, and when task is filed (using C-c C-c), then the clock resumes on the original task
-      '(("m" "Meeting" entry (file+headline "~/Documents/repos/perso_stuff/GTD/notes.org" "Calendar")
+      '(("m" "Meeting" entry (file+headline "~/Documents/repos/org/memacs/GTD/notes.org" "Calendar")
 	 "* Meeting %^{Description} %^g\n %? :MEETING:\n Added: %U\n" :clock-in t :clock-resume t)
 	;; for example, a mail that needs a response
-	("r" "Needs response" entry (file+headline "~/Documents/repos/perso_stuff/GTD/notes.org" "Calendar")
+	("r" "Needs response" entry (file+headline "~/Documents/repos/org/memacs/GTD/notes.org" "Calendar")
 	 "* NEXT Respond to %:from on %:subject\nSCHEDULED: %t\n%U\n%a\n" :clock-in t :clock-resume t :immediate-finish t)
-	("p" "Phone call" entry (file+headline "~/Documents/repos/perso_stuff/GTD/notes.org" "Calendar")
+	("p" "Phone call" entry (file+headline "~/Documents/repos/org/memacs/GTD/notes.org" "Calendar")
 	 "* Phone %? :PHONE:\n%U\n" :clock-in t :clock-resume t)
-	("t" "Tasks diary" entry (file+headline "~/Documents/repos/perso_stuff/GTD/notes.org" "Tasks")
+	("t" "Tasks diary" entry (file+headline "~/Documents/repos/org/memacs/GTD/notes.org" "Tasks")
 	 "* TODO %?\n%U\n%a\n" :clock-in t :clock-resume t)
-	("u" "Us.es Tasks"  entry (file+headline "~/Documents/repos/perso_stuff/GTD/notes.org" "Tasks")
+	("u" "Us.es Tasks"  entry (file+headline "~/Documents/repos/org/memacs/GTD/notes.org" "Tasks")
 	 "* TODO %? :US.ES:\n%U\n%a\n" :clock-in t :clock-resume t)
-	("c" "Cpp Tasks"  entry (file+headline "~/Documents/repos/perso_stuff/GTD/notes.org" "Tasks")
+	("c" "Cpp Tasks"  entry (file+headline "~/Documents/repos/org/memacs/GTD/notes.org" "Tasks")
 	 "* TODO %? :CPP:\n%U\n%a\n" :clock-in t :clock-resume t)
-	("n" "Note"  entry (file+headline "~/Documents/repos/perso_stuff/GTD/notes.org" "Notes")
+	("n" "Note"  entry (file+headline "~/Documents/repos/org/memacs/GTD/notes.org" "Notes")
 	 "* %? :NOTE:\n%U\n%a\n" :clock-in t :clock-resume t)
-	("x" "Most used commands" entry (file+headline "~/Documents/repos/perso_stuff/GTD/notes.org" "Most used commands")
+	("x" "Most used commands" entry (file+headline "~/Documents/repos/org/memacs/GTD/notes.org" "Most used commands")
 	 "- %?\n%U\n%a\n" :clock-in t :clock-resume t)
-	("h" "Habit" entry (file+headline "~/Documents/repos/perso_stuff/GTD/notes.org" "Habit")
+	("h" "Habit" entry (file+headline "~/Documents/repos/org/memacs/GTD/notes.org" "Habit")
 	 "* NEXT %?\n%U\n%a\nSCHEDULED: %(format-time-string \"%<<%Y-%m-%d %a .+1d/3d>>\")\n:PROPERTIES:\n:STYLE: habit\n:REPEAT_TO_STATE: NEXT\n:END:\n")
-	("e" "e-mail related task" entry (file+headline "~/Documents/repos/perso_stuff/GTD/notes.org" "Source related tasks")
+	("e" "e-mail related task" entry (file+headline "~/Documents/repos/org/memacs/GTD/notes.org" "Source related tasks")
 	 "- %? , as activity response to source:\t%i\n%U\n%a\n" :clock-in t :clock-resume t)
-	("j" "Journal" entry (file+datetree "~/Documents/repos/perso_stuff/GTD/journal.org")
+	("j" "Journal" entry (file+datetree "~/Documents/repos/org/memacs/GTD/journal.org")
 	 "* %?\n%U\n" :clock-in t :clock-resume t)))
 
 ;; quick clocking in/out of capture mode tasks often takes less than a minute to capture new task details => can leave empty clock drawers in tasks which aren't really useful. If remove clocking lines with 0:00 length, one might end up with empty LOGBOOK (clock drawer). Hence, need to remove those empty LOGBOOK drawers when they occur on clock out
@@ -1119,5 +1119,38 @@ Skip project and sub-project tasks, habits, and loose non-project tasks."
 (setq recentf-max-saved-items 25)
 (global-set-key "\C-x\ \C-r" 'recentf-open-files)
 
+;; publish to html settings
+(require 'ox-publish)
+(setq org-publish-project-alist
+      '(("learnings-notes"
+	 :base-directory "~/Documents/repos/org/memacs/learnings" ; components root directory
+	 :base-extension "org"                         ; extension without dot
+	 :publishing-directory "~/public_html/learnings"        ; base directory where files will be published
+	 :recursive t                           ; if 't', include subdirectories, subdirectories in:publishing-directory created if don't exist
+	 :publishing-function org-html-publish-to-html ; if and how org process files in component => convert org files to HTML
+	 :headline-levels 4                            ; level of display in table of content
+	 :auto-preamble t
+	 :auto-sitemap t                ; Generate sitemap.org automagically...
+	 :sitemap-filename "sitemap.org"  ; ... call it sitemap.org (it's the default)...
+	 :sitemap-title "Sitemap"         ; ... with title 'Sitemap'.
+	 :section-numbers nil       ;; Don't include section numbers
+	 :time-stamp-file nil       ;; Don't include time stamp in file
+	 )
+	("learnings-static"
+	 :base-directory "~/Documents/repos/org/memacs/learnings"
+	 :base-extension "css\\|js\\|png\\|jpg\\|gif\\|pdf\\|mp3\\|ogg\\|swf"
+	 :publishing-directory "~/public_html/"
+	 :recursive t
+	 :publishing-function org-publish-attachment
+	 )
+	("learnings-project" :components ("learnings-notes" "learnings-static"))
+
+	)
+      )
+
+;; get rid of validate link at the bottom of published html files
+(setq org-html-validation-link nil)
+
+
 ;; open file on start
-(find-file "/home/myfirstdebianpc/Documents/repos/perso_stuff/GTD/tasks_list.org")
+(find-file "/home/myfirstdebianpc/Documents/repos/org/memacs/GTD/tasks_list.org")

@@ -1,148 +1,159 @@
-#-*- mode: org -*-
-#+Keybindings cheatsheets
+# -*- mode: org -*-
+#+title: Emacs learning project
+#+options: ^:nil _:nil
+
+* emacs files types
+- emacs.org~ :: usually for backup files
+- #emacs.org# :: for auto-save state
+- .#emacs.org :: file locking
+- files in ~./emacs.d :: files that needs to be persistent throughout
+  all emacs sessions
 
 
-* Useful commands (not used enough)
-- find mappings for keyboard (useful for keybindings) :: showkey -a
+* Notice :
+- C- Ctrl
+- M- Meta (Esc or Alt)
+- S- Shift
+- RET- well, return
+- C-h b : list all bindings available in a buffer (b for bindings).
+- C-h k [enter key or chain of key] : describe entered key
+- no namespaces in emacs, so to differentiate with existing function
+  names, use short prefixes
+  (https://emacs.stackexchange.com/questions/18030/function-naming-with-forward-slash)
+  ex: bh/a-known-name-here
+- hidden buffers start with space, hidden files of course start with dot
+- prefer customizing variables, groups, etc. through M-x customize-xxx
+  rather than manually adding into emacs initialization file.
 
-* Emacs
-** foreword, help and basic
- - C- Ctrl
- - M- Meta (Esc or Alt on keyboard)
- - S- Shift
- - RET- well, return
- - C-h b : list all bindings available in a buffer (b for bindings).
- - C-h k [enter key or chain of key] : describe entered key
 
-** file management
-*** filesystem
- - open recent files dialog :: C-x C-r
- - rename file (using dired) ::
-   1. switch to dired buffer :: C-x d
-   2. navigate to file
-   3. go into wdired mode :: C-x C-q
-   4. rename file
-   5. confirm :: C-c C-c
+* To remember (marked as very useful)
+  Note : internal links : insert target-id into \[\[LINK\]\[DESCRIPTIONS\]\] (without escaping characters) (source: https://orgmode.org/guide/Hyperlinks.html)
+  - clocking in tasks [[#task_to_clock_in][** Find task to clock in]]
+  - estimating task [[#task_time_estimate][** Task time estimate (with column view)]]
 
-*** file display
- - show next/previous screen :: C-v/M-v
- - reposition window :: C-M-l
- - keep current window, close others :: C-x 1
 
-*** file navigation
- - move forward/backward on word :: M-f/M-b
+* Habit: typical day with org-mode
+  source :: http://doc.norang.ca/org-mode.html#CustomAgendaViewSetup
+** Habit daily
+   1. Punch in (start the clock on the default task)
+   2. Look at the agenda and make a mental note of anything important to deal with today
+   3. Read email and news
+      * create notes, and tasks for things that need responses with org-capture
+   4. Check refile tasks and respond to emails
+   5. Look at agenda and work on important tasks for today
+      * Clock it in
+      * Work on it until it is DONE or it gets interrupted
+   6. Work on tasks
+   7. Make journal entries (C-c c j) for interruptions
+   8. Punch out for lunch and punch back in after lunch
+   9. work on more tasks
+   10. Refile tasks to empty the list
+       * Tag tasks to be refiled with 'm' collecting all tasks for the
+         same target (bulk refile)
+       * Bulk refile the tasks to the target location with 'B r'
+       * Repeat (or refile individually with C-c C-w) until all refile tasks are gone
+   11. Mark habits done today as DONE
+   12. Punch out at the end of the work day
 
-*** search and replace
- - search forward/backward :: C-s/C-r
- - query replace (search and replace) :: M-S-5
- - query replace (search and replace) with REGEX :: C-M-S-5
+** Next tasks to work on 
+   + Start with: *deadlines* and *tasks scheduled today or earlier* from
+the daily agenda view.
+   + Then move on to *tasks in the Next Tasks list* in the block
+     agenda view.
+   + Advice : schedule current projects to 'today' when starting to
+     work on them. They sit on daily agenda reminding that they need
+     to be completed.
+   + !! Normally only schedule *one or two projects* to the daily agenda
+     and unschedule things that are no longer important and don't deserve my attention today.
+   + order of new task to pick ::
+     1. Pick something off today's agenda
+	- deadline for today (do this first - it's not late yet)
+	- deadline in the past (it's already late)
+	- a scheduled task for today (it's supposed to be done today)
+	- a scheduled task that is still on the agenda
+	- deadline that is coming up soon
+     2. Pick a NEXT task
+     3. If run out of items to work on, look for a NEXT task in the
+        current context pick a task from the Tasks list of the current project.
+   + !!! :: better use only 'NEXT' for 'projects' tasks ('NEXT' tasks
+     are things available to work on *now*! <=> next logical step in a
+     project <=> current task).
 
-*** file edition
- - deactivate/activate auto-fill (line break) in current buffer :: C-c q
- - duplicate line :: C-c d
- - select column :: C-x SPACE
-   + insert text inside selected region :: C-x r t
 
-** emacs windows management
- - list buffers :: C-x C-b
- - switch between buffers :: C-x b
- - open buffer in another window :: C-x 4 b
- - minimize window (back to toolbar) :: C-x C-z
- - move current visible window with respect to cursor :: C-l (multiple time (3*) until desired display)
+* Time clocking
+** Clocking in (How to)
+   Select any :
+   - C-c C-x C-i
+   - I :: in the agenda
+   - I :: speed key on first character of heading line
+   - f9 I :: (globally defined key bindings) while on the task in agenda
+   - f9 I :: while in the task in an org file
 
-** org mode
- - add item :: M-RET
- - move up/down item :: M-UP/DOWN
- - cycle through available bullets :: C-c -
+** Default task clocking
+   - set default timing in a headline for default clocking ('**
+     Organisation' for mine)
+   - quick clocking in in default :: C-u C-c C-x C-i d
+   - when interruption occurs, set a capture task to pause current
+     time clocking
+   - change default clocking task ::
+     1. visit new default task in org buffer
+     2. clock it in with :: C-u C-u C-c C-x C-i
+     3. now new task is the default
 
-** org agenda and todo lists
-*** org agenda
- - 
+** Clock history for clocking old tasks
+   - scenario ::
+     + currently working on and clocking Task A (default 'Organization'
+       for example)
+     + get interrupted and switch to Task B (any)
+     + Task B completed and now want to go back to Task A ('Organization') again to continue
+   - solution ::
+     + solution 1 :: clock in again on Task A and resume work
+     + solution 2 :: when completed Task B, hit 'C-u C-c C-x C-i i' to
+       display clocking history selection buffer (the 'i' at the end
+       is for 'interrupted')
 
-*** todo
- - add item with checkbox :: C-S-M-m
- - toggle between todo states (TODO-DONE-etc) :: C-c C-t // will create todo task if not one already
- - toggle checkbox ([ ] to [x]) :: C-c C-c
+** Clocking interruption flow
+   interruption occurs when clocking task:
+   - Create a quick capture task journal entry ::
+     + is it a one shot uninteresting task ? :: 1) create journal capture
+       for it : C-c c j; 2) create heading for task; 3) do task; 4)
+       file it : C-c C-c (restores clock back to previous clocking task)
+     + is it interesting and needs be marked as completed ? :: create
+       capture task in refile file
 
-** Time clocking
-*** Clocking in (How to)
-    Select any :
-    - C-c C-x C-i
-    - I :: in the agenda
-    - I :: speed key on first character of heading line
-    - f9 I :: (globally defined key bindings) while on the task in agenda
-    - f9 I :: while in the task in an org file
+** Find task to clock in
+   :PROPERTIES:
+   :CUSTOM_ID: task_to_clock_in
+   :END:
+   use one of the following (listed by most frequently used first) :
+   1. Use clock history C-u C-c C-x C-i: Go back to something I was clocking that is not finished
+   2. Pick something off today's block agenda: *SCHEDULED* or
+      *DEADLINE* (items that need to be done soon)
+   3. Pick something off the *NEXT* tasks agenda view Work on some unfinished task to move to completion
+   4. Pick something off the other task list
+   5. Use an agenda view with filtering to pick something to work on
+   Note : punching in on selected task will restrict the agenda view
+   to that project so that can focus on just that thing for some period of time. 
 
-*** Default task clocking
-    - set default timing in a headline for default clocking ('**
-      Organisation' for mine)
-    - quick clocking in in default :: C-u C-c C-x C-i d
-    - when interruption occurs, set a capture task to pause current
-      time clocking
-    - change default clocking task ::
-      1. visit new default task in org buffer
-      2. clock it in with :: C-u C-u C-c C-x C-i
-      3. now new task is the default
+** Editing clock entries
+   (edition often needed to reflect reality)
+   ex scenario: when not properly clocked in on a task, then previous clocked task still
+   run and count for both tasks, which is wrong.
+   => solution : clock in properly the latest task, and edit start and
+   end times to correct clocking history.
+   Step to edit :
+   1. org-agenda-log-mode : (f12 a l, if f12 is mapped to org-agenda,
+      C-u C-u l otherwise) visit clock line for an entry, shows all clock lines for today
+   2. then navigate desired clock line
+   3. hit TAB
+   4. put cursor on part needed to edit
+   5. use S-<UP> or S-<DOWN> to change the time
+   !!! CAREFUL not to create overlaps when fixing clock entries, use :
+   - v c :: in daily agenda, and it will identify gaps and overlaps
 
-*** Clock history for clocking old tasks
-    - scenario ::
-      + currently working on and clocking Task A (default 'Organization'
-	for example)
-      + get interrupted and switch to Task B (any)
-      + Task B completed and now want to go back to Task A ('Organization') again to continue
-    - solution ::
-      + solution 1 :: clock in again on Task A and resume work
-      + solution 2 :: when completed Task B, hit 'C-u C-c C-x C-i i' to
-	display clocking history selection buffer (the 'i' at the end
-	is for 'interrupted')
 
-*** Clocking interruption flow
-    interruption occurs when clocking task:
-    - Create a quick capture task journal entry ::
-      + is it a one shot uninteresting task ? :: 1) create journal capture
-	for it : C-c c j; 2) create heading for task; 3) do task; 4)
-	file it : C-c C-c (restores clock back to previous clocking task)
-      + is it interesting and needs be marked as completed ? :: create
-	capture task in refile file
-
-*** Find task to clock in
-    :PROPERTIES:
-    :CUSTOM_ID: task_to_clock_in
-    :END:
-    use one of the following (listed by most frequently used first) :
-    1. Use clock history C-u C-c C-x C-i: Go back to something I was clocking that is not finished
-    2. Pick something off today's block agenda: *SCHEDULED* or
-       *DEADLINE* (items that need to be done soon)
-    3. Pick something off the *NEXT* tasks agenda view Work on some unfinished task to move to completion
-    4. Pick something off the other task list
-    5. Use an agenda view with filtering to pick something to work on
-    Note : punching in on selected task will restrict the agenda view
-    to that project so that can focus on just that thing for some period of time. 
-
-*** Editing clock entries
-    (edition often needed to reflect reality)
-    ex scenario: when not properly clocked in on a task, then previous clocked task still
-    run and count for both tasks, which is wrong.
-    => solution : clock in properly the latest task, and edit start and
-    end times to correct clocking history.
-    Step to edit :
-    1. org-agenda-log-mode : (f12 a l, if f12 is mapped to org-agenda,
-       C-u C-u l otherwise) visit clock line for an entry, shows all clock lines for today
-    2. then navigate desired clock line
-    3. hit TAB
-    4. put cursor on part needed to edit
-    5. use S-<UP> or S-<DOWN> to change the time
-    !!! CAREFUL not to create overlaps when fixing clock entries, use :
-    - v c :: in daily agenda, and it will identify gaps and overlaps
-
-* Terminal
-- add last argument of previous command :: ESC - .
-- comment current command line :: ESC - #
-  + nice to add command in terminal history and find it with :: C-r (backward search)
-  + add keybinding in ~/.zshrc :: bindkey '#' pound-insert
-
-* Time reporting (org agenda => go into mode first)
-  - v c :: check for unclosed clock times, gaps, overlaps, etc.
+* Time reporting
+  - v c :: (in agenda) check for unclosed clock times, gaps, overlaps, etc.
   - check past month clocked times :: 'f12 a v m b v c'
     + f12 a :: org-agenda
     + v m :: org-agenda-month-view
@@ -157,7 +168,12 @@
    :PROPERTIES:
    :CUSTOM_ID: task_time_estimate
    :END:
-   *Note* : timing a task is a difficult skill to master. Org-mode makes it easy: practice _creating estimates_ for tasks and _then clock the actual time_ it takes to complete. By _repeatedly estimating tasks_ and _reviewing how estimates relate to the actual time clocked_, one can tune his estimating skills.
+   *Note* : timing a task is a difficult skill to master. Org-mode
+   makes it easy: practice _creating estimates_ for tasks and _then
+   clock the actual time_ it takes to complete. By _repeatedly
+   estimating tasks_ and _reviewing how estimates relate to the actual
+   time clocked_, one can tune his estimating skills.
+
    - creating estimate with column view :: use 'properties' and
      'column view' to do project estimates (setq globally variable
      org-columns-default-format)
@@ -201,9 +217,6 @@
             exporting the needed data
 
 
-* Others
-- maximize/minimize windows :: Super- UP/DOWN
-
 * Tags
   - examples of use:
     + filtering todo lists and agenda views
@@ -222,10 +235,12 @@
   - nice use of FILETAGS to apply multiple tags to files (eg: apply
     refile to all tasks in refile file)
 
+
 * Handling phone calls
   (in conjunction with bbdb works better)
   - use of bbdb lookup to insert contact when phone capturing ::
     <f9>-p (of course if key mapping done in emacs init file)
+
 
 * Filtering
   - / RET :: in agenda mode: filters tasks based on user-provided
@@ -395,12 +410,80 @@
       to check if specific need occurs
 
 *** Publishing and exporting
-    - publish single file :: 'C-c C-e' + key of export type needed
+    - source :: https://orgmode.org/worg/org-tutorials/org-publish-html-tutorial.html
+    - publishing projects (or multiple files) ::
+      + needs to setup variable :: 'org-publish-project-alist'
+      + best to split each projects into 3 components (4 in fact), since org uses two different functions to publish (dynamic and static) ::
+	1. 'notes' components for dynamic content :: org => html
+	   + 'publishing-function' is set to :: org-publish-org-to-html
+	   + eg ::
+	      #+begin_src elisp
+	      ("projA-notes"
+        	   :base-directory "~/A/"                      ; components root directory
+        	   :base-extension "org"                         ; filename suffix without the dot
+        	   :publishing-directory "~/public_html/A/"        ; base directory where all files of all projects will be published
+        	   :recursive t                                  ; if 't', include subdirectories - we want that. Subdirectories in :publishing-directory are created if they don't yet exist
+        	   :publishing-function org-html-publish-to-html ; if and how org should process the files in this component. In this case: convert the Org-mode files to HTML
+        	   :headline-levels 4                            ; level of display in table of content
+        	   :auto-preamble t
+		)
+	      #+end_src
+	2. 'static' components for static content :: scripts, imgs, stylesheets, .htaccess files => copy
+	   + just copies files and folders from :base-directory to :publishing-directory without changing them ::
+	   + tells org to use function :: org-publish-attachment
+	   + eg ::
+              #+begin_src elisp
+              ("projA-static"
+        	   :base-directory "~/A/"
+        	   :base-extension "css\\|js\\|png\\|jpg\\|gif\\|pdf\\|mp3\\|ogg\\|swf"
+        	   :publishing-directory "~/public_html/A/"
+        	   :recursive t
+        	   :publishing-function org-publish-attachment
+		)
+              #+end_src
+	3. last component 'publish' component :: for convenience and tells org to execute former ones
+	   + then M-x org-publish-project RET org RET publishes everything recursively to ~/public_html/. Target directories are created, if don't exist ::
+	   + eg ::
+	      #+begin_src elisp
+	      ("projA" :components ("projA-notes" "projA-static"))
+              #+end_src
+	4. 'inherit' component :: to reuse static file common to several projects
+	   + set base directory to folder which contains files common to several projects :: stylesheets and scripts for example
+	   + imperative to run inherit component first in order to track changes in inherit base directory :: since components in projA are executed in listed sequence: first get the new stylesheet into A, then execute projA-static. 
+	   + eg ::
+             #+begin_src elisp
+              ("projA-inherit"
+        	   :base-directory "~/org/"  ; not the specific project folder. ~/org contains static files common to several projects
+        	   :base-extension "css\\|js\\|png\\|jpg\\|gif\\|pdf\\|mp3\\|ogg\\|swf"
+        	   :publishing-directory "~/public_html/A/"
+        	   :recursive t
+        	   :publishing-function org-publish-attachment
+		)
+	      ("projA-notes"...)
+	      ("projA-static"...)
+	      ("projA-project" :components ("projA-inherit" "projA-notes" "projA-static"))
+             #+end_src
+	   + can even re-use common :: // means, B C D and E use local stylesheets (in x-inherit) and always the latest version of org-info.js
+             #+begin_src elisp
+	     ("inherit-org-info-js"
+	      :base-directory "~/develop/org/Worg/code/org-info-js/"
+	      :recursive t
+	      :base-extension "js"
+	      :publishing-directory "~/org/"
+	      :publishing-function org-publish-attachment)
+	     
+	     ;; ... all the rest ... ;;
+	     
+	     ("B" :components ("inherit-org-info-js" "B-inherit" "B-notes" "B-static"))
+	     ("C" :components ("inherit-org-info-js" "C-inherit" "C-notes" "C-static"))
+	     ("D" :components ("inherit-org-info-js" "D-inherit" "D-notes" "D-static"))
+	     ("E" :components ("inherit-org-info-js" "E-inherit" "E-notes" "E-static"))
+             #+end_src
+      + org-info.js :: handy to navigate through the project
     - publish graphics with plantuml and ditaa ::
       1. create source block within #+begin_src ... #+end_src
       2. build the picture with 'C-c C-c'
 	 - toggle display of inline images with 'C-c C-x C-v'
-    - publishing projects (or multiple files) :: TO_COMPLETE
       
 
 ** hledger
@@ -409,7 +492,19 @@
 * emacs IDE
 
 
-* emacs and org-mode:
+* org-mode
+  - references ::
+    + super : https://orgmode.org/manual/index.html
+    + others :
+      - https://orgmode.org/worg/org-tutorials/org4beginners.html
+      - https://orgmode.org/orgguide.pdf
+  - tutorials ::
+    + https://orgmode.org/worg/org-tutorials/index.html
+    + https://orgmode.org/worg/
+  - to make Emacs understand it's Org document, add to top of document :: PROJECTNAME -*- mode: org -*-
+
+** complete and detailed deep dive introduction to org mode: http://doc.norang.ca/org-mode.html
+
 
 ** 'capture', previously known as 'remember' (notes taking)
    x. org-capture is global: can be called anywhere in emacs, whether editing txt, or reading email
@@ -468,9 +563,6 @@
    3. checkboxes commands :
       - toggle between states :: C-c C-c
 
-*** export
-https://orgmode.org/manual/Exporting.html
-
 *** plain-lists   
     - unordered lists :: starts with '-', '+', '\*'
     - ordered lists :: starts with number and dot
@@ -483,3 +575,5 @@ https://orgmode.org/manual/Exporting.html
 
 ** report generation (automatic and customs)
 
+
+* Hledger (emacs finance)

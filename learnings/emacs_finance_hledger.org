@@ -1,0 +1,6 @@
+# -*- mode: org -*-
+#+title: emacs and finance
+#+options: ^:nil _:nil
+
+
+* Emacs + Hledger :: emacs finance

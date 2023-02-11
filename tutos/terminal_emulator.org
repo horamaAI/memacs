@@ -1,5 +1,0 @@
-#-*- mode: org -*-
-#+learn how to better use terminal emulators
-
-* Terminator
-

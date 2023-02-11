@@ -1,0 +1,7 @@
+#+options: ^:nil _:nil
+#+options: title:t toc:t
+#+title: index
+
+- keybindings cheatsheet : [[file:kbd_cheatsheet.org][kbd cheatsheet]]
+- cpp : [[file:cpp.org][cpp]]
+- emacs : [[file:emacs.org][emacs]]

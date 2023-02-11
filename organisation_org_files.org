@@ -4,7 +4,7 @@
 folders:
 *perso_stuff*:
 |
-- organisation_org_files.org (this file) :: list structure and content of org files (to be moved, maybe right in previous folder (root))
+- organisation_org_files.org (this file) :: list structure and content of files (to be moved, maybe right in previous folder (root))
 |
 - GTD :: (getting things done, bulk of org files)
   + tasks_list.org :: contains :
@@ -26,13 +26,13 @@ folders:
   + old_task_list.org_trash :: probably trash, old version of gtd
     manager, delete when sure nothing's lost
 |
-- tutos ::
-  + cpp_learnings.org ::
-  + emacs_finance_hledger_learnings.org ::
-  + emacs_learnings.org ::
-  |
-  + org-mode ::
-    - 
+- learnings ::
+  + cpp.org ::
+  + emacs_finance_hledger.org ::
+  + emacs.org ::
+  + html :: contains html published version of files
+  + imgs :: 
+  + css :: 
 
 
 TODO tasks organisation:
