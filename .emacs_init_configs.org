@@ -1,3 +1,7 @@
+# -*- mode: org -*-
+#+title: my emacs init file configs but in orgmode
+
+
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
@@ -78,6 +82,7 @@
 (package-install 'use-package))
 
 ; bh is for Bernt Hansen : http://doc.norang.ca/org-mode.html
+; used as main source for GTD
 ; bh Custom Key Bindings
 ;; (global-set-key (kbd "<f12>") 'org-agenda
 (global-set-key (kbd "<f5>") 'bh/org-todo)
@@ -181,6 +186,21 @@
 
 (setq org-refile-target-verify-function 'bh/verify-refile-target)
 
+* TODO My organizing org files tree (details in [[file:organisation_org_files.org][organisation_org_files.org]])
+
+| filename (f) or folder (d)   | description                                                      |
+|------------------------------+------------------------------------------------------------------|
+| (f) tasks_list.org           | for tasks and keeping tracks                                     |
+| (f) journal.org              | personal journal notes                                           |
+| (f) kbd_cheatsheet.org       | keybindings file grouped by tool                                 |
+| (f) notes.org                | buffer for captures and quick notes that needs to be reorganised |
+| (f) commands_to_remember.org | journal for commands to remember                                 |
+| (f) other_projects.org       | to keep track of non urgent project "good to have"               |
+| (f) us.es_notes.org          | notes specific to project us.es                                  |
+| (f) running.org              | running related notes and tracking                               |
+| (f) *.org_archive            | archive version files of backed up tasks                         |
+| (d) learnings                | folder for things to learn organised by org files                |
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Org mode configs.
 ;; Note: some configs are managed by emacs, so the order my change
@@ -188,7 +208,7 @@
 ;; different sources, but main and detailed template is from : http://www.newartisans.com/2007/08/using-org-mode-as-a-day-planner/
 (require 'org-install)
 
-(add-to-list 'auto-mode-alist '("\\.org$" . org-mode))
+;; (add-to-list 'auto-mode-alist '("\\.org$" . org-mode))
 
 (define-key mode-specific-map [?a] 'org-agenda) ;; for events that follow C-c
 

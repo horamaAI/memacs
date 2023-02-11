@@ -44,6 +44,7 @@
 
 *** file edition
  - select all :: C-x h
+ - edit link :: C-c C-l
  - deactivate/activate auto-fill (line break) in current buffer :: C-c q
  - duplicate line :: C-c d
  - select column :: C-x SPACE

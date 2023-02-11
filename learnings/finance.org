@@ -3,4 +3,4 @@
 #+options: ^:nil _:nil
 
 
-* Emacs + Hledger :: emacs finance
+* Emacs and Hledger :: emacs finance

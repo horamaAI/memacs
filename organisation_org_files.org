@@ -18,17 +18,18 @@ folders:
   + journal.org :: personal journal notes
   + notes.org :: buffer for quick notes, that needs to be reorganised
     later (quicknotes, 1st draft) 
-  + notorious_commands.org :: journal for commands that needs to be remembered
+  + commands_to_remember.org :: journal for commands to remember
   + other_projects.org :: to keep track of non urgent project and
     notes, "good to have"
   + us.es_notes.org :: notes specific to us.es
   + us.es_notes.org_archive ::
+  + running.org :: running notes and tracking
   + old_task_list.org_trash :: probably trash, old version of gtd
     manager, delete when sure nothing's lost
 |
 - learnings ::
   + cpp.org ::
-  + emacs_finance_hledger.org ::
+  + finance.org ::
   + emacs.org ::
   + html :: contains html published version of files
   + imgs :: 
