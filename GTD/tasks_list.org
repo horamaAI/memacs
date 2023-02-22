@@ -35,7 +35,14 @@
   :END:
 *** TODO videos cpp [0/13]
     SCHEDULED: <2023-01-18 Wed>
-     1) [ ] general c++ related talks ::
+     1) [ ] back to basics sessions ::
+	+ [ ] cppcon2022 just Enough Assembly for Compiler Explorer :: https://www.youtube.com/watch?v=_sSFtJwgVYQ
+	+ [ ] cppcon2022 back to basics :: https://www.youtube.com/watch?v=G9MxNwUoSt0&list=PLBr2a3Hg541jp7u7CNukhDstDl6NedNUJ
+	+ [ ] cppcon2021 back to basics :: https://www.youtube.com/watch?v=Bt3zcJZIalk&list=PLHTh1InhhwT4TJaHBVWzvBOYhp27UO7mI
+	+ [ ] cppcon2020 back to basics :: https://www.youtube.com/watch?v=ZAji7PkXaKY&list=PLHTh1InhhwT5o3GwbFYy3sR7HDNRA353e
+	+ [ ] cppcon2019 back to basics :: https://www.youtube.com/watch?v=32tDTD9UJCE&list=PLHTh1InhhwT4CTnVjJqnAKeMfGzOWjsRa
+	  - [ ] other playlist on same topic :: https://www.youtube.com/watch?v=iz5Qx18H6lg&list=PLX-5eF57P5eEHJCMYVIOL9u9ZQtKas8Ut
+     2) [ ] general c++ related talks ::
 	+ [ ] c++weekly, can AI And ChatGPT Replace C++ Programmers ? :: https://www.youtube.com/watch?v=TIDA6pvjEE0
 	+ [ ] Kate Gregory, "Am I A Good Programmer?" :: https://www.youtube.com/watch?v=pdHvC8fDC5E
 	+ [ ] Hiring in C++ :: https://www.youtube.com/watch?v=uqO8y81_RJI
@@ -47,12 +54,6 @@
 	+ [ ] cppcon2022 an C++ be 10x Simpler & Safer?, Herb Sutter :: https://www.youtube.com/watch?v=ELeZAKCN4tY
 	+ [ ] intro to c++ : Modern C++ Quick Start Tutorial - 90 Topics in 20 Minutes :: https://www.youtube.com/watch?v=VpqwCDSfgz0
 	  - [ ] 5 Step Plan For Deeper C++ Knowledge :: https://www.youtube.com/watch?v=287_oG4CNMc
-     2) [ ] back to basics sessions ::
-	+ [ ] cppcon2022 back to basics :: TBC
-	+ [ ] cppcon2021 back to basics :: https://www.youtube.com/watch?v=Bt3zcJZIalk&list=PLHTh1InhhwT4TJaHBVWzvBOYhp27UO7mI
-	+ [ ] cppcon2020 back to basics :: https://www.youtube.com/watch?v=ZAji7PkXaKY&list=PLHTh1InhhwT5o3GwbFYy3sR7HDNRA353e
-	+ [ ] cppcon2019 back to basics :: https://www.youtube.com/watch?v=32tDTD9UJCE&list=PLHTh1InhhwT4CTnVjJqnAKeMfGzOWjsRa
-	  - [ ] other playlist on same topic :: https://www.youtube.com/watch?v=iz5Qx18H6lg&list=PLX-5eF57P5eEHJCMYVIOL9u9ZQtKas8Ut
      3) [ ] modern c++ ::
 	+ [ ] ref-qualifiers and inheritance :: https://www.youtube.com/watch?v=Fsi3JpYCsUM
 	+ [ ] cppcon2021 new mental model of constexpr :: https://www.youtube.com/watch?v=MdrfPSUtMVM

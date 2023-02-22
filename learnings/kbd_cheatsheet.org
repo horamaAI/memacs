@@ -3,10 +3,6 @@
 #+options: ^:nil _:nil
 
 
-* Useful commands (not used enough)
- - find mappings for keyboard (useful for keybindings) :: showkey -a
-
-
 * Emacs
 ** foreword, help and basic
  - C- Ctrl
@@ -41,6 +37,11 @@
 
 *** file navigation
  - move forward/backward on word :: M-f/M-b
+ - search and replace ::
+   + search forward/backward :: C-s/C-r
+   + with REGEX search forward/backward :: C-M-s/C-M-r
+   + query replace (search and replace) :: M-S-5
+   + with REGEX query replace (search and replace) :: C-M-S-5
 
 *** file edition
  - select all :: C-x h
@@ -74,11 +75,6 @@
      - delete current column :: S-M-<LEFT>
      - set width of columns (narrow size of column) :: in first row, insert number of chars to display, eg: <10>
        + display content of narrowed cell :: C-u TAB (or "C-u C-c `"; or edit conent in separate window: "C-c `")
-*** search and replace
- - search forward/backward :: C-s/C-r
- - query replace (search and replace) :: M-S-5
- - query replace (search and replace) with REGEX :: C-M-S-5
-
 ** emacs windows management
  - list buffers :: C-x C-b
  - switch between buffers :: C-x b
@@ -109,6 +105,8 @@
 *** org agenda
  - call org agenda :: C-c a
    + reschedule selected item :: C-c C-s // and then set relative to today: +1, +2w, etc.
+ - add/remove file to org agenda :: C-c [ (remove : C-c ])
+   + careful :: to be sure and use whole content of folder, prefer manual edit than C-c [
 
 *** todo
  - add item with checkbox :: C-S-M-m

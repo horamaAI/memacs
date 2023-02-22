@@ -186,7 +186,7 @@
 
 (setq org-refile-target-verify-function 'bh/verify-refile-target)
 
-* TODO My organizing org files tree (details in [[file:organisation_org_files.org][organisation_org_files.org]])
+* My organizing org files tree (details in [[file:organisation_org_files.org][organisation_org_files.org]])
 
 | filename (f) or folder (d)   | description                                                      |
 |------------------------------+------------------------------------------------------------------|
@@ -200,19 +200,112 @@
 | (f) running.org              | running related notes and tracking                               |
 | (f) *.org_archive            | archive version files of backed up tasks                         |
 | (d) learnings                | folder for things to learn organised by org files                |
+| (d) GTD                      | folder for org files to include in agenda (org-agenda-files)     |
+| (d) GTD-private              | same as above GTD, but for agenda not to be published publicly   |
+| (d) to_clean                 | unorganised content, to clean ASAP                               |
+|                              |                                                                  |
 
+
+* Org mode specific configs
+- notes ::
+  + different sources, but main and detailed template is from : http://www.newartisans.com/2007/08/using-org-mode-as-a-day-planner/
+  + careful, some configs are managed by emacs, so the order my change
+- basic org mode settings ::
+#+begin_src emacs-lisp
+
+;; set which extensions will use orgmode
+(add-to-list 'auto-mode-alist '("\\.\\(org\\|org_archive\\|txt\\)$" . org-mode))
+
+;; 'mode-specific-map' : for events that follow C-c prefix key
+(define-key mode-specific-map [?a] 'org-agenda)
+
+;; By default Org mode buffers need Font Lock to be turned on.
+;; For better experience, these three Org commands ought to be accessible anywhere in Emacs
+;; , not just in Org buffers => need to bind them to globally available keys, like ones reserved for users (see (elisp)Key Binding Conventions).
+(global-set-key (kbd "C-c l") #'org-store-link) ;; for handling links
+(global-set-key (kbd "C-c a") #'org-agenda) ;; org-agenda :)
+(global-set-key (kbd "C-c c") #'org-capture) ;; previously known as 'remember' (notes taking)
+
+#+end_src
+
+** Org Mode TODO state triggers
+
+- basic settings for task actions ::
+#+begin_src emacs-lisp
+
+;; action tasks status
+;; vertical bar (|) used to separate TODO keywords (states that need action) from DONE states (needs no further action)
+;; If not provided, the last state is used as DONE state.
+(setq org-todo-keywords
+      (quote ((sequence "TODO(t)" "NEXT(n)" "|" "DONE(d)")
+              (sequence "WAITING(w@/!)" "HOLD(h@/!)" "|" "CANCELLED(c@/!)" "PHONE" "MEETING"))))
+
+;; customize design of trigger states
+(setq org-todo-keyword-faces
+      (quote (("TODO" :foreground "red" :weight bold)
+	      ("NEXT" :foreground "blue" :weight bold)
+              ("DONE" :foreground "forest green" :weight bold)
+              ("WAITING" :foreground "orange" :weight bold)
+              ("HOLD" :foreground "magenta" :weight bold)
+              ("CANCELLED" :foreground "forest green" :weight bold)
+              ("MEETING" :foreground "forest green" :weight bold)
+              ("PHONE" :foreground "forest green" :weight bold))))
+#+end_src
+
+- fast Todo Selection :: allows changing from any task todo state to any other state directly by selecting the appropriate key from the fast todo selection key menu.
+#+begin_src emacs-lisp
+
+;; allow for faster task state change, using shortcut defined in 'org-todo-keywords'
+;; can then change state by simply typing C-c C-t, ex: C-c C-t n to change to 'next' state
+(setq org-use-fast-todo-selection t)
+
+;; change todo states using S-left and S-right, and skipping all normal processings when entering or leaving a todo state: cycle through todo states but skips setting timestamps and entering notes.
+;; very convenient when all you want to do is fix up the status of an entry.
+(setq org-treat-S-cursor-todo-selection-as-state-change nil)
+
+#+end_src
+
+- TODO state triggers :: to automatically assign tags to tasks based on state changes.
+  + tags and states ::
+    - on some pre-defined triggers, automatically assign tags to tasks based on state changes.
+    - eg :: If a task moves to =CANCELLED= state then it gets a =CANCELLED= tag. Moving a =CANCELLED= task back to =TODO= removes the =CANCELLED= tag.
+    - These are mainly used for filtering tasks in agenda views.
+  + current settings break down ::
+    - Moving a task to =CANCELLED= adds a =CANCELLED= tag
+    - Moving a task to =WAITING= adds a =WAITING= tag
+    - Moving a task to =HOLD= adds =WAITING= and =HOLD= tags
+    - Moving a task to a done state removes =WAITING= and =HOLD= tags
+    - Moving a task to =TODO= removes =WAITING=, =CANCELLED=, and =HOLD= tags
+    - Moving a task to =NEXT= removes =WAITING=, =CANCELLED=, and =HOLD= tags
+    - Moving a task to =DONE= removes =WAITING=, =CANCELLED=, and =HOLD= tags
+#+begin_src emacs-lisp
+
+;; "TODO state triggers" (automatically assign tags to tasks on state changes.)
+;; ex: Moving task to done state removes WAITING and HOLD tags
+(setq org-todo-state-tags-triggers
+      (quote (("CANCELLED" ("CANCELLED" . t))
+              ("WAITING" ("WAITING" . t))
+              ("HOLD" ("WAITING") ("HOLD" . t))
+              (done ("WAITING") ("HOLD"))
+              ("TODO" ("WAITING") ("CANCELLED") ("HOLD"))
+              ("NEXT" ("WAITING") ("CANCELLED") ("HOLD"))
+              ("DONE" ("WAITING") ("CANCELLED") ("HOLD")))))
+
+#+end_src
+
+- setting excluding tags ::
+#+begin_src emacs-lisp
+
+;; Tags that are mutually excluding example (use of dummy tags :startgroup and :endgroup)
+;; (setq org-tag-alist '((:startgroup . nil)
+;;                       ("@work" . ?w) ("@home" . ?h)
+;;                       ("@tennisclub" . ?t)
+;;                       (:endgroup . nil)
+;; 		         ("laptop" . ?l) ("pc" . ?p)))
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; Org mode configs.
-;; Note: some configs are managed by emacs, so the order my change
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; different sources, but main and detailed template is from : http://www.newartisans.com/2007/08/using-org-mode-as-a-day-planner/
-(require 'org-install)
 
-;; (add-to-list 'auto-mode-alist '("\\.org$" . org-mode))
 
-(define-key mode-specific-map [?a] 'org-agenda) ;; for events that follow C-c
-
-;; GTD (TODOs and tasks)
+;; 'GTD' : TODO state triggers (TODOs, DONE, STARTED, etc. can tune as prefer)
 (eval-after-load "org"
   '(progn
      (define-prefix-command 'org-todo-state-map)
@@ -236,11 +329,6 @@
 ;;     (define-key org-agenda-keymap "\C-n" 'next-line)
 ;;     (define-key org-agenda-mode-map "\C-p" 'previous-line)
 ;;     (define-key org-agenda-keymap "\C-p" 'previous-line)))
-
-;; By default Org mode buffers need Font Lock to be turned on. For better experience, these three Org commands ought to be accessible anywhere in Emacs, not just in Org buffers => need to bind them to globally available keys, like ones reserved for users (see (elisp)Key Binding Conventions).
-(global-set-key (kbd "C-c l") #'org-store-link)
-(global-set-key (kbd "C-c a") #'org-agenda)
-(global-set-key (kbd "C-c c") #'org-capture) ;; previously known as 'remember' (notes taking)
 
 ;; 'capture' for notes (previously known as 'remember')
 ;; Note: not quite helpful to have lot of capture templates, use minimal to capture quicknote and resume current task, then after refile them properly
@@ -274,6 +362,9 @@
 	("j" "Journal" entry (file+datetree "~/Documents/repos/org/memacs/GTD/journal.org")
 	 "* %?\n%U\n" :clock-in t :clock-resume t)))
 
+#+end_src
+
+
 ;; quick clocking in/out of capture mode tasks often takes less than a minute to capture new task details => can leave empty clock drawers in tasks which aren't really useful. If remove clocking lines with 0:00 length, one might end up with empty LOGBOOK (clock drawer). Hence, need to remove those empty LOGBOOK drawers when they occur on clock out
 (defun bh/remove-empty-drawer-on-clock-out ()
   (interactive)
@@ -290,47 +381,6 @@
 (setq org-log-done 'time) ;; keep track of when a todo item was done => when toggled to done, a line ‘CLOSED: [timestamp]’ is inserted just after the headline.
 (setq org-log-done 'note) ;; to record a note along with the timestamp
 
-;; TODO tasks status
-;; vertical bar (|) used to separate TODO keywords (states that need action) from DONE states (needs no further action). If not provided, the last state is used as DONE state.
-(setq org-todo-keywords
-      (quote ((sequence "TODO(t)" "NEXT(n)" "|" "DONE(d)")
-              (sequence "WAITING(w@/!)" "HOLD(h@/!)" "|" "CANCELLED(c@/!)" "PHONE" "MEETING"))))
-
-(setq org-todo-keyword-faces
-      (quote (("TODO" :foreground "red" :weight bold)
-	      ("NEXT" :foreground "blue" :weight bold)
-              ("DONE" :foreground "forest green" :weight bold)
-              ("WAITING" :foreground "orange" :weight bold)
-              ("HOLD" :foreground "magenta" :weight bold)
-              ("CANCELLED" :foreground "forest green" :weight bold)
-              ("MEETING" :foreground "forest green" :weight bold)
-              ("PHONE" :foreground "forest green" :weight bold))))
-
-;; allow for faster task state change, using shortcut defined in 'org-todo-keywords'
-;; now can change state by simply typing C-c C-t Key, ex: C-c C-t n to change to 'next' state
-(setq org-use-fast-todo-selection t)
-
-;; change todo states using S-left and S-right, and skipping all normal processings when entering or leaving a todo state: cycle through todo states but skips setting timestamps and entering notes. This is very convenient when all you want to do is fix up the status of an entry.
-(setq org-treat-S-cursor-todo-selection-as-state-change nil)
-
-;; "TODO state triggers" (to automatically assign tags to tasks based on state changes.)
-;; ex: Moving task to done state removes WAITING and HOLD tags
-(setq org-todo-state-tags-triggers
-      (quote (("CANCELLED" ("CANCELLED" . t))
-              ("WAITING" ("WAITING" . t))
-              ("HOLD" ("WAITING") ("HOLD" . t))
-              (done ("WAITING") ("HOLD"))
-              ("TODO" ("WAITING") ("CANCELLED") ("HOLD"))
-              ("NEXT" ("WAITING") ("CANCELLED") ("HOLD"))
-              ("DONE" ("WAITING") ("CANCELLED") ("HOLD")))))
-
-;; Tags that are mutually excluding example (use of dummy tags :startgroup and :endgroup)
-;; (setq org-tag-alist '((:startgroup . nil)
-;;                       ("@work" . ?w) ("@home" . ?h)
-;;                       ("@tennisclub" . ?t)
-;;                       (:endgroup . nil)
-;; 		         ("laptop" . ?l) ("pc" . ?p)))
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 
 ;; custom filtering: filters tasks not supposed to be working on

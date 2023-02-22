@@ -1,0 +1,291 @@
+//TupleInterface
+//	- pair
+//  - tuple
+//  - array
+//    values :
+//		- std::get<std::size_t> -> accessor
+//		- std::get<T> -> accessor
+//    types :
+//		- std::tuple_element_t<std::size_t>
+//		- std::tuple_size_v<tuple_type>
+//		- std::tuple_cat
+​//	```cpp
+//		[&value]<std::size_t ... indexes>(std::index_sequence<indexes...>){​​​
+//			(((std::get<indexes>(value))),...);
+//		}(​​std::make_index_sequence<std::tuple_size_v<tuple_type>>());
+TODO:
+- Conteneurs de la STL (pourquoi tel ou tel conteneur)
+- Chercher cas d'usages, types d'iterateurs, algo, (std::next, std::advance), ...
+- Lire les docs de ce que l'on a vue aujourd'hui
+	-- `std::get<T>`, `std::get<N>`
+	    - std::tuple_element
+	    - std::index_sequence
+	    - std::tuple
+	    - std::pair -> + tricky std::tuple::tuple{std::pair{}}
+	    - std::array
+- sur les algos de la stl, il y a ca qui est interessant https://www.fluentcpp.com/getthemap/
+et aussi https://www.fluentcpp.com/2017/01/05/the-importance-of-knowing-stl-algorithms/
+
+Exo 1:
+(solution exo 1: https://godbolt.org/z/axoEcsdzY)
+(solution exo 1 bonus: https://godbolt.org/z/6sevK6K14)
+- Faites une fonction reverse_tuple qui consommera n'importe quel type matchant TupleInterface,
+	et retournera un std::tuple avec un contenu inverse.
+	Exemple : std::tuple{'a', 42, true} == reverse_tuple(std::tuple{true, 42, 'a'});
+	-- Bonus : Ne pas retourner un std::tuple, mais le meme type-template que celui passe en parametre :
+		std::array<int, 3> -> std::array<int, 3>
+		std::pair<int, char> -> std::pair<char,int>
+		std::tuple<int, double, float> -> std::tuple<float, double, int>
+	- Une seule fonction, pas de specialisation
+
+Exo 2 : 
+(solution exo 2 stage 1 and 2: https://godbolt.org/z/hs7KPdvsM // for stage 1 just switch the positions)
+- Corriger le code "legacy" suivant https://godbolt.org/z/vEfhbn335 :
+	- Stage 1 (the riddle) : Corriger func de facon a ce que le code compile
+		-- Sans changer la logique, ni modifier le contenu, ni rajouter de code, ni supprimer de code
+		-- Indice : pensez aux trainings que nous avons vue ensemble depuis le debut
+	- Stage 2 : Changer l'implementation de facon a supprimer toute recursivite
+
+Exo 3 : print-type en recursif comme evoque precedement
+(solution exo 3: https://godbolt.org/z/8G9x19GzG)
+- Etudes : Le but ici est de vous donner un degres d'autonomie sur l'apprentissage, afin de developper votre aptitude a apprendre, encaisser les infos des prochains standards par vous-meme.
+-- Etude 1 : CTAD
+	Lire la page https://en.cppreference.com/w/cpp/language/class_template_argument_deduction
+
+-- Etudes 2 : Containers
+	- Lire la page https://en.cppreference.com/w/cpp/container
+		--- avec std::string, pas besoin de std::string_view, std::span, std::ranges pour le moment
+	- Determiner un exemple/scenario d'usage pour chaque type conteneur: Pas d'implementation, juste une idee de design
+	- Etre en mesure de determiner quel conteneur convient mieux a quel besoin
+	
+Exo 4 : is_instance_of
+(solution exo 4: https://godbolt.org/z/j8eczon38)
+- Creer un type-trait qui permet trivialement de determiner si un type T est une instance d'un type template, tel que :
+	-- static_assert(is_instance_of_v<std::tuple, std::tuple<int, char, double>>)
+	-- static_assert(not is_instance_of_v<int, char>)
+	-- static_assert(not is_instance_of_v<std::pair, std::tuple<int, char>)
+- Ca doit marcher pour des types que vous ne connaissez pas cote details d'implementation, tel que :
+	-- template <typename, typename> struct toto{​​​​​​​}​​​​​​​;
+	-- static_assert(is_instance_of_v<toto, toto<int, char>>);
+
+
+===============================================
+
+exe 1:
+'''
+constexpr auto   reverse_tuple(auto && args) {
+    using   raw_type_t = std::remove_cvref_t<decltype(args)>;
+    constexpr auto n = std::tuple_size_v<raw_type_t>;
+    return [&]<std::size_t ... indexes>(std::index_sequence<indexes...>){
+        return std::tuple{std::get<n - 1 - indexes>(args)...};
+    }(std::make_index_sequence<n>());
+}
+
+// assert works for tuple and array cause reverse_tuple returns tuple
+static_assert(std::tuple{3, 2, 1}
+    == reverse_tuple(std::array<int, 3>{1, 2, 3}));
+static_assert(std::tuple{'a', 1}
+    == reverse_tuple(std::pair<int, char>{1, 'a'}));
+static_assert(std::tuple{3, 2, 1}
+    == reverse_tuple(std::tuple<int, double, float>{1, 2, 3}));
+'''
+
+bonus ================================================
+```
+template<template <typename ...> typename T
+    , typename ... Ts
+>
+constexpr auto   reverse_tuple(T<Ts...> && args) {
+    using   raw_type_t = std::remove_cvref_t<decltype(args)>;
+    constexpr auto n = std::tuple_size_v<raw_type_t>;
+    return [&]<std::size_t ... indexes>(std::index_sequence<indexes...>){
+        return T{std::get<n - 1 - indexes>(args)...};
+    }(std::make_index_sequence<n>());
+}
+template<class T, std::size_t N
+>
+constexpr auto   reverse_tuple(std::array<T, N> && args) {
+    using   raw_type_t = std::remove_cvref_t<decltype(args)>;
+    constexpr auto n = std::tuple_size_v<raw_type_t>;
+    return [&]<std::size_t ... indexes>(std::index_sequence<indexes...>){
+        return std::array{std::get<n - 1 - indexes>(args)...};
+    }(std::make_index_sequence<n>());
+}
+
+static_assert(std::array{3, 2, 1}
+    == reverse_tuple(std::array<int, 3>{1, 2, 3}));
+static_assert(std::pair{'a', 1}
+    == reverse_tuple(std::pair<int, char>{1, 'a'}));
+static_assert(std::tuple{3, 2, 1}
+    == reverse_tuple(std::tuple<int, double, float>{1, 2, 3}));
+```
+
+
+===============================================
+
+
+exe 2:
+'''
+#include <iostream> // debug purpose only
+#include <tuple>
+
+template <typename T>
+void func(std::tuple<T>) {
+    std::cout << "last\n";
+}
+template <typename node, typename ... Ts>
+void func(std::tuple<node, Ts...> value) {
+    constexpr auto n_remainder = sizeof...(Ts);
+    [&]<std::size_t ... indexes>(std::index_sequence<indexes...>) constexpr {
+        ((std::cout << (n_remainder - indexes) << " -> "
+            << std::get<(n_remainder - indexes)>(value) << '\n'), ...);
+    }(std::make_index_sequence<n_remainder>());
+    std::cout << "last\n";
+}
+
+auto main() -> int {
+
+    func(std::tuple{1,2,3,4});
+}
+'''
+
+
+===============================================
+
+
+exe 3:
+'''
+#include <iostream> // debug purpose only
+#include <iomanip>
+#include <vector>
+#include <set>
+
+
+namespace gcl::cx {
+    template <typename T>
+    static constexpr /*consteval*/ std::string_view type_name(/*no parameters allowed*/)
+    {
+    #if defined(__GNUC__) or defined(__clang__)
+        std::string_view str_view = __PRETTY_FUNCTION__;
+        str_view.remove_prefix(str_view.find(__FUNCTION__) + sizeof(__FUNCTION__));
+        const char prefix[] = "T = ";
+        str_view.remove_prefix(str_view.find(prefix) + sizeof(prefix) - 1);
+        str_view.remove_suffix(str_view.length() - str_view.find_first_of(";]"));
+    #elif defined(_MSC_VER)
+        std::string_view str_view = __FUNCSIG__;
+        str_view.remove_prefix(str_view.find(__func__) + sizeof(__func__));
+        if (auto enum_token_pos = str_view.find("enum "); enum_token_pos == 0)
+            str_view.remove_prefix(enum_token_pos + sizeof("enum ") - 1);
+        str_view.remove_suffix(str_view.length() - str_view.rfind(">(void)"));
+    #else
+        static_assert(false, "gcl::cx::typeinfo : unhandled plateform");
+    #endif
+        return str_view;
+    }
+    template <typename T>
+    constexpr inline auto type_name_v = type_name<T>();
+    template <auto value>
+    static constexpr std::string_view type_name(/*no parameters allowed*/)
+    {
+        return type_name<decltype(value)>();
+    }
+
+    template <auto value>
+    static constexpr std::string_view value_name(/*no parameters allowed*/)
+    {
+    #if defined(__GNUC__) or defined(__clang__)
+        std::string_view str_view = __PRETTY_FUNCTION__;
+        str_view.remove_prefix(str_view.find(__FUNCTION__) + sizeof(__FUNCTION__));
+        const char prefix[] = "value = ";
+        str_view.remove_prefix(str_view.find(prefix) + sizeof(prefix) - 1);
+        str_view.remove_suffix(str_view.length() - str_view.find_first_of(";]"));
+    #elif defined(_MSC_VER)
+        std::string_view str_view = __FUNCSIG__;
+        str_view.remove_prefix(str_view.find(__func__) + sizeof(__func__));
+        if (auto enum_token_pos = str_view.find("enum "); enum_token_pos == 0)
+            str_view.remove_prefix(enum_token_pos + sizeof("enum ") - 1);
+        str_view.remove_suffix(str_view.length() - str_view.rfind(">(void)"));
+    #else
+        static_assert(false, "gcl::cx::typeinfo : unhandled plateform");
+    #endif
+        return str_view;
+    }
+    template <auto value>
+    constexpr inline auto value_name_v = value_name<value>();
+}
+
+void    cout_identations(std::ostream& os, std::size_t n_idents) {
+    os << std::setw(n_idents * 2) << ""
+        << " -> ";
+}
+
+// You code below that line -----
+template <typename T/* ??? */>
+void print_type(T &&args, std::size_t = 0/* ??? */) {
+    std::cout <<"type = " << gcl::cx::type_name_v<T> << '\n';
+}
+template <template<typename...> typename Container, typename... Ts/* ??? */>
+void print_type(Container<Ts...> &&args, std::size_t n_idents = 0/* ??? */) {
+
+    std::cout << gcl::cx::type_name_v<Container<Ts...>> << '\n';
+    
+    auto index = std::size_t{0};
+    (([&]() {
+        cout_identations(std::cout, n_idents);
+        std::cout << "with T" << index++ << " = ";
+        print_type(Ts{}, n_idents + 1);
+        }()
+    ), ...);
+}
+
+template <typename... Ts/* ??? */>
+void print_types(Ts&&... args/* ??? */) {
+    std::setfill('\t'); // set fill character to indentation
+    (print_type(std::forward<Ts>(args)), ...);
+    std::setfill(' ');
+}
+
+auto main() -> int {
+
+    print_types(
+        true,
+        42,
+        'a',
+        std::tuple<std::tuple<int>>{},
+        std::tuple<std::tuple<std::tuple<int>>>{},
+        std::tuple<std::tuple<std::tuple<int, char, float>>>{},
+        std::vector<int>{},
+        std::string{},
+        std::set<std::string>{}
+    );
+}
+'''
+
+
+===============================================
+exe 4:
+'''
+template<typename ... T>
+struct toto {
+    toto(T ... t);
+};
+
+
+template <typename T, typename U>
+struct is_instance_of : std::is_same<T, U>{};
+template <template <typename...> typename T, typename ... Ts, typename ... Us>
+struct is_instance_of<T<Ts...>, T<Us...>> : std::true_type {};
+
+template <typename T, typename U>
+constexpr bool is_instance_of_v = is_instance_of<T, U>::value;
+
+auto main() -> int {
+    std::cout << "toto\n";
+}
+
+static_assert(is_instance_of_v<std::tuple<>, std::tuple<int, char, double>>);
+static_assert(not is_instance_of_v<int, char>);
+static_assert(not is_instance_of_v<std::pair<int, char>, std::tuple<int, char>>);
+static_assert(is_instance_of_v<toto<char>, toto<int, char>>);
+
+'''

@@ -1,3 +1,10 @@
+;; uncomment when emacs init ormode version is ready
+;; (require 'org-install) ;; better than just 'org' (https://emacs-orgmode.gnu.narkive.com/YIL4iBtt/orgmode-org-install-el-in-emacs-probably-should-be-removed)
+;; (org-babel-load-file
+;;  (expand-file-name "emacs-init.org"
+;;                    user-emacs-directory)) ;; user-emacs-directory to set custom user directory
+
+
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
@@ -46,7 +53,9 @@
 	  (org-agenda-skip-entry-if 'scheduled 'deadline 'regexp "
 ]+>")))
        (org-agenda-overriding-header "Unscheduled TODO entries: ")))))
- '(org-agenda-files nil)
+ '(org-agenda-files '("~/Documents/repos/org/memacs/GTD/"
+		      "~/Documents/repos/org/memacs/GTD-private/"
+		      ))
  '(org-agenda-ndays 7)
  '(org-agenda-show-all-dates t)
  '(org-agenda-skip-deadline-if-done t)

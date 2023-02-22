@@ -1,0 +1,187 @@
+# -*- mode: org -*-
+#+title: Miscellaneous notes, need to be cleaned
+#+options: ^:nil _:nil
+
+
+* cpp with klaus iglberger
+  - better to size_t for sizes that are always positive: size_t is the unsigned integer type of the result of sizeof
+
+- !!!!NO EXCEPT for move operations!!!!
+-------------------------------------
+- making move operations 'no_except' helps performance, making it no_except can substantially improve the operation
+=> if an exception is thrown on a function with no_except, it's as if nothing will have happened (as if function was nothing
+called at all). If a no_except promise is made to a function, it will apply it with no hesitation, but without the no_except the
+function will ***fall back*** to pre c++11 behavior and will do a copy
+// Note: c++ core guidelines: "...a move operation should move and leave its source in a valid state... and ideally the moved-from
+value should be left to the default value of its type, unless there is an exceptional reason not to...", eg: moved int value -> set
+it to 0, not done by default with move
+// HOWEVER: for pointers (they are special), it's mandatory to leave it in a defined value after the move (= nullptr)
+// Note: in C++11, a move constructor of std::vector<T> for example that takes an rvalue reference to an std::vector<T> can copy the pointer to
+the internal C-style array out of the rvalue into the new std::vector<T>, then set the pointer inside the rvalue to null. And since the temporary will
+never again be used, no code will try to access the null pointer, and because the pointer is null, its memory is not deleted when it goes out
+of scope. Hence, the operation not only forgoes the expense of a deep copy, but is safe and invisible.
+
+#+begin_src c++
+
+class Widget {
+	int			i{0};
+	std::string	s{};
+	int*		pi{ nullptr };// no copy/assignment prvalue for primitive type int => explicit move operations for this class
+	
+	// ...
+	// Move constructor (I.)
+	Widget( Widget&& w ) no_except
+		: i( std::move(w.i) ) // since int, still a copy assignment, but convention for homogeneity
+		, s( std::move(w.s) ) // ok, move operation since std::string has move operations implemented
+							  // Note: w at this point is an **lvalue**: in parameter w is a temporary, but in order to
+							  // to be used in the function, it is !!!transformed back!!! into an lvalue (a named value)
+		// , pi( std::move(w.pi) ) // !!! Danger: int doesn't handle move operations, it is copied !!! ===> two vbles points at the same object,
+								// and will eventually destroy it !!!Whence the danger: one will destroy an non existing value => !!!DANGER!!!
+								// solution: explicitly point one to nullptr (see next)
+		, pi( std::exchange(w.pi, nullptr) ) // std::exchange(object_to_apply_to, new_value) will return the old value of object_to_apply_to, and assign
+												// new_value to it
+		{
+			//w.i = 0;	// optional, c++ core guideline
+			//w.pi = nullptr;	// !!mandatory!!, since ptrs special, have to be left in a valid and defined state:
+								// now w.pi is in a valid and defined (nullptr) state, but thanks to std::exchange above, not needed here
+		}
+	// if was 'pi' was a unique ptr, after the move no need for std::exchange, the unique ptr handler would leave it in a valid and defined state
+	// there would be no need for an explicit constructor definition, the default would be
+	// enough: Widget( Widget&& w ) = default; // no no_except needed either, 'default' gives the whole package. And it is the best way to do.
+	// As Howard Hinnant says: "... better for the programmer to be leery of following patterns without thoughts..."
+
+	// ...
+
+	// Move assignment operator (II.)
+	Widget&	operator=( Widget&& w ) {// changing existing object (this), whereas constructor creating new => constructor usually easier
+		// Note: if 'pi' was unique_ptr, no need for phase 1 and 3 => only phase 2 needed, which is implicit with using the default assignment
+		// operator: Widget&	operator=( Widget&& w ) = default; // no_except needed either
+
+		// DANGER: self-assignment => if this == w; return this;
+		// 1) 1st sln: with explicit delete of old value of this->pi, move from w.pi, and do w.pi = nullptr;
+		
+		// phase 1: cleanup. Mandatory for all other resources with ptr type (always at the beginning)
+		/* 1) */ delete pi; 
+		
+		// phase 2: member-wise move
+		i = std::move(w.i); // Still no performance improvement for int, but canonical
+		s = std::move(w.s);
+		// DANGER: directly assign an existing member which would replace it w/o enforcing the valid-defined state for previous value
+		// ==> hence the delete pi at beginning;
+		/* 1) */ pi = std::move(w.pi); // phase 2: member-wise move
+
+		// phase 3: reset, also mandatory for all other 'cxe' resources
+		/* 1) */ w.pi = nullptr;
+		// 2) substitute to 1) : 'swap' old pi with w.pi : std::swap(pi, w.pi) : a. more elegant (no need for all 1) steps), but b. less
+		// deterministic (at some point, w.pi will be destroyed, but don't really know when), c. if has counting operation, will count
+		// one more operation ==>> **prefer** 1) form explicitly
+
+		return (*this);
+	}
+	
+	// ...
+	
+	// Copy+move assignment operator (III.) (more efficient when dealing with lvalues assignment)
+	Widget&	operator=( Widget w ) {
+		swap(w);
+		return this;
+	}
+	
+	void	swap( Widget&& w ) {
+		
+	}
+
+}
+#+end_src
+
+-- C++ compiler and special member functions generation:
+- default copy operations generated when:
+	=> no move operation is user-defined
+- default move operations generated when:
+	=> no copy operation or destructor is user-defined
+// Note: = default and = delete count as user-defined
+
+// Note: core guideline C.21 (rule of 5, or rule of 6 if count default constructor): if one defines or = delete any default operation, he
+// has to define or = delete them all
+
+// Note: core guideline C.15: Prefer simple and conventional ways of passing information
+
+
+
+
+
+-- Forwarding references and perfect forwarding (> C++11)
+--------------------------------------------------------
+- forwarding references represent:
+	-- an lvalue reference if they are initialized by an lvalue
+	-- an rvalue reference if they are initialized by an rvalue
+	
+- rvalue references are forwarding references if they:
+	-- involve type deduction
+	-- appear exactly in the form T&& or auto&&
+
+// Note: reference collapsing tip: il have one lvalue ref then collapsing gives an lvalue ref. Only two rvalue ref collapsing gives an rvalue ref (&& && -> &&)
+
+
+- Need for forwarding references: perfect forwarding
+suppose one wants to write a function that merely forward its arguments to another function, eg of make_unique function:
+
+namespace std {
+
+template<typename T, ???>
+unique_ptr<T>	make_unique( ??? ) // forward args ??? to constructor of T
+{
+	return unique_ptr<T>(new T(???)); // calling the constructor of T with args ???
+}
+}
+
+// Problem: depending on how implemented, can cost a lot
+
+I. first solution: pass by value
+
+namespace std {
+
+template<typename T, typename Arg>
+unique_ptr<T>	make_unique( Arg arg )
+{
+	return unique_ptr<T>(new T(arg));
+}
+}
+
+=> Problem:
+	1. won't work not copiable types
+	2. overhead (time spent not accomplishing useful work) when constructing T: eg when passing cxe object => expensive copy
+eg:
+	std::make_unique<int>(1); // ok, not expensive
+	std::make_unique<W>(w); // very expensive extra copy
+	
+II. second solution: pass by reference
+namespace std {
+
+template<typename T, typename Arg>
+unique_ptr<T>	make_unique( Arg& arg )
+{
+	return unique_ptr<T>(new T(arg));
+}
+}
+
+=> works for lvalues and const lvalues, BUT NOT for rvalues, eg : calling the function with :
+std::make_unique<int>(1); // compilation error, rvalue doesn't bind to lvalue reference to non const : error: invalid initialization of non-const
+							// reference of type 'int&' from an rvalue of type 'int'
+
+
+III. solution 3: pass by reference to const (usual default)
+namespace std {
+
+template<typename T, typename Arg>
+unique_ptr<T>	make_unique( Arg const& arg )
+{
+	return unique_ptr<T>(new T(arg));
+}
+}
+
+=> Better for a lot of things, but limitation for example on non const:
+struct Example { Example( int& ); };
+
+int	i{1};
+std::make_unique<int>(i); // always 

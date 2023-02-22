@@ -3,3 +3,6 @@
 #+options: ^:nil _:nil
 
 ** Most used commands
+
+* showkey : useful for keybindings when whants to get text version of keys from keyboard
+  - find mappings :: showkey -a

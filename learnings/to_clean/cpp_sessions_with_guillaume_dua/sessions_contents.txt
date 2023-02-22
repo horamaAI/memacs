@@ -1,0 +1,519 @@
+Tuto c++ guillaume dua:
+
+
+June 28 :
+// values categories
+// values semantic
+// guaranteed copy elision
+// move semantic
+// perfect-forwarding
+// reference collapsing
+
+
+=============================================================
+
+
+June 28 and July 5 :
+// noexcept
+// std::unique_ptr / std::make_unique
+// IIFE
+// std::move_iterator / std::make_move_iterator
+[Monday 12:47 PM] Guillaume DUA (contractor)
+    A propos de la move-semantic, j'ai vue ce comment pas mal ce matin sur Reddit :
+​[Monday 12:47 PM] Guillaume DUA (contractor)
+    https://www.reddit.com/r/cpp/comments/odd2kz/is_passbyvalue_slower_than_passbyrvaluereference/h40hao4?utm_source=share&utm_medium=web2x&context=3
+
+
+=============================================================
+
+
+July 9:
+[3:04 PM] Guillaume DUA (contractor)
+// Two-phases name lookup
+// Argument   name lookup ADL 
+// Substitution ranking
+// overload-resolution
+//
+//  - ref-qualifiers
+//      - lvalue-reference
+//      - rvalue-reference
+//  - cv-qualifier
+//      - const
+//      - volatile
+// DbC -> Design by contract, DP -> Defensive programming
+// - pre-condition  -> types, ref-qualifier, cv-qualifiers
+// - post-condition -> 
+// - behavior       -> 
+// - invariants     -> cv-qualifiers
+​[3:04 PM] Guillaume DUA (contractor)
+    - Documentation :
+- https://en.cppreference.com/w/cpp/language/overload_resolution
+- https://eel.is/c++draft/over.match
+- https://eel.is/c++draft/tab:over.ics.scs
+- https://accu.org/journals/overload/13/66/kilpelainen_268/
+
+Exercice : 
+(solution: https://godbolt.org/z/M6a6fbcaa)
+Faire un object avec une fonction membre possedant 16 overload differentes
+	(Je suis sympa, ca aurait pu etre les 64 !)
+Chaque overload affiche une lettre sur la sortie standard
+Output attendu :
+abcd
+efgh
+ijkl
+mnop
+
+
+
+July 15:
+https://godbolt.org/z/KPWcaPnTr
+https://gist.github.com/GuillaumeDua/b0f5e3a40ce49468607dd62f7b7809b1#stdvariants--concepts--overload-resolution
+
+
+
+July 21:
+Session : Programmation generique & templates
+// TTP  -> template-type parameters
+// TTTP -> template-template-type parameters
+// NTTP -> non-template-type parameters
+// compile-time constant
+// template-type specialization
+//  - https://en.cppreference.com/w/cpp/language/partial_specialization
+// template-variables
+// generic lambdas
+// static_assert
+Exercice 1
+(solution: https://godbolt.org/z/jjrEh378s)
+Vous avez ce code ci : https://godbolt.org/z/vx71oKfnv	
+Sans modifier le code contenu dans la fonction main(), le namespace gcl, ni meme modifier la fonction print_type existante, vous devez obtenir l'output suivant :
+type = int
+
+type   = toto<char>
+ TTP_0 = char
+
+type    = titi<char, int>
+  TTP_0 = char
+  TTP_1 = int
+
+type    = std::__cxx11::basic_string<char>
+  TTP_0 = char
+  TTP_1 = std::char_traits<char>
+
+(derniere partie est un bonus/best-effort)
+type    = std::array<int, 3>
+  TTP_0 = int
+ NTTP_0 = 3
+
+Exercice 2
+(solution: https://godbolt.org/z/h18414f1M)
+Faites en sorte que ce code compile correctement https://godbolt.org/z/q53axc3zW,
+	en implementant :
+	
+	Exercice 2.a :
+	- Un type fibonnacci qui prendra en NTTP une valeur numerique
+	
+	Exercice 2.b :
+	- Une variable-template fibonnacci_v qui prendra en NTTP une valeur numerique
+	
+	De facon a ce que fibonnaci<N>::value et fibonnacci_v<N> :
+	- Soient egales entre elles
+	- Soient egales a l'entier dans la suite de Fibonnacci dont l'index est N
+	
+	Hint : pas besoin de main(), les static_assert sont tout ce dont vous avez besoin.
+	
+	Indice exo 2 :recursivite
+	Contrainte : fibonnacci_v ne dois pas etre un alias vers fibonnacci::value
+	
+	Faites l'algo classique de fib<N> = fib<N - 1> + fib<N - 2>, pas l'algo optimisee avec pow et sqrt
+
+Exercice 3
+(solution: https://godbolt.org/z/9PWxseKr8)
+Faire une implementation simpliste de std::array, tel que ce code compile et s'execute correctement :
+https://godbolt.org/z/GnKK1nbdK
+(Evidement, pas le droit d'utiliser un autre conteneur pour implementer le sien !)
+
+
+
+August 2:
+// type_trait-s
+// TTP vs. NTTP
+// variadic templates (old) -> parameter-pack (new)
+// - fold expression
+// (contract programming)
+
+exo 1 : print_type + print_types (final boss)
+(solution exo 1 https://godbolt.org/z/srahnEKzK
+exo 1 bonus https://godbolt.org/z/9sbxzbvTa)
+- Completez le code suivant : https://godbolt.org/z/oxv85nKhb, en remplaceant les "/* ??? */
+	-- print_type doit conserver le comportement definit dans les exercices precedents
+	-- print_types (avec un 's' !) doit afficher tout les types des valeurs passe en parametres.
+	-- Vous n'avez pas besoin de creer de nouvelles fonctions ou types
+	-- les outputs doivent correspondre aux commentaires en dessous de chaque ligne de code present dans la fonction main()
+- Si vous etes bloque plus de 15 minutes, demandez moi.
+- Cet exercice concentre les 4 chapitres des trainings effectues precedement
+	Indices :
+	-- Soyez feignant
+	-- print_type peut se coder en 3 lignes.
+	-- print_typespeut se coder en une seul ligne.
+- Quand vous avez completez l'exo 1, vous pouvez l'ameliorer avec ce superset bonus :
+	Changer l'implementation de print_types de facon a preserver son comportement mais ne plus utiliser les keywords template et typename
+- Si vous avez besoin d'aide sur certain elements :
+	-- Reflechissez en mode simple, basique
+	-- use also : https://en.cppreference.com/w/cpp/header/type_traits
+
+exo 2 : Anonymisation de liste de noms
+(solution exo 2 : https://godbolt.org/z/e1711c9MK)
+- Completer la fonction make_anonymized_names_collection : https://godbolt.org/z/TP3fhrjPf
+	-- Etape 1 :
+		--- En entree, on prend un ensemble de noms
+				* Les noms doivent etre convertible vers le type std::string
+					** const char *
+					** std::string
+					** std::string_view
+					** etc.
+		--- En sortie, on retourne un vecteur de noms, de type names_collection_t, contenant les noms passes en parametres
+	-- Etape 2 :
+		--- Modifier l'implementation de la fonction make_anonymized_names_collection de facon a remplacer le nom des agents par "x",
+			De facon a produire le meme output que celui present dans la fonction main()
+		--- Attention a ne pas produire de copies inutiles
+
+exo 3 :
+(solution exo 3 : https://godbolt.org/z/fnoE918j4)
+- Implementer les fonctions print et format tel que le main() ici fonctionne comme attendu: https://godbolt.org/z/qafW15v5n
+	-- Le token "{}" definit en tant que details::print::token sert a signifier les positions a remplacer dans le
+	parametre format/format_str par les valeurs passes egalement en parametres
+	-- Exceptionellement, la recursivite est autorisee (evil smiley)
+	-- Exercice libre, faite comme vous voulez, mais interdiction d'utiliser fmt ou std::format evidement.
+
+Exo 4 :
+(one solution for exo 4 (does not really the answer to question, but quite fun, informative and gnrl): https://godbolt.org/z/Mx3E6KqqG)
+(solution more accurate to the question: https://godbolt.org/z/45jxrsrPr)
+- Implementer les types merge_packs_t et merge_sequence_t de facon a ce que les tests suivants passent : https://godbolt.org/z/c184T6rMT
+	-- Bonus : Ajouter le test suivant : https://godbolt.org/z/4z5daTzd3
+	
+
+
+
+August 19:
+// Le plan du training d'aujourd'hui que l'on a survole par manque de temps etait le suivant :
+//	- Programmation generique (3)
+//		- if-constexpr
+//		- expansion
+//		- limits : parameter-pack must be the last parameters (if no deductions)
+//			-- `template<typename, typename, typename... Ts> void func(){​​​​​​​}​​​​​​​​​​​​​​`
+//			-- `template<typename ... Ts, typename... Us> void func(Us && ...){​​​​​​​​​​​​​​}​​​​​​​​​​​​​​`
+//			-- parameter-pack + default : `template <typename..., typename = int>`
+//		- recursivite vs. fold expressions
+//		- lambda-capture `...args = `
+//	https://en.cppreference.com/w/cpp/language/class_template_argument_deduction
+//	- CTAD, -> class template argument deduction
+//	- user-defined deduction guide
+//	- En options : ODR -> One definition rules
+exo 1:
+- Exo print_type v3 :
+	-- Faire un affichage recursif des types + parametres templates (avec index, hein !),
+	en reprenant l'implementation precedente. De facon a ce que vous obteniez une arborescence qui ressemble vaguement a
+	la commande tree, ou ce qui vous convient le mieux en terme d'affichage. Si vous voulez faire les kikoo avec iomanip, sentez vous libres.
+
+
+
+August 23:
+//TupleInterface
+//	- pair
+//  - tuple
+//  - array
+//    values :
+//		- std::get<std::size_t> -> accessor
+//		- std::get<T> -> accessor
+//    types :
+//		- std::tuple_element_t<std::size_t>
+//		- std::tuple_size_v<tuple_type>
+//		- std::tuple_cat
+​//	```cpp
+//		[&value]<std::size_t ... indexes>(std::index_sequence<indexes...>){​​​
+//			(((std::get<indexes>(value))),...);
+//		}(​​std::make_index_sequence<std::tuple_size_v<tuple_type>>());
+TODO:
+- Conteneurs de la STL (pourquoi tel ou tel conteneur)
+- Chercher cas d'usages, types d'iterateurs, algo, (std::next, std::advance), ...
+- Lire les docs de ce que l'on a vue aujourd'hui
+	-- `std::get<T>`, `std::get<N>`
+	    - std::tuple_element
+	    - std::index_sequence
+	    - std::tuple
+	    - std::pair -> + tricky std::tuple::tuple{std::pair{}}
+	    - std::array
+- sur les algos de la stl, il y a ca qui est interessant https://www.fluentcpp.com/getthemap/
+et aussi https://www.fluentcpp.com/2017/01/05/the-importance-of-knowing-stl-algorithms/
+
+Exo 1:
+(solution exo 1: https://godbolt.org/z/axoEcsdzY)
+(solution exo 1 bonus: https://godbolt.org/z/6sevK6K14)
+- Faites une fonction reverse_tuple qui consommera n'importe quel type matchant TupleInterface,
+	et retournera un std::tuple avec un contenu inverse.
+	Exemple : std::tuple{'a', 42, true} == reverse_tuple(std::tuple{true, 42, 'a'});
+	-- Bonus : Ne pas retourner un std::tuple, mais le meme type-template que celui passe en parametre :
+		std::array<int, 3> -> std::array<int, 3>
+		std::pair<int, char> -> std::pair<char,int>
+		std::tuple<int, double, float> -> std::tuple<float, double, int>
+	- Une seule fonction, pas de specialisation
+
+Exo 2 :
+(solution exo 2 stage 1 and 2: https://godbolt.org/z/hs7KPdvsM // for stage 1 just switch the positions)
+- Corriger le code "legacy" suivant https://godbolt.org/z/vEfhbn335 :
+	- Stage 1 (the riddle) : Corriger func de facon a ce que le code compile
+		-- Sans changer la logique, ni modifier le contenu, ni rajouter de code, ni supprimer de code
+		-- Indice : pensez aux trainings que nous avons vue ensemble depuis le debut
+	- Stage 2 : Changer l'implementation de facon a supprimer toute recursivite
+
+Exo 3 : print-type en recursif comme evoque precedement
+(solution exo 3: https://godbolt.org/z/8G9x19GzG)
+
+- Etudes : Le but ici est de vous donner un degres d'autonomie sur l'apprentissage, afin de developper votre aptitude a apprendre, encaisser les infos des prochains standards par vous-meme.
+-- Etude 1 : CTAD
+	Lire la page https://en.cppreference.com/w/cpp/language/class_template_argument_deduction
+
+-- Etudes 2 : Containers
+	- Lire la page https://en.cppreference.com/w/cpp/container
+		--- avec std::string, pas besoin de std::string_view, std::span, std::ranges pour le moment
+	- Determiner un exemple/scenario d'usage pour chaque type conteneur: Pas d'implementation, juste une idee de design
+	- Etre en mesure de determiner quel conteneur convient mieux a quel besoin
+	
+Exo 4 : is_instance_of
+(solution exo 4: https://godbolt.org/z/j8eczon38)
+- Creer un type-trait qui permet trivialement de determiner si un type T est une instance d'un type template, tel que :
+	-- static_assert(is_instance_of_v<std::tuple, std::tuple<int, char, double>>)
+	-- static_assert(not is_instance_of_v<int, char>)
+	-- static_assert(not is_instance_of_v<std::pair, std::tuple<int, char>)
+- Ca doit marcher pour des types que vous ne connaissez pas cote details d'implementation, tel que :
+	-- template <typename, typename> struct toto{​​​​​​​}​​​​​​​;
+	-- static_assert(is_instance_of_v<toto, toto<int, char>>);
+
+
+
+September 20:
+Exo 1:
+- Petit exo en meta-prog :
+Repeat<N> : 
+	-- Faire une fonction repeat tel que repeat<3>([i = 0]() mutable { std::cout << ++i << ' ' ;}) affichera 1 2 3
+	A vous de determiner la signature adequat de repeat : ce n'est certainement pas ce que vous pensez !
+	Basiquement, interessez vous a la question "Comment invoquer un fonctor en C++, tout en maintenant les garanties de celui-ci ?" et regardez la documentation de std::invoke, cela vous mettra sur la bonne piste
+
+Exo 1: repeat: bonus
+	-- A moins que l'invocation du fonctor en parametre ne renvoie un void, alors la fonction repeat devra retourner un array des resultats, tel que :
+	  ```cpp
+	  const auto [res_1, res_2] = repeat<2>([i = 0]() mutable { return ++i; });
+	  ```	
+
+Exo 2: Correction de code legacy (Special Amadeus)
+Corriger le code suivant, de la facon qui vous semblera la plus adequate :
+	https://godbolt.org/z/nz1d36Ex3
+	(Cas reel, on vient de fix ca avec Mathieu Loiselle )
+
+Exo 3: print_tuple :
+Faire une fonction print_tuple qui prend en parameter un std::ostream& ainsi qu'un type qui match la TupleInterface, et affichera pour chaque element le type et sa valeur, tel que:
+	print_tuple(std::cout, std::tuple{42, 'a'});
+	affichera :
+	```
+	int : 42
+	char : 'a'
+	```
+//Note:
+[Yesterday 4:32 PM] Guillaume DUA (contractor)
+    Pour un exemple des differentes operations en fonction des requirements des iterateurs,
+voir https://en.cppreference.com/w/cpp/iterator/advance
+​[Yesterday 4:45 PM] Guillaume LE PAPE (contractor)
+    en fait ils doivent reimplémenter toute la stl avec les concepts. 
+​[Yesterday 4:48 PM] Guillaume DUA (contractor)
+    Hum ... oui et non, genre souvent c'est juste rajouter la requires-clause au haut des fonctions ou pour restreindre les types templates
+​[Yesterday 4:50 PM] Guillaume DUA (contractor)
+    Je n'ai pas eu le temps de parler de std::initializer_list<T>, Je vous laisse checker ca de votre cote, et la facon dont c'est utilise dans les conteneurs de la STL
+
+
+October 06:
+Exos : is_variant_worth
+- https://godbolt.org/z/vqza7Y9q4
+La consigne est dans le code
+
+
+
+October 17:
+// [Monday 4:13 PM] Guillaume DUA (contractor)
+Compile-time random : https://www.youtube.com/watch?v=rpn_5Mrrxf8
+// [Monday 5:09 PM] Guillaume DUA (contractor)
+Donald MAHORO NTWARI (contractor) Je te laisse check le lien de la demo du training (https://godbolt.org/z/TaKcvGzGo)
+(ou meme, reflechir avant a ce que tu aurais fait pour le scneario suivant) :
+	- Tu fais un std::vector<toto>, sachant que struct toto{ int value; }; , avec des valeurs de 1 a 10 (donc, 10 elements)
+	- std::bind te permet de faire une projection en utilisant plutot qu'un fonctor ou member functions, une membre variable. donc:
+		auto toto_value_projection = std::bind(&toto::value, std::placeholders::_1) est legale
+		(De facon "cachee" a l'utilisateur, this est le premier parametre des fonctions membre.
+		Donc ici, il devient le parametre, tel que std::cout << toto_value_projection(toto{42}); // affiche 42
+	- Ensuite, utlise tout les elements precedents pour remplir un std::vector<int> avec les values de toto
+	- Pas de boucle, pas de std::for_each
+	- Tu as la solution en haut
+Exo 1: Egalement, a faire : l'exo du calcul de PI via les darts, comme mentionne ci-dessus (voir suivant)
+Exo 1: Constexpr darts PI calculation :Refaire l'exo du calcul de Pi avec des flechettes, mais en full constexpr
+Le resultat ne doit faire qu'une seule ligne, ormis le return du main()
+	https://godbolt.org/z/9T8hnT58x
+Resultat via return du main :
+	main:
+        mov     eax, 3
+        ret
+Si on retourne simplement le ration des fleches presente dans le cercle par rapport au nombre lance initialement :
+	main:
+        mov     eax, 70
+        ret
+// Note: see what's this (edited msg, might have removed it)
+	Compiler Explorer - C++
+	constexpr auto seed()
+	{
+		std::uint64_t shifted = 0;
+		for( const auto c : __TIME__ )
+		{
+			shifted <<= 8;
+			shifted |= c;
+		}
+		return shifted;
+	}
+	struct PCG
+	{
+		struct pcg32_random_t { std...
+
+Exo 2: JV (1)
+// SC2 gamedev initiation, specs (1) :
+// - Two armies are about to fight each others
+// - One is Terran, with marine units
+// - One is Zerg, with zergling units
+// - Any unit have the following information
+//   	-- HPs
+//   	-- DPS
+
+* Etape 1 :
+- Vous devez implementer une fonction qui genere un vector d'entitees, qui representera toutes vos unitees en jeux, configurable au compile-time, tel que la synthaxe suivante est legale et produit le resultat d'execution ci-joint :
+	auto main() -> int {
+		
+		auto entities = make_entities<
+			std::vector,
+			army<units::zergling, 100>,
+			army<units::marine, 30>
+		>();
+		
+		std::cout << gcl::cx::type_name_v<decltype(entities)> << '\n';
+		std::cout << std::size(entities) << '\n';
+	}
+	
+	gives:
+	
+	Program returned: 0
+	Program stdout
+	std::vector<std::variant<units::zergling, units::marine>>
+	130
+	
+- Ps : std::vector n'a pas a etre passe en parametre, il n'existe pas de facon generique & trivial d'inserer dans un conteneur de la STL (avant range-v3)
+
+* Etape 2 :
+- Faire une fonction qui affichera pour toute valeurs de type 'entities' (const-ref qualified)
+	le nombre d'unite restant appartement a chaque armee.  Attention : Vous n'avez pas la garanties que les units sont triees.
+	Possible output :
+		units::marine = 2
+		units::zergling = 138
+C'est tout pour le moment (coeur emoji)
+
+// Important : Precision au sujet du dernier training qu'on a fait, nous avions evoque les projections.Dans la STL, vous avez std::identity qui fait une projection qui ne sert a rien. On pourrait resumer en :"std::identity est aux valeurs ce que std::type_identity est aux types"
+// Vous pouvez check un de mes projets perso la :https://github.com/GuillaumeDua/GCL_CPP/commit/efbec6321fc7e8dc8cc4fa87f091645395c39bdf
+// En addition du make_army,
+faites une fonction details::variant_utils::count_alternatives (ou un autre nom que vous trouvez pertinent),
+qui renvoie un std::array<std::size_t, N> tel que :
+	const auto entities = make_entities<
+			army<units::zergling, 100>,
+			army<units::marine, 30>
+		>();
+	auto alternatives_count = details::variant_utils::count_alternatives(entities);
+	// test : alternatives_count == std::array<std::size_t, 2>{100, 30};
+
+Ainsi qu'une fonction details::variant_utils::print_alternatives_count tel que :
+	using namespace details::variant_utils;
+	print_alternatives_count(entities);
+affichera un truc du genre:
+	zerglings : 100  marines : 30
+De cette facon, vous pouvez tester votre code avec ces fonctions la  J'suis gentil hein ! non
+
+// pour SC2 : Etape 2 :
+	- refine etape 1
+	- 
+		print_count_alternatives(entities); // before
+		std::cout << count_alternatives(entities); // after
+	- 
+		// approximatively :
+		for (const auto &[units_count, units_name] : count_alternatives(entities)) {
+			// do something...
+		}
+// C'est un exo de design, je vous invite donc a reflechir a ce qui conviendrait pour ce genre d'interface. Comme pour tout les exos de design, il n'y a pas de solution absolue, mais un ensemble de solutions possibles impliquant divers trade-off contextuels
+// Si vous ne trouvez pas, ce n'est pas grave.Tout ce que je vous demande ici, est de chercher suffisament pour comprendre les enjeux et les divers trade-off :
+		- Code-bloat
+		- Memory-bloat
+		- CPU-usage
+		- I/O-usage
+		- Interface convenience
+		- Maintainability (resilience to change, future-proof ?)
+		- etc.
+// ℹ (Btw, je suis en train de refine mon training guide, et de ce que je lis, j'ai oublie de vous dire que les destructeurs doivent etre noexcept, autant que les constructeurs par move/rvalue-reference)
+
+
+// Hello le groupe 1.
+Actuellement comme vous l'avez remarque, je me focus sur le ramp-up des 3 autres groupes.
+Cependant, pour ne pas que vos skills s'emoussent, je vous invite a jouer au jeux du "gcc vs. clang : kikaraison ?"
+https://godbolt.org/z/EKrb69xob
+L'idee etant de comprendre pourquoi les deux compilateurs produisent un comportement different sur ce code en particulier,
+et si on est sur un blind-point du standard, et si non, alors lequel respecte le standard, et lequel non.
+
+
+
+// FYI, y'a un bug de ouf que j'ai decouvert sur GCC (trunk) hier,
+voici un cas de repro quasi-minimal :
+https://godbolt.org/z/e8YvvfGxP
+
+
+January 26:
+[Yesterday 5:47 PM] Guillaume DUA (contractor)
+- Exo 1: **Secret message decryption**  - [enonce](https://godbolt.org/z/bfMYTaM4G)
+Compiler Explorer - C++ (x86-64 gcc 11.1)
+
+template 
+struct data_type {
+    std::string id;
+    bool is_valid;
+
+    using payload_type = std::tuple;
+    payload_type payload;
+};
+
+constexpr bool is_visible_char(auto value) { return value >=...
+
+[Yesterday 5:48 PM] Guillaume DUA (contractor)
+- **Game history / MOBA stats**  - [enonce](https://godbolt.org/z/1hj6GYYxY)
+Compiler Explorer - C++ (x86-64 gcc (trunk))
+
+using namespace std::chrono_literals;
+using namespace std::string_view_literals;
+
+// --- data types
+
+struct user {
+    using id_type = std::size_t;
+    const id_type id = 0;
+
+    using name_type =...
+
+[Yesterday 5:49 PM] Guillaume DUA (contractor)
+expected output : https://godbolt.org/z/f17dhdWeT (ms-team n'accepte pas les messages long)
+Compiler Explorer - C++
+  - expected output :
+    ```
+    All players :
+      User :          NA-00-00-p1 (   1) |     OK ,     2s |  8/ 5/ 3 (2.2)
+      User :      NA-00-00-troll1 (   3) |     OK ,     0s |  0/25/ 3 (0....
+
+[Yesterday 5:49 PM] Guillaume DUA (contractor)
+GG GL HF
+
