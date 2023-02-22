@@ -1,0 +1,14 @@
+
+* Glossaries
+  - Generic components (in book) :: pre-implemented pieces of design
+    whose main characteristics is flexibility, versatility (can adapt
+    to different functions (in the general sense of the word, not just
+    in computer science) and/or activities)
+  - Framework :: defines interdependent classes to foster a specific
+    object model
+
+* Design patterns
+** Singleton
+** Factory
+** Abstract factory
+** Visitor
