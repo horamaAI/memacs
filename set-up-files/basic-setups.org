@@ -1,0 +1,10 @@
+#+PROPERTY: header-args :tangle ~/set-up-files/basic-setups.org
+
+* basic configs
+
+#+begin_src emacs-lisp
+
+# escape chars so they don't get evaluated : ^, _
+#+options: ^:nil _:nil
+
+#+end_src

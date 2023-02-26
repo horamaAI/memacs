@@ -1,6 +1,6 @@
 # -*- mode: org -*-
 #+title: Most used commands file
-#+options: ^:nil _:nil
+#+SETUPFILE: ~/set-up-files/basic-setups.org
 
 ** Most used commands
 

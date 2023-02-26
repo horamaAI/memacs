@@ -1,6 +1,6 @@
 # -*- mode: org -*-
 #+title: Keybindings cheatsheets
-#+options: ^:nil _:nil
+#+SETUPFILE: ~/set-up-files/basic-setups.org
 
 
 * Emacs
@@ -55,6 +55,9 @@
  - insert link ::
    + to another file :: [​[file:remember.org][remember]]
    + image :: [​[file:img/test.jpg]]
+ - insert inclusion (include from other file) ::
+   + source :: https://orgmode.org/manual/Include-Files.html
+   + ​#​+INCLUDE: "~/path-to-source-org-file.org" :minlevel 1 :: 'minlevel' to skip adding the included part headers as child, but rather add it as sibling
  - add source code field (into ) :: C-c C-,
    1. select s (displayed as [s]) for src code
    2. add type of source code needed (eg: c++ for #+begin_src c++; R for #+begin_src R, etc.)
@@ -83,6 +86,7 @@
  - move current visible window with respect to cursor :: C-l (multiple time (3*) until desired display)
 
 ** org mode
+ - local refresh of current buffer :: C-c C-c
  - add headline :: C-RET
  - add item :: M-RET
  - move up/down item :: M-UP/DOWN

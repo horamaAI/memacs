@@ -1,6 +1,6 @@
 # -*- mode: org -*-
 #+title: learn how to better use terminal emulators
-#+options: ^:nil _:nil
+#+SETUPFILE: ~/set-up-files/basic-setups.org
 
 * Terminator
 

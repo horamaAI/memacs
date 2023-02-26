@@ -1,6 +1,6 @@
 # -*- mode: org -*-
 #+title: Emacs learning project
-#+options: ^:nil _:nil
+#+SETUPFILE: ~/set-up-files/basic-setups.org
 
 * emacs files types
 - emacs.org~ :: usually for backup files

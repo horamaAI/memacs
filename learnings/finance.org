@@ -1,6 +1,6 @@
 # -*- mode: org -*-
 #+title: emacs and finance
-#+options: ^:nil _:nil
+#+SETUPFILE: ~/set-up-files/basic-setups.org
 
 
 * Emacs and Hledger :: emacs finance

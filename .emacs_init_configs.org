@@ -1,5 +1,6 @@
 # -*- mode: org -*-
 #+title: my emacs init file configs but in orgmode
+#+SETUPFILE: ~/set-up-files/basic-setups.org
 
 
 (custom-set-variables
@@ -186,29 +187,15 @@
 
 (setq org-refile-target-verify-function 'bh/verify-refile-target)
 
-* My organizing org files tree (details in [[file:organisation_org_files.org][organisation_org_files.org]])
-
-| filename (f) or folder (d)   | description                                                      |
-|------------------------------+------------------------------------------------------------------|
-| (f) tasks_list.org           | for tasks and keeping tracks                                     |
-| (f) journal.org              | personal journal notes                                           |
-| (f) kbd_cheatsheet.org       | keybindings file grouped by tool                                 |
-| (f) notes.org                | buffer for captures and quick notes that needs to be reorganised |
-| (f) commands_to_remember.org | journal for commands to remember                                 |
-| (f) other_projects.org       | to keep track of non urgent project "good to have"               |
-| (f) us.es_notes.org          | notes specific to project us.es                                  |
-| (f) running.org              | running related notes and tracking                               |
-| (f) *.org_archive            | archive version files of backed up tasks                         |
-| (d) learnings                | folder for things to learn organised by org files                |
-| (d) GTD                      | folder for org files to include in agenda (org-agenda-files)     |
-| (d) GTD-private              | same as above GTD, but for agenda not to be published publicly   |
-| (d) to_clean                 | unorganised content, to clean ASAP                               |
-|                              |                                                                  |
+* My organization of org files tree (details in [[file:organisation_org_files.org][organisation_org_files.org]])
+#+INCLUDE: "./organisation_org_files.org::Folders and files:"
 
 
 * Org mode specific configs
 - notes ::
-  + different sources, but main and detailed template is from : http://www.newartisans.com/2007/08/using-org-mode-as-a-day-planner/
+  + different sources, but main and detailed templates are from :
+    - http://doc.norang.ca/org-mode.html
+    - http://www.newartisans.com/2007/08/using-org-mode-as-a-day-planner/
   + careful, some configs are managed by emacs, so the order my change
 - basic org mode settings ::
 #+begin_src emacs-lisp
@@ -252,7 +239,8 @@
               ("PHONE" :foreground "forest green" :weight bold))))
 #+end_src
 
-- fast Todo Selection :: allows changing from any task todo state to any other state directly by selecting the appropriate key from the fast todo selection key menu.
+- fast Todo Selection ::
+  + allows changing from any todo task state to any other state directly by selecting the appropriate key from the fast todo selection key menu.
 #+begin_src emacs-lisp
 
 ;; allow for faster task state change, using shortcut defined in 'org-todo-keywords'

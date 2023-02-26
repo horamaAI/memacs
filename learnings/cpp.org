@@ -1,6 +1,6 @@
 # -*- mode: org -*-
 #+title: cpp and modern cpp notes
-#+options: ^:nil _:nil
+#+SETUPFILE: ~/set-up-files/basic-setups.org
 
 * foreword, UML, and general notes
   + UML notation ::

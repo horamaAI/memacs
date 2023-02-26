@@ -1,6 +1,6 @@
 # -*- mode: org -*-
 #+title: Miscellaneous notes, need to be cleaned
-#+options: ^:nil _:nil
+#+SETUPFILE: ~/set-up-files/basic-setups.org
 
 
 * cpp with klaus iglberger
