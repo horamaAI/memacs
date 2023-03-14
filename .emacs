@@ -14,9 +14,9 @@
    [default default default italic underline success warning error])
  '(ansi-color-names-vector
    ["#282a36" "#ff5555" "#50fa7b" "#f1fa8c" "#6272a4" "#bd93f9" "#8be9fd" "#f8f8f2"])
- '(custom-enabled-themes '(timu-spacegrey))
+ '(custom-enabled-themes '(spacemacs-dark))
  '(custom-safe-themes
-   '("9b7f37885eec6ef0441bae9c5ea4a1dd2484eef4342aa3f88d1691722f769fba" "c7000071e9302bee62fbe0072d53063da398887115ac27470d664f9859cdd41d" "5f9b1b414d4e0b793f7907b1a48c7bc0591f06d8d9e8e144524b974d8bafa5ef" "79586dc4eb374231af28bbc36ba0880ed8e270249b07f814b0e6555bdcb71fab" "18bec4c258b4b4fb261671cf59197c1c3ba2a7a47cc776915c3e8db3334a0d25" default))
+   '("bffa9739ce0752a37d9b1eee78fc00ba159748f50dc328af4be661484848e476" "7f01d214ef35925074125b88da30eebd624836dcf09336d13bfe23827827e40b" "9b7f37885eec6ef0441bae9c5ea4a1dd2484eef4342aa3f88d1691722f769fba" "c7000071e9302bee62fbe0072d53063da398887115ac27470d664f9859cdd41d" "5f9b1b414d4e0b793f7907b1a48c7bc0591f06d8d9e8e144524b974d8bafa5ef" "79586dc4eb374231af28bbc36ba0880ed8e270249b07f814b0e6555bdcb71fab" "18bec4c258b4b4fb261671cf59197c1c3ba2a7a47cc776915c3e8db3334a0d25" default))
  '(ensime-sem-high-faces
    '((var :foreground "#9876aa" :underline
 	  (:style wave :color "yellow"))
@@ -53,20 +53,19 @@
 	  (org-agenda-skip-entry-if 'scheduled 'deadline 'regexp "
 ]+>")))
        (org-agenda-overriding-header "Unscheduled TODO entries: ")))))
- '(org-agenda-files '("~/Documents/repos/org/memacs/GTD/"
-		      "~/Documents/repos/org/memacs/GTD-private/"
-		      ))
+ '(org-agenda-files
+   '("~/Documents/repos/org/memacs/GTD/" "~/Documents/repos/org/memacs/GTD-private/"))
  '(org-agenda-ndays 7)
  '(org-agenda-show-all-dates t)
  '(org-agenda-skip-deadline-if-done t)
  '(org-agenda-skip-scheduled-if-done t)
  '(org-agenda-start-on-weekday nil)
  '(org-deadline-warning-days 14)
- '(org-default-notes-file "~/notes.org")
+ '(org-default-notes-file "~/notes_to_refile.org")
  '(org-fast-tag-selection-single-key 'expert)
  '(org-reverse-note-order t)
  '(package-selected-packages
-   '(timu-spacegrey-theme use-package greymatters-theme hledger-mode undo-tree projectile iedit avy counsel lsp-mode darcula-theme dracula-theme company eglot)))
+   '(spacemacs-theme plantuml-mode timu-spacegrey-theme use-package greymatters-theme hledger-mode undo-tree projectile iedit avy counsel lsp-mode darcula-theme dracula-theme company eglot)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
@@ -78,7 +77,13 @@
 
 (add-to-list 'package-archives
 	     '("melpa" . "http://melpa.org/packages/") t)
- 
+
+;; add directories/files to load-path so the files/directories can be found and used
+;; set where to look for themes
+(add-to-list 'load-path "~/.emacs.d/themes/")
+;; new theme
+;; (require 'tomorrow-night-paradise-theme)
+
 ;; 'use-package' to ease further installations of packages
 (package-initialize)
 
@@ -124,6 +129,10 @@
 ;;(global-set-key (kbd "C-s-<f12>") 'bh/save-then-publish) ;; needs first configs for publishing multiple files/project
 ;; (global-set-key (kbd "C-c c") 'org-capture)
 
+;; line wrap on buffer visualisation (won't affect the actual buffer, just the display of the buffer)
+(global-visual-line-mode t)
+
+
 (defun bh/hide-other ()
   (interactive)
   (save-excursion
@@ -150,6 +159,11 @@
 (defun bh/switch-to-scratch ()
   (interactive)
   (switch-to-buffer "*scratch*"))
+
+;; activate evaluation of PlantUML source code blocks by adding plantuml to org-babel-load-languages. 
+(org-babel-do-load-languages
+ 'org-babel-load-languages
+ '((plantuml . t))) ; this line activates plantuml
 
 
 ;; 'Ido' activation (interactive use of buffers and files)
@@ -235,30 +249,30 @@
 ;; Note: not quite helpful to have lot of capture templates, use minimal to capture quicknote and resume current task, then after refile them properly
 ;; the other benefit of minimal template is when new org file created, not always necessary to configure a new template for it
 (setq org-directory (getenv "HOME" ))
-(setq org-default-notes-file (concat org-directory "/Documents/repos/org/perso_stuff/GTD/notes.org"))
+(setq org-default-notes-file (concat org-directory "/Documents/repos/org/perso_stuff/GTD/notes_to_refile.org"))
 
 (setq org-capture-templates
       ;; clock-in means the task is clocked, and when task is filed (using C-c C-c), then the clock resumes on the original task
-      '(("m" "Meeting" entry (file+headline "~/Documents/repos/org/memacs/GTD/notes.org" "Calendar")
+      '(("m" "Meeting" entry (file+headline "~/Documents/repos/org/memacs/GTD/notes_to_refile.org" "Calendar")
 	 "* Meeting %^{Description} %^g\n %? :MEETING:\n Added: %U\n" :clock-in t :clock-resume t)
 	;; for example, a mail that needs a response
-	("r" "Needs response" entry (file+headline "~/Documents/repos/org/memacs/GTD/notes.org" "Calendar")
+	("r" "Needs response" entry (file+headline "~/Documents/repos/org/memacs/GTD/notes_to_refile.org" "Calendar")
 	 "* NEXT Respond to %:from on %:subject\nSCHEDULED: %t\n%U\n%a\n" :clock-in t :clock-resume t :immediate-finish t)
-	("p" "Phone call" entry (file+headline "~/Documents/repos/org/memacs/GTD/notes.org" "Calendar")
+	("p" "Phone call" entry (file+headline "~/Documents/repos/org/memacs/GTD/notes_to_refile.org" "Calendar")
 	 "* Phone %? :PHONE:\n%U\n" :clock-in t :clock-resume t)
-	("t" "Tasks diary" entry (file+headline "~/Documents/repos/org/memacs/GTD/notes.org" "Tasks")
+	("t" "Tasks diary" entry (file+headline "~/Documents/repos/org/memacs/GTD/notes_to_refile.org" "Tasks")
 	 "* TODO %?\n%U\n%a\n" :clock-in t :clock-resume t)
-	("u" "Us.es Tasks"  entry (file+headline "~/Documents/repos/org/memacs/GTD/notes.org" "Tasks")
+	("u" "Us.es Tasks"  entry (file+headline "~/Documents/repos/org/memacs/GTD/notes_to_refile.org" "Tasks")
 	 "* TODO %? :US.ES:\n%U\n%a\n" :clock-in t :clock-resume t)
-	("c" "Cpp Tasks"  entry (file+headline "~/Documents/repos/org/memacs/GTD/notes.org" "Tasks")
+	("c" "Cpp Tasks"  entry (file+headline "~/Documents/repos/org/memacs/GTD/notes_to_refile.org" "Tasks")
 	 "* TODO %? :CPP:\n%U\n%a\n" :clock-in t :clock-resume t)
-	("n" "Note"  entry (file+headline "~/Documents/repos/org/memacs/GTD/notes.org" "Notes")
+	("n" "Note"  entry (file+headline "~/Documents/repos/org/memacs/GTD/notes_to_refile.org" "Notes")
 	 "* %? :NOTE:\n%U\n%a\n" :clock-in t :clock-resume t)
-	("x" "Most used commands" entry (file+headline "~/Documents/repos/org/memacs/GTD/notes.org" "Most used commands")
+	("x" "Most used commands" entry (file+headline "~/Documents/repos/org/memacs/GTD/notes_to_refile.org" "Most used commands")
 	 "- %?\n%U\n%a\n" :clock-in t :clock-resume t)
-	("h" "Habit" entry (file+headline "~/Documents/repos/org/memacs/GTD/notes.org" "Habit")
+	("h" "Habit" entry (file+headline "~/Documents/repos/org/memacs/GTD/notes_to_refile.org" "Habit")
 	 "* NEXT %?\n%U\n%a\nSCHEDULED: %(format-time-string \"%<<%Y-%m-%d %a .+1d/3d>>\")\n:PROPERTIES:\n:STYLE: habit\n:REPEAT_TO_STATE: NEXT\n:END:\n")
-	("e" "e-mail related task" entry (file+headline "~/Documents/repos/org/memacs/GTD/notes.org" "Source related tasks")
+	("e" "e-mail related task" entry (file+headline "~/Documents/repos/org/memacs/GTD/notes_to_refile.org" "Source related tasks")
 	 "- %? , as activity response to source:\t%i\n%U\n%a\n" :clock-in t :clock-resume t)
 	("j" "Journal" entry (file+datetree "~/Documents/repos/org/memacs/GTD/journal.org")
 	 "* %?\n%U\n" :clock-in t :clock-resume t)))
@@ -854,7 +868,12 @@ Skip project and sub-project tasks, habits, and loose non-project tasks."
 (require 'ox-ascii)
 
 (org-babel-do-load-languages 'org-babel-load-languages '((ditaa . t))) ; this line activates ditaa
-(setq org-plantuml-jar-path "~/Documents/repos/opt/plantuml/plantuml-1.2022.2.jar")
+(setq org-plantuml-jar-path "~/Documents/repos/opt/plantuml/plantuml-1.2023.2.jar")
+
+
+;; to automatically enable plantuml-mode for files with extension .plantuml (https://github.com/skuro/plantuml-mode#installation)
+(add-to-list 'auto-mode-alist '("\\.plantuml\\'" . plantuml-mode))
+
 
 (add-hook 'org-babel-after-execute-hook 'bh/display-inline-images 'append)
 
@@ -894,8 +913,8 @@ Skip project and sub-project tasks, habits, and loose non-project tasks."
 (setq org-startup-with-inline-images nil)
 
 ;; phone calls configs
-(require 'bbdb)
-(require 'bbdb-com)
+;; (require 'bbdb) // commented since causing issues, is it deprecated ?
+;; (require 'bbdb-com) // same
 
 (global-set-key (kbd "<f9> p") 'bh/phone-call)
 
@@ -1077,7 +1096,7 @@ Skip project and sub-project tasks, habits, and loose non-project tasks."
 (global-display-line-numbers-mode)
 
 ;; show line for fill column
-(display-fill-column-indicator-mode)
+(global-display-fill-column-indicator-mode)
 
 ;; use projectile for project management
 (use-package projectile

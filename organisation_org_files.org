@@ -1,8 +1,29 @@
-#-*- mode: org -*-
+# -*- mode: org -*-
 #+Organisation of myorg files
 
-folders:
-*perso_stuff*:
+* Folders and files:
+
+| filename (f) or folder (d)   | description                                                                           |
+|------------------------------+---------------------------------------------------------------------------------------|
+| (f) tasks_list.org           | for tasks and keeping tracks                                                          |
+| (f) journal.org              | personal journal notes                                                                |
+| (f) kbd_cheatsheet.org       | keybindings file grouped by tool                                                      |
+| (f) notes_to_refile.org      | buffer for captures and quick notes that needs to be reorganised                      |
+| (f) commands_to_remember.org | journal for commands to remember                                                      |
+| (f) other_projects.org       | to keep track of non urgent project "good to have"                                    |
+| (f) us.es_notes.org          | notes specific to project us.es                                                       |
+| (f) fun.org                  | personal hobbies file, org-mode organized                                             |
+| (f) running.org              | running related notes and trackings, not in fun file since to be taken more seriously |
+| (f) *.org_archive            | archive version files of backed up tasks                                              |
+| (d) learnings                | folder for things to learn organised by org files                                     |
+| (d) GTD                      | folder for org files to include in agenda (org-agenda-files)                          |
+| (d) GTD-private              | same as above GTD, but for agenda not to be published publicly                        |
+| (d) set-up-files             | contains different set up configs to be used in different org-files                   |
+| (d) to_clean                 | unorganised content, to clean ASAP                                                    |
+
+
+* Structure:
+*memacs*:
 |
 - organisation_org_files.org (this file) :: list structure and content of files (to be moved, maybe right in previous folder (root))
 |
@@ -26,6 +47,8 @@ folders:
   + running.org :: running notes and tracking
   + old_task_list.org_trash :: probably trash, old version of gtd
     manager, delete when sure nothing's lost
+|
+- set-up-files :: (for configs to be shared by different org files)
 |
 - learnings ::
   + cpp.org ::

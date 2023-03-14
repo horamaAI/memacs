@@ -20,6 +20,15 @@
    + describe variable :: C-h v
    + describe mode :: C-h m
    + describe syntax :: C-h s
+** install packages with Melpa/Elpa
+   - install package with melpa :: M-x package-install
+   - list available packages with melpa (and install if needed) :: M-x package-list-packages
+     + ‘i’ to mark for installation
+     + ‘u’ to unmark
+     + ‘x’ to perform the installation
+     + ‘RET’ to get more infos
+   - list available packages with elpa :: M-x list-packages
+   - refresh after package update :: M-x package-refresh-contents
 ** file management
 *** filesystem
  - open recent files dialog :: C-x C-r
@@ -78,10 +87,11 @@
      - delete current column :: S-M-<LEFT>
      - set width of columns (narrow size of column) :: in first row, insert number of chars to display, eg: <10>
        + display content of narrowed cell :: C-u TAB (or "C-u C-c `"; or edit conent in separate window: "C-c `")
-** emacs windows management
+** emacs buffers and windows management
  - list buffers :: C-x C-b
  - switch between buffers :: C-x b
  - open buffer in another window :: C-x 4 b
+ - execute code block (place first cursor inside code block) :: C-c C-c
  - minimize window (back to toolbar) :: C-x C-z
  - move current visible window with respect to cursor :: C-l (multiple time (3*) until desired display)
 
@@ -92,101 +102,111 @@
  - move up/down item :: M-UP/DOWN
  - cycle through available bullets :: C-c -
 
-** org mode (exporting)
- - insert templates options for exporting :: C-c C-e # [category] // where [category] can be html, latex, ascii, etc.
-   + to change option :: C-c C-c
- - insert customized templates (setup files) ::
-   + need of directory to store setup files :: e.g. ~/.emacs.d/org-templates/
-   + call setup file :: 
-     #+begin_src elisp
-     eg :: #+SETUPFILE: ~/.emacs.d/org-templates/level-N.org
-     #+end_src
- - export :: 'C-c C-e' + key of export type needed
-   + eg, export to html file :: C-c C-e h h // bound to org-html-export-to-html
- - :: 
+*** org mode (exporting)
+  - insert templates options for exporting :: C-c C-e # [category] // where [category] can be html, latex, ascii, etc.
+    + to change option :: C-c C-c
+  - insert customized templates (setup files) ::
+    + need of directory to store setup files :: e.g. ~/.emacs.d/org-templates/
+    + call setup file :: 
+      #+begin_src elisp
+      eg :: #+SETUPFILE: ~/.emacs.d/org-templates/level-N.org
+      #+end_src
+  - export :: 'C-c C-e' + key of export type needed
+    + eg, export to html file :: C-c C-e h h // bound to org-html-export-to-html
+  - :: 
 
-** org agenda and todo lists
-*** org agenda
- - call org agenda :: C-c a
-   + reschedule selected item :: C-c C-s // and then set relative to today: +1, +2w, etc.
- - add/remove file to org agenda :: C-c [ (remove : C-c ])
-   + careful :: to be sure and use whole content of folder, prefer manual edit than C-c [
+*** org agenda and todo lists
+**** org agenda
+  - call org agenda :: C-c a
+    + reschedule selected item :: C-c C-s // and then set relative to today: +1, +2w, etc.
+  - add/remove file to org agenda :: C-c [ (remove : C-c ])
+    + careful :: to be sure and use whole content of folder, prefer manual edit than C-c [
 
-*** todo
- - add item with checkbox :: C-S-M-m
- - toggle between todo states (TODO-DONE-etc) :: C-c C-t // will create todo task if not one already
- - toggle checkbox ([ ] to [x]) :: C-c C-c
+**** org agenda todo and GTD (getting things done)
+  - add item with checkbox :: C-S-M-m
+  - toggle between todo states (TODO-DONE-etc) :: C-c C-t // will create todo task if not one already
+  - toggle checkbox ([ ] to [x]) :: C-c C-c
+***** org-capture
+   - call capture templates on task :: C-c t // t here is for task, not template
+   - after finished entering details, file item in defined org-default-notes-file (will resume previous task) :: C-c C-c
 
-** Time clocking
-*** Clocking in (How to)
-    Select any :
-    - C-c C-x C-i
-    - I :: in the agenda
-    - I :: speed key on first character of heading line
-    - f9 I :: (globally defined key bindings) while on the task in agenda
-    - f9 I :: while in the task in an org file
+****** refiling tasks
+   - 
 
-*** Default task clocking
-    - set default timing in a headline for default clocking ('**
-      Organisation' for mine)
-    - quick clocking in in default :: C-u C-c C-x C-i d
-    - when interruption occurs, set a capture task to pause current
-      time clocking
-    - change default clocking task ::
-      1. visit new default task in org buffer
-      2. clock it in with :: C-u C-u C-c C-x C-i
-      3. now new task is the default
+***** Time clocking
+****** Clocking in (How to)
+       Select any :
+       - C-c C-x C-i
+       - I :: in the agenda
+       - I :: speed key on first character of heading line
+       - f9 I :: (globally defined key bindings) while on the task in agenda
+       - f9 I :: while in the task in an org file
 
-*** Clock history for clocking old tasks
-    - scenario ::
-      + currently working on and clocking Task A (default 'Organization'
-	for example)
-      + get interrupted and switch to Task B (any)
-      + Task B completed and now want to go back to Task A ('Organization') again to continue
-    - solution ::
-      + solution 1 :: clock in again on Task A and resume work
-      + solution 2 :: when completed Task B, hit 'C-u C-c C-x C-i i' to
-	display clocking history selection buffer (the 'i' at the end
-	is for 'interrupted')
+****** Default task clocking
+       - set default timing in a headline for default clocking ('**
+	 Organisation' for mine)
+       - quick clocking in in default :: C-u C-c C-x C-i d
+       - when interruption occurs, set a capture task to pause current
+	 time clocking
+       - change default clocking task ::
+	 1. visit new default task in org buffer
+	 2. clock it in with :: C-u C-u C-c C-x C-i
+	 3. now new task is the default
 
-*** Clocking interruption flow
-    interruption occurs when clocking task:
-    - Create a quick capture task journal entry ::
-      + is it a one shot uninteresting task ? :: 1) create journal capture
-	for it : C-c c j; 2) create heading for task; 3) do task; 4)
-	file it : C-c C-c (restores clock back to previous clocking task)
-      + is it interesting and needs be marked as completed ? :: create
-	capture task in refile file
+****** Clock history for clocking old tasks
+       - scenario ::
+	 + currently working on and clocking Task A (default 'Organization'
+	   for example)
+	 + get interrupted and switch to Task B (any)
+	 + Task B completed and now want to go back to Task A ('Organization') again to continue
+       - solution ::
+	 + solution 1 :: clock in again on Task A and resume work
+	 + solution 2 :: when completed Task B, hit 'C-u C-c C-x C-i i' to
+	   display clocking history selection buffer (the 'i' at the end
+	   is for 'interrupted')
 
-*** Find task to clock in
-    :PROPERTIES:
-    :CUSTOM_ID: task_to_clock_in
-    :END:
-    use one of the following (listed by most frequently used first) :
-    1. Use clock history C-u C-c C-x C-i: Go back to something I was clocking that is not finished
-    2. Pick something off today's block agenda: *SCHEDULED* or
-       *DEADLINE* (items that need to be done soon)
-    3. Pick something off the *NEXT* tasks agenda view Work on some unfinished task to move to completion
-    4. Pick something off the other task list
-    5. Use an agenda view with filtering to pick something to work on
-    Note : punching in on selected task will restrict the agenda view
-    to that project so that can focus on just that thing for some period of time. 
+****** Clocking interruption flow
+       interruption occurs when clocking task:
+       - Create a quick capture task journal entry ::
+	 + is it a one shot uninteresting task ? :: 1) create journal capture
+	   for it : C-c c j; 2) create heading for task; 3) do task; 4)
+	   file it : C-c C-c (restores clock back to previous clocking task)
+	 + is it interesting and needs be marked as completed ? :: create
+	   capture task in refile file
 
-*** Editing clock entries
-    (edition often needed to reflect reality)
-    ex scenario: when not properly clocked in on a task, then previous clocked task still
-    run and count for both tasks, which is wrong.
-    => solution : clock in properly the latest task, and edit start and
-    end times to correct clocking history.
-    Step to edit :
-    1. org-agenda-log-mode : (f12 a l, if f12 is mapped to org-agenda,
-       C-u C-u l otherwise) visit clock line for an entry, shows all clock lines for today
-    2. then navigate desired clock line
-    3. hit TAB
-    4. put cursor on part needed to edit
-    5. use S-<UP> or S-<DOWN> to change the time
-    !!! CAREFUL not to create overlaps when fixing clock entries, use :
-    - v c :: in daily agenda, and it will identify gaps and overlaps
+****** Find task to clock in
+       :PROPERTIES:
+       :CUSTOM_ID: task_to_clock_in
+       :END:
+       use one of the following (listed by most frequently used first) :
+       1. Use clock history C-u C-c C-x C-i: Go back to something I was clocking that is not finished
+       2. Pick something off today's block agenda: *SCHEDULED* or
+	  *DEADLINE* (items that need to be done soon)
+       3. Pick something off the *NEXT* tasks agenda view Work on some unfinished task to move to completion
+       4. Pick something off the other task list
+       5. Use an agenda view with filtering to pick something to work on
+       Note : punching in on selected task will restrict the agenda view
+       to that project so that can focus on just that thing for some period of time. 
+
+****** Editing clock entries
+       (edition often needed to reflect reality)
+       ex scenario: when not properly clocked in on a task, then previous clocked task still
+       run and count for both tasks, which is wrong.
+       => solution : clock in properly the latest task, and edit start and
+       end times to correct clocking history.
+       Step to edit :
+       1. org-agenda-log-mode : (f12 a l, if f12 is mapped to org-agenda,
+	  C-u C-u l otherwise) visit clock line for an entry, shows all clock lines for today
+       2. then navigate desired clock line
+       3. hit TAB
+       4. put cursor on part needed to edit
+       5. use S-<UP> or S-<DOWN> to change the time
+       !!! CAREFUL not to create overlaps when fixing clock entries, use :
+       - v c :: in daily agenda, and it will identify gaps and overlaps
+
+
+* C++
+  + activate c++ mode (done by default for .cpp, .cxx files, but not .h files that are opened as c files) :: M-x c++-mode
 
 
 * Terminal

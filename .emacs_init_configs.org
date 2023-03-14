@@ -58,7 +58,7 @@
  '(org-agenda-skip-scheduled-if-done t)
  '(org-agenda-start-on-weekday nil)
  '(org-deadline-warning-days 14)
- '(org-default-notes-file "~/notes.org")
+ '(org-default-notes-file "~/notes_to_refile.org")
  '(org-fast-tag-selection-single-key 'expert)
  '(org-reverse-note-order t)
  '(package-selected-packages
@@ -82,176 +82,247 @@
 (package-refresh-contents)
 (package-install 'use-package))
 
-; bh is for Bernt Hansen : http://doc.norang.ca/org-mode.html
-; used as main source for GTD
-; bh Custom Key Bindings
-;; (global-set-key (kbd "<f12>") 'org-agenda
-(global-set-key (kbd "<f5>") 'bh/org-todo)
-(global-set-key (kbd "<S-f5>") 'bh/widen)
-(global-set-key (kbd "<f7>") 'bh/set-truncate-lines)
-(global-set-key (kbd "<f8>") 'org-cycle-agenda-files) ;; Cycle through agenda file list, visiting one file after the other.
-(global-set-key (kbd "<f9> <f9>") 'bh/show-org-agenda)
-;; (global-set-key (kbd "<f9> b") 'bbdb)
-;; (global-set-key (kbd "<f9> c") 'calendar)
-;; (global-set-key (kbd "<f9> f") 'boxquote-insert-file)
-;; (global-set-key (kbd "<f9> g") 'gnus)
-(global-set-key (kbd "<f9> h") 'bh/hide-other)
-(global-set-key (kbd "<f9> n") 'bh/toggle-next-task-display)
-
-(global-set-key (kbd "<f9> I") 'bh/punch-in)
-(global-set-key (kbd "<f9> O") 'bh/punch-out)
-
-(global-set-key (kbd "<f9> o") 'bh/make-org-scratch)
-
-;; (global-set-key (kbd "<f9> r") 'boxquote-region)
-(global-set-key (kbd "<f9> s") 'bh/switch-to-scratch)
-
-(global-set-key (kbd "<f9> t") 'bh/insert-inactive-timestamp)
-(global-set-key (kbd "<f9> T") 'bh/toggle-insert-inactive-timestamp)
-
-(global-set-key (kbd "<f9> v") 'visible-mode)
-;; (global-set-key (kbd "<f9> l") 'org-toggle-link-display)
-(global-set-key (kbd "<f9> SPC") 'bh/clock-in-last-task) ;; not needed much anymore thanks to punch-in/out (see http://doc.norang.ca/org-mode.html#ClockSetup) 
-;; (global-set-key (kbd "C-<f9>") 'previous-buffer)
-;; (global-set-key (kbd "M-<f9>") 'org-toggle-inline-images)
-;; (global-set-key (kbd "C-x n r") 'narrow-to-region)
-;; (global-set-key (kbd "C-<f10>") 'next-buffer)
-(global-set-key (kbd "<f11>") 'org-clock-goto)
-(global-set-key (kbd "C-<f11>") 'org-clock-in)
-;;(global-set-key (kbd "C-s-<f12>") 'bh/save-then-publish) ;; needs first configs for publishing multiple files/project
-;; (global-set-key (kbd "C-c c") 'org-capture)
-
-(defun bh/hide-other ()
-  (interactive)
-  (save-excursion
-    (org-back-to-heading 'invisible-ok)
-    (hide-other)
-    (org-cycle)
-    (org-cycle)
-    (org-cycle)))
-
-(defun bh/set-truncate-lines ()
-  "Toggle value of truncate-lines and refresh window display."
-  (interactive)
-  (setq truncate-lines (not truncate-lines))
-  ;; now refresh window display (an idiom from simple.el):
-  (save-excursion
-    (set-window-start (selected-window)
-                      (window-start (selected-window)))))
-
-(defun bh/make-org-scratch ()
-  (interactive)
-  (find-file "/tmp/publish/scratch.org")
-  (gnus-make-directory "/tmp/publish"))
-
-(defun bh/switch-to-scratch ()
-  (interactive)
-  (switch-to-buffer "*scratch*"))
-
-
-;; 'Ido' activation (interactive use of buffers and files)
-(require 'ido)
-(ido-mode t)
-
-;; Ido for refile configuration
-; Targets include this file and any file contributing to the agenda - up to 9 levels deep
-(setq org-refile-targets (quote ((nil :maxlevel . 9)
-                                 (org-agenda-files :maxlevel . 9))))
-
-; Use full outline paths for refile targets - we file directly with IDO
-(setq org-refile-use-outline-path t)
-
-; Targets complete directly with IDO
-(setq org-outline-path-complete-in-steps nil)
-
-; Allow refile to create parent tasks with confirmation
-(setq org-refile-allow-creating-parent-nodes (quote confirm))
-
-; Use IDO for both buffer and file completion and ido-everywhere to t
-(setq org-completion-use-ido t)
-(setq ido-enable-flex-matching t) ; use ido flex matching
-(setq ido-everywhere t)
-(setq ido-max-directory-size 100000)
-(ido-mode (quote both))
-; Use the current window when visiting files and buffers with ido
-(setq ido-default-file-method 'selected-window)
-(setq ido-default-buffer-method 'selected-window)
-; Use the current window for indirect buffer display
-(setq org-indirect-buffer-display 'current-window)
-
-;;;; Refile settings
-; Exclude DONE state tasks from refile targets
-(defun bh/verify-refile-target ()
-  "Exclude todo keywords with a done state from refile targets"
-  (not (member (nth 2 (org-heading-components)) org-done-keywords)))
-
-(setq org-refile-target-verify-function 'bh/verify-refile-target)
 
 * My organization of org files tree (details in [[file:organisation_org_files.org][organisation_org_files.org]])
 #+INCLUDE: "./organisation_org_files.org::Folders and files:"
 
 
-* Org mode specific configs
+* Org mode configs
 - notes ::
-  + different sources, but main and detailed templates are from :
+  + different sources, but mainly, detailed templates are from :
     - http://doc.norang.ca/org-mode.html
     - http://www.newartisans.com/2007/08/using-org-mode-as-a-day-planner/
   + careful, some configs are managed by emacs, so the order my change
-- basic org mode settings ::
-#+begin_src emacs-lisp
+  + make emacs faster by adding it to OS startup in background ::
+    - linux (debian) ::
+      + sources ::
+	- https://wikemacs.org/wiki/Emacs_server
+	- https://wiki.debian.org/systemd
 
-;; set which extensions will use orgmode
-(add-to-list 'auto-mode-alist '("\\.\\(org\\|org_archive\\|txt\\)$" . org-mode))
+- first basic but of course very useful org mode settings ::
+	#+begin_src emacs-lisp
+	
+	;; set which extensions will use orgmode: .org, .org_archive, and .txt
+	(add-to-list 'auto-mode-alist '("\\.\\(org\\|org_archive\\|txt\\)$" . org-mode))
+	
+	;; 'mode-specific-map' : for events that follow C-c prefix key
+	(define-key mode-specific-map [?a] 'org-agenda)
+	
+	;; add directories/files to load-path so the files/directories can be found and used
+	; here, folder for themes to use for example
+	; expand-file-name to convert relative path to absolute
+	(add-to-list 'load-path (expand-file-name "~/.emacs.d/themes/"))
+	
+	;; allow open recent file
+	(recentf-mode 1)
+	(setq recentf-max-menu-items 25)
+	(setq recentf-max-saved-items 25)
+	(global-set-key "\C-x\ \C-r" 'recentf-open-files)
+	
+	;; line wrap on buffer visualisation (won't affect the actual buffer, just the display of the buffer)
+	(global-visual-line-mode t)
+	
+	;; 'Ido' activation (interactive use of buffers and files)
+	(require 'ido)
+	(ido-mode t)
+	
+	;; org-agenda-files: to add folders containing files contributing to the agenda
+	; GTD-private: contains contributing agenda files that should not be shared publicly
+	(setq org-agenda-files (quote ("~/Documents/repos/org/memacs/GTD/"
+	                                "~/Documents/repos/org/memacs/GTD-private/")))
+	
+	;; Disable keys in org-mode
+	;;    C-c [ 
+	;;    C-c ]
+	;;    C-c ;
+	;;    C-c C-x C-q  cancelling the clock (we never want this)
+	(add-hook 'org-mode-hook
+	          '(lambda ()
+	             ;; Undefine C-c [ and C-c ] since this breaks my
+	             ;; org-agenda files when directories are include It
+	             ;; expands the files in the directories individually
+	             (org-defkey org-mode-map "\C-c[" 'undefined) ;; manually adding to 'org-agenda-files' is better than the automatic version that could mess up previous configurations of list of directories used for the files contributing to the agenda
+	             (org-defkey org-mode-map "\C-c]" 'undefined)
+	;;             (org-defkey org-mode-map "\C-c;" 'undefined) ;; is it really necessary ? how much do I accidentally hit the comment function ?
+	             (org-defkey org-mode-map "\C-c\C-x\C-q" 'undefined))
+	          'append)
+	
+	;; activate evaluation of PlantUML source code blocks by adding plantuml to org-babel-load-languages. 
+	(org-babel-do-load-languages
+	 'org-babel-load-languages
+	 '((plantuml . t))) ; this line activates plantuml
+	
+	#+end_src
 
-;; 'mode-specific-map' : for events that follow C-c prefix key
-(define-key mode-specific-map [?a] 'org-agenda)
+- better for all first level task to have a =property drawer= specifying the category ::
+	#+begin_src emacs-lisp
+	;; example for use of categories
+	;; * Health and Recreation
+	;;   :PROPERTIES:
+	;;   :CATEGORY: Health
+	;;   :END:
+	;;   ...
+	;; * House Maintenance
+	;;   :PROPERTIES:
+	;;   :CATEGORY: House
+	;;   :END:
+	#+end_src
 
-;; By default Org mode buffers need Font Lock to be turned on.
-;; For better experience, these three Org commands ought to be accessible anywhere in Emacs
-;; , not just in Org buffers => need to bind them to globally available keys, like ones reserved for users (see (elisp)Key Binding Conventions).
-(global-set-key (kbd "C-c l") #'org-store-link) ;; for handling links
-(global-set-key (kbd "C-c a") #'org-agenda) ;; org-agenda :)
-(global-set-key (kbd "C-c c") #'org-capture) ;; previously known as 'remember' (notes taking)
-
-#+end_src
+- keybindings ::
+	#+begin_src emacs-lisp
+	
+	; my kbd
+	;; By default Org mode buffers need Font Lock to be turned on. So, for a better experience, these three Org commands ought to be accessible anywhere in Emacs
+	;; , not just in Org buffers => need to bind them to globally available keys, like ones reserved for users (see (elisp)Key Binding Conventions).
+	(global-set-key (kbd "C-c l") #'org-store-link) ;; for handling links
+	(global-set-key (kbd "C-c a") #'org-agenda) ;; org-agenda :)
+	(global-set-key (kbd "C-c c") #'org-capture) ;; previously known as 'remember' (notes taking)
+	
+	;; undo tree mode (for more popular undo-redo using C-z C-S-z)
+	;;turn on everywhere
+	(global-undo-tree-mode 1)
+	;; make ctrl-z undo
+	(global-set-key (kbd "C-z") 'undo)
+	;; make ctrl-Z redo
+	(defalias 'redo 'undo-tree-redo)
+	(global-set-key (kbd "C-S-z") 'redo)
+	
+	;; define special key to capture particular template without going through interactive template selection
+	(define-key global-map (kbd "C-c t")
+	  (lambda () (interactive) (org-capture nil "t")))
+	
+	;; auto fill in text modes (NOT word completion, but auto-fill: lines are broken automatically at spaces/RET when line too long.)
+	;; to turn on auto-fill mode for every buffer in a certain mode, you must use the hook for that mode, here for example: text-mode to turn on auto fill mode on all text buffers
+	; (add-hook 'text-mode-hook 'turn-on-auto-fill)
+	;; to turn on auto-fill mode on all major modes
+	; (setq-default auto-fill-function 'do-auto-fill)
+	;;; to activate auto fill just in current buffer
+	(global-set-key (kbd "C-c q") 'auto-fill-mode)
+	
+	;; allow C-c d keybinding for line duplication (its defining function included too)
+	(defun duplicate-line()
+	  (interactive)
+	  (move-beginning-of-line 1)
+	  (kill-line)
+	  (yank)
+	  (open-line 1)
+	  (next-line 1)
+	  (yank)
+	)
+	(global-set-key (kbd "C-c d") 'duplicate-line)
+	
+	
+	
+	;; bh Custom Key Bindings
+	;; ======================
+	;; bh is from source Bernt Hansen : http://doc.norang.ca/org-mode.html
+	;; main reason for special key bindings (like F11, and F12) is to have keys work in any mode. If for ex the Gnus summary buffer then C-u C-c C-x C-i doesn't work, but the C-F11 key combination does and this saves time since don't have to visit an org-mode buffer first just to clock in a recent task. 
+	
+	;; well, phone call
+	(global-set-key (kbd "<f9> p") 'bh/phone-call)
+	
+	;; (global-set-key (kbd "<f12>") 'org-agenda
+	(global-set-key (kbd "<f5>") 'bh/org-todo)
+	(global-set-key (kbd "<S-f5>") 'bh/widen)
+	(global-set-key (kbd "<f7>") 'bh/set-truncate-lines)
+	(global-set-key (kbd "<f8>") 'org-cycle-agenda-files) ;; Cycle through agenda file list, visiting one file after the other.
+	(global-set-key (kbd "<f9> <f9>") 'bh/show-org-agenda)
+	;; (global-set-key (kbd "<f9> b") 'bbdb)
+	;; (global-set-key (kbd "<f9> c") 'calendar)
+	;; (global-set-key (kbd "<f9> f") 'boxquote-insert-file)
+	;; (global-set-key (kbd "<f9> g") 'gnus)
+	(global-set-key (kbd "<f9> h") 'bh/hide-other)
+	(global-set-key (kbd "<f9> n") 'bh/toggle-next-task-display)
+	
+	(global-set-key (kbd "<f9> I") 'bh/punch-in)
+	(global-set-key (kbd "<f9> O") 'bh/punch-out)
+	
+	(global-set-key (kbd "<f9> o") 'bh/make-org-scratch)
+	
+	;; (global-set-key (kbd "<f9> r") 'boxquote-region)
+	(global-set-key (kbd "<f9> s") 'bh/switch-to-scratch)
+	
+	(global-set-key (kbd "<f9> t") 'bh/insert-inactive-timestamp)
+	(global-set-key (kbd "<f9> T") 'bh/toggle-insert-inactive-timestamp)
+	
+	(global-set-key (kbd "<f9> v") 'visible-mode)
+	;; (global-set-key (kbd "<f9> l") 'org-toggle-link-display)
+	(global-set-key (kbd "<f9> SPC") 'bh/clock-in-last-task) ;; not needed much anymore thanks to punch-in/out (see http://doc.norang.ca/org-mode.html#ClockSetup) 
+	;; (global-set-key (kbd "C-<f9>") 'previous-buffer)
+	;; (global-set-key (kbd "M-<f9>") 'org-toggle-inline-images)
+	;; (global-set-key (kbd "C-x n r") 'narrow-to-region)
+	;; (global-set-key (kbd "C-<f10>") 'next-buffer)
+	(global-set-key (kbd "<f11>") 'org-clock-goto)
+	(global-set-key (kbd "C-<f11>") 'org-clock-in)
+	;;(global-set-key (kbd "C-s-<f12>") 'bh/save-then-publish) ;; needs first configs for publishing multiple files/project
+	;; (global-set-key (kbd "C-c c") 'org-capture)
+	
+	(defun bh/hide-other ()
+	  (interactive)
+	  (save-excursion
+	    (org-back-to-heading 'invisible-ok)
+	    (hide-other)
+	    (org-cycle)
+	    (org-cycle)
+	    (org-cycle)))
+	
+	(defun bh/set-truncate-lines ()
+	  "Toggle value of truncate-lines and refresh window display."
+	  (interactive)
+	  (setq truncate-lines (not truncate-lines))
+	  ;; now refresh window display (an idiom from simple.el):
+	  (save-excursion
+	    (set-window-start (selected-window)
+	                      (window-start (selected-window)))))
+	
+	(defun bh/make-org-scratch ()
+	  (interactive)
+	  (find-file "/tmp/publish/scratch.org")
+	  (gnus-make-directory "/tmp/publish"))
+	
+	(defun bh/switch-to-scratch ()
+	  (interactive)
+	  (switch-to-buffer "*scratch*"))
+	
+	#+end_src
 
 ** Org Mode TODO state triggers
 
 - basic settings for task actions ::
-#+begin_src emacs-lisp
-
-;; action tasks status
-;; vertical bar (|) used to separate TODO keywords (states that need action) from DONE states (needs no further action)
-;; If not provided, the last state is used as DONE state.
-(setq org-todo-keywords
-      (quote ((sequence "TODO(t)" "NEXT(n)" "|" "DONE(d)")
-              (sequence "WAITING(w@/!)" "HOLD(h@/!)" "|" "CANCELLED(c@/!)" "PHONE" "MEETING"))))
-
-;; customize design of trigger states
-(setq org-todo-keyword-faces
-      (quote (("TODO" :foreground "red" :weight bold)
-	      ("NEXT" :foreground "blue" :weight bold)
-              ("DONE" :foreground "forest green" :weight bold)
-              ("WAITING" :foreground "orange" :weight bold)
-              ("HOLD" :foreground "magenta" :weight bold)
-              ("CANCELLED" :foreground "forest green" :weight bold)
-              ("MEETING" :foreground "forest green" :weight bold)
-              ("PHONE" :foreground "forest green" :weight bold))))
-#+end_src
+	#+begin_src emacs-lisp
+	
+	;; action tasks status
+	;; vertical bar (|) used to separate TODO keywords (states that need action) from DONE states (needs no further action)
+	;; If not provided, the last state is used as DONE state.
+	(setq org-todo-keywords
+	      (quote ((sequence "TODO(t)" "NEXT(n)" "|" "DONE(d)")
+	              (sequence "WAITING(w@/!)" "HOLD(h@/!)" "|" "CANCELLED(c@/!)" "PHONE" "MEETING"))))
+	
+	;; customize design of trigger states
+	(setq org-todo-keyword-faces
+	      (quote (("TODO" :foreground "red" :weight bold)
+		      ("NEXT" :foreground "blue" :weight bold)
+	              ("DONE" :foreground "forest green" :weight bold)
+	              ("WAITING" :foreground "orange" :weight bold)
+	              ("HOLD" :foreground "magenta" :weight bold)
+	              ("CANCELLED" :foreground "forest green" :weight bold)
+	              ("MEETING" :foreground "forest green" :weight bold)
+	              ("PHONE" :foreground "forest green" :weight bold))))
+	#+end_src
 
 - fast Todo Selection ::
   + allows changing from any todo task state to any other state directly by selecting the appropriate key from the fast todo selection key menu.
-#+begin_src emacs-lisp
-
-;; allow for faster task state change, using shortcut defined in 'org-todo-keywords'
-;; can then change state by simply typing C-c C-t, ex: C-c C-t n to change to 'next' state
-(setq org-use-fast-todo-selection t)
-
-;; change todo states using S-left and S-right, and skipping all normal processings when entering or leaving a todo state: cycle through todo states but skips setting timestamps and entering notes.
-;; very convenient when all you want to do is fix up the status of an entry.
-(setq org-treat-S-cursor-todo-selection-as-state-change nil)
-
-#+end_src
+	#+begin_src emacs-lisp
+	
+	;; allow for faster task state change, using shortcut defined in 'org-todo-keywords'
+	;; can then change state by simply typing C-c C-t, ex: C-c C-t n to change to 'next' state, assuming 'next' exists in 'org-todo-keywords'
+	(setq org-use-fast-todo-selection t)
+	
+	;; change todo states using S-left and S-right, and skipping all normal processings when entering or leaving a todo state: cycle through todo states but skips setting timestamps and entering notes.
+	;; very convenient when all you want to do is fix up the status of an entry.
+	(setq org-treat-S-cursor-todo-selection-as-state-change nil)
+	
+	#+end_src
 
 - TODO state triggers :: to automatically assign tags to tasks based on state changes.
   + tags and states ::
@@ -266,20 +337,205 @@
     - Moving a task to =TODO= removes =WAITING=, =CANCELLED=, and =HOLD= tags
     - Moving a task to =NEXT= removes =WAITING=, =CANCELLED=, and =HOLD= tags
     - Moving a task to =DONE= removes =WAITING=, =CANCELLED=, and =HOLD= tags
-#+begin_src emacs-lisp
+  + todo state flow ::
+	#+begin_src plantuml :file normal_task_states.png :cache yes
+	title Task States
+	[*] -> TODO
+	TODO -> NEXT
+	TODO -> DONE
+	NEXT -> DONE
+	DONE -> [*]
+	TODO --> WAITING
+	WAITING --> TODO
+	NEXT --> WAITING
+	WAITING --> NEXT
+	HOLD --> CANCELLED
+	WAITING --> CANCELLED
+	CANCELLED --> [*]
+	TODO --> HOLD
+	HOLD --> TODO
+	TODO --> CANCELLED
+	TODO: t
+	NEXT: n
+	DONE: d
+	WAITING:w
+	note right of WAITING: Note records\nwhat it is waiting for
+	HOLD:h
+	note right of CANCELLED: Note records\nwhy it was cancelled
+	CANCELLED:c
+	WAITING --> DONE
+	#+end_src
 
-;; "TODO state triggers" (automatically assign tags to tasks on state changes.)
-;; ex: Moving task to done state removes WAITING and HOLD tags
-(setq org-todo-state-tags-triggers
-      (quote (("CANCELLED" ("CANCELLED" . t))
-              ("WAITING" ("WAITING" . t))
-              ("HOLD" ("WAITING") ("HOLD" . t))
-              (done ("WAITING") ("HOLD"))
-              ("TODO" ("WAITING") ("CANCELLED") ("HOLD"))
-              ("NEXT" ("WAITING") ("CANCELLED") ("HOLD"))
-              ("DONE" ("WAITING") ("CANCELLED") ("HOLD")))))
+	#+begin_src emacs-lisp
+	
+	;; "TODO state triggers" (automatically assign tags to tasks on state changes.)
+	;; ex: Moving task to done state removes WAITING and HOLD tags
+	(setq org-todo-state-tags-triggers
+	      (quote (("CANCELLED" ("CANCELLED" . t))
+	              ("WAITING" ("WAITING" . t))
+	              ("HOLD" ("WAITING") ("HOLD" . t))
+	              (done ("WAITING") ("HOLD"))
+	              ("TODO" ("WAITING") ("CANCELLED") ("HOLD"))
+	              ("NEXT" ("WAITING") ("CANCELLED") ("HOLD"))
+	              ("DONE" ("WAITING") ("CANCELLED") ("HOLD")))))
+	
+	#+end_src
 
-#+end_src
+- GTDs and projects ::
+  + bh definition of a project :: any task with a subtask with a todo state keyword
+  + bh definition of phone calls :: "phone calls created in a done state by a capture task. The time of the call is recorded for as long as the capture task is active. If need to look up other details and want to close the capture task early, can just =C-c C-c= to close the capture task (stopping the clock) and then =f9 SPC= to resume the clock in the phone call while doing other things"
+	#+begin_src plantuml :file phone_states.png :cache yes
+	title Phone Call Task State
+	[*] -> PHONE
+	PHONE -> [*]
+	#+end_src
+  + meetings ::
+    - bh definition of meetings :: "created in a done state by a capture task. Use MEETING capture template when someone interrupts (question/discussion)
+    - time of meeting recorded for as long as the capture task is active. ::
+    - can escape capture time early :: C-c C-c will close capture
+    - resume capture time record (bh configs) :: =f9 SPC= 
+    - example ::
+	#+begin_src plantuml :file meeting_states.png :cache yes
+	title Meeting Task State
+	[*] -> MEETING
+	MEETING -> [*]
+	#+end_src
+
+- capture and capture templates ::
+  + start org-capture :: C-c c
+  + use a minimal number of capture templates rather than going through all available templates ::
+  + can clock task in capture mode ::
+  + can remove empty lock drawers (marked with logbook) when clocking lines is 0 :: 
+    - hence, use mechanism to remove empty logbooks when occuring ::
+	#+begin_src emacs-lisp
+	
+	;; quick clocking in/out of capture mode tasks often takes less than a minute to capture new task details => can leave empty clock drawers in tasks which aren't really useful. If remove clocking lines with 0:00 length, one might end up with empty LOGBOOK (clock drawer). Hence, need to remove those empty LOGBOOK drawers when they occur on clock out
+	;; remove empty LOGBOOK drawers on clock out
+	(defun bh/remove-empty-drawer-on-clock-out ()
+	  (interactive)
+	  (save-excursion
+	    (beginning-of-line 0)
+	    (org-remove-empty-drawer-at "LOGBOOK" (point))))
+	
+	(add-hook 'org-clock-out-hook 'bh/remove-empty-drawer-on-clock-out 'append)
+	#+end_src
+  + capture templates definitions :: meetings, phone calls, etc.
+  + better to have just one file with different subtask, than may files :: 
+      #+begin_src emacs-lisp
+	
+      ;; 'capture' for notes (previously known as 'remember')
+      ;; not quite helpful to have lot of capture templates, use minimal to capture quicknote and resume current task, then after refile them properly
+      ;; the other benefit of minimal template is when new org file created, not always necessary to configure a new template for it
+      (setq org-directory (getenv "HOME" ))
+      (setq org-default-notes-file (concat org-directory "/Documents/repos/org/perso_stuff/GTD/notes_to_refile.org"))	
+      (setq org-capture-templates
+	    ;; clock-in means the task is clocked, and when task is filed (using C-c C-c), then the clock resumes on the original task
+	    '(("m" "Meeting" entry (file+headline "~/Documents/repos/org/memacs/GTD/notes_to_refile.org" "Calendar")
+	       "* Meeting %^{Description} %^g\n %? :MEETING:\n Added: %U\n" :clock-in t :clock-resume t)
+	      ;; for example, a mail that needs a response
+	      ("r" "Needs response" entry (file+headline "~/Documents/repos/org/memacs/GTD/notes_to_refile.org" "Calendar")
+	       "* NEXT Respond to %:from on %:subject\nSCHEDULED: %t\n%U\n%a\n" :clock-in t :clock-resume t :immediate-finish t)
+	      ("p" "Phone call" entry (file+headline "~/Documents/repos/org/memacs/GTD/notes_to_refile.org" "Calendar")
+	       "* Phone %? :PHONE:\n%U\n" :clock-in t :clock-resume t)
+	      ("t" "Tasks diary" entry (file+headline "~/Documents/repos/org/memacs/GTD/notes_to_refile.org" "Tasks")
+	       "* TODO %?\n%U\n%a\n" :clock-in t :clock-resume t)
+	      ("u" "Us.es Tasks"  entry (file+headline "~/Documents/repos/org/memacs/GTD/notes_to_refile.org" "Tasks")
+	       "* TODO %? :US.ES:\n%U\n%a\n" :clock-in t :clock-resume t)
+	      ("c" "Cpp Tasks"  entry (file+headline "~/Documents/repos/org/memacs/GTD/notes_to_refile.org" "Tasks")
+	       "* TODO %? :CPP:\n%U\n%a\n" :clock-in t :clock-resume t)
+	      ("n" "Note"  entry (file+headline "~/Documents/repos/org/memacs/GTD/notes_to_refile.org" "Notes")
+	       "* %? :NOTE:\n%U\n%a\n" :clock-in t :clock-resume t)
+	      ("x" "Most used commands" entry (file+headline "~/Documents/repos/org/memacs/GTD/notes_to_refile.org" "Most used commands")
+	       "- %?\n%U\n%a\n" :clock-in t :clock-resume t)
+	      ("h" "Habit" entry (file+headline "~/Documents/repos/org/memacs/GTD/notes_to_refile.org" "Habit")
+	       "* NEXT %?\n%U\n%a\nSCHEDULED: %(format-time-string \"%<<%Y-%m-%d %a .+1d/3d>>\")\n:PROPERTIES:\n:STYLE: habit\n:REPEAT_TO_STATE: NEXT\n:END:\n")
+	      ("e" "e-mail related task" entry (file+headline "~/Documents/repos/org/memacs/GTD/notes_to_refile.org" "Source related tasks")
+	       "- %? , as activity response to source:\t%i\n%U\n%a\n" :clock-in t :clock-resume t)
+	      ("j" "Journal" entry (file+datetree "~/Documents/repos/org/memacs/GTD/journal.org")
+	       "* %?\n%U\n" :clock-in t :clock-resume t)))
+	
+      #+end_src
+  + add 'refile' tag to tag everything in file with the refile tag (that one line at top) :: #+FILETAGS: REFILE
+  + process quick capture in the middle of something else ::
+    1. =C-c c= :: start capture
+    2. select =t= :: since a task to add in capture
+    3. enter all needed details for TODO item
+    4. =C-c C-c= :: file it away in refile file (defined with org-default-notes-file) and resume previous task
+       + with bh configs, time spent while logging capture is clocked
+
+- refiling things ::
+  - refiling tasks ::
+    + need target for refiling files :: choice is letting et any file in org-agenda-files contribute to the list of valid refile targets
+    + IDO (“Interactively DO things”) is nice, it makes for example locating targets easy ::
+      - sources ::
+	+ https://www.masteringemacs.org/article/introduction-to-ido-mode
+      - frequency :: at most 1/week regularly; but better to do as soon as possible
+      - process for refiling ::
+	+ =C-c C-w= :: start refile process
+	  - can start typing to get matching targets and =C-SPC= to restrict matches to current list
+	  - =C-j= :: to select current completion
+	+ ex :: to refile a task to us.es_notes.org under header 'to investigate' for example ::
+	  1. put cursor on task
+	  2. =C-c C-w= RET
+	  3. type: =us.e C-SPC to inv RET=
+	  4. done
+      - refile configs :: 
+	  #+begin_src emacs-lisp
+	  ; Targets include this file and any file contributing to the agenda - up to 9 levels deep
+	  (setq org-refile-targets (quote ((nil :maxlevel . 9)
+	                                   (org-agenda-files :maxlevel . 9))))
+
+	  ; Use full outline paths for refile targets - we file directly with IDO
+	  (setq org-refile-use-outline-path t)
+	
+	  ; Targets complete directly with IDO
+	  (setq org-outline-path-complete-in-steps nil)
+	
+	  ; Allow refile to create parent tasks with confirmation
+	  (setq org-refile-allow-creating-parent-nodes (quote confirm))
+	
+	  ; Use IDO for both buffer and file completion and ido-everywhere to t
+	  (setq org-completion-use-ido t)
+	  (setq ido-enable-flex-matching t) ; use ido flex matching
+	  (setq ido-everywhere t)
+	  (setq ido-max-directory-size 100000)
+	  (ido-mode (quote both))
+	  ; Use the current window when visiting files and buffers with ido
+	  (setq ido-default-file-method 'selected-window)
+	  (setq ido-default-buffer-method 'selected-window)
+	  ; Use the current window for indirect buffer display
+	  (setq org-indirect-buffer-display 'current-window)
+	
+	  ;;;; Refile settings
+	  ; Exclude DONE state tasks from refile targets
+	  (defun bh/verify-refile-target ()
+	    "Exclude todo keywords with a done state from refile targets"
+	    (not (member (nth 2 (org-heading-components)) org-done-keywords)))
+	
+	  (setq org-refile-target-verify-function 'bh/verify-refile-target)
+	
+	  #+end_src
+    + find tasks to refile ::
+      - run agenda view :: =F12 SPC= (bh config)
+      - and scroll to tasks to refile section ::
+	+ can do a bulk refile that go to same refile target ::
+	  - mark all tasks to refile in same target :: =m=
+	  - refile all marked bulk :: =B r=
+      - can refile tasks as subtasks of current clocking task from [to_refile] file :: =C-2 C-c C-w=
+
+  - refiling notes ::
+    + when have a * Note headline to org files ::
+      - add NOTE tag to make it easier to find notes across multiple files using agenda search functions for example ::
+	+ tags should be created by the capture template for notes
+	+ when refiling notes though, try to find most appropriate section, rather than put it all under the catchall * Notes of the refile target
+
+  - refiling phone calls and meetings ::
+    + ex of use :: billed calls, needs to be refiled in appropriate target (in project, accounting, etc.) when clocked properly
+    + handled through capture modes ::
+      - can time calls and meetings using capture mode template settings to clock in and out the capture task while phone call/meeting is in progress
+    + again, need to be refiled in appropriate target :: reports are important
+
+- Custom agenda views :: 
 
 - setting excluding tags ::
 #+begin_src emacs-lisp
@@ -318,53 +574,8 @@
 ;;     (define-key org-agenda-mode-map "\C-p" 'previous-line)
 ;;     (define-key org-agenda-keymap "\C-p" 'previous-line)))
 
-;; 'capture' for notes (previously known as 'remember')
-;; Note: not quite helpful to have lot of capture templates, use minimal to capture quicknote and resume current task, then after refile them properly
-;; the other benefit of minimal template is when new org file created, not always necessary to configure a new template for it
-(setq org-directory (getenv "HOME" ))
-(setq org-default-notes-file (concat org-directory "/Documents/repos/org/perso_stuff/GTD/notes.org"))
-
-(setq org-capture-templates
-      ;; clock-in means the task is clocked, and when task is filed (using C-c C-c), then the clock resumes on the original task
-      '(("m" "Meeting" entry (file+headline "~/Documents/repos/org/memacs/GTD/notes.org" "Calendar")
-	 "* Meeting %^{Description} %^g\n %? :MEETING:\n Added: %U\n" :clock-in t :clock-resume t)
-	;; for example, a mail that needs a response
-	("r" "Needs response" entry (file+headline "~/Documents/repos/org/memacs/GTD/notes.org" "Calendar")
-	 "* NEXT Respond to %:from on %:subject\nSCHEDULED: %t\n%U\n%a\n" :clock-in t :clock-resume t :immediate-finish t)
-	("p" "Phone call" entry (file+headline "~/Documents/repos/org/memacs/GTD/notes.org" "Calendar")
-	 "* Phone %? :PHONE:\n%U\n" :clock-in t :clock-resume t)
-	("t" "Tasks diary" entry (file+headline "~/Documents/repos/org/memacs/GTD/notes.org" "Tasks")
-	 "* TODO %?\n%U\n%a\n" :clock-in t :clock-resume t)
-	("u" "Us.es Tasks"  entry (file+headline "~/Documents/repos/org/memacs/GTD/notes.org" "Tasks")
-	 "* TODO %? :US.ES:\n%U\n%a\n" :clock-in t :clock-resume t)
-	("c" "Cpp Tasks"  entry (file+headline "~/Documents/repos/org/memacs/GTD/notes.org" "Tasks")
-	 "* TODO %? :CPP:\n%U\n%a\n" :clock-in t :clock-resume t)
-	("n" "Note"  entry (file+headline "~/Documents/repos/org/memacs/GTD/notes.org" "Notes")
-	 "* %? :NOTE:\n%U\n%a\n" :clock-in t :clock-resume t)
-	("x" "Most used commands" entry (file+headline "~/Documents/repos/org/memacs/GTD/notes.org" "Most used commands")
-	 "- %?\n%U\n%a\n" :clock-in t :clock-resume t)
-	("h" "Habit" entry (file+headline "~/Documents/repos/org/memacs/GTD/notes.org" "Habit")
-	 "* NEXT %?\n%U\n%a\nSCHEDULED: %(format-time-string \"%<<%Y-%m-%d %a .+1d/3d>>\")\n:PROPERTIES:\n:STYLE: habit\n:REPEAT_TO_STATE: NEXT\n:END:\n")
-	("e" "e-mail related task" entry (file+headline "~/Documents/repos/org/memacs/GTD/notes.org" "Source related tasks")
-	 "- %? , as activity response to source:\t%i\n%U\n%a\n" :clock-in t :clock-resume t)
-	("j" "Journal" entry (file+datetree "~/Documents/repos/org/memacs/GTD/journal.org")
-	 "* %?\n%U\n" :clock-in t :clock-resume t)))
-
 #+end_src
 
-
-;; quick clocking in/out of capture mode tasks often takes less than a minute to capture new task details => can leave empty clock drawers in tasks which aren't really useful. If remove clocking lines with 0:00 length, one might end up with empty LOGBOOK (clock drawer). Hence, need to remove those empty LOGBOOK drawers when they occur on clock out
-(defun bh/remove-empty-drawer-on-clock-out ()
-  (interactive)
-  (save-excursion
-    (beginning-of-line 0)
-    (org-remove-empty-drawer-at "LOGBOOK" (point))))
-
-(add-hook 'org-clock-out-hook 'bh/remove-empty-drawer-on-clock-out 'append)
-
-;; define special key to capture to particular template without going through interactive template selection
-(define-key global-map (kbd "C-c t")
-  (lambda () (interactive) (org-capture nil "t")))
 
 (setq org-log-done 'time) ;; keep track of when a todo item was done => when toggled to done, a line ‘CLOSED: [timestamp]’ is inserted just after the headline.
 (setq org-log-done 'note) ;; to record a note along with the timestamp
@@ -943,10 +1154,8 @@ Skip project and sub-project tasks, habits, and loose non-project tasks."
 (setq org-startup-with-inline-images nil)
 
 ;; phone calls configs
-(require 'bbdb)
-(require 'bbdb-com)
-
-(global-set-key (kbd "<f9> p") 'bh/phone-call)
+;; (require 'bbdb)
+;; (require 'bbdb-com)
 
 ;;
 ;; Phone capture template handling with BBDB lookup
@@ -1001,15 +1210,6 @@ Skip project and sub-project tasks, habits, and loose non-project tasks."
 ; If we leave Emacs running overnight - reset the appointments one minute after midnight
 (run-at-time "24:01" nil 'bh/org-agenda-to-appt)
 ;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-;; undo tree mode (for undo-redo)
-;;turn on everywhere
-(global-undo-tree-mode 1)
-;; make ctrl-z undo
-(global-set-key (kbd "C-z") 'undo)
-;; make ctrl-Z redo
-(defalias 'redo 'undo-tree-redo)
-(global-set-key (kbd "C-S-z") 'redo)
 
 ;;;; load darcula theme not dracula
 ;;(use-package darcula-theme
@@ -1125,8 +1325,8 @@ Skip project and sub-project tasks, habits, and loose non-project tasks."
 ;; always display line numbers
 (global-display-line-numbers-mode)
 
-;; show line for fill column
-(display-fill-column-indicator-mode)
+;; show line fill column globally (note that it doesn't break automatically, just display the fill-column)
+(global-display-fill-column-indicator-mode)
 
 ;; use projectile for project management
 (use-package projectile
@@ -1154,28 +1354,6 @@ Skip project and sub-project tasks, habits, and loose non-project tasks."
 (add-to-list 'eglot-server-programs '((c++-mode c-mode) "clangd")) ;; c++ language server clangd 
 (add-hook 'c-mode-hook 'eglot-ensure)
 (add-hook 'c++-mode-hook 'eglot-ensure)
-
-;;; auto fill in text modes (NOT word completion, auto-fill: lines are broken automatically at spaces when the line becomes too wide.)
-;(add-hook 'text-mode-hook 'turn-on-auto-fill)
-;;; to activate auto fill in current buffer
-;(global-set-key (kbd "C-c q") 'auto-fill-mode)
-;; allow C-c d keybinding for line duplication (its function added too)
-(defun duplicate-line()
-  (interactive)
-  (move-beginning-of-line 1)
-  (kill-line)
-  (yank)
-  (open-line 1)
-  (next-line 1)
-  (yank)
-)
-(global-set-key (kbd "C-c d") 'duplicate-line)
-
-;; allow open recent file
-(recentf-mode 1)
-(setq recentf-max-menu-items 25)
-(setq recentf-max-saved-items 25)
-(global-set-key "\C-x\ \C-r" 'recentf-open-files)
 
 ;; publish to html settings
 (require 'ox-publish)
@@ -1212,3 +1390,17 @@ Skip project and sub-project tasks, habits, and loose non-project tasks."
 
 ;; open file on start
 (find-file "/home/myfirstdebianpc/Documents/repos/org/memacs/GTD/tasks_list.org")
+
+
+* C++
+
+- notes ::
+  + different sources, but mainly ::
+    - c++ mode from official documentation :: https://www.emacswiki.org/emacs/CPlusPlusMode
+- basic configs ::
+#+begin_src emacs-lisp
+
+;; activate M-x c++-mode for .h files that won't be opened as c++ files by default, but rather c files
+(add-to-list 'auto-mode-alist '("\\.h\\'" . c++-mode))
+
+#+end_src
