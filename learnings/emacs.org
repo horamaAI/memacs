@@ -35,8 +35,9 @@
 
 * org-mode
   - references ::
-    + super : https://orgmode.org/manual/index.html
-    + others :
+    + complete and detailed deep dive introduction to org mode from Bernt Hansen (marked bh in different org files) :: http://doc.norang.ca/org-mode.html
+    + official org-mode manual :: https://orgmode.org/manual/index.html
+    + others ::
       - https://orgmode.org/worg/org-tutorials/org4beginners.html
       - https://orgmode.org/orgguide.pdf
   - tutorials ::
@@ -44,7 +45,7 @@
     + https://orgmode.org/worg/
   - to make Emacs understand it's Org document, add to top of document :: PROJECTNAME -*- mode: org -*-
 
-** complete and detailed deep dive introduction to org mode: http://doc.norang.ca/org-mode.html
+** org-mode document structure
 
 
 ** agenda and TODO functionalities
@@ -69,7 +70,7 @@
      - C-c . :: call agenda entry (in TODO related headline)
      -  :: 
 
-** 'capture' :: take quick notes to be completed later. Previously known as 'remember' (notes taking)
+** 'capture' :: take quick notes to be completed later. Previously known as 'remember' (taking notes)
    x. org-capture is global: can be called anywhere in emacs, whether editing txt, or reading email
    x. main reference: https://orgmode.org/manual/Capture.html#Capture
    x. thorough tuto: http://howardism.org/Technical/Emacs/capturing-intro.html

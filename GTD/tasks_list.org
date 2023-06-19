@@ -2,7 +2,23 @@
 #+title: tasks list file
 
 
+* Organization
+:PROPERTIES:
+:ID: eb155a82-92b2-4f25-a3c6-0304591af2f9
+:END:
+  - this is the default punching in/out task
+
 * Current
+- [ ] finish rest project for user-manager :: file:///home/myfirstdebianpc/Desktop/project-res-user_manager.org
+- [ ] watch "productivity tool" video ASAP :: '/home/myfirstdebianpc/Downloads/Tech_Talks_-_Productivity_Tips_&_Tools.mp4'
+- [ ] start capgemini 'next' platform trainings ::
+  + https://degreed.com/ -> my profile -> pathways + plans
+- [ ] tags-todo: add extra condition only matching todo headlines :: use https://orgmode.org/manual/Matching-tags-and-properties.html, and complete emacs config file (.emacs_init_configs.org)
+- [ ] start learning docker and kubernetes, begin with ::
+  + [ ] docker :: https://www.youtube.com/watch?v=eGz9DS-aIeY
+  + [ ] kubernetes :: https://www.youtube.com/watch?v=7bA0gTroJjw
+  + [ ] ansible :: https://www.youtube.com/watch?v=5hycyr-8EKs
+  + [ ] jenkins :: https://www.youtube.com/watch?v=LFDrDnKPOTg
 - [ ] build own keybindings cheatsheet (see file kbd_cheatsheet.org) ::
   + https://gist.github.com/drj42/1755992
   + https://emacsclub.github.io/html/org_tutorial.html
@@ -56,6 +72,7 @@
 	  - [ ] 5 Step Plan For Deeper C++ Knowledge :: https://www.youtube.com/watch?v=287_oG4CNMc
      3) [ ] modern c++ ::
 	+ [ ] ref-qualifiers and inheritance :: https://www.youtube.com/watch?v=Fsi3JpYCsUM
+	+ [ ] cppcon2019 The Best Parts of C++, :: https://www.youtube.com/watch?v=iz5Qx18H6lg&t=23s
 	+ [ ] cppcon2021 new mental model of constexpr :: https://www.youtube.com/watch?v=MdrfPSUtMVM
 	+ [ ] cppcon2021 lambdas :: https://www.youtube.com/watch?v=IgNUBw3vcO4
 	+ [ ] cppcon2017 learning and teaching modern c++, bjarne :: https://www.youtube.com/watch?v=fX2W3nNjJIo
@@ -312,7 +329,7 @@ version 3.22 already installed
      -
 
 *** TODO links
-     - file:///home/myfirstdebianpc/Downloads/LocalSolver.pdf
+     - file:///home/myfirstdebianpc/Downloads/books-learning/us.es/LocalSolver.pdf
      - https://www.localsolver.com/docs/last/quickstart/index.html
      - https://www.localsolver.com/docs/last/exampletour/kmeans.html
      - https://www.localsolver.com/clientpasco.html
@@ -326,10 +343,8 @@ version 3.22 already installed
      - https://www.localsolver.com/doccenter.html
 
 ** Other learning tasks
-*** TODO julia
-    - https://julialang.univ-nantes.fr/julianantes/documents/
-    - https://www.juliabloggers.com/linear-programming-in-julia-with-glpk-and-jump/?utm_source=ReviveOldPost&utm_medium=social&utm_campaign=ReviveOldPost
 *** TODO Web assembly
+     - https://www.youtube.com/watch?v=3sU557ZKjUs
      - https://marcoselvatici.github.io/WASM_tutorial/
      - https://webassembly.org/getting-started/developers-guide/
      - https://developer.mozilla.org/en-US/docs/WebAssembly/C_to_wasm
@@ -351,6 +366,9 @@ version 3.22 already installed
      - protractor angular
      - https://gradle.org/maven-vs-gradle/
      - https://tomcat.apache.org/tomcat-10.0-doc/index.html
+
+*** TODO Music and mathematics
+     - see bookmark on myfirstdebianpc firefox :: youtube -> music_and_maths
 
 *** TODO sh and zsh
      - https://www.youtube.com/watch?v=V8EUdia_kOE
@@ -384,6 +402,10 @@ version 3.22 already installed
 *** TODO best practices
      - https://www.coursera.org/specializations/secure-coding-practices#courses
 
+*** TODO julia
+    - note :: julia seems to be kind of cancelled as not drawing much attraction in the community, so, maybe drod it... ?
+    - https://julialang.univ-nantes.fr/julianantes/documents/
+    - https://www.juliabloggers.com/linear-programming-in-julia-with-glpk-and-jump/?utm_source=ReviveOldPost&utm_medium=social&utm_campaign=ReviveOldPost
 *** TODO optional
      - https://training.linuxfoundation.org/training/introduction-to-kubernetes/
      - https://docs.docker.com/engine/install/debian/

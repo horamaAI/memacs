@@ -88,37 +88,46 @@
      - set width of columns (narrow size of column) :: in first row, insert number of chars to display, eg: <10>
        + display content of narrowed cell :: C-u TAB (or "C-u C-c `"; or edit conent in separate window: "C-c `")
 ** emacs buffers and windows management
- - list buffers :: C-x C-b
- - switch between buffers :: C-x b
- - open buffer in another window :: C-x 4 b
- - execute code block (place first cursor inside code block) :: C-c C-c
- - minimize window (back to toolbar) :: C-x C-z
- - move current visible window with respect to cursor :: C-l (multiple time (3*) until desired display)
+ - list buffers :: =C-x C-b=
+ - local refresh of current buffer :: =C-c C-c=
+ - switch between buffers :: =C-x b=
+ - open buffer in another window :: =C-x 4 b=
+ - execute code block (place first cursor inside code block) :: =C-c C-c=
+ - minimize window (back to toolbar) :: =C-x C-z=
+ - move current visible window with respect to cursor :: =C-l= (multiple time (3*) until desired display)
 
-** org mode
- - local refresh of current buffer :: C-c C-c
- - add headline :: C-RET
- - add item :: M-RET
- - move up/down item :: M-UP/DOWN
- - cycle through available bullets :: C-c -
+** org-mode
 
-*** org mode (exporting)
+*** org-mode document structures
+    - headlines and items ::
+      + add headline :: =C-RET=
+      + add item :: =M-RET=
+      + move item/headline up/down :: =M-UP/DOWN=
+      + cycle through available bullets :: =C-c -=
+    - drawers :: 
+      + insert a drawer below current headline :: =C-c C-x d= // calls 'org-insert-drawer'
+      + insert property drawer below current headline :: // calls 'org-insert-property-drawer'
+      + LOGBOOK ::
+	- add time-stamped note to ‘LOGBOOK’ drawer :: =C-c C-z=
+
+*** exporting org-mode files
   - insert templates options for exporting :: C-c C-e # [category] // where [category] can be html, latex, ascii, etc.
     + to change option :: C-c C-c
   - insert customized templates (setup files) ::
     + need of directory to store setup files :: e.g. ~/.emacs.d/org-templates/
     + call setup file :: 
-      #+begin_src elisp
+      #+begin_src org :exports src
       eg :: #+SETUPFILE: ~/.emacs.d/org-templates/level-N.org
       #+end_src
-  - export :: 'C-c C-e' + key of export type needed
-    + eg, export to html file :: C-c C-e h h // bound to org-html-export-to-html
-  - :: 
+  - export :: =C-c C-e' + key of export type needed=
+    + eg, export to html file :: =C-c C-e h h= // bound to org-html-export-to-html
 
-*** org agenda and todo lists
+
+*** org agenda and todo items
 **** org agenda
-  - call org agenda :: C-c a
-    + reschedule selected item :: C-c C-s // and then set relative to today: +1, +2w, etc.
+  - call org agenda :: =C-c a=
+    + bh keybinding :: =F12 a=
+  - reschedule selected item :: =C-c C-s= // and then set relative to today: +1, +2w, etc.
   - add/remove file to org agenda :: C-c [ (remove : C-c ])
     + careful :: to be sure and use whole content of folder, prefer manual edit than C-c [
 
@@ -168,11 +177,12 @@
 ****** Clocking interruption flow
        interruption occurs when clocking task:
        - Create a quick capture task journal entry ::
-	 + is it a one shot uninteresting task ? :: 1) create journal capture
-	   for it : C-c c j; 2) create heading for task; 3) do task; 4)
-	   file it : C-c C-c (restores clock back to previous clocking task)
-	 + is it interesting and needs be marked as completed ? :: create
-	   capture task in refile file
+	 + is it a one shot uninteresting task ? ::
+	   1. create journal capture for it :: ==C-c c j==
+	   2. create heading for task;
+	   3. do task;
+	   4. file it :: ==C-c C-c== (restores clock back to previous clocking task)
+	   5. clock in something else or continue with current clocking task
 
 ****** Find task to clock in
        :PROPERTIES:
@@ -354,6 +364,7 @@
        - today's overview
        - find tasks ::
 	 + to be refiled
+	   - 
 	 + stuck projects
 	 + next tasks
 	 + waiting on something
