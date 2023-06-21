@@ -323,8 +323,7 @@
     
     #+end_src
 
-- TODO state triggers :: to automatically assign tags to tasks based on state changes
-<<todo_state_triggers>>
+- TODO state triggers <<todo_state_triggers>> :: to automatically assign tags to tasks based on state changes
   + tags and states ::
     - on some pre-defined triggers, automatically assign tags to tasks based on state changes.
     - eg :: If a task moves to =CANCELLED= state then it gets a =CANCELLED= tag. Moving a =CANCELLED= task back to =TODO= removes the =CANCELLED= tag.
@@ -403,7 +402,19 @@
 ** Org-mode notes taking, Capture and refiling
 
 - capture and capture templates ::
-  + start org-capture :: C-c c
+  + quick process ::
+    1. create a note using note capture templates :: ==C-c c n==
+    2. type a heading for the note
+    3. save it :: ==C-c C-c==
+    4. remember to refile it later when have time
+    5. if there is no specific task to refile the note into, then it belongs to it goes to the catchall ==* Notes== task
+    6. tips ::
+       + have a catchall ==notes== task in every project file
+       + in bh configs, notes are created with a ==NOTE== tag already applied by the capture template, so it's easy to refile the note anywhere
+       + as long as the note is in a project file that contributes to the agenda (ie. org-agenda-files) then easy to find the note back with notes agenda view ==F12 N==
+       + can limit the agenda view of notes using standard agenda tag filtering
+       + project related notes are not generally useful off project, and can be archived with the project and removed from the agenda when the project is removed
+  + starting org-capture :: ==C-c c==
   + use a minimal number of capture templates rather than going through all available templates ::
   + can clock task in capture mode ::
   + can remove empty lock drawers (marked with logbook) when clocking lines is 0 :: 
@@ -1043,7 +1054,6 @@
       - Mark habits (as tasking and working process done) done today as DONE
       - Punch out at the end of the work day
 
-
 ** Choosing tasks to work on next and time management tips
 *** How to pick a *new task* to work on
   + after going through tasks with deadlines, and today's tasks -> move on to tasks in the ==Next Tasks== list in the block agenda view
@@ -1113,7 +1123,6 @@
     
     (setq org-agenda-auto-exclude-function 'bh/org-auto-exclude-function)
     #+end_src
-
 
 ** Time Clocking
 *** forewords ::
@@ -1511,7 +1520,6 @@
        - eg :: ==C-x C-w /tmp/agenda.html RET== exports to HTML, ==C-x C-w /tmp/agenda.txt RET== exports to plain text (possible to export in other formats)
        - can combine export with tag filters and ==C-u R== to limit the report to exactly the tags that people are interested in
 
-
 ** Tags
   + notes :: 
     - main use ::
@@ -1574,6 +1582,24 @@
     #+end_src
   + tags organisation per file ::
     #+INCLUDE: "./organisation_org_files.org::Tags by files and context"
+
+** Agenda and notes
+  + reminder, quick process to create notes ::
+    1. create a note using note capture templates :: ==C-c c n==
+    2. type a heading for the note
+    3. save it :: ==C-c C-c==
+    4. remember to refile it later when have time
+    5. if there is no specific task to refile the note into, then it belongs to it goes to the catchall ==* Notes== task
+    6. tips ::
+       + have a catchall ==notes== task in every project file
+       + in bh configs, notes are created with a ==NOTE== tag already applied by the capture template, so it's easy to refile the note anywhere
+       + as long as the note is in a project file that contributes to the agenda (ie. org-agenda-files) then easy to find the note back with notes agenda view ==F12 N==
+       + can limit the agenda view of notes using standard agenda tag filtering
+       + project related notes are not generally useful off project, and can be archived with the project and removed from the agenda when the project is removed
+  + kbd ::
+    - notes agenda view :: ==F12 N==
+
+** Handling phone calls
 
 * Programming language specific
 
