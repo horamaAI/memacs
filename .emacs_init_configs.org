@@ -323,7 +323,8 @@
     
     #+end_src
 
-- TODO state triggers :: to automatically assign tags to tasks based on state changes.
+- TODO state triggers :: to automatically assign tags to tasks based on state changes
+<<todo_state_triggers>>
   + tags and states ::
     - on some pre-defined triggers, automatically assign tags to tasks based on state changes.
     - eg :: If a task moves to =CANCELLED= state then it gets a =CANCELLED= tag. Moving a =CANCELLED= task back to =TODO= removes the =CANCELLED= tag.
@@ -553,7 +554,9 @@
   + keybinding for today agenda view :: =F12 a=
 
 *** Matching tags and properties (filtering and viewings tags/properties)
-<<match_tags_props>>
+:PROPERTIES:
+:CUSTOM_ID: match_tags_props
+:END:
 
  - filtering is not just enabled only in agenda mode
 
@@ -913,7 +916,7 @@
        - prompts for the name of a property, and then for a value
        - a sparse tree is created with all entries that define this property with the given value
        - if value is enclosed in curly braces, it is interpreted as a regular expression and matched against the property values
-     + syntax for the search string is described in :: [[match_tags_props][Matching tags and properties]]
+     + syntax for the search string is described in :: [[#match_tags_props][Matching tags and properties]]
 
    - Column view :: to view and edit properties in an outline tree
 
@@ -1510,7 +1513,67 @@
 
 
 ** Tags
+  + notes :: 
+    - main use ::
+      + *filtering* todo lists and agenda views
+      + providing *context* for tasks
+      + tagging notes, phone calls, meetings
+      + tagging tasks *to be refiled*
+      + tagging tasks in a ==WAITING== state *because a parent* task is ==WAITING==
+      + tagging cancelled tasks *because a parent* task is CANCELLED
+      + *preventing* export of some subtrees when publishing
+    - can make tags mutually exclusive :: defined in a group so that only one of the tags can be applied to a task at a time (disregarding tag inheritance)
+      + can be used for example to apply context to a task (eg: ==@office== for work, ==@us.es== for sevilla, that needs to be done when at home)
+    - can reuse a modified version of a tag to higlight that they are related ::
+      + eg ::
+	- two tags ==FARM== and ==@farm==
+	- ==FARM== being set for eg by a ==FILETAGS== entry and gives a way to filter anything farm related
+	- ==@farm== tag to mean that the task has to be done at the farm
+	- if need to call someone about something with a FARM tag, no need to be physically at the farm to make the call
+    - tasks are grouped together in org-files and a ==#+FILETAGS:== entry applies a tag to *all tasks in the file*
+    - ==:startgroup== - ==:endgroup== (which bh chosed to note as ==@XXX==) tags are mutually exclusive
+      + not to be confused with ==:startgrouptag== which creates hierarchies of tags (see section group tags in [[#match_tags_props][Matching tags and properties]])
+      + editing a mutually exclusive tag automagically removes the old one, cannot cohabitate
+    - ==#+FILETAGS== :: convenient way to apply one or more tags to all of the headings in a file, eg: ==#+FILETAGS: NORANG @office==
+    - tags ==WAITING== and ==CANCELLED== are automatically added or removed by todo state triggers described in [[todo_state_triggers][previous section]]
+  + kbd ::
+    - add or remove tag or apply the tag for filtering on the agenda :: ==C-c C-q==
+  + set up ::
+    #+begin_src emacs-lisp
+    ; Tags with fast selection keys, eg: type O to select tag ORG
+    (setq org-tag-alist (quote ((:startgroup)
+                                ("@errand" . ?e)
+                                ("@office" . ?o)
+                                ("@home" . ?H)
+                                ("@farm" . ?f)
+                                (:endgroup)
+				(:startgrouptag)
+				("US.ES" . ?u)
+				(:grouptags)
+				("LineProg")
+				("GeneAlgos")
+				(:endgrouptag)
+                                ("WAITING" . ?w)
+                                ("HOLD" . ?h)
+                                ("PERSONAL" . ?P)
+                                ("WORK" . ?W)
+                                ("FARM" . ?F)
+                                ("ORG" . ?O)
+				("CPP" . ?c)
+                                ("crypt" . ?E)
+                                ("NOTE" . ?n)
+                                ("CANCELLED" . ?C)
+                                ("FLAGGED" . ??))))
 
+    ; Allow setting single tags without the menu, so no longer have to press RET to exit fast tag selection, it exits after the first change
+    (setq org-fast-tag-selection-single-key (quote expert))
+    
+    ; For tag searches ignore tasks with scheduled and deadline dates
+    (setq org-agenda-tags-todo-honor-ignore-options t)
+
+    #+end_src
+  + tags organisation per file ::
+    #+INCLUDE: "./organisation_org_files.org::Tags by files and context"
 
 * Programming language specific
 
@@ -1530,14 +1593,6 @@
 
  - setting excluding tags ::
  #+begin_src emacs-lisp
-
- ;; Tags that are mutually excluding example (use of dummy tags :startgroup and :endgroup)
- ;; (setq org-tag-alist '((:startgroup . nil)
- ;;                       ("@work" . ?w) ("@home" . ?h)
- ;;                       ("@tennisclub" . ?t)
- ;;                       (:endgroup . nil)
- ;; 		         ("laptop" . ?l) ("pc" . ?p)))
- ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 
  ;; 'GTD' : TODO state triggers (TODOs, DONE, STARTED, etc. can tune as prefer)
@@ -1611,31 +1666,6 @@
  ;; end clocking setup
  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
- ; Tags with fast selection keys
- (setq org-tag-alist (quote ((:startgroup)
-                             ("@errand" . ?e)
-                             ("@office" . ?o)
-                             ("@home" . ?H)
-                             ("@farm" . ?f)
-                             (:endgroup)
-                             ("WAITING" . ?w)
-                             ("HOLD" . ?h)
-                             ("PERSONAL" . ?P)
-                             ("WORK" . ?W)
-                             ("FARM" . ?F)
-                             ("ORG" . ?O)
-                             ("US.ES" . ?u)
-			     ("CPP" . ?c)
-                             ("crypt" . ?E)
-                             ("NOTE" . ?n)
-                             ("CANCELLED" . ?C)
-                             ("FLAGGED" . ??))))
-
- ; Allow setting single tags without the menu
- (setq org-fast-tag-selection-single-key (quote expert))
-
- ; For tag searches ignore tasks with scheduled and deadline dates
- (setq org-agenda-tags-todo-honor-ignore-options t)
 
  ;; to make org-agenda fast and show only today's date by default
  ;; weekly view is called explicitly

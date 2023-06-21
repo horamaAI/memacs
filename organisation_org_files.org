@@ -8,7 +8,7 @@
 | (f) tasks_list.org           | for tasks and keeping tracks                                                          |
 | (f) journal.org              | personal journal notes                                                                |
 | (f) kbd_cheatsheet.org       | keybindings file grouped by tool                                                      |
-| (f) notes_to_refile.org      | buffer for captures and quick notes that needs to be reorganised                      |
+| (f) notes_to_refile.org      | buffer for captures and quick notes that needs to be reorganised (refiled)            |
 | (f) commands_to_remember.org | journal for commands to remember                                                      |
 | (f) other_projects.org       | to keep track of non urgent project "good to have"                                    |
 | (f) us.es_notes.org          | notes specific to project us.es                                                       |
@@ -58,11 +58,41 @@
   + imgs :: 
   + css :: 
 
+* Tags by files and context
+** Non-work related org-mode files
+   :PROPERTIES:
+   :CUSTOM_ID: TaggingNonWorkFiles
+   :END:
 
-TODO tasks organisation:
-- todos as 'projects' :: anything (headline, topic, etc.) that contains one
-  or more 'TODOs' *is* a project
-  => make a project (headline for example), and add a common task for
-  several tasks of the same kind (ex: watch videos). List with '[ ]'
-  minimal subtasks => task is completed when all the subtasks are
-  marked as completed
+| File         | Tags                  |
+|--------------+-----------------------|
+| todo.org     | PERSONAL              |
+| gsoc2009.org | GSOC PERSONAL         |
+| git.org      | GIT WORK              |
+| org.org      | ORG WORK              |
+| mark.org     | MARK PERSONAL         |
+| farm.org     | FARM PERSONAL         |
+
+** Work related org-mode files
+   :PROPERTIES:
+   :CUSTOM_ID: TaggingWorkFiles
+   :END:
+
+| File        | Tags            |
+|-------------+-----------------|
+| norang.org  | NORANG @office  |
+| ABC.org     | ABC @office     |
+| XYZ.org     | XYZ @office     |
+| ABC-DEF.org | ABC DEF @office |
+| ABC-KKK.org | ABC KKK @office |
+| YYY.org     | YYY @office     |
+
+** Refile tasks
+   :PROPERTIES:
+   :CUSTOM_ID: RefileTasks
+   :END:
+
+| File                | Tags   |
+|---------------------+--------|
+| notes_to_refile.org | REFILE |
+|---------------------+--------|
