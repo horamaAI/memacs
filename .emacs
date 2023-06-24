@@ -65,7 +65,7 @@
  '(org-fast-tag-selection-single-key 'expert)
  '(org-reverse-note-order t)
  '(package-selected-packages
-   '(spacemacs-theme plantuml-mode timu-spacegrey-theme use-package greymatters-theme hledger-mode undo-tree projectile iedit avy counsel lsp-mode darcula-theme dracula-theme company eglot)))
+   '(bbdb spacemacs-theme plantuml-mode timu-spacegrey-theme use-package greymatters-theme hledger-mode undo-tree projectile iedit avy counsel lsp-mode darcula-theme dracula-theme company eglot)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.

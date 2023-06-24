@@ -58,7 +58,7 @@
  '(org-agenda-skip-scheduled-if-done t)
  '(org-agenda-start-on-weekday nil)
  '(org-deadline-warning-days 14)
- '(org-default-notes-file "~/notes_to_refile.org")
+ '(org-default-notes-file "~/refile.org")
  '(org-fast-tag-selection-single-key 'expert)
  '(org-reverse-note-order t)
  '(package-selected-packages
@@ -217,9 +217,8 @@
   ;; bh is from source Bernt Hansen : http://doc.norang.ca/org-mode.html
   ;; main reason for special key bindings (like F11, and F12) is to have keys work in any mode. If for ex the Gnus summary buffer then C-u C-c C-x C-i doesn't work, but the C-F11 key combination does and this saves time since don't have to visit an org-mode buffer first just to clock in a recent task. 
   
-  ;; well, phone call
-  (global-set-key (kbd "<f9> p") 'bh/phone-call)
-  
+
+  (global-set-key (kbd "<f9> p") 'bh/phone-call)  
   (global-set-key (kbd "<f12>") 'org-agenda
   (global-set-key (kbd "<f5>") 'bh/org-todo)
   (global-set-key (kbd "<S-f5>") 'bh/widen)
@@ -437,29 +436,29 @@
     ;; not quite helpful to have lot of capture templates, use minimal to capture quicknote and resume current task, then after refile them properly
     ;; the other benefit of minimal template is when new org file created, not always necessary to configure a new template for it
     (setq org-directory (getenv "HOME" ))
-    (setq org-default-notes-file (concat org-directory "/Documents/repos/org/perso_stuff/GTD/notes_to_refile.org"))	
+    (setq org-default-notes-file (concat org-directory "/Documents/repos/org/perso_stuff/GTD/refile.org"))	
     (setq org-capture-templates
     	    ;; clock-in means the task is clocked, and when task is filed (using C-c C-c), then the clock resumes on the original task
-    	    '(("m" "Meeting" entry (file+headline "~/Documents/repos/org/memacs/GTD/notes_to_refile.org" "Calendar")
+    	    '(("m" "Meeting" entry (file+headline "~/Documents/repos/org/memacs/GTD/refile.org" "Calendar")
     	       "* Meeting %^{Description} %^g\n %? :MEETING:\n Added: %U\n" :clock-in t :clock-resume t)
     	      ;; for example, a mail that needs a response
-    	      ("r" "Needs response" entry (file+headline "~/Documents/repos/org/memacs/GTD/notes_to_refile.org" "Calendar")
+    	      ("r" "Needs response" entry (file+headline "~/Documents/repos/org/memacs/GTD/refile.org" "Calendar")
     	       "* NEXT Respond to %:from on %:subject\nSCHEDULED: %t\n%U\n%a\n" :clock-in t :clock-resume t :immediate-finish t)
-    	      ("p" "Phone call" entry (file+headline "~/Documents/repos/org/memacs/GTD/notes_to_refile.org" "Calendar")
+    	      ("p" "Phone call" entry (file+headline "~/Documents/repos/org/memacs/GTD/refile.org" "Calendar")
     	       "* Phone %? :PHONE:\n%U\n" :clock-in t :clock-resume t)
-    	      ("t" "Tasks diary" entry (file+headline "~/Documents/repos/org/memacs/GTD/notes_to_refile.org" "Tasks")
+    	      ("t" "Tasks diary" entry (file+headline "~/Documents/repos/org/memacs/GTD/refile.org" "Tasks")
     	       "* TODO %?\n%U\n%a\n" :clock-in t :clock-resume t)
-    	      ("u" "Us.es Tasks"  entry (file+headline "~/Documents/repos/org/memacs/GTD/notes_to_refile.org" "Tasks")
+    	      ("u" "Us.es Tasks"  entry (file+headline "~/Documents/repos/org/memacs/GTD/refile.org" "Tasks")
     	       "* TODO %? :US.ES:\n%U\n%a\n" :clock-in t :clock-resume t)
-    	      ("c" "Cpp Tasks"  entry (file+headline "~/Documents/repos/org/memacs/GTD/notes_to_refile.org" "Tasks")
+    	      ("c" "Cpp Tasks"  entry (file+headline "~/Documents/repos/org/memacs/GTD/refile.org" "Tasks")
     	       "* TODO %? :CPP:\n%U\n%a\n" :clock-in t :clock-resume t)
-    	      ("n" "Note"  entry (file+headline "~/Documents/repos/org/memacs/GTD/notes_to_refile.org" "Notes")
+    	      ("n" "Note"  entry (file+headline "~/Documents/repos/org/memacs/GTD/refile.org" "Notes")
     	       "* %? :NOTE:\n%U\n%a\n" :clock-in t :clock-resume t)
-    	      ("x" "Most used commands" entry (file+headline "~/Documents/repos/org/memacs/GTD/notes_to_refile.org" "Most used commands")
+    	      ("x" "Most used commands" entry (file+headline "~/Documents/repos/org/memacs/GTD/refile.org" "Most used commands")
     	       "- %?\n%U\n%a\n" :clock-in t :clock-resume t)
-    	      ("h" "Habit" entry (file+headline "~/Documents/repos/org/memacs/GTD/notes_to_refile.org" "Habit")
+    	      ("h" "Habit" entry (file+headline "~/Documents/repos/org/memacs/GTD/refile.org" "Habit")
     	       "* NEXT %?\n%U\n%a\nSCHEDULED: %(format-time-string \"%<<%Y-%m-%d %a .+1d/3d>>\")\n:PROPERTIES:\n:STYLE: habit\n:REPEAT_TO_STATE: NEXT\n:END:\n")
-    	      ("e" "e-mail related task" entry (file+headline "~/Documents/repos/org/memacs/GTD/notes_to_refile.org" "Source related tasks")
+    	      ("e" "e-mail related task" entry (file+headline "~/Documents/repos/org/memacs/GTD/refile.org" "Source related tasks")
     	       "- %? , as activity response to source:\t%i\n%U\n%a\n" :clock-in t :clock-resume t)
     	      ("j" "Journal" entry (file+datetree "~/Documents/repos/org/memacs/GTD/journal.org")
     	       "* %?\n%U\n" :clock-in t :clock-resume t)))	
@@ -1600,6 +1599,55 @@
     - notes agenda view :: ==F12 N==
 
 ** Handling phone calls
+  + notes ::
+    - phone calls are interruptions, so treated with capture as all interruptions
+    - with bh configs ::
+      + most of phone calls is handled by capture mode
+      + can use special capture template for phone calls combined with a custom function that replaces text with information from ==bbdb3== (bbdb3 is just bbdb version 3.XXX)
+      + the phone call capture template starts the clock as soon as the phone rings, then one is free to lookup and replace the caller in ==bbdb== anytime during or after the call
+	- capture mode starts the clock using the ==:clock-in t== setting in the template
+  + process ::
+    1. start capture task (==C-c c p==) and enter notes from the call in the template ::
+       + cursor starts in the template normally where the name of the caller would be inserted
+	 - can use a ==bbdb== lookup function to insert the name :: ==f9-b==
+	 - if a ==bbdb== entry needs to be created for the caller, then can do that first and replace the caller details with ==f9-p== anytime that is convenient afterward
+    2. when phone call ends, do ==C-c C-c== to close the capture buffer and stop the clock
+  + set-up ::
+    - see "Phone call" section in org-capture-templates
+    - see kbd "<f9> p" for 'bh/phone-call
+    #+begin_src emacs-lisp
+    ;; Phone capture template handling with BBDB lookup
+    ;; Adapted from code by Gregory J. Grubbs
+    (defun bh/phone-call ()
+      "Return name and company info for caller from bbdb lookup"
+      (interactive)
+      (let* (name rec caller)
+        (setq name (completing-read "Who is calling? "
+                                    (bbdb-hashtable)
+                                    'bbdb-completion-predicate
+                                    'confirm))
+        (when (> (length name) 0)
+          ; Something was supplied - look it up in bbdb
+          (setq rec
+                (or (first
+                     (or (bbdb-search (bbdb-records) name nil nil)
+                         (bbdb-search (bbdb-records) nil name nil)))
+                    name)))
+    
+        ; Build the bbdb link if we have a bbdb record, otherwise just return the name
+        (setq caller (cond ((and rec (vectorp rec))
+                            (let ((name (bbdb-record-name rec))
+                                  (company (bbdb-record-company rec)))
+                              (concat "[[bbdb:"
+                                      name "]["
+                                      name "]]"
+                                      (when company
+                                        (concat " - " company)))))
+    			(rec)
+    			(t "NameOfCaller")))
+        (insert caller)))
+    
+    #+end_src
 
 * Programming language specific
 
@@ -2045,37 +2093,6 @@
  ;; (require 'bbdb-com)
 
  ;;
- ;; Phone capture template handling with BBDB lookup
- ;; Adapted from code by Gregory J. Grubbs
- (defun bh/phone-call ()
-   "Return name and company info for caller from bbdb lookup"
-   (interactive)
-   (let* (name rec caller)
-     (setq name (completing-read "Who is calling? "
-                                 (bbdb-hashtable)
-                                 'bbdb-completion-predicate
-                                 'confirm))
-     (when (> (length name) 0)
-       ; Something was supplied - look it up in bbdb
-       (setq rec
-             (or (first
-                  (or (bbdb-search (bbdb-records) name nil nil)
-                      (bbdb-search (bbdb-records) nil name nil)))
-                 name)))
-
-     ; Build the bbdb link if we have a bbdb record, otherwise just return the name
-     (setq caller (cond ((and rec (vectorp rec))
-                         (let ((name (bbdb-record-name rec))
-                               (company (bbdb-record-company rec)))
-                           (concat "[[bbdb:"
-                                   name "]["
-                                   name "]]"
-                                   (when company
-                                     (concat " - " company)))))
-			(rec)
-			(t "NameOfCaller")))
-     (insert caller)))
-
 
  ;;;;;;;;;;;;;;;;;;;;;;;;;;
  ;; reminders setup
