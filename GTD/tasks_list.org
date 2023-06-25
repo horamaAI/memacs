@@ -420,20 +420,21 @@ version 3.22 already installed
      - https://www.coursera.org/learn/real-time-systems
 
 * Weekly review
+  SCHEDULED: <2023-06-26 Mon ++1w>
+  ,, :LOGBOOK:...
+  ,, :PROPERTIES:...
   What to review:
-  - [ ] Check 'follow-up' folder (physical/virtual folder for stuff
-    that should be dealt with, but not urgently)
-  - [ ] Review weekly agenda =F12 a w //=
+  - [ ] Check 'follow-up' folder (physical/virtual folder for stuff that should be dealt with, but not urgently) ::
+  - [ ] Review weekly agenda :: =F12 a w //=
     + review/fix/fill tasks that needs to be done in the week
-  - [ ] Check clocking data for past week =v c=
-  - [ ] Review clock report for past week =R=
-    + [ ] Check where we spent time (too much or too little) and rectify
-    this week
-  - [ ] Look at entire agenda for today  =F12 SPC=
-  - [ ] Review projects =F12 SPC //= and =V= repeatedly to view each project
-  -  start work
-      - daily agenda first - knock off items
-      - then work on NEXT tasks
+  - [ ] Check clocking data for past week :: =v c=
+  - [ ] Review clock report for past week :: =R=
+    + [ ] Check where we spent time too much or too little, and rectify this week
+  - [ ] Look at entire agenda for today ::  =F12 SPC=
+  - [ ] Review projects :: =F12 SPC //= and =V= repeatedly to view each project
+  - start work
+    + daily agenda first - knock off items
+    + then work on ==NEXT== tasks
 * Finances
   :PROPERTIES:
   :CATEGORY: Finances
