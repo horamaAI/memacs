@@ -1981,6 +1981,66 @@
       #+end_src
 
 ** Archiving
+  + kbd ::
+    - move subtree to archive :: ==a y==
+  + notes ::
+    - archive a task in file ==[file_name].org== to ==[file_name].org_archive==
+    - from bh config ::
+      + if a ==done== task is old enough, then archive it
+      + archivable tasks show up in the last section of block agenda when a new month starts
+      + any tasks ==done==, but with no timestamps the current month or previous month (ie. over 30 days old) are available to archive
+	- timestamps include :: closed dates, notes, clock data, etc - any active or inactive timestamp in the task
+      + the archived tasks get extra property data created during the archive procedure so that it is possible to reconstruct exactly where the archived entry came from in the rare case where you want to unarchive something
+      + no need for an ==ARCHIVE== property in subtrees, tasks can just archive normally to the ==Archived Tasks== heading in the archive file (default setting)
+      + bh setup made sure that task states are untouched when they are archived
+	- this makes it possible to archive tasks that are not marked ==DONE==
+      + exception to using ==ARCHIVE== tag ::
+	- the only time one would need to use the tag ==ARCHIVE== on a task with bh config, is when for example one wants to prevent the task from opening by default because it has tons of information that are not needed to be looked at on a regular basis
+	- still possible to open the task with ==C-TAB== if needs to see the gory details (like a huge table of data related to the task). But, usually, these information are not needed to be displayed by default
+  + procedure ::
+    - mark all of the entries in the last section of block agenda using ==m== and then archive them all to the appropriate place with ==B $==
+  + set up ::
+    - archiving function ::
+      + archiving function does not keep the project trees intact, it archives done state tasks when they are old enough and are removed from the main org file
+      + theoretically, it should be possible to reconstruct the original tree from the archive detail properties, but bh never tried, so if you would ever need it, you'll need to sort it out yourself
+      + archiving function setup ::
+	#+begin_src emacs-lisp
+	;; archiving set up
+	(setq org-archive-mark-done nil)
+	(setq org-archive-location "%s_archive::* Archived Tasks") ;; will archive in [name_of_org_file]_archive
+
+	(defun bh/skip-non-archivable-tasks ()
+	  "Skip trees that are not available for archiving"
+	  (save-restriction
+	    (widen)
+	    ;; Consider only tasks with done todo headings as archivable candidates
+	    (let ((next-headline (save-excursion (or (outline-next-heading) (point-max))))
+	          (subtree-end (save-excursion (org-end-of-subtree t))))
+	      (if (member (org-get-todo-state) org-todo-keywords-1)
+	          (if (member (org-get-todo-state) org-done-keywords)
+	              (let* ((daynr (string-to-int (format-time-string "%d" (current-time))))
+	                     (a-month-ago (* 60 60 24 (+ daynr 1)))
+	                     (last-month (format-time-string "%Y-%m-" (time-subtract (current-time) (seconds-to-time a-month-ago))))
+	                     (this-month (format-time-string "%Y-%m-" (current-time)))
+	                     (subtree-is-current (save-excursion
+	                                           (forward-line 1)
+	                                           (and (< (point) subtree-end)
+	                                                (re-search-forward (concat last-month "\\|" this-month) subtree-end t)))))
+	                (if subtree-is-current
+	                    subtree-end ; Has a date in this month or last month, skip it
+	                  nil))  ; available to archive
+	            (or subtree-end (point-max)))
+	        next-headline))))
+	#+end_src
+
+*** when to archive
+  + archiving *monthly* works well, as with procedure given previously
+  + it keeps current clocking information for the last 30 days out of the archives :: keeps files that contribute to the agenda fairly current (this month, last month, and anything that is unfinished)
+  + archiving keeps main working files clutter-free
+  + if ever need the detail for the archived tasks, they are still available in the appropriate archive file
+
+** Publishing and Exporting
+
 
 * Programming language specific
 
@@ -2079,34 +2139,7 @@
  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 
- ;; archiving set up
- (setq org-archive-mark-done nil)
- (setq org-archive-location "%s_archive::* Archived Tasks") ;; will archive in [name_of_org_file]_archive
 
- (defun bh/skip-non-archivable-tasks ()
-   "Skip trees that are not available for archiving"
-   (save-restriction
-     (widen)
-     ;; Consider only tasks with done todo headings as archivable candidates
-     (let ((next-headline (save-excursion (or (outline-next-heading) (point-max))))
-           (subtree-end (save-excursion (org-end-of-subtree t))))
-       (if (member (org-get-todo-state) org-todo-keywords-1)
-           (if (member (org-get-todo-state) org-done-keywords)
-               (let* ((daynr (string-to-int (format-time-string "%d" (current-time))))
-                      (a-month-ago (* 60 60 24 (+ daynr 1)))
-                      (last-month (format-time-string "%Y-%m-" (time-subtract (current-time) (seconds-to-time a-month-ago))))
-                      (this-month (format-time-string "%Y-%m-" (current-time)))
-                      (subtree-is-current (save-excursion
-                                            (forward-line 1)
-                                            (and (< (point) subtree-end)
-                                                 (re-search-forward (concat last-month "\\|" this-month) subtree-end t)))))
-                 (if subtree-is-current
-                     subtree-end ; Has a date in this month or last month, skip it
-                   nil))  ; available to archive
-             (or subtree-end (point-max)))
-         next-headline))))
-
- ;; end archiving set up
 
  ;; publishing and exporting
  (setq org-alphabetical-lists t)
