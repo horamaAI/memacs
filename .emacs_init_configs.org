@@ -2571,6 +2571,34 @@
     (global-set-key (kbd "C-s-<f12>") 'bh/save-then-publish)
     #+end_src
 
+*** Miscellaneous Export Settings
+  + collection of export and publishing related settings for latex,  HTML without XML header, and others
+**** HTML without XML header
+  + setup ::
+    #+begin_src emacs-lisp
+    ; remove xml header line for HTML exports
+    ; the xml line confuses Open Office when opening the HTML to convert to ODT
+    (setq org-html-xml-declaration (quote (("html" . "")
+                                           ("was-html" . "<?xml version=\"1.0\" encoding=\"%s\"?>")
+                                           ("php" . "<?php echo \"<?xml version=\\\"1.0\\\" encoding=\\\"%s\\\" ?>\"; ?>"))))
+    #+end_src
+**** Latex
+  + setup ::
+    #+begin_src emacs-lisp
+    ; for fontified listings from source blocks
+    (setq org-latex-listings t)
+    #+end_src
+**** Allow binding variables on export without confirmation
+  + setting to allows #+BIND: variables to be set on export without confirmation ::
+    - rare usecase :: where needed to override some org-mode variable for export, the settings allows exporting the document without a prompt
+  + setup ::
+    #+begin_src emacs-lisp
+    (setq org-export-allow-BIND t)
+    #+end_src
+
+** Setting reminders
+  + 
+
 * Programming language specific
 
 ** C++
