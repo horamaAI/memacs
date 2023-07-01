@@ -2166,7 +2166,7 @@
     #+end_src
     
     #+results[b72ce84b1be00db6721081a8353a0c879f187fdd]:
-    [[file:communication.png]]
+    [[file:images/communication.png]]
 
 **** graphViz
   + same as ditaa :: 
@@ -2220,10 +2220,105 @@
     #+end_src
     
     #+results[296ce064f7aab7f79ba32a4e903ed7a31b01ca73]:
-    [[file:gv01.png]]
+    [[file:images/gv01.png]]
 
 **** plantUML
+  + build on top of graphviz ::
+  + eg of usecase :: todo states change diagrams
+  + template of a ditaa graphic block ::
+    #+begin_src org :exports src
+    ,#+begin_src plantuml :file some_filename.png
+      <context of plantuml source goes here>
+    ,#+end_src
+    #+end_src
+***** Sequence diagram
+  + example ::
+    #+begin_src plantuml :file sequence.png :exports both :cache yes
+    title Example Sequence Diagram
+    activate Client
+    Client -> Server: Session Initiation
+    note right: Client requests new session
+    activate Server
+    Client <-- Server: Authorization Request
+    note left: Server requires authentication
+    Client -> Server: Authorization Response
+    note right: Client provides authentication details
+    Server --> Client: Session Token
+    note left: Session established
+    deactivate Server
+    Client -> Client: Saves token
+    deactivate Client
+    #+end_src
 
+    #+results[9b612e0e68cd747fc032d949b739f4c5b06dee21]:
+    [[file:images/sequence.png]]
+
+***** Activity diagram
+  + example ::
+    #+begin_src plantuml :file activity.png :exports both :cache yes
+    title Example Activity Diagram
+    note right: Example Function
+    (*)--> "Step 1"
+    --> "Step 2"
+    -> "Step 3"
+    --> "Step 4"
+    --> === STARTLOOP ===
+    note top: For each element in the array
+    if "Are we done?" then
+      -> [no] "Do this"
+      -> "Do that"
+      note bottom: Important note\ngoes here
+      -up-> "Increment counters"
+      --> === STARTLOOP ===
+    else
+      --> [yes] === ENDLOOP ===
+    endif
+    --> "Last Step"
+    --> (*)
+    #+end_src
+    
+    #+results[d5646e42c69b25b55eb1699a43c5d9547c019c5e]:
+    [[file:images/activity.png]]
+
+***** Usecase diagram
+  + example ::
+    #+begin_src plantuml :file usecase.png :exports both :cache yes
+    LabUser --> (Runs Simulation)
+    LabUser --> (Analyses Results)
+    #+end_src
+    
+    #+results[b7079ee21eb099b19ca524bf62e84edb7c317890]:
+    [[file:images/usecase.png]]
+
+***** Object diagram
+  + example ::
+    #+begin_src plantuml :file object.png :exports both :cache yes
+    Object1 <|-- Object2
+    Object1: someVar
+    Object1: execute()
+    Object2: getState()
+    Object2: setState()
+    Object2: state
+    #+end_src
+    
+    #+results[12eb2caa1043195361ca1953b474932e796e80f5]:
+    [[file:object.png]]
+
+***** State diagram
+  + example ::
+    #+begin_src plantuml :file plantuml_example_states.png :exports both :cache yes
+    [*] --> Start
+    Start -> State2
+    State2 -> State3
+    note right of State3: Notes can be\nattached to states
+    State2 --> State4
+    State4 -> Finish
+    State3 --> Finish
+    Finish --> [*]
+    #+end_src
+    
+    #+results[5faa6c28383266f9e8b76f4a8c70012f7ab70753]:
+    [[file:images/plantuml_example_states.png]]
 
 * Programming language specific
 
