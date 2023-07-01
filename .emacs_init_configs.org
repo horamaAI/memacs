@@ -2322,8 +2322,9 @@
 
 *** Publishing single file/project
   + kbd ::
-    - publish single project ::
+    - publish single file ::
       + export current buffer to type given by key :: ==C-c C-e + [key_of_type_export]==
+    - publishing project :: after modifying, then ==C-S-F12==
 **** Publishing project
   + with org-mode projects :: no need to remember where the created export files need to move to
   + bh config :: lazy setup: no need to remember the name of the project to publish when a file part of a project is modified
@@ -2332,7 +2333,12 @@
   + in bh configs for example :: main projects are ==norang, doc, doc-private, org-mode-doc==, and ==tmp==
     - these projects publish directly *to the webserver directory on a remote web server* that serves the site
     - publishing one of these projects exports all modified pages, generates images, and copies the resulting files to the webserver so that they are immediately available for viewing
-    -  http://doc.norang.ca/ site contains subdirectories with client and private documentation that are restricted by using Apache Basic authentication. I don't create links to these sites from the publicly viewable pages. http://doc.norang.ca/someclient/ would show the index for any org files under ~/git/doc.norang.ca/someclient/ if that is set up as a viewable website. I use most of the information myself but give access to clients if they are interested in the information/notes that I keep about their systems. 
+    - for example, http://doc.norang.ca/ site contains subdirectories with client and private documentation that are restricted by using *Apache Basic authentication*
+    - *no need to create links to these sites* from the publicly viewable pages ::
+    - http://doc.norang.ca/someclient/ would show the index for any org files under ~/git/doc.norang.ca/someclient/ if that is set up as a viewable website
+    - bh uses most of the information for himself but give access to clients if they are interested in the information/notes that are kept about their systems
+  + in bh config, can use emporary publishing site for testing exports and validation :: see ==tmp== site which takes files from ==/tmp/publish== and exports them to a website publishing directory
+    - makes it easy to try new throw-away things on a live server ::
   + setup for publishing project ::
     #+begin_src emacs-lisp
     ; experimenting with docbook exports - not finished
