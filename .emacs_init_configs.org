@@ -2330,6 +2330,9 @@
     - function ==bh/save-then-publish== saves the file, and publishes the project that includes this file ::
       + function bound to ==C-S-F12==, so just need to edit and hit :: ==C-S-F12== when done, and can then just move on to the next thing
   + in bh configs for example :: main projects are ==norang, doc, doc-private, org-mode-doc==, and ==tmp==
+    - these projects publish directly *to the webserver directory on a remote web server* that serves the site
+    - publishing one of these projects exports all modified pages, generates images, and copies the resulting files to the webserver so that they are immediately available for viewing
+    -  http://doc.norang.ca/ site contains subdirectories with client and private documentation that are restricted by using Apache Basic authentication. I don't create links to these sites from the publicly viewable pages. http://doc.norang.ca/someclient/ would show the index for any org files under ~/git/doc.norang.ca/someclient/ if that is set up as a viewable website. I use most of the information myself but give access to clients if they are interested in the information/notes that I keep about their systems. 
   + setup for publishing project ::
     #+begin_src emacs-lisp
     ; experimenting with docbook exports - not finished
