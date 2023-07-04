@@ -2623,6 +2623,291 @@
     #+end_src
 
 ** Productivity Tools
+  + miscellaneous emacs tools for more productivity
+*** abbrev-mode and skeletons
+  + skeletons + abbrev-mode :: to quickly add preconfigured blocks to emacs edit buffers
+  + eg blocks for creation ::
+    - creating *generic blocks* in org-mode
+    - creating *plantuml* blocks in org-mode
+    - creating plantuml *activity* diagram block in org-mode
+    - creating plantuml *sequence* diagram block in org-mode
+    - creating *graphviz* dot blocks in org-mode
+    - creating *ditaa* blocks in org-mode
+    - creating *elisp* source blocks in org-mode
+  + kbd and process ::
+    - creating example blocks and simple shell script blocks that need no further parameters :: ==< e TAB== and ==< s TAB==
+    - create plantuml bloc :: ==splantumlRET==
+      + prompts for the filename (without extension) for the generated image file
+    - create an abbreviation (for the mode currently in) :: ==[new_abbrev_short_form] C-x a i l== (type in the short form followed by ==C-x a i l==)
+      + *careful* though, try not to use a common word for your abbreviation, since abbrev-mode will try to expand it everytime it is entered
+	- eg with ==plantuml== that will expand when trying to use it as abbreviation
+	- because of that, bh added the ==s== (src) prefix on the plantuml shortcut to prevent abbrev-mode from trying to expand PlantUML when typing it in
+  + can even use skeletons and abbrev-mode on code source files to create custom blocks :: eg with c++ source files
+  + with bh config, one can add a ==:tangle== header to the skeleton and explicitly include the ==@startuml== and ==@enduml== marker lines in the skeleton so one can tangle the source file and share it ::
+    - this can for example make the tangled source useable in Notepad and the PlantUML jar file running standalone
+  + for convenience, in activity diagrams, bh added ==sif== and ==sfor== and just change the labels for the synchronization bars:: 
+  + can also use abbrev-mode when taking notes ::
+    - for example, with bh configs, when using abbrev-mode in notes, when typing ==i== followed by the initials of people, it gets expanded to their complete name in notes
+      + so, when writing ==imm==, it gets automatically expanded to ==Mickey Mouse== as being typed
+  + setup :: 
+    #+begin_src emacs-lisp
+    ;; Enable abbrev-mode
+    (add-hook 'org-mode-hook (lambda () (abbrev-mode 1)))
+    
+    ;; Skeletons
+    ;;
+    ;; sblk - Generic block #+begin_FOO .. #+end_FOO
+    (define-skeleton skel-org-block
+      "Insert an org block, querying for type."
+      "Type: "
+      "#+begin_" str "\n"
+      _ - \n
+      "#+end_" str "\n")
+    
+    (define-abbrev org-mode-abbrev-table "sblk" "" 'skel-org-block)
+    
+    ;; splantuml - PlantUML Source block
+    (define-skeleton skel-org-block-plantuml
+      "Insert a org plantuml block, querying for filename."
+      "File (no extension): "
+      "#+begin_src plantuml :file " str ".png :cache yes\n"
+      _ - \n
+      "#+end_src\n")
+    
+    (define-abbrev org-mode-abbrev-table "splantuml" "" 'skel-org-block-plantuml)
+    
+    (define-skeleton skel-org-block-plantuml-activity
+      "Insert a org plantuml block, querying for filename."
+      "File (no extension): "
+      "#+begin_src plantuml :file " str "-act.png :cache yes :tangle " str "-act.txt\n"
+      (bh/plantuml-reset-counters)
+      "@startuml\n"
+      "skinparam activity {\n"
+      "BackgroundColor<<New>> Cyan\n"
+      "}\n\n"
+      "title " str " - \n"
+      "note left: " str "\n"
+      "(*) --> \"" str "\"\n"
+      "--> (*)\n"
+      _ - \n
+      "@enduml\n"
+      "#+end_src\n")
+    
+    (defvar bh/plantuml-if-count 0)
+    
+    (defun bh/plantuml-if () 
+      (incf bh/plantuml-if-count)
+      (number-to-string bh/plantuml-if-count))
+    
+    (defvar bh/plantuml-loop-count 0)
+    
+    (defun bh/plantuml-loop () 
+      (incf bh/plantuml-loop-count)
+      (number-to-string bh/plantuml-loop-count))
+    
+    (defun bh/plantuml-reset-counters ()
+      (setq bh/plantuml-if-count 0
+            bh/plantuml-loop-count 0)
+      "")
+    
+    (define-abbrev org-mode-abbrev-table "sact" "" 'skel-org-block-plantuml-activity)
+    
+    (define-skeleton skel-org-block-plantuml-activity-if
+      "Insert a org plantuml block activity if statement"
+      "" 
+      "if \"\" then\n"
+      "  -> [condition] ==IF" (setq ifn (bh/plantuml-if)) "==\n"
+      "  --> ==IF" ifn "M1==\n"
+      "  -left-> ==IF" ifn "M2==\n"
+      "else\n"
+      "end if\n"
+      "--> ==IF" ifn "M2==")
+    
+    (define-abbrev org-mode-abbrev-table "sif" "" 'skel-org-block-plantuml-activity-if)
+    
+    (define-skeleton skel-org-block-plantuml-activity-for
+      "Insert a org plantuml block activity for statement"
+      "Loop for each: " 
+      "--> ==LOOP" (setq loopn (bh/plantuml-loop)) "==\n"
+      "note left: Loop" loopn ": For each " str "\n"
+      "--> ==ENDLOOP" loopn "==\n"
+      "note left: Loop" loopn ": End for each " str "\n" )
+    
+    (define-abbrev org-mode-abbrev-table "sfor" "" 'skel-org-block-plantuml-activity-for)
+    
+    (define-skeleton skel-org-block-plantuml-sequence
+      "Insert a org plantuml activity diagram block, querying for filename."
+      "File appends (no extension): "
+      "#+begin_src plantuml :file " str "-seq.png :cache yes :tangle " str "-seq.txt\n"
+      "@startuml\n"
+      "title " str " - \n"
+      "actor CSR as \"Customer Service Representative\"\n"
+      "participant CSMO as \"CSM Online\"\n"
+      "participant CSMU as \"CSM Unix\"\n"
+      "participant NRIS\n"
+      "actor Customer"
+      _ - \n
+      "@enduml\n"
+      "#+end_src\n")
+    
+    (define-abbrev org-mode-abbrev-table "sseq" "" 'skel-org-block-plantuml-sequence)
+    
+    ;; sdot - Graphviz DOT block
+    (define-skeleton skel-org-block-dot
+      "Insert a org graphviz dot block, querying for filename."
+      "File (no extension): "
+      "#+begin_src dot :file " str ".png :cache yes :cmdline -Kdot -Tpng\n"
+      "graph G {\n"
+      _ - \n
+      "}\n"
+      "#+end_src\n")
+    
+    (define-abbrev org-mode-abbrev-table "sdot" "" 'skel-org-block-dot)
+    
+    ;; sditaa - Ditaa source block
+    (define-skeleton skel-org-block-ditaa
+      "Insert a org ditaa block, querying for filename."
+      "File (no extension): "
+      "#+begin_src ditaa :file " str ".png :cache yes\n"
+      _ - \n
+      "#+end_src\n")
+    
+    (define-abbrev org-mode-abbrev-table "sditaa" "" 'skel-org-block-ditaa)
+    
+    ;; selisp - Emacs Lisp source block
+    (define-skeleton skel-org-block-elisp
+      "Insert a org emacs-lisp block"
+      ""
+      "#+begin_src emacs-lisp\n"
+      _ - \n
+      "#+end_src\n")
+    
+    (define-abbrev org-mode-abbrev-table "selisp" "" 'skel-org-block-elisp)
+    #+end_src
+
+**** Example :: PlantUml Activity Diagram Generation
+  + as said previously, when creating activity diagrams, one can use ==sif== and ==sfor== to add IF and FOR blocks to the diagram with unique numbering automatically generated
+  + scenario :: create a new diagram and enter 2 IFs and 2 FOR blocks
+  + process ::
+    - create diagram :: ==sact RET test RET==
+      + will generate ::
+	#+begin_src plantuml :file test-act.png :cache yes :tangle test-act.txt :exports both
+	@startuml
+	skinparam activity {
+	BackgroundColor<<New>> Cyan
+	}
+	
+	title test - 
+	note left: test
+	(*) --> "test"
+	--> (*)
+	
+	@enduml
+	#+end_src
+	
+	#+results[941b135a91506a3806dcb1dcc07c18b23c0cd608]:
+	[[file:images/test-act.png]]
+
+      + when the cursor is put on --> (*) and one enters ==sif RET==, it will add the if condition and give ::
+	#+begin_src plantuml :file test-act2.png :cache yes :tangle test-act2.txt :exports both
+	@startuml
+	skinparam activity {
+	BackgroundColor<<New>> Cyan
+	}
+	
+	title test - 
+	note left: test
+	(*) --> "test"
+	if "" then
+	  -> [condition] ==IF1==
+	  --> ==IF1M1==
+	  -left-> ==IF1M2==
+	else
+	end if
+	--> ==IF1M2==
+	--> (*)
+	
+	@enduml
+	#+end_src
+	
+	#+results[0b3365856895b29376087110b72d8cd127d3b4f7]:
+	[[file:images/test-act2.png]]
+
+      + repeat on --> (*) line, will produce ::
+	#+begin_src plantuml :file test-act3.png :cache yes :tangle test-act3.txt :exports both
+	@startuml
+	skinparam activity {
+	BackgroundColor<<New>> Cyan
+	}
+	
+	title test - 
+	note left: test
+	(*) --> "test"
+	if "" then
+	  -> [condition] ==IF1==
+	  --> ==IF1M1==
+	  -left-> ==IF1M2==
+	else
+	end if
+	--> ==IF1M2==
+	if "" then
+	  -> [condition] ==IF2==
+	  --> ==IF2M1==
+	  -left-> ==IF2M2==
+	else
+	end if
+	--> ==IF2M2==
+	--> (*)
+	
+	@enduml
+	#+end_src
+	
+	#+results[f1e8e6dfcb6cfc183b56196edb5769e53b7ad127]:
+	[[file:images/test-act3.png]]
+
+      + now, adding two for loops at the end with ==sfor RET line in file RET== and ==sfor RET address in addressbook RET== :: 
+	#+begin_src plantuml :file test-act4.png :cache yes :tangle test-act4.txt :exports both
+	@startuml
+	skinparam activity {
+	BackgroundColor<<New>> Cyan
+	}
+	
+	title test - 
+	note left: test
+	(*) --> "test"
+	if "" then
+	  -> [condition] ==IF1==
+	  --> ==IF1M1==
+	  -left-> ==IF1M2==
+	else
+	end if
+	--> ==IF1M2==
+	if "" then
+	  -> [condition] ==IF2==
+	  --> ==IF2M1==
+	  -left-> ==IF2M2==
+	else
+	end if
+	--> ==IF2M2==
+	--> ==LOOP1==
+	note left: Loop1: For each line in file
+	--> ==ENDLOOP1==
+	note left: Loop1: End for each line in file
+	--> ==LOOP2==
+	note left: Loop2: For each address in addressbook
+	--> ==ENDLOOP2==
+	note left: Loop2: End for each address in addressbook
+	
+	--> (*)
+	
+	@enduml
+	#+end_src
+
+	#+results[dffc80c1690d0ffc945596218c6264aa99f52ec5]:
+	[[file:images/test-act4.png]]
+
+*** Focusing On Current Work (narrowing and filtering)
+  + 
 
 * Programming language specific
 
