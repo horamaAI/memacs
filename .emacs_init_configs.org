@@ -2596,8 +2596,33 @@
     (setq org-export-allow-BIND t)
     #+end_src
 
-** Setting reminders
-  + 
+** Setting reminders and appointments
+  + use of appt for reminders
+  + bh configs :: put pending appointments in the status bar and beeping as 12, 9, 6, 3, and 0 minutes before the appointment is due
+  + everytime the agenda is displayed (try to do it as most as possible) :: the appointment list is erased and rebuilt from the current agenda details for today
+    - hence :: everytime something that is time related is rescheduled (tasks is added or removed), the *appointment list is automatically updated* the next time the agenda is looked up
+  + reminder setup ::
+    #+begin_src emacs-lisp
+    ; Erase all reminders and rebuilt reminders for today from the agenda
+    (defun bh/org-agenda-to-appt ()
+      (interactive)
+      (setq appt-time-msg-list nil)
+      (org-agenda-to-appt))
+    
+    ; Rebuild the reminders everytime the agenda is displayed
+    (add-hook 'org-agenda-finalize-hook 'bh/org-agenda-to-appt 'append)
+    
+    ; This is at the end of my .emacs - so appointments are set up when Emacs starts
+    (bh/org-agenda-to-appt)
+    
+    ; Activate appointments so we get notifications
+    (appt-activate t)
+    
+    ; If we leave Emacs running overnight - reset the appointments one minute after midnight
+    (run-at-time "24:01" nil 'bh/org-agenda-to-appt)
+    #+end_src
+
+** Productivity Tools
 
 * Programming language specific
 
@@ -2722,23 +2747,6 @@
 
  ;;;;;;;;;;;;;;;;;;;;;;;;;;
  ;; reminders setup
- ; Erase all reminders and rebuilt reminders for today from the agenda
- (defun bh/org-agenda-to-appt ()
-   (interactive)
-   (setq appt-time-msg-list nil)
-   (org-agenda-to-appt))
-
- ; Rebuild the reminders everytime the agenda is displayed
- (add-hook 'org-agenda-finalize-hook 'bh/org-agenda-to-appt 'append)
-
- ; This is at the end of my .emacs - so appointments are set up when Emacs starts
- (bh/org-agenda-to-appt)
-
- ; Activate appointments so we get notifications
- (appt-activate t)
-
- ; If we leave Emacs running overnight - reset the appointments one minute after midnight
- (run-at-time "24:01" nil 'bh/org-agenda-to-appt)
  ;;;;;;;;;;;;;;;;;;;;;;;;;;
 
  ;;;; load darcula theme not dracula

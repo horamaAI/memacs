@@ -35,7 +35,7 @@
   :CATEGORY: Calendar
   :END:
 ** Birthdays
-** Appointmens
+** Appointments
 ** Holidays, days off and vacations
 
 * To learn
