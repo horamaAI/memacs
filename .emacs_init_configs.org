@@ -2906,8 +2906,8 @@
 	#+results[dffc80c1690d0ffc945596218c6264aa99f52ec5]:
 	[[file:images/test-act4.png]]
 
-*** Focusing On Current Work (narrowing and filtering)
-  + 
+** Focusing On Current Work (narrowing, filtering, and structuring agenda and agenda view)
+ + 
 
 * Programming language specific
 
