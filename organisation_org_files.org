@@ -12,6 +12,7 @@
 | (f) commands_to_remember.org | journal for commands to remember                                                      |
 | (f) other_projects.org       | to keep track of non urgent project "good to have"                                    |
 | (f) us.es_notes.org          | notes specific to project us.es                                                       |
+| (f) diary.org                | to keep track of important dates                                                      |
 | (f) fun.org                  | personal hobbies file, org-mode organized                                             |
 | (f) running.org              | running related notes and trackings, not in fun file since to be taken more seriously |
 | (f) *.org_archive            | archive version files of backed up tasks                                              |

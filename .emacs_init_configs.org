@@ -3200,7 +3200,38 @@
     #+end_src
 
 *** Use the Diary for Holidays and Appointments
-  + 
+  + remove use of emacs diary (can unset it if need of a diary), and set a 'diary' file that really contains important dates (holidays, appointments, etc.) ::
+    #+begin_src emacs-lisp
+    (setq org-agenda-include-diary nil)
+    (setq org-agenda-diary-file "~/Documents/repos/org/memacs/GTD/diary.org")
+    #+end_src
+  + this diary file keeps ==date-tree== entries created by the capture mode 'appointment' template ::
+    - can also be used for miscellaneous tasks needed to be clocked during interruptions
+  + instead of emacs diary, bh uses org-mode's /diary functions/ ::
+    - inserting entries with ==i== in the emacs agenda creates date entries in ~/Documents/repos/org/memacs/GTD/diary.org
+    - eg ::
+      + include holidays from the calendar in todo.org file ::
+	#+begin_src org :exports src
+	,#+FILETAGS: PERSONAL
+	,* Appointments
+          :PROPERTIES:
+          :CATEGORY: Appt
+          :ARCHIVE:  %s_archive::* Appointments
+          :END:      
+	,** Holidays
+           :PROPERTIES:
+           :Category: Holiday
+           :END:
+           %%(org-calendar-holiday)
+	,** Some other Appointment
+           ...
+	#+end_src
+  + setting for any time strings in the heading to be showned in the agenda ::
+    #+begin_src emacs-lisp
+    (setq org-agenda-insert-diary-extract-time t)
+    #+end_src
+
+
 
 * Programming language specific
 
