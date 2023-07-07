@@ -3376,7 +3376,22 @@
       (string-match "Sched\.\\(.*\\)x:" date-str))
     #+end_src
 
-*** 
+*** Sticky Agendas
+  + Sticky agendas :: allows someone to have more than one agenda view created simultaneously
+    - can quickly switch to the other view without incurring an agenda rebuild by invoking the agenda custom command key that normally generates the agenda
+    - if it already exists it will display the existing view
+    - can force the regeneration of the agenda view with ==g==
+  + eg, and kbd :: can display two views :
+    - ==F12 a==  for the daily/weekly agenda ::
+    - ==F12 SPC== for a project management view ::
+  + setup ::
+    #+begin_src emacs-lisp
+    ;; Use sticky agenda's so they persist
+    (setq org-agenda-sticky t)
+    #+end_src
+
+** Handling checklists
+  + 
 
 * Programming language specific
 
