@@ -3150,6 +3150,24 @@
 
 ** Tuning further the Agenda Views
 *** Highlight the current agenda line
+  + keeping the current agenda line highlighted helps to know what task will be affected by commands issued in the agenda, and avoid acting on the wrong task by mistake
+  + settings also make clock modeline time shown with a reverse background
+  + setups ::
+    #+begin_src emacs-lisp
+    ;; Always highlight the current agenda line
+    (add-hook 'org-agenda-mode-hook
+              '(lambda () (hl-line-mode 1))
+              'append)
+    
+    
+    ;; The following custom-set-faces create the highlights
+    (custom-set-faces
+      ;; custom-set-faces was added by Custom.
+      ;; If you edit it by hand, you could mess it up, so be careful.
+      ;; Your init file should contain only one such instance.
+      ;; If there is more than one, they won't work right.
+     '(org-mode-line-clock ((t (:background "grey75" :foreground "red" :box (:line-width -1 :style released-button)))) t))
+    #+end_src
 
 * Programming language specific
 
