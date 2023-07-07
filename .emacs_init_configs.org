@@ -3138,6 +3138,19 @@
     (setq org-agenda-restriction-lock-highlight-subtree nil)
     #+end_src
 
+*** Limiting the agenda to a file
+  + limit agenda view to one file ::
+    - use the agenda restriction lock to set the agenda restriction lock to this file only ::
+      + on any line /before the first heading/ :: ==C-c C-x <==
+      + from anywhere in the file, using prefix ==C-u== :: ==C-u C-c C-x <==
+      + lock stays in effect until removed with :: ==C-c C-x >==
+    - same, lock to file, but from the agenda :: ==C-u C-c c-x <==
+    - by visiting org-file, and invoking agenda with :: ==F12 < a==
+      + can be used, to view in the agenda, a file not in ==org-agenda-files==
+
+** Tuning further the Agenda Views
+*** Highlight the current agenda line
+
 * Programming language specific
 
 ** C++
