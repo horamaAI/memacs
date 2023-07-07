@@ -3169,6 +3169,39 @@
      '(org-mode-line-clock ((t (:background "grey75" :foreground "red" :box (:line-width -1 :style released-button)))) t))
     #+end_src
 
+*** Keep tasks with timestamps visible on the global todo lists
+  + context ::
+    - Tasks with dates (==SCHEDULED:==, ==DEADLINE:==, or active dates) show up in the agenda when appropriate. The block agenda view (==F12 a==) tries to keep tasks showing up only in one location (either in the calendar or other todo lists in later sections of the block agenda.)
+    - one needs to use global todo list search in org-mode (==F12 t==, ==F12 m==) if he is looking for a specific task
+    - with bh configs, the todo lists include _everything_ so one can just search for a needed item and move on
+  + the block agenda prevents display of tasks with deadlines or scheduled dates in the future, so those can safely be ignored until appropriate time
+  + setup :: 
+    #+begin_src emacs-lisp
+    ;; Keep tasks with dates on the global todo lists
+    (setq org-agenda-todo-ignore-with-date nil)
+    
+    ;; Keep tasks with deadlines on the global todo lists
+    (setq org-agenda-todo-ignore-deadlines nil)
+    
+    ;; Keep tasks with scheduled dates on the global todo lists
+    (setq org-agenda-todo-ignore-scheduled nil)
+    
+    ;; Keep tasks with timestamps on the global todo lists
+    (setq org-agenda-todo-ignore-timestamp nil)
+    
+    ;; Remove completed deadline tasks from the agenda view
+    (setq org-agenda-skip-deadline-if-done t)
+    
+    ;; Remove completed scheduled tasks from the agenda view
+    (setq org-agenda-skip-scheduled-if-done t)
+    
+    ;; Remove completed items from search results
+    (setq org-agenda-skip-timestamp-if-done t)
+    #+end_src
+
+*** Use the Diary for Holidays and Appointments
+  + 
+
 * Programming language specific
 
 ** C++
