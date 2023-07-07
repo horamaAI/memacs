@@ -3232,7 +3232,12 @@
     #+end_src
 
 *** Searches include archive files
-  + 
+  + tip : keep a single archive file for each org-mode project files :: allows searching the current file and the archive when need to dig up old information from the archives
+  + setup ::
+    #+begin_src emacs-lisp
+    ;; Include agenda archive files when searching for things
+    (setq org-agenda-text-search-extra-files (quote (agenda-archives)))
+    #+end_src
 
 * Programming language specific
 
