@@ -3231,7 +3231,8 @@
     (setq org-agenda-insert-diary-extract-time t)
     #+end_src
 
-
+*** Searches include archive files
+  + 
 
 * Programming language specific
 
