@@ -3088,7 +3088,55 @@
     #+end_src
 
 *** Limiting the agenda to a subtree
-  + 
+  + kbd ::
+    - ==C-c C-x <== to turn on the agenda restriction lock on the current subtree :: keeps agenda focused on only current subtree
+      + alarms and notifications are still active outside the agenda restriction ::
+    - ==C-c C-x >== to turn off the agenda restriction lock, and return agenda view back to normal ::
+    - ==N== narrows to the current task subtree :: this is the same as same as ==C-c C-x <==
+    - ==U== narrows to the parent subtree of this task :: goes up one level and narrows to that subtree
+    - ==P== narrows to the entire project containing this task :: goes up the tree to the top-level ==TODO== keyword and selects that as the subtree to narrow to
+    - ==W== removes the restriction :: widens the buffer
+  + notes ::
+    - limiting allows to set the restriction lock from agenda *to task directly* (instead of automatically moving up the tree to the project level task)
+    - can easily move the *restriction lock up a level* by visiting the task in the org file *and going up and resetting the lock* (in case one wants to see how the project is moving)
+    - since sometimes an entire *project can have too many tasks* in it, and one wants to *limit the view* to part of the subtree, it's possible to use ==N== and ==U== key bindings to adjust the narrowed region
+    - the keybinds set by bh (see 'kbd' next) can be used to restrict the *agenda*, and *org-buffer* to *subtree, parent task, and project task*, as well as *remove the restriction*
+      + hence, these *keys work both* in the *agenda* and as speed commands *on a headline* in the org-file
+    - restriction kbds ::
+      + ==N== narrows to the current task subtree :: this is the same as same as ==C-c C-x <==
+      + ==U== narrows to the parent subtree of this task :: goes up one level and narrows to that subtree
+      + ==P== narrows to the entire project containing this task :: goes up the tree to the top-level ==TODO== keyword and selects that as the subtree to narrow to
+      + ==W== removes the restriction :: widens the buffer
+  + bh added key bindings for the agenda to allow using ==C-c C-x <== in the agenda to set the restriction lock to the current task directly ::
+    - that is done with the following setup ::
+      #+begin_src emacs-lisp
+      (add-hook 'org-agenda-mode-hook
+                '(lambda () (org-defkey org-agenda-mode-map "\C-c\C-x<" 'bh/set-agenda-restriction-lock))
+                'append)
+      
+      (defun bh/set-agenda-restriction-lock (arg)
+        "Set restriction lock to current task subtree or file if prefix is specified"
+        (interactive "p")
+        (let* ((pom (bh/get-pom-from-agenda-restriction-or-point))
+               (tags (org-with-point-at pom (org-get-tags-at))))
+          (let ((restriction-type (if (equal arg 4) 'file 'subtree)))
+            (save-restriction
+              (cond
+               ((and (equal major-mode 'org-agenda-mode) pom)
+                (org-with-point-at pom
+                  (org-agenda-set-restriction-lock restriction-type))
+                (org-agenda-redo))
+               ((and (equal major-mode 'org-mode) (org-before-first-heading-p))
+                (org-agenda-set-restriction-lock 'file))
+               (pom
+                (org-with-point-at pom
+                  (org-agenda-set-restriction-lock restriction-type))))))))
+      #+end_src
+  + set restrictions highlighting to only affect the headline (headings) and not the entire body of the agenda restriction ::
+    #+begin_src emacs-lisp
+    ;; Limit restriction lock highlighting to the headline only
+    (setq org-agenda-restriction-lock-highlight-subtree nil)
+    #+end_src
 
 * Programming language specific
 
