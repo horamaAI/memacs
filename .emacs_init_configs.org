@@ -3456,7 +3456,15 @@
     #+end_src
 
 *** Handling blank lines
-  + 
+  + automatically *hide* blank lines between headlines while (un)folding ((un)collapse) headlines (with ==TAB==) ::
+    #+begin_src emacs-lisp
+    (setq org-cycle-separator-lines 0)
+    #+end_src
+  + prevent creating blank lines before headings, but allow list items to adapt to existing blank lines around the items ::
+    #+begin_src emacs-lisp
+    (setq org-blank-before-new-entry (quote ((heading)
+                                             (plain-list-item . auto))))
+    #+end_src
 
 * Programming language specific
 
