@@ -3449,12 +3449,11 @@
 
 ** Org Task structure and presentation (to control how tasks are displayed while working on org-mode files)
 *** org-indent mode
-  + org-indent removes indentation in org-file on lines that are not headlines, and displays prefixed them with virtual space as if they were indented to vertically align with the headline text
-    - 
+  + org-indent removes indentation in org-file on lines that are not headlines, and displays prefixed them with virtual space as if they were indented to vertically align with the headline text 
   + turn on ==org-indent== at startup ::
-#+begin_src emacs-lisp
-(setq org-startup-indented t)
-#+end_src
+    #+begin_src emacs-lisp
+    (setq org-startup-indented t)
+    #+end_src
 
 *** Handling blank lines
   + 
