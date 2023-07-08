@@ -3391,7 +3391,28 @@
     #+end_src
 
 ** Handling checklists
-  + 
+  + checklists :: great for repeated tasks with lots of things that need to be done
+    - for repeating tasks, instead of manually resetting the checklists when the task is ==DONE==, ==org-checklist== can automatically uncheck the boxes when the task is marked done ::
+  + setup ::
+    #+begin_src emacs-lisp
+    ; load org-checklist.el from org-contrib
+    (add-to-list 'load-path (expand-file-name "~/Documents/repos/opt/org-contrib/lisp"))
+    
+    (require 'org-checklist)
+    #+end_src
+  + use in a task :: simply set the property ==RESET_CHECK_BOXES== to ==t== :
+    #+begin_src org :exports src
+    ,* TODO Invoicing and Archive Tasks [0/7]
+      DEADLINE: <2009-07-01 Wed +1m -0d> 
+      :PROPERTIES:
+      :RESET_CHECK_BOXES: t
+      :END:
+    
+      - [ ] Do task 1
+      - [ ] Do task 2
+      ...
+      - [ ] Do task 7
+    #+end_src
 
 * Programming language specific
 
