@@ -343,7 +343,7 @@ version 3.22 already installed
      - https://www.localsolver.com/doccenter.html
 
 ** Other learning tasks
-*** git repository backup : https://bruhtus.github.io/posts/git-repo-backup/
+*** TODO git repository backup : https://bruhtus.github.io/posts/git-repo-backup/
 *** TODO Web assembly
      - https://www.youtube.com/watch?v=3sU557ZKjUs
      - https://marcoselvatici.github.io/WASM_tutorial/
@@ -407,6 +407,9 @@ version 3.22 already installed
     - note :: julia seems to be kind of cancelled as not drawing much attraction in the community, so, maybe drod it... ?
     - https://julialang.univ-nantes.fr/julianantes/documents/
     - https://www.juliabloggers.com/linear-programming-in-julia-with-glpk-and-jump/?utm_source=ReviveOldPost&utm_medium=social&utm_campaign=ReviveOldPost
+*** TODO not optional, but misc
+  + melpa, elpa, non elpa ::
+    - https://www.reddit.com/r/emacs/comments/nmykrg/org_elpa_will_be_shutting_down_and_org_contrib/
 *** TODO optional
      - https://training.linuxfoundation.org/training/introduction-to-kubernetes/
      - https://docs.docker.com/engine/install/debian/

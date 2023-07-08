@@ -3415,7 +3415,40 @@
     #+end_src
 
 ** Dealing with blocked tasks
-  + 
+  + reminder: blocked tasks :: tasks that have subtasks which are not in a done todo state
+    - with bh config :: blocked tasks show up in a grayed font by default in the agenda
+  + to enforce entries to not get ==DONE== while some tasks are in blocked state ::
+    - plus, if an entry has a property ==ORDERED==, each of its TODO children is *blocked* until *all earlier siblings* are marked as done
+  + enable tasks blocking ::
+    #+begin_src emacs-lisp
+    (setq org-enforce-todo-dependencies t)
+    #+end_src
+  + enable tasks blocking with ==ORDERED== property on subtasks, eg ::
+    #+begin_src org :exports src
+    ,* TODO Some Task
+      :PROPERTIES:
+      :ORDERED: t
+      :END:
+    ,** TODO Step 1
+    ,** TODO Step 2, needs to wait for Step 1
+    ,** TODO Step 3, needs to wait for Step 1 and Step 2  
+    #+end_src
+  + enable tasks blocking for repeating tasks ::
+    - does not work well for repeating tasks where not all of the subtasks need to be complete before the next repeat cycle
+      + workaround :: set a permanent property on repeating tasks by overriding the blocking setting :
+	#+begin_src org :exports src
+	,* TODO New Repeating Task
+	  SCHEDULED: <2009-06-16 Tue +1w>
+	  :PROPERTIES:
+	  :NOBLOCKING: t
+	  :END:
+	  ...
+	,** TODO Subtask  
+	#+end_src
+      + the property above prevents ==New Repeating Task== from being blocked if some of the items under it are not complete :: 
+
+** Org Task structure and presentation
+  + to set how tasks are displayed while one is working on some org-mode files
 
 * Programming language specific
 
