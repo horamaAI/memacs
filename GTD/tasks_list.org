@@ -411,6 +411,9 @@ version 3.22 already installed
   + melpa, elpa, non elpa ::
     - https://www.reddit.com/r/emacs/comments/nmykrg/org_elpa_will_be_shutting_down_and_org_contrib/
   + snapshots :: https://unix.stackexchange.com/questions/108131/how-are-filesystem-snapshots-different-from-simply-making-a-copy-of-the-files
+  + org-mode ::
+    - insert files :: https://www.reddit.com/r/emacs/comments/6aqsj8/insert_content_from_another_file/
+    - include files :: https://orgmode.org/manual/Include-Files.html
 *** TODO optional
      - https://training.linuxfoundation.org/training/introduction-to-kubernetes/
      - https://docs.docker.com/engine/install/debian/
