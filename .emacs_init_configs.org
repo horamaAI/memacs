@@ -3414,6 +3414,9 @@
       - [ ] Do task 7
     #+end_src
 
+** Dealing with blocked tasks
+  + 
+
 * Programming language specific
 
 ** C++

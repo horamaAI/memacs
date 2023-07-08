@@ -343,6 +343,7 @@ version 3.22 already installed
      - https://www.localsolver.com/doccenter.html
 
 ** Other learning tasks
+*** git repository backup : https://bruhtus.github.io/posts/git-repo-backup/
 *** TODO Web assembly
      - https://www.youtube.com/watch?v=3sU557ZKjUs
      - https://marcoselvatici.github.io/WASM_tutorial/
