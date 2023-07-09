@@ -3466,6 +3466,20 @@
                                              (plain-list-item . auto))))
     #+end_src
 
+*** Adding new tasks quickly without disturbing the current task content
+  + fast insertion of new headings in a project (possibly with a ==TODO== keyword) with :: ==C-RET==, ==C-S-RET==, ==M-RET==, and ==M-S-RET== :
+    #+begin_src emacs-lisp
+    (setq org-insert-heading-respect-content nil)
+    #+end_src
+  + ==C-== vs ==M-== ::
+    + for the ==C-== version :: org respects the content (adds the new heading after the content of the current item)
+      - when entering ==C-S-RET== in the middle of an entry :: the new heading is added after the body of the current entry
+    + for the ==M-== version :: org inserts the heading at point
+      - with ==M-S-RET== :: can split an entry in the middle
+
+*** Notes at the top
+  + 
+
 * Programming language specific
 
 ** C++
