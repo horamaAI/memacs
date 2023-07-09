@@ -3478,7 +3478,15 @@
       - with ==M-S-RET== :: can split an entry in the middle
 
 *** Notes at the top
-  + 
+  + kbd ::
+    - entering notes :: ==C-c C-z==
+      + entering notes *in the agenda* :: ==z==
+  + changing tasks states can also prompt for a note (e.g. moving to ==WAITING== prompts for a note, then enter reason why task is waiting) ::
+    - these notes are saved at the top of the task so *unfolding the task shows the note first* :: 
+  + setup ::
+    #+begin_src emacs-lisp
+    (setq org-reverse-note-order nil)
+    #+end_src
 
 * Programming language specific
 
