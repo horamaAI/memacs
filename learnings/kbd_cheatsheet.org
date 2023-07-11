@@ -45,12 +45,13 @@
  - keep current window, close others :: C-x 1
 
 *** file navigation
- - move forward/backward on word :: M-f/M-b
+ - move forward/backward on word :: ==M-f/M-b==
  - search and replace ::
-   + search forward/backward :: C-s/C-r
-   + with REGEX search forward/backward :: C-M-s/C-M-r
-   + query replace (search and replace) :: M-S-5
-   + with REGEX query replace (search and replace) :: C-M-S-5
+   + search forward/backward :: ==C-s/C-r==
+   + with REGEX search forward/backward :: ==C-M-s/C-M-r==
+   + query replace (search and replace) :: ==M-S-5==
+   + with REGEX query replace (search and replace) :: ==C-M-S-5==
+   + regex search on current file of *all* matching results in a collapsed view :: ==C-c / /==
 
 *** file edition
  - select all :: C-x h

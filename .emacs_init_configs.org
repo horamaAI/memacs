@@ -3488,6 +3488,22 @@
     (setq org-reverse-note-order nil)
     #+end_src
 
+*** Showing results of searches
+  + reminder ::
+    - regex search on current file of *all* matching results in a collapsed view :: ==C-c / /==
+  + with bh settings ::
+    - org-mode show the hierarchy of tasks above the matched entries and also the immediately following sibling task (but not all siblings) ::
+      + advantage :: compact display, and mitigates accidental errors by cutting too much data from org file with ==C-k== for example (cutting folded data (including the …) cuts text, including following hidden uncollapsed subtrees)
+    - setup ::
+      #+begin_src emacs-lisp
+      (setq org-show-following-heading t)
+      (setq org-show-hierarchy-above t)
+      (setq org-show-siblings (quote ((default))))
+      #+end_src
+
+*** Editing and Special key handling
+  + 
+
 * Programming language specific
 
 ** C++
