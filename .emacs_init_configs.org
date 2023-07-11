@@ -3550,6 +3550,23 @@
     - to open the attachment for a task :: ==C-c C-a o==
 
 ** Deadlines and Agenda Visibility
+  + set as default to see deadlines and due dates in the agenda 30 days before the due date :: to prepare for the task so that it is completed on or before the due date
+    #+begin_src emacs-lisp
+    (setq org-deadline-warning-days 30)
+    #+end_src
+  + can also use deadlines for repeating tasks ::
+    - if the task repeats more often than once per month, could always keep bugging on the agenda view
+    - can adapt to repeating tasks more often by setting directly on the property an explicit deadline warning date ::
+      + setup ::
+	#+begin_src org :exports src
+	,* TODO Pay Wages
+	  DEADLINE: <2009-07-01 Wed +1m -0d>   
+	#+end_src
+      + in example :: the task repeats monthly and shows up in the agenda on the day it is due (with no prior warning)
+    - can set any number of lead days on ==DEADLINES== using ==-Nd== where N is the number of days in advance the task should show up in the agenda
+    - if no value is specified the default ==org-deadline-warning-days== is used
+
+** Exporting Tables to CSV
   + 
 
 * Programming language specific
