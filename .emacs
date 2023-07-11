@@ -1179,6 +1179,8 @@ Skip project and sub-project tasks, habits, and loose non-project tasks."
 ;; get rid of validate link at the bottom of published html files
 (setq org-html-validation-link nil)
 
+;; set repeated C-a to go to headline
+(setq org-special-ctrl-a/e t)
 
 ;; open file on start
 (find-file "/home/myfirstdebianpc/Documents/repos/org/memacs/GTD/tasks_list.org")

@@ -3502,6 +3502,21 @@
       #+end_src
 
 *** Editing and Special key handling
+  + notes ::
+    - org-mode allows special handling of the ==C-a==, ==C-e==, and ==C-k== keys when editing headlines
+    - plus, can also use the setting that yanks (pastes) subtrees and adjusts the levels to match the task where pasting to (see the docstring (==C-h v org-yank-adjust-subtrees==) for more details on each variable and what it does).
+    - settings ::
+      + ==org-special-ctrl-a/e== :: to enable special easy access to the beginning and end of headlines
+	- can use ==M-m== or ==C-a C-a== to get to the beginning of the line so the speed commands work
+	- and ==C-a== to give easy access to the beginning of the heading text when needed
+      + setups ::
+	#+begin_src emacs-lisp
+	(setq org-special-ctrl-a/e t)
+	(setq org-special-ctrl-k t)
+	(setq org-yank-adjusted-subtrees t)
+	#+end_src
+
+** Attachments
   + 
 
 * Programming language specific

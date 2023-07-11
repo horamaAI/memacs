@@ -15,11 +15,12 @@
 
 ** help
  - describe tool :: C-h 'c' // where 'c' is what one wants described
-   + describe bindings :: C-h b
-   + describe function :: C-h f
-   + describe variable :: C-h v
-   + describe mode :: C-h m
-   + describe syntax :: C-h s
+   + describe bindings :: ==C-h b==
+   + describe function :: ==C-h f==
+   + describe variable :: ==C-h v==
+     - eg: ==C-h v org-yank-adjust-subtrees== :: "non-nil means when yanking subtrees, adjust the level. With this setting, ‘org-paste-subtree’ is used to insert the subtree"
+   + describe mode :: ==C-h m==
+   + describe syntax :: ==C-h s==
 ** install packages with Melpa/Elpa
    - install package with melpa :: M-x package-install
    - list available packages with melpa (and install if needed) :: M-x package-list-packages
