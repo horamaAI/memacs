@@ -3517,6 +3517,39 @@
 	#+end_src
 
 ** Attachments
+  + notes ::
+    - great for getting *large amounts* of data related to the project out of the org-mode files
+    - set up org-mode to generate unique attachment IDs with ==org-id-method== ::
+      #+begin_src emacs-lisp
+      (setq org-id-method (quote uuidgen))
+      #+end_src
+    - process ::
+      - let's say you want to attach file ==x.sql== to current buffer :: create it in ==/tmp/x.sql==, and save it
+      - attach the file with ==C-c C-a a==, and enter the filename: ==x.sql== ::
+	+ this generates a unique ID for the task and adds the file in the attachment directory ::
+	+ The attached file is saved for example in :: ==folderx/f1/d38e9a-ff70-4cc4-ab50-e8b58b2aaa7b/==
+	  - where it goes exactly isn't really important as long as it is saved and retrievable easily
+	  - org-mode copies the original file ==/tmp/x.sql== into the appropriate attachment directory
+	+ example of result ::
+	  #+begin_src org :exports src
+	  ,* Attachments                                                        :ATTACH:
+	    :PROPERTIES:
+	    :Attachments: x.sql
+	    :ID:       f1d38e9a-ff70-4cc4-ab50-e8b58b2aaa7b
+	    :END:  
+	  #+end_src
+    - further notes ::
+      + the ==ID== changes for every task header when a new ==ID== is generated
+      + tasks with attachments automatically get an ==ATTACH== tag
+	- so, easy to find tasks with attachments with a *tag search*
+      + to open the attachment for a task : ==C-c C-a o==
+	- prompts for the attachment to open, and ==TAB== completion works here
+      + possible to use named directories for attachments, but need to test it yourself
+  + kbd ::
+    - attach a file to current buffer :: ==C-c C-a a==
+    - to open the attachment for a task :: ==C-c C-a o==
+
+** Deadlines and Agenda Visibility
   + 
 
 * Programming language specific
