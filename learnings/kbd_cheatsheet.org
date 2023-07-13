@@ -46,6 +46,10 @@
  - keep current window, close others :: C-x 1
 
 *** file navigation
+ - selection ::
+   + select all :: ==C-x h==
+   + select column :: ==C-x SPACE==
+     - insert text inside selected region :: C-x r t
  - move forward/backward on word :: ==M-f/M-b==
  - search and replace ::
    + search forward/backward :: ==C-s/C-r==
@@ -55,21 +59,19 @@
    + regex search on current file of *all* matching results in a collapsed view :: ==C-c / /==
 
 *** file edition
- - select all :: C-x h
- - edit link :: C-c C-l
- - deactivate/activate auto-fill (line break) in current buffer :: C-c q
- - duplicate line :: C-c d
- - select column :: C-x SPACE
-   + insert text inside selected region :: C-x r t
- - to escape character, use 'zero width character' :: C-x 8 <RET> 200B <RET>
-   * eg :: to write link example in plain text, use ['x'​[file:remember.org][remember]], where 'x' denotes the zero width character
- - insert link ::
-   + to another file :: [​[file:remember.org][remember]]
-   + image :: [​[file:img/test.jpg]]
+ - links ::
+   + edit link :: ==C-c C-l==
+   + insert link ::
+     - to another file :: [​[file:remember.org][remember]]
+     - image :: [​[file:img/test.jpg]]
+ - deactivate/activate auto-fill (line break) in current buffer :: ==C-c q==
+ - duplicate line :: ==C-c d==
+ - escape character :: use 'zero width character' :: ==C-x 8 <RET> 200B <RET>==
+   + eg :: to write link example in plain text, use ['x'​[file:remember.org][remember]], where 'x' denotes the zero width character
  - insert inclusion (include from other file) ::
    + source :: https://orgmode.org/manual/Include-Files.html
    + ​#​+INCLUDE: "~/path-to-source-org-file.org" :minlevel 1 :: 'minlevel' to skip adding the included part headers as child, but rather add it as sibling
- - add source code field (into ) :: C-c C-,
+ - add source code field (into ) :: ==C-c C-,==, process :
    1. select s (displayed as [s]) for src code
    2. add type of source code needed (eg: c++ for #+begin_src c++; R for #+begin_src R, etc.)
    3. eg ::
