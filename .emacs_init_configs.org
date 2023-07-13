@@ -3592,6 +3592,30 @@
     - manually create the second frame :: ==C-x 5 2==
       + or split the window :: ==C-x 4 2== or ==C-X 4 3==
 
+** Logging
+  + logging setup ::
+    #+begin_src emacs-lisp
+    ;; my version
+    (setq org-log-done (quote ((time)     ;; keep track of when a todo item was done => when toggled to done, a line ‘CLOSED: [timestamp]’ is inserted just after the headline
+                               (note))))  ;; to record a note along with the timestamp
+    ;; bh version
+    ;; (setq org-log-done (quote time))
+    (setq org-log-into-drawer t)
+    (setq org-log-state-notes-insert-after-drawers nil)
+    #+end_src
+  + from ==org-todo-keywords== (see config above), with logging settings, a log entry is added whenever a task moves to any of the following states ::
+    - to or out of ==DONE== status
+    - to ==WAITING== status (with a note) or out of ==WAITING== status
+    - to ==HOLD== status
+    - to ==CANCELLED== status (with a note) or out of ==CANCELLED== status
+  + clock times and states are kept in the ==LOGBOOK== drawer to keep tasks uncluttered ::
+    - eg ::
+      + if a task is ==WAITING== then the reason why is near the top of the ==LOGBOOK==, and unfolding the ==LOGBOOK== drawer provides that information
+      + from the agenda, simply hitting ==SPC== on the task will reveal the ==LOGBOOK== drawer
+
+** Limiting time spent on tasks
+  + 
+
 * Programming language specific
 
 ** C++
@@ -3655,8 +3679,6 @@
  #+end_src
 
 
- (setq org-log-done 'time) ;; keep track of when a todo item was done => when toggled to done, a line ‘CLOSED: [timestamp]’ is inserted just after the headline.
- (setq org-log-done 'note) ;; to record a note along with the timestamp
 
 
 
