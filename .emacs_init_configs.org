@@ -3614,7 +3614,32 @@
       + from the agenda, simply hitting ==SPC== on the task will reveal the ==LOGBOOK== drawer
 
 ** Limiting time spent on tasks
-  + 
+  + notes ::
+    - org-mode has this great feature for signalling alarms *when the estimated time for a task is reached*
+    - can be used to limit the amount of time spent on a task (during the day for example)
+  + eg ::
+    - suppose clocked on a task estimated at 1h ::
+      #+begin_src org :exports src
+      ,* NEXT Document my use of org-mode
+        :LOGBOOK:...
+        :PROPERTIES:
+        :CLOCK_MODELINE_TOTAL: today
+        :Effort:   1:00
+        :END:  
+      #+end_src
+    - when clocked in, the task shows the total in the mode-line as follows :: (35 minutes out of estimated 1 hour so far)
+      : --:**  org-mode.org   91% (2348,73) Git:master  (Org Fly yas Font)-----[0:35/1:00 (Document my use of org-mode)]-------
+    - alarm sets off + message stating to be done working on this task :: 
+  + if one switches task, and try to clock in on clock limited task again, the sound goes off each and every time the task is clocked on :: incentive to work on something else :-)
+  + set up alarm for when effort limit is passed (will show a message too) ::
+    #+begin_src emacs-lisp
+    (setq org-clock-sound "/usr/local/lib/mechanicus-Children_of_the_Omnissiah.mp3")
+    #+end_src
+  + similar setups for repeated tasks ::
+    - by default the last repeat time is recorded as a property when a repeating task is marked done
+    - for repeating tasks, the mode-line clock total counts since the last repeat time by default. This lets one accumulate time over multiple days and counts towards estimated effort limit
+
+** Habit Tracking
 
 * Programming language specific
 
