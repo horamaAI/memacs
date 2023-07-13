@@ -3566,7 +3566,17 @@
     - can set any number of lead days on ==DEADLINES== using ==-Nd== where N is the number of days in advance the task should show up in the agenda
     - if no value is specified the default ==org-deadline-warning-days== is used
 
-** Exporting Tables to CSV
+** Exporting Tables to CSV (comma delimited values)
+  + create csv by exporting org-mode tables as comma delimited values (can also export as TAB delimited values)
+  + set default value to csv ::
+    #+begin_src emacs-lisp
+    (setq org-table-export-default-format "orgtbl-to-csv")
+    #+end_src
+  + process ::
+    - put cursor inside table ::
+    - hit ==M-x org-table-export== :: prompts for a filename and the format which defaults to orgtbl-to-csv from setting above
+
+** Minimize Emacs Frames
   + 
 
 * Programming language specific
