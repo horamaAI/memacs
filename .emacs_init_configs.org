@@ -3794,6 +3794,19 @@
   + excluding the ‘crypt’ tag from inheritance prevents already encrypted text from being encrypted again :: 
 
 *** Auto Save Files and encryption
+  + notes ::
+    - autosave feature is pretty great
+    - emacs temporarily saves buffers in an autosave file while one is editing their org buffer and a sufficient number of changes have accumulated
+    - if one has decrypted subtrees in their buffers, these will be written to disk *in plain text* which possibly leaks sensitive information
+    - to prevent this, org-mode now asks if one wants to disable the autosave functionality in the current buffer
+      + hence the utility seen previously of keep decrypted entries as minimal as possible, so that when autosaving the temporary file is also encrypted
+      + when need a clear encrypted entry lookup, do it and directly save it so that it is encrypted again
+  + setup to disable ==org-crypt-disable-auto-save== :: but *careful*, autosave will still be active
+    #+begin_src emacs-lisp
+    (setq org-crypt-disable-auto-save nil)
+    #+end_src
+
+** Speed Commands
   + 
 
 * Programming language specific
