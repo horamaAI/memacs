@@ -3639,7 +3639,64 @@
     - by default the last repeat time is recorded as a property when a repeating task is marked done
     - for repeating tasks, the mode-line clock total counts since the last repeat time by default. This lets one accumulate time over multiple days and counts towards estimated effort limit
 
-** Habit Tracking
+** Habits and org-mode
+*** Habit Tracking
+  + notes ::
+    - try to develop habits, good for health
+    - logging of ==DONE== states habits need to be enabled for habit tracking
+    - a habit is just like a regular task except it has a special ==PROPERTY== value setting and a special ==SCHEDULED== date entry for example like this ::
+      + example ::
+	#+begin_src org :exports src
+	,* TODO Update Org Mode Doc
+	  SCHEDULED: <2009-11-21 Sat .+7d/30d>
+	  [2009-11-14 Sat 11:45]
+	  :PROPERTIES:
+	  :STYLE: habit
+	  :END:  
+	#+end_src
+      + the property marks the task as a habit and separates it from the regular task display on the agenda
+      + can use the special ==SCHEDULED== entry to state that one wants to do this every day, but at least every 2 days
+	- if 3 days go without marking it ==DONE==, it shows up RED on the agenda indicating that the habit has been neglected
+      + when a habit is ==DONE==, it shows up on the daily agenda the next time based on the first interval in the ==SCHEDULED== entry (==.+7d== in previous example)
+	- the period (==.xd==), indicates that the task will reschedule the item x days after it is completed
+      + in case of delay, one can hide and display habits quickly using the ==K== key on the agenda
+  + kbd ::
+    - hide/display habits on the agenda :: ==K==
+  + settings for habit tracking :: 
+    #+begin_src emacs-lisp
+    ; Enable habit tracking (and a bunch of other modules)
+    (setq org-modules (quote (org-bbdb
+                              org-bibtex
+                              org-crypt
+                              org-gnus
+                              org-id
+                              org-info
+                              org-jsinfo
+                              org-habit
+                              org-inlinetask
+                              org-irc
+                              org-mew
+                              org-mhe
+                              org-protocol
+                              org-rmail
+                              org-vm
+                              org-wl
+                              org-w3m)))
+    
+    ; position the habit graph on the agenda to the right of the default
+    (setq org-habit-graph-column 50)
+    #+end_src
+  + recommended process ::
+    - during the day and when not needed, turn off the habit display in the agenda with ==K==
+      + and if kept Emacs running for days at a time, habits display don't come back
+    - but, to make sure that habits are displayed daily, one can have settings to redisplay the habits in the agenda each day
+    - eg, the following turns the habit display on again at 6AM each morning ::
+      #+begin_src emacs-lisp
+      (run-at-time "06:00" 86400 '(lambda () (setq org-habit-show-habits t)))
+      #+end_src
+
+*** Habits only log DONE state changes
+  + 
 
 * Programming language specific
 
