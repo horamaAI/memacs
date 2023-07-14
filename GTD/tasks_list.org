@@ -451,6 +451,8 @@ version 3.22 already installed
 * Habit
   :PROPERTIES:
   :CATEGORY: Habit
+  :LOGGING:  DONE(!)
+  :ARCHIVE:  %s_archive::* Habits
   :END:
 
 * Health

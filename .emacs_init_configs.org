@@ -3695,7 +3695,23 @@
       (run-at-time "06:00" 86400 '(lambda () (setq org-habit-show-habits t)))
       #+end_src
 
-*** Habits only log DONE state changes
+*** Habits: only log ==DONE== state changes
+  + tips ::
+    - keep habits under a level 1 task ==* Habits== with a special logging property that only logs changes to ==DONE== state
+      + this allows cancelling a habit and not record a timestamp for it and mess up the habit graph
+	- cancelling a habit just to get it off the agenda since for example it's undoable (like get up before 6AM) should not mark the habit as done today
+	- should only cancel habits that repeat every day
+    - prefer having one habit heading in every org file that can have habits defined
+  + example :: 
+    #+begin_src org :exports src
+    ,* Habits
+      :PROPERTIES:
+      :LOGGING:  DONE(!)
+      :ARCHIVE:  %s_archive::* Habits
+      :END:  
+    #+end_src
+
+** Auto revert mode
   + 
 
 * Programming language specific

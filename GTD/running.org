@@ -1,0 +1,15 @@
+# -*- mode: org -*-
+#+title: Running TODO and related task org-mode file
+
+
+* Training
+
+* Habit
+  :PROPERTIES:
+  :CATEGORY: Habit
+  :LOGGING:  DONE(!)
+  :ARCHIVE:  %s_archive::* Habits
+  :END:
+
+* Diet
+
