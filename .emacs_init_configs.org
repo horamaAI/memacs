@@ -3712,6 +3712,23 @@
     #+end_src
 
 ** Auto revert mode
+  + notes ::
+    - need :: when for example one needs to synchronize org-mode files between different machines (eg: laptop and workstation)
+      + not easy scenario with git ::
+	1. save all latest changes
+	2. push to a bare repo
+	3. fetch on the other system
+	4. revert all org-mode files to get the updated information
+    - easier alternative with ==global-auto-revert-mode== ::
+    - with the setting :: any files that change on disk, where there are no changes in the buffer, automatically revert to the on-disk version
+      + great for synchronizing org-mode files between systems
+      + 
+  + activate setup :: 
+    #+begin_src emacs-lisp
+    (global-auto-revert-mode t)
+    #+end_src
+
+** org-mode and encryption
   + 
 
 * Programming language specific
