@@ -3732,6 +3732,68 @@
     #+end_src
 
 ** org-mode and encryption
+*** Handling encryption
+  + notes ::
+    - instead of using encryption wallets to store passwords, one can keep them in org-mode files with special tags
+    - encrypted data will be kept in the org-mode file associated with the raw file
+  + ==org-crypt== allows tag headings with a special tag ==crypt==, and org-mode can keep data in these headings encrypted when saved to disk
+    - can decrypt the heading temporarily when need access to the data and org-mode re-encrypts the heading as soon as you save the file
+    - any text below a headline that has a ==crypt== tag is automatically encrypted when the file is saved
+      + to use a different tag, can customize the ==org-crypt-tag-matcher== setting
+  + setups ::
+    - source :: official org-mode documentation (https://orgmode.org/manual/Org-Crypt.html)
+      #+begin_src emacs-lisp
+      (require 'org-crypt)
+      (org-crypt-use-before-save-magic)
+      (setq org-tags-exclude-from-inheritance '("crypt"))
+      
+      ;(setq org-crypt-key nil)
+      ;; GPG key to use for encryption.
+      ;; nil means  use symmetric encryption unconditionally.
+      ;; "" means use symmetric encryption unless heading sets CRYPTKEY property.
+      
+      (setq auto-save-default nil)
+      ;; Auto-saving does not cooperate with org-crypt.el: so you need to
+      ;; turn it off if you plan to use org-crypt.el quite often.  Otherwise,
+      ;; you'll get an (annoying) message each time you start Org.
+      
+      ;; To turn it off only locally, you can insert this:
+      ;;
+      ;; # -*- buffer-auto-save-file-name: nil; -*-
+      #+end_src
+    - bh config ::
+      #+begin_src emacs-lisp
+      ; (require 'org-crypt)
+      
+      ; Encrypt all entries before saving
+      ; (org-crypt-use-before-save-magic)
+      ; (setq org-tags-exclude-from-inheritance (quote ("crypt")))
+      
+      ; GPG key to use for encryption
+      (setq org-crypt-key "F0B66B40")
+      #+end_src
+  + process ::
+    - ==M-x org-decrypt-entry== prompts for the passphrase associated with the encryption key and replace the encrypted data where the point is with the plaintext details for your encrypted entry ::
+    - as soon as the file is saved, the data is re-encrypted for the key ::
+    - encrypting does not require prompting for the passphrase - that's only for looking at the plain text version of the data :: 
+  + tips ::
+    - prefer having a single level 1 encrypted entry per file (like ==* Passwords==)
+    - prevent the ==crypt== tag from using inheritance so not to have encrypted data inside encrypted data
+    - ==M-x org-decrypt-entries== prompting for the passphrase to decrypt data over and over again (once per entry to decrypt) can be too inconvenient
+      + so, try to leave entries encrypted unless need to look up data - decrypt on demand and then save the file again to re-encrypt the data, this keeps the data in plain text as short as possible
+  + possible to use different keys for different headings by specifying the respective key as property ==CRYPTKEY== ::
+    - e.g. ::
+      #+begin_src org :exports src
+      ,* Totally secret :crypt:
+        :PROPERTIES:
+        :CRYPTKEY: 0x0123456789012345678901234567890123456789
+        :END:  
+      #+end_src
+    - note that ==CRYPTKEY== property is only effective when ==org-crypt-key== is set to ==non-nil==
+      + ==nil== value of ==org-crypt-key== makes org-mode use symmetric encryption unconditionally
+  + excluding the ‘crypt’ tag from inheritance prevents already encrypted text from being encrypted again :: 
+
+*** Auto Save Files and encryption
   + 
 
 * Programming language specific
