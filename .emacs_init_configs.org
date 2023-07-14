@@ -3720,9 +3720,12 @@
 	3. fetch on the other system
 	4. revert all org-mode files to get the updated information
     - easier alternative with ==global-auto-revert-mode== ::
+      + this automatically reverts the buffer when its visited file changes on disk
+      + ==global-auto-revert-mode== does that for all file buffers
     - with the setting :: any files that change on disk, where there are no changes in the buffer, automatically revert to the on-disk version
       + great for synchronizing org-mode files between systems
-      + 
+      + saves step 4. above
+      + auto revert will not revert a buffer if it has unsaved changes, or if its file on disk is deleted or renamed
   + activate setup :: 
     #+begin_src emacs-lisp
     (global-auto-revert-mode t)
