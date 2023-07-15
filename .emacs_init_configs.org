@@ -3932,6 +3932,16 @@
     #+end_src
 
 ** Add (require) a final newline when saving files
+  + utility :: mainly for editing yasnippets (template system for Emacs, allows to type an abbreviation and automatically expand it into function templates)
+    - great for anything: programming autocomplete, orgmode, etc.
+    - settings helps to expand a snippet but stay on the same line
+    - perfect way to for replacing short strings or initials with full names for people during meeting notes
+  + thanks to ==abbrev-mode-==, no longer need to fuss :: when saving a file in Emacs, add a final newline that fits better with the source code projects that is usually worked on ::
+    #+begin_src emacs-lisp
+    (setq require-final-newline t)
+    #+end_src
+
+** Insert inactive timestamps and exclude from export
   + 
 
 * Programming language specific
