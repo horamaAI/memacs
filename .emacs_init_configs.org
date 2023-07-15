@@ -3806,7 +3806,127 @@
     (setq org-crypt-disable-auto-save nil)
     #+end_src
 
-** Speed Commands
+** Speed Commands with ==org-speed-commands==
+  + kbd (default speed command keys) ::
+    - ==I== and ==O== for clocking in and out
+    - ==J== to jump to current or last clocking task
+    - ==t== to change todo state
+  + speed commands :: allow access to frequently used commands when on the beginning of a headline (similar to one-key agenda commands)
+    - speed commands are user configurable and org-mode provides a good set of default commands
+  + tips ::
+    - can override the default settings for the 1, 2, and 3 keys if one doesn't use priorities
+    - disable cycling with ==c==, and add ==q== as a quick way to get back to the agenda and update the current view
+  + default org-speed ==org-speed-commands-default== already sets plenty of useful speed keys ::
+    - eg ::
+      + ==I== and ==O== :: for clocking in and out
+      + ==J== :: jump to current or last clocking task
+      + ==t== :: change todo state
+      + ==TAB== and ==S-TAB== :: for cycling
+      + ==c== and ==C== :: are disabled by bh so they do not accidentally self insert when not intended to
+    - example setup ::
+    #+begin_src org :exports src
+    ,(("Outline Navigation")
+     ("n" org-speed-move-safe 'outline-next-visible-heading)
+     ("p" org-speed-move-safe 'outline-previous-visible-heading)
+     ...
+     ("g" org-refile t)
+     ("Outline Visibility")
+     ("c" . org-cycle)
+     ("C" . org-shifttab)
+     ...
+     ("Outline Structure Editing")
+     ("U" . org-shiftmetaup)
+     ("D" . org-shiftmetadown)
+     ...
+     ("#" . org-toggle-comment)
+     ("Clock Commands")
+     ("I" . org-clock-in)
+     ("O" . org-clock-out)
+     ("Meta Data Editing")
+     ("t" . org-todo)
+     ("," org-priority)
+     ("0" org-priority 32)
+     ("1" org-priority 65)
+     ("2" org-priority 66)
+     ...
+     ("W" lambda
+      (m)
+      (interactive "sMinutes before warning: ")
+      (org-entry-put
+       (point)
+       "APPT_WARNTIME" m))
+     ("Agenda Views etc")
+     ("v" . org-agenda)
+     ("/" . org-sparse-tree)
+     ("Misc")
+     ("o" . org-open-at-point)
+     ("?" . org-speed-command-help)
+     ("<" org-agenda-set-restriction-lock 'subtree)
+     (">" org-agenda-remove-restriction-lock))
+    #+end_src
+  + setup ::
+    #+begin_src emacs-lisp
+    (setq org-use-speed-commands t)
+    (setq org-speed-commands-user (quote (("0" . ignore)
+                                          ("1" . ignore)
+                                          ("2" . ignore)
+                                          ("3" . ignore)
+                                          ("4" . ignore)
+                                          ("5" . ignore)
+                                          ("6" . ignore)
+                                          ("7" . ignore)
+                                          ("8" . ignore)
+                                          ("9" . ignore)
+    
+                                          ("a" . ignore)
+                                          ("d" . ignore)
+                                          ("h" . bh/hide-other)
+                                          ("i" progn
+                                           (forward-char 1)
+                                           (call-interactively 'org-insert-heading-respect-content))
+                                          ("k" . org-kill-note-or-show-branches)
+                                          ("l" . ignore)
+                                          ("m" . ignore)
+                                          ("q" . bh/show-org-agenda)
+                                          ("r" . ignore)
+                                          ("s" . org-save-all-org-buffers)
+                                          ("w" . org-refile)
+                                          ("x" . ignore)
+                                          ("y" . ignore)
+                                          ("z" . org-add-note)
+    
+                                          ("A" . ignore)
+                                          ("B" . ignore)
+                                          ("E" . ignore)
+                                          ("F" . bh/restrict-to-file-or-follow)
+                                          ("G" . ignore)
+                                          ("H" . ignore)
+                                          ("J" . org-clock-goto)
+                                          ("K" . ignore)
+                                          ("L" . ignore)
+                                          ("M" . ignore)
+                                          ("N" . bh/narrow-to-org-subtree)
+                                          ("P" . bh/narrow-to-org-project)
+                                          ("Q" . ignore)
+                                          ("R" . ignore)
+                                          ("S" . ignore)
+                                          ("T" . bh/org-todo)
+                                          ("U" . bh/narrow-up-one-org-level)
+                                          ("V" . ignore)
+                                          ("W" . bh/widen)
+                                          ("X" . ignore)
+                                          ("Y" . ignore)
+                                          ("Z" . ignore))))
+    
+    (defun bh/show-org-agenda ()
+      (interactive)
+      (if org-agenda-sticky
+          (switch-to-buffer "*Org Agenda( )*")
+        (switch-to-buffer "*Org Agenda*"))
+      (delete-other-windows))
+    #+end_src
+
+** Org Protocol
   + 
 
 * Programming language specific

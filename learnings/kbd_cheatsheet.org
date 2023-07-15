@@ -101,7 +101,6 @@
  - move current visible window with respect to cursor :: =C-l= (multiple time (3*) until desired display)
 
 ** org-mode
-
 *** org-mode document structures
     - headlines and items ::
       + add headline :: =C-RET=
@@ -125,7 +124,6 @@
       #+end_src
   - export :: =C-c C-e' + key of export type needed=
     + eg, export to html file :: =C-c C-e h h= // bound to org-html-export-to-html
-
 
 *** org agenda and todo items
 **** org agenda
@@ -218,6 +216,14 @@
        !!! CAREFUL not to create overlaps when fixing clock entries, use :
        - v c :: in daily agenda, and it will identify gaps and overlaps
 
+*** speed commands
+  - defaults ::
+    + ==I== and ==O== :: for clocking in and out
+    + ==J== :: jump to current or last clocking task
+    + ==t== :: change todo state
+    + ==TAB== and ==S-TAB== :: for cycling
+  - from bh configs :: 
+    + ==c== and ==C== :: are disabled by bh so they do not accidentally self insert when not intended to
 
 * C++
   + activate c++ mode (done by default for .cpp, .cxx files, but not .h files that are opened as c files) :: M-x c++-mode
