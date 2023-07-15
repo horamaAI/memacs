@@ -3,9 +3,10 @@
 
 
 * Organization
-:PROPERTIES:
-:ID: eb155a82-92b2-4f25-a3c6-0304591af2f9
-:END:
+  :PROPERTIES:
+  :ID: eb155a82-92b2-4f25-a3c6-0304591af2f9
+  :CATEGORY: Default_task
+  :END:
   - this is the default punching in/out task
 
 * Current
@@ -200,51 +201,52 @@ https://cestlaz.github.io/stories/emacs/
 
 *** TODO links [1/30]
     SCHEDULED: <2023-01-18 Wed>
-  1. [X] https://orgmode.org/worg/org-tutorials/org4beginners.html
-  2. [ ] for GTDs:
+  1. [ ] magit :: https://www.masteringemacs.org/article/introduction-magit-emacs-mode-git
+  3. [X] https://orgmode.org/worg/org-tutorials/org4beginners.html
+  4. [ ] for GTDs:
      + http://doc.norang.ca/org-mode.html#HowToUseThisDocument
      + https://orgmode.org/manual/Weekly_002fdaily-agenda.html
      + https://writequit.org/denver-emacs/presentations/2017-04-11-time-clocking-with-org.html
-  3. [ ] org mode linter : https://orgmode.org/manual/Org-Syntax.html
-  4. [ ] babel :
+  5. [ ] org mode linter : https://orgmode.org/manual/Org-Syntax.html
+  6. [ ] babel :
      + https://orgmode.org/worg/org-contrib/babel/intro.html
      + https://orgmode.org/worg/org-contrib/babel/languages/ob-doc-shell.html
      + https://orgmode.org/worg/org-contrib/babel/languages/ob-doc-eshell.html
-  5. [ ] http://www.newartisans.com/2007/08/using-org-mode-as-a-day-planner/
+  7. [ ] http://www.newartisans.com/2007/08/using-org-mode-as-a-day-planner/
      + https://list.orgmode.org/orgmode/m2myw3fa2f.fsf@newartisans.com/
      + https://list.orgmode.org/orgmode/m21wc7dz4r.fsf@newartisans.com/
-  6. [ ] http://members.optusnet.com.au/~charles57/GTD/gtd_workflow.html
+  8. [ ] http://members.optusnet.com.au/~charles57/GTD/gtd_workflow.html
      + supersede of deprecated: http://members.optusnet.com.au/~charles57/GTD/orgmode.html
-  7. [ ] complete tutorial: https://orgmode.org/worg/org-tutorials/index.html
-  8. [ ] 'remember' replaced by 'capture' : http://howardism.org/Technical/Emacs/capturing-intro.html
-     + https://orgmode.org/manual/Capture.html#Capture 
-     + check again https://orgmode.org/manual/Capture-templates.html
-  9. [ ] https://www.emacswiki.org/emacs/GnusTutorial
-  10. [ ] https://sachachua.com/blog/2008/04/wicked-cool-emacs-bbdb-set-up-bbdb/
-  11. [ ] https://emacs.cafe/emacs/orgmode/gtd/2017/06/30/orgmode-gtd.html
-  12. [ ] https://orgmode.org/manual/Include-Files.html
+  9. [ ] complete tutorial: https://orgmode.org/worg/org-tutorials/index.html
+  10. [ ] 'remember' replaced by 'capture' : http://howardism.org/Technical/Emacs/capturing-intro.html
+      + https://orgmode.org/manual/Capture.html#Capture 
+      + check again https://orgmode.org/manual/Capture-templates.html
+  11. [ ] https://www.emacswiki.org/emacs/GnusTutorial
+  12. [ ] https://sachachua.com/blog/2008/04/wicked-cool-emacs-bbdb-set-up-bbdb/
+  13. [ ] https://emacs.cafe/emacs/orgmode/gtd/2017/06/30/orgmode-gtd.html
+  14. [ ] https://orgmode.org/manual/Include-Files.html
       + https://stackoverflow.com/questions/10968034/in-org-mode-how-do-i-include-other-org-files-from-a-main-org-file
       + https://github.com/dangom/org-thesis
       + https://write.as/dani/writing-a-phd-thesis-with-org-mode
-  13. [ ] https://orgmode.org/worg/org-gtd-etc.html
-  14. [ ] https://www.emacswiki.org/emacs/GnusTutorial
-  15. [ ] https://lgfang.github.io/mynotes/emacs/emacs-xml.html
-  16. [ ] https://orgmode.org/org.html#Sparse-Trees
-  17. [ ] https://www.gnu.org/software/emacs/manual/pdf/eintr.pdf
-  18. [ ] https://orgmode.org/worg/org-gtd-etc.html
-  19. [ ] https://orgmode.org/worg/org-tutorials/orgtutorial_dto.html
-  20. [ ] https://orgmode.org/manual/Structure-Editing.html
-  21. [ ] http://doc.norang.ca/org-mode.html#Publishing
+  15. [ ] https://orgmode.org/worg/org-gtd-etc.html
+  16. [ ] https://www.emacswiki.org/emacs/GnusTutorial
+  17. [ ] https://lgfang.github.io/mynotes/emacs/emacs-xml.html
+  18. [ ] https://orgmode.org/org.html#Sparse-Trees
+  19. [ ] https://www.gnu.org/software/emacs/manual/pdf/eintr.pdf
+  20. [ ] https://orgmode.org/worg/org-gtd-etc.html
+  21. [ ] https://orgmode.org/worg/org-tutorials/orgtutorial_dto.html
+  22. [ ] https://orgmode.org/manual/Structure-Editing.html
+  23. [ ] http://doc.norang.ca/org-mode.html#Publishing
       - more details :: https://orgmode.org/manual/Exporting.html
-  22. [ ] https://www.emacswiki.org/emacs/LaTeX
-  23. [ ] https://www.emacswiki.org/emacs/EmacsScreencasts
-  24. [ ] https://github.com/hlissner/doom-emacs
-  25. [ ] https://people.cs.pitt.edu/~milos/courses/cs2740/Lectures/LispTutorial.pdf
-  26. [ ] https://www.emacswiki.org/emacs/LearnEmacsLisp
-  27. [ ] https://opensource.com/article/21/5/learn-lisp
-  28. [ ] https://github.com/jwiegley/use-package
-  29. [ ] https://emacstil.com/til/2021/09/09/fold-heading/
-  30. [ ] https://orgmode.org/worg/org-tutorials/index.html
+  24. [ ] https://www.emacswiki.org/emacs/LaTeX
+  25. [ ] https://www.emacswiki.org/emacs/EmacsScreencasts
+  26. [ ] https://github.com/hlissner/doom-emacs
+  27. [ ] https://people.cs.pitt.edu/~milos/courses/cs2740/Lectures/LispTutorial.pdf
+  28. [ ] https://www.emacswiki.org/emacs/LearnEmacsLisp
+  29. [ ] https://opensource.com/article/21/5/learn-lisp
+  30. [ ] https://github.com/jwiegley/use-package
+  31. [ ] https://emacstil.com/til/2021/09/09/fold-heading/
+  32. [ ] https://orgmode.org/worg/org-tutorials/index.html
 
 *** TODO optional
      - https://www.youtube.com/watch?v=InNlNAoExik
@@ -468,11 +470,6 @@ version 3.22 already installed
 * Notes
   :PROPERTIES:
   :CATEGORY: Note
-  :END:
-
-* Organisation
-  :PROPERTIES:
-  :CATEGORY: Default_task
   :END:
 
 * Recreation
