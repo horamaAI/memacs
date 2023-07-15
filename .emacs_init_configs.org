@@ -87,7 +87,6 @@
 #+INCLUDE: "./organisation_org_files.org::Folders and files:"
 
 * Org mode configs
-
 - notes ::
   + different sources, but mainly, detailed templates are from :
     - http://doc.norang.ca/org-mode.html
@@ -165,11 +164,8 @@
    '((plantuml . t))) ; this line activates plantuml
   
   #+end_src
-
-- keybindings ::
-  
+- keybindings (kbd) ::  
   #+begin_src emacs-lisp
-  
   ; my kbd
   ;; By default Org mode buffers need Font Lock to be turned on. So, for a better experience, these three Org commands ought to be accessible anywhere in Emacs
   ;; , not just in Org buffers => need to bind them to globally available keys, like ones reserved for users (see (elisp)Key Binding Conventions).
@@ -208,9 +204,7 @@
     (next-line 1)
     (yank)
   )
-  (global-set-key (kbd "C-c d") 'duplicate-line)
-  
-  
+  (global-set-key (kbd "C-c d") 'duplicate-line)  
   
   ;; bh Custom Key Bindings
   ;; ======================
@@ -280,10 +274,8 @@
   
   (defun bh/switch-to-scratch ()
     (interactive)
-    (switch-to-buffer "*scratch*"))
-  
+    (switch-to-buffer "*scratch*"))  
   #+end_src
-
 ** Org Mode TODO states, triggers, and project definition
 
 - basic settings for task actions ::
@@ -399,6 +391,9 @@
       #+end_src
 
 ** Org-mode notes taking, Capture and refiling
+:PROPERTIES:
+:CUSTOM_ID: CaptureTemplates
+:END:
 
 - capture and capture templates ::
   + quick process ::
@@ -3925,8 +3920,18 @@
         (switch-to-buffer "*Org Agenda*"))
       (delete-other-windows))
     #+end_src
+** Org Protocol (create capture notes in org-mode from other applications)
+  + utility ::  great way to create capture notes in org-mode from other applications
+    - for example, it's great way to create tasks to review interesting web pages visited from Firefox
+  + can have a special capture template set up for org-protocol to use (set up with ==w== key) :: 
+  + need to set bulk of the setup in the target application (Firefox in this case), so that ==C-c c== on a page in Firefox triggers the org-protocol capture template with details of the page currently being viewed (in firefox) ::
+    - can set up ==org-protocol== in firefox as described in  [[http://orgmode.org/worg/org-contrib/org-protocol.php#sec-9][Keybindings for Firefox]]
+  + org-mode setup for org-protocol is simple, it enables org-protocol and creates a single org-protocol capture template as described in [[#CaptureTemplates][Capture Templates]] ::
+    #+begin_src emacs-lisp
+    (require 'org-protocol)
+    #+end_src
 
-** Org Protocol
+** Add (require) a final newline when saving files
   + 
 
 * Programming language specific

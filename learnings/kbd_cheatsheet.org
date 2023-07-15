@@ -228,13 +228,11 @@
 * C++
   + activate c++ mode (done by default for .cpp, .cxx files, but not .h files that are opened as c files) :: M-x c++-mode
 
-
 * Terminal
 - add last argument of previous command :: ESC - .
 - comment current command line :: ESC - #
   + nice to add command in terminal history and find it with :: C-r (backward search)
   + add keybinding in ~/.zshrc :: bindkey '#' pound-insert
-
 
 * Time reporting (org agenda => go into mode first)
   - v c :: check for unclosed clock times, gaps, overlaps, etc.
@@ -295,12 +293,10 @@
 	 4. *BONUS* : combining with tags filtering help keeping only
             exporting the needed data
 
-
 * Others
 - maximize/minimize windows :: Super- UP/DOWN
 - [Debian] shutdown :: C-M-Del
 - [Debian] run application pop-up :: Win-r
-
 
 * Tags
   - examples of use:
@@ -320,17 +316,14 @@
   - nice use of FILETAGS to apply multiple tags to files (eg: apply
     refile to all tasks in refile file)
 
-
 * Handling phone calls
   (in conjunction with bbdb works better)
   - use of bbdb lookup to insert contact when phone capturing ::
     <f9>-p (of course if key mapping done in emacs init file)
 
-
 * Filtering
   - / RET :: in agenda mode: filters tasks based on user-provided function
     + mark subsequently delayed tasks as on 'HOLD' => / RET filter removes all 'HOLD' tasks and subtasks.
-
 
 * cheatsheets
 ** general
@@ -441,7 +434,6 @@
        - ex: '[ch]$' :: list files ending with c or h 
    - hidden buffers/files, toggle display :: C-a (ido-toggle-ignore)
 
-
 ** emacs IDE
 
 ** org mode (general)
@@ -498,17 +490,15 @@
       1. create source block within #+begin_src ... #+end_src
       2. build the picture with 'C-c C-c'
 	 - toggle display of inline images with 'C-c C-x C-v'
-    - publishing projects (or multiple files) :: TO_COMPLETE
-      
+    - publishing projects (or multiple files) :: TO_COMPLETE      
 
 ** hledger
-
+  + 
 
 * emacs IDE
-
+  + 
 
 * emacs and org-mode:
-
 ** 'capture', previously known as 'remember' (notes taking)
    x. org-capture is global: can be called anywhere in emacs, whether editing txt, or reading email
    x. main reference: https://orgmode.org/manual/Capture.html#Capture
@@ -580,4 +570,3 @@ https://orgmode.org/manual/Exporting.html
 ** GTD (Getting things done)
 
 ** report generation (automatic and customs)
-
