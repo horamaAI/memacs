@@ -3941,8 +3941,54 @@
     (setq require-final-newline t)
     #+end_src
 
-** Insert inactive timestamps and exclude from export
-  + 
+** Insert inactive timestamps (for later references and remembering) and exclude from export
+  + notes ::
+    - inserting inactive timestamps when working on org-mode files is possible in order for example to remember when a task/something was created/done/blocked
+    - for ==remember== tasks, the timestamp is in the remember template, but for regular structure editing, one can want the timestamp automatically added when the headline is created
+    - bh made a function that is run by an org-mode hook to automatically insert the inactive timestamp whenever a headline is created
+      + adding the timestamp can be controlled with ==f9 T== which toggles the creation of the timestamp *on and off* for new headlines
+  + example ::
+    - when creating a heading (with ==M-RET== or ==M-S-RET==), the hook invokes bh's function and it inserts an inactive timestamp like this ::
+      #+begin_src org :exports src
+      ,* <point here>
+        [2009-11-22 Sun 18:45]  
+      #+end_src
+    - this keeps an automatic record of when tasks was created, which can be very useful ::
+  + kbd ::
+    - invoke insert inactive timestamp function on demand and anywhere :: ==f9 T==
+  + setup for timestamp hook insertion ::
+    #+begin_src emacs-lisp
+    (defvar bh/insert-inactive-timestamp t)
+    
+    (defun bh/toggle-insert-inactive-timestamp ()
+      (interactive)
+      (setq bh/insert-inactive-timestamp (not bh/insert-inactive-timestamp))
+      (message "Heading timestamps are %s" (if bh/insert-inactive-timestamp "ON" "OFF")))
+    
+    (defun bh/insert-inactive-timestamp ()
+      (interactive)
+      (org-insert-time-stamp nil t t nil nil nil))
+    
+    (defun bh/insert-heading-inactive-timestamp ()
+      (save-excursion
+        (when bh/insert-inactive-timestamp
+          (org-return)
+          (org-cycle)
+          (bh/insert-inactive-timestamp))))
+    
+    (add-hook 'org-insert-heading-hook 'bh/insert-heading-inactive-timestamp 'append)
+    #+end_src
+  + setup for hotkeys ::
+    - invoke insert inactive timestamp function on demand and anywhere :: ==f9 T==
+      #+begin_src emacs-lisp
+      (global-set-key (kbd "<f9> t") 'bh/insert-inactive-timestamp)
+      #+end_src
+  + setup to prevent the timestamps from being exported in documents ::
+    #+begin_src emacs-lisp
+    (setq org-export-with-timestamps nil)
+    #+end_src
+
+** Return follows links
 
 * Programming language specific
 
