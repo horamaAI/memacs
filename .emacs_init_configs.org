@@ -3946,6 +3946,18 @@
      #+end_src
 
 *** Highlight clock when running overtime
+  + current clocking task is displayed on the ==modeline== (which appears at the bottom of every Emacs internal window, and displays as much infos about the buffer as possible, such as buffer name being used, it's major/minor mode, the current cursor line, etc., see [[https://www.emacswiki.org/emacs/ModeLine][modeline]] for more details)
+  + if current task has an estimated time and it is run over the limit, make this stand out on the modeline by changing the background to red as follows ::
+    #+begin_src emacs-lisp
+    (custom-set-faces
+      ;; custom-set-faces was added by Custom.
+      ;; If you edit it by hand, you could mess it up, so be careful.
+      ;; Your init file should contain only one such instance.
+      ;; If there is more than one, they won't work right.
+     '(org-mode-line-clock ((t (:foreground "red" :box (:line-width -1 :style released-button)))) t))
+    #+end_src
+
+*** Register 'Meeting Notes'
   + 
 
 ** Miscellaneous
