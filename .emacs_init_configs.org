@@ -2901,1094 +2901,1104 @@
 	#+results[dffc80c1690d0ffc945596218c6264aa99f52ec5]:
 	[[file:images/test-act4.png]]
 
-** Focusing On Current Work (narrowing, filtering, and structuring agenda and agenda view)
-*** Narrowing to a subtree with bh's ==bh/org-todo==
-  + kbd ::
-    - ==f5== and ==S-f5== (respectively) :: *narrowing* and *widening* the emacs buffer as defined below
-      + ==T== (tasks) for ==C-c / t== on the current buffer
-      + ==N== (narrow) narrows to this task subtree
-      + ==U== (up) narrows to the immediate parent task subtree without moving
-      + ==P== (project) narrows to the parent project subtree without moving
-      + ==F== (file) narrows to the current file or file of the existing restriction
-  + pros ::
-    - makes it easy to hide all the other details in org-file temporarily by limiting view to this task subtree.
-    - tasks are folded and highlighted so that only tasks which are incomplete are shown
-  + tips ::
-    - ==f5== (or the ==T== speed key) basically does a ==org-narrow-to-subtree== and ==C-c / t== combination leaving the buffer in a narrowed state
-    - ==f5== (or some other widening speed key like ==U==, ==W==, ==F==) widens back to normal view
-    - use of ==org-show-entry-below== to force showing the next headline, and prevent too many headlines from being folded together when working with collapsed trees ::
-      #+begin_src emacs-lisp
-      (setq org-show-entry-below (quote ((default))))
-      #+end_src
-  + setup ::
-    #+begin_src emacs-lisp
-    ; (global-set-key (kbd "<f5>") 'bh/org-todo) ;; already set above
+*** Focusing On Current Work (narrowing, filtering, and structuring agenda and agenda view)
+**** Narrowing to a subtree with bh's ==bh/org-todo==
+   + kbd ::
+     - ==f5== and ==S-f5== (respectively) :: *narrowing* and *widening* the emacs buffer as defined below
+       + ==T== (tasks) for ==C-c / t== on the current buffer
+       + ==N== (narrow) narrows to this task subtree
+       + ==U== (up) narrows to the immediate parent task subtree without moving
+       + ==P== (project) narrows to the parent project subtree without moving
+       + ==F== (file) narrows to the current file or file of the existing restriction
+   + pros ::
+     - makes it easy to hide all the other details in org-file temporarily by limiting view to this task subtree.
+     - tasks are folded and highlighted so that only tasks which are incomplete are shown
+   + tips ::
+     - ==f5== (or the ==T== speed key) basically does a ==org-narrow-to-subtree== and ==C-c / t== combination leaving the buffer in a narrowed state
+     - ==f5== (or some other widening speed key like ==U==, ==W==, ==F==) widens back to normal view
+     - use of ==org-show-entry-below== to force showing the next headline, and prevent too many headlines from being folded together when working with collapsed trees ::
+       #+begin_src emacs-lisp
+       (setq org-show-entry-below (quote ((default))))
+       #+end_src
+   + setup ::
+     #+begin_src emacs-lisp
+     ; (global-set-key (kbd "<f5>") 'bh/org-todo) ;; already set above
     
-    (defun bh/org-todo (arg)
-      (interactive "p")
-      (if (equal arg 4)
-          (save-restriction
-            (bh/narrow-to-org-subtree)
-            (org-show-todo-tree nil))
-        (bh/narrow-to-org-subtree)
-        (org-show-todo-tree nil)))
+     (defun bh/org-todo (arg)
+       (interactive "p")
+       (if (equal arg 4)
+           (save-restriction
+             (bh/narrow-to-org-subtree)
+             (org-show-todo-tree nil))
+         (bh/narrow-to-org-subtree)
+         (org-show-todo-tree nil)))
     
-    ; (global-set-key (kbd "<S-f5>") 'bh/widen) ;; also already set above
+     ; (global-set-key (kbd "<S-f5>") 'bh/widen) ;; also already set above
     
-    (defun bh/widen ()
-      (interactive)
-      (if (equal major-mode 'org-agenda-mode)
-          (progn
-            (org-agenda-remove-restriction-lock)
-            (when org-agenda-sticky
-              (org-agenda-redo)))
-        (widen)))
+     (defun bh/widen ()
+       (interactive)
+       (if (equal major-mode 'org-agenda-mode)
+           (progn
+             (org-agenda-remove-restriction-lock)
+             (when org-agenda-sticky
+               (org-agenda-redo)))
+         (widen)))
     
-    (add-hook 'org-agenda-mode-hook
-              '(lambda () (org-defkey org-agenda-mode-map "W" (lambda () (interactive) (setq bh/hide-scheduled-and-waiting-next-tasks t) (bh/widen))))
-              'append)
+     (add-hook 'org-agenda-mode-hook
+               '(lambda () (org-defkey org-agenda-mode-map "W" (lambda () (interactive) (setq bh/hide-scheduled-and-waiting-next-tasks t) (bh/widen))))
+               'append)
     
-    (defun bh/restrict-to-file-or-follow (arg)
-      "Set agenda restriction to 'file or with argument invoke follow mode.
-    I don't use follow mode very often but I restrict to file all the time
-    so change the default 'F' binding in the agenda to allow both"
-      (interactive "p")
-      (if (equal arg 4)
-          (org-agenda-follow-mode)
-        (widen)
-        (bh/set-agenda-restriction-lock 4)
-        (org-agenda-redo)
-        (beginning-of-buffer)))
+     (defun bh/restrict-to-file-or-follow (arg)
+       "Set agenda restriction to 'file or with argument invoke follow mode.
+     I don't use follow mode very often but I restrict to file all the time
+     so change the default 'F' binding in the agenda to allow both"
+       (interactive "p")
+       (if (equal arg 4)
+           (org-agenda-follow-mode)
+         (widen)
+         (bh/set-agenda-restriction-lock 4)
+         (org-agenda-redo)
+         (beginning-of-buffer)))
     
-    (add-hook 'org-agenda-mode-hook
-              '(lambda () (org-defkey org-agenda-mode-map "F" 'bh/restrict-to-file-or-follow))
-              'append)
+     (add-hook 'org-agenda-mode-hook
+               '(lambda () (org-defkey org-agenda-mode-map "F" 'bh/restrict-to-file-or-follow))
+               'append)
     
-    (defun bh/narrow-to-org-subtree ()
-      (widen)
-      (org-narrow-to-subtree)
-      (save-restriction
-        (org-agenda-set-restriction-lock)))
+     (defun bh/narrow-to-org-subtree ()
+       (widen)
+       (org-narrow-to-subtree)
+       (save-restriction
+         (org-agenda-set-restriction-lock)))
     
-    (defun bh/narrow-to-subtree ()
-      (interactive)
-      (if (equal major-mode 'org-agenda-mode)
-          (progn
-            (org-with-point-at (org-get-at-bol 'org-hd-marker)
-              (bh/narrow-to-org-subtree))
-            (when org-agenda-sticky
-              (org-agenda-redo)))
-        (bh/narrow-to-org-subtree)))
+     (defun bh/narrow-to-subtree ()
+       (interactive)
+       (if (equal major-mode 'org-agenda-mode)
+           (progn
+             (org-with-point-at (org-get-at-bol 'org-hd-marker)
+               (bh/narrow-to-org-subtree))
+             (when org-agenda-sticky
+               (org-agenda-redo)))
+         (bh/narrow-to-org-subtree)))
     
-    (add-hook 'org-agenda-mode-hook
-              '(lambda () (org-defkey org-agenda-mode-map "N" 'bh/narrow-to-subtree))
-              'append)
+     (add-hook 'org-agenda-mode-hook
+               '(lambda () (org-defkey org-agenda-mode-map "N" 'bh/narrow-to-subtree))
+               'append)
     
-    (defun bh/narrow-up-one-org-level ()
-      (widen)
-      (save-excursion
-        (outline-up-heading 1 'invisible-ok)
-        (bh/narrow-to-org-subtree)))
+     (defun bh/narrow-up-one-org-level ()
+       (widen)
+       (save-excursion
+         (outline-up-heading 1 'invisible-ok)
+         (bh/narrow-to-org-subtree)))
     
-    (defun bh/get-pom-from-agenda-restriction-or-point ()
-      (or (and (marker-position org-agenda-restrict-begin) org-agenda-restrict-begin)
-          (org-get-at-bol 'org-hd-marker)
-          (and (equal major-mode 'org-mode) (point))
-          org-clock-marker))
+     (defun bh/get-pom-from-agenda-restriction-or-point ()
+       (or (and (marker-position org-agenda-restrict-begin) org-agenda-restrict-begin)
+           (org-get-at-bol 'org-hd-marker)
+           (and (equal major-mode 'org-mode) (point))
+           org-clock-marker))
     
-    (defun bh/narrow-up-one-level ()
-      (interactive)
-      (if (equal major-mode 'org-agenda-mode)
-          (progn
-            (org-with-point-at (bh/get-pom-from-agenda-restriction-or-point)
-              (bh/narrow-up-one-org-level))
-            (org-agenda-redo))
-        (bh/narrow-up-one-org-level)))
+     (defun bh/narrow-up-one-level ()
+       (interactive)
+       (if (equal major-mode 'org-agenda-mode)
+           (progn
+             (org-with-point-at (bh/get-pom-from-agenda-restriction-or-point)
+               (bh/narrow-up-one-org-level))
+             (org-agenda-redo))
+         (bh/narrow-up-one-org-level)))
     
-    (add-hook 'org-agenda-mode-hook
-              '(lambda () (org-defkey org-agenda-mode-map "U" 'bh/narrow-up-one-level))
-              'append)
+     (add-hook 'org-agenda-mode-hook
+               '(lambda () (org-defkey org-agenda-mode-map "U" 'bh/narrow-up-one-level))
+               'append)
     
-    (defun bh/narrow-to-org-project ()
-      (widen)
-      (save-excursion
-        (bh/find-project-task)
-        (bh/narrow-to-org-subtree)))
+     (defun bh/narrow-to-org-project ()
+       (widen)
+       (save-excursion
+         (bh/find-project-task)
+         (bh/narrow-to-org-subtree)))
     
-    (defun bh/narrow-to-project ()
-      (interactive)
-      (if (equal major-mode 'org-agenda-mode)
-          (progn
-            (org-with-point-at (bh/get-pom-from-agenda-restriction-or-point)
-              (bh/narrow-to-org-project)
-              (save-excursion
-                (bh/find-project-task)
-                (org-agenda-set-restriction-lock)))
-            (org-agenda-redo)
-            (beginning-of-buffer))
-        (bh/narrow-to-org-project)
-        (save-restriction
-          (org-agenda-set-restriction-lock))))
+     (defun bh/narrow-to-project ()
+       (interactive)
+       (if (equal major-mode 'org-agenda-mode)
+           (progn
+             (org-with-point-at (bh/get-pom-from-agenda-restriction-or-point)
+               (bh/narrow-to-org-project)
+               (save-excursion
+                 (bh/find-project-task)
+                 (org-agenda-set-restriction-lock)))
+             (org-agenda-redo)
+             (beginning-of-buffer))
+         (bh/narrow-to-org-project)
+         (save-restriction
+           (org-agenda-set-restriction-lock))))
     
-    (add-hook 'org-agenda-mode-hook
-              '(lambda () (org-defkey org-agenda-mode-map "P" 'bh/narrow-to-project))
-              'append)
+     (add-hook 'org-agenda-mode-hook
+               '(lambda () (org-defkey org-agenda-mode-map "P" 'bh/narrow-to-project))
+               'append)
     
-    (defvar bh/project-list nil)
+     (defvar bh/project-list nil)
     
-    (defun bh/view-next-project ()
-      (interactive)
-      (let (num-project-left current-project)
-        (unless (marker-position org-agenda-restrict-begin)
-          (goto-char (point-min))
-          ; Clear all of the existing markers on the list
-          (while bh/project-list
-            (set-marker (pop bh/project-list) nil))
-          (re-search-forward "Tasks to Refile")
-          (forward-visible-line 1))
+     (defun bh/view-next-project ()
+       (interactive)
+       (let (num-project-left current-project)
+         (unless (marker-position org-agenda-restrict-begin)
+           (goto-char (point-min))
+           ; Clear all of the existing markers on the list
+           (while bh/project-list
+             (set-marker (pop bh/project-list) nil))
+           (re-search-forward "Tasks to Refile")
+           (forward-visible-line 1))
     
-        ; Build a new project marker list
-        (unless bh/project-list
-          (while (< (point) (point-max))
-            (while (and (< (point) (point-max))
-                        (or (not (org-get-at-bol 'org-hd-marker))
-                            (org-with-point-at (org-get-at-bol 'org-hd-marker)
-                              (or (not (bh/is-project-p))
-                                  (bh/is-project-subtree-p)))))
-              (forward-visible-line 1))
-            (when (< (point) (point-max))
-              (add-to-list 'bh/project-list (copy-marker (org-get-at-bol 'org-hd-marker)) 'append))
-            (forward-visible-line 1)))
+         ; Build a new project marker list
+         (unless bh/project-list
+           (while (< (point) (point-max))
+             (while (and (< (point) (point-max))
+                         (or (not (org-get-at-bol 'org-hd-marker))
+                             (org-with-point-at (org-get-at-bol 'org-hd-marker)
+                               (or (not (bh/is-project-p))
+                                   (bh/is-project-subtree-p)))))
+               (forward-visible-line 1))
+             (when (< (point) (point-max))
+               (add-to-list 'bh/project-list (copy-marker (org-get-at-bol 'org-hd-marker)) 'append))
+             (forward-visible-line 1)))
     
-        ; Pop off the first marker on the list and display
-        (setq current-project (pop bh/project-list))
-        (when current-project
-          (org-with-point-at current-project
-            (setq bh/hide-scheduled-and-waiting-next-tasks nil)
-            (bh/narrow-to-project))
-          ; Remove the marker
-          (setq current-project nil)
-          (org-agenda-redo)
-          (beginning-of-buffer)
-          (setq num-projects-left (length bh/project-list))
-          (if (> num-projects-left 0)
-              (message "%s projects left to view" num-projects-left)
-            (beginning-of-buffer)
-            (setq bh/hide-scheduled-and-waiting-next-tasks t)
-            (error "All projects viewed.")))))
+         ; Pop off the first marker on the list and display
+         (setq current-project (pop bh/project-list))
+         (when current-project
+           (org-with-point-at current-project
+             (setq bh/hide-scheduled-and-waiting-next-tasks nil)
+             (bh/narrow-to-project))
+           ; Remove the marker
+           (setq current-project nil)
+           (org-agenda-redo)
+           (beginning-of-buffer)
+           (setq num-projects-left (length bh/project-list))
+           (if (> num-projects-left 0)
+               (message "%s projects left to view" num-projects-left)
+             (beginning-of-buffer)
+             (setq bh/hide-scheduled-and-waiting-next-tasks t)
+             (error "All projects viewed.")))))
     
-    (add-hook 'org-agenda-mode-hook
-              '(lambda () (org-defkey org-agenda-mode-map "V" 'bh/view-next-project))
-              'append)
-    #+end_src
+     (add-hook 'org-agenda-mode-hook
+               '(lambda () (org-defkey org-agenda-mode-map "V" 'bh/view-next-project))
+               'append)
+     #+end_src
 
-*** Limiting the agenda to a subtree
-  + kbd ::
-    - ==C-c C-x <== to turn on the agenda restriction lock on the current subtree :: keeps agenda focused on only current subtree
-      + alarms and notifications are still active outside the agenda restriction ::
-    - ==C-c C-x >== to turn off the agenda restriction lock, and return agenda view back to normal ::
-    - ==N== narrows to the current task subtree :: this is the same as same as ==C-c C-x <==
-    - ==U== narrows to the parent subtree of this task :: goes up one level and narrows to that subtree
-    - ==P== narrows to the entire project containing this task :: goes up the tree to the top-level ==TODO== keyword and selects that as the subtree to narrow to
-    - ==W== removes the restriction :: widens the buffer
-  + notes ::
-    - limiting allows to set the restriction lock from agenda *to task directly* (instead of automatically moving up the tree to the project level task)
-    - can easily move the *restriction lock up a level* by visiting the task in the org file *and going up and resetting the lock* (in case one wants to see how the project is moving)
-    - since sometimes an entire *project can have too many tasks* in it, and one wants to *limit the view* to part of the subtree, it's possible to use ==N== and ==U== key bindings to adjust the narrowed region
-    - the keybinds set by bh (see 'kbd' next) can be used to restrict the *agenda*, and *org-buffer* to *subtree, parent task, and project task*, as well as *remove the restriction*
-      + hence, these *keys work both* in the *agenda* and as speed commands *on a headline* in the org-file
-    - restriction kbds ::
-      + ==N== narrows to the current task subtree :: this is the same as same as ==C-c C-x <==
-      + ==U== narrows to the parent subtree of this task :: goes up one level and narrows to that subtree
-      + ==P== narrows to the entire project containing this task :: goes up the tree to the top-level ==TODO== keyword and selects that as the subtree to narrow to
-      + ==W== removes the restriction :: widens the buffer
-  + bh added key bindings for the agenda to allow using ==C-c C-x <== in the agenda to set the restriction lock to the current task directly ::
-    - that is done with the following setup ::
-      #+begin_src emacs-lisp
-      (add-hook 'org-agenda-mode-hook
-                '(lambda () (org-defkey org-agenda-mode-map "\C-c\C-x<" 'bh/set-agenda-restriction-lock))
-                'append)
+**** Limiting the agenda to a subtree
+   + kbd ::
+     - ==C-c C-x <== to turn on the agenda restriction lock on the current subtree :: keeps agenda focused on only current subtree
+       + alarms and notifications are still active outside the agenda restriction ::
+     - ==C-c C-x >== to turn off the agenda restriction lock, and return agenda view back to normal ::
+     - ==N== narrows to the current task subtree :: this is the same as same as ==C-c C-x <==
+     - ==U== narrows to the parent subtree of this task :: goes up one level and narrows to that subtree
+     - ==P== narrows to the entire project containing this task :: goes up the tree to the top-level ==TODO== keyword and selects that as the subtree to narrow to
+     - ==W== removes the restriction :: widens the buffer
+   + notes ::
+     - limiting allows to set the restriction lock from agenda *to task directly* (instead of automatically moving up the tree to the project level task)
+     - can easily move the *restriction lock up a level* by visiting the task in the org file *and going up and resetting the lock* (in case one wants to see how the project is moving)
+     - since sometimes an entire *project can have too many tasks* in it, and one wants to *limit the view* to part of the subtree, it's possible to use ==N== and ==U== key bindings to adjust the narrowed region
+     - the keybinds set by bh (see 'kbd' next) can be used to restrict the *agenda*, and *org-buffer* to *subtree, parent task, and project task*, as well as *remove the restriction*
+       + hence, these *keys work both* in the *agenda* and as speed commands *on a headline* in the org-file
+     - restriction kbds ::
+       + ==N== narrows to the current task subtree :: this is the same as same as ==C-c C-x <==
+       + ==U== narrows to the parent subtree of this task :: goes up one level and narrows to that subtree
+       + ==P== narrows to the entire project containing this task :: goes up the tree to the top-level ==TODO== keyword and selects that as the subtree to narrow to
+       + ==W== removes the restriction :: widens the buffer
+   + bh added key bindings for the agenda to allow using ==C-c C-x <== in the agenda to set the restriction lock to the current task directly ::
+     - that is done with the following setup ::
+       #+begin_src emacs-lisp
+       (add-hook 'org-agenda-mode-hook
+                 '(lambda () (org-defkey org-agenda-mode-map "\C-c\C-x<" 'bh/set-agenda-restriction-lock))
+                 'append)
       
-      (defun bh/set-agenda-restriction-lock (arg)
-        "Set restriction lock to current task subtree or file if prefix is specified"
-        (interactive "p")
-        (let* ((pom (bh/get-pom-from-agenda-restriction-or-point))
-               (tags (org-with-point-at pom (org-get-tags-at))))
-          (let ((restriction-type (if (equal arg 4) 'file 'subtree)))
-            (save-restriction
-              (cond
-               ((and (equal major-mode 'org-agenda-mode) pom)
-                (org-with-point-at pom
-                  (org-agenda-set-restriction-lock restriction-type))
-                (org-agenda-redo))
-               ((and (equal major-mode 'org-mode) (org-before-first-heading-p))
-                (org-agenda-set-restriction-lock 'file))
-               (pom
-                (org-with-point-at pom
-                  (org-agenda-set-restriction-lock restriction-type))))))))
-      #+end_src
-  + set restrictions highlighting to only affect the headline (headings) and not the entire body of the agenda restriction ::
-    #+begin_src emacs-lisp
-    ;; Limit restriction lock highlighting to the headline only
-    (setq org-agenda-restriction-lock-highlight-subtree nil)
-    #+end_src
+       (defun bh/set-agenda-restriction-lock (arg)
+         "Set restriction lock to current task subtree or file if prefix is specified"
+         (interactive "p")
+         (let* ((pom (bh/get-pom-from-agenda-restriction-or-point))
+		(tags (org-with-point-at pom (org-get-tags-at))))
+           (let ((restriction-type (if (equal arg 4) 'file 'subtree)))
+             (save-restriction
+               (cond
+		((and (equal major-mode 'org-agenda-mode) pom)
+                 (org-with-point-at pom
+                   (org-agenda-set-restriction-lock restriction-type))
+                 (org-agenda-redo))
+		((and (equal major-mode 'org-mode) (org-before-first-heading-p))
+                 (org-agenda-set-restriction-lock 'file))
+		(pom
+                 (org-with-point-at pom
+                   (org-agenda-set-restriction-lock restriction-type))))))))
+       #+end_src
+   + set restrictions highlighting to only affect the headline (headings) and not the entire body of the agenda restriction ::
+     #+begin_src emacs-lisp
+     ;; Limit restriction lock highlighting to the headline only
+     (setq org-agenda-restriction-lock-highlight-subtree nil)
+     #+end_src
 
-*** Limiting the agenda to a file
-  + limit agenda view to one file ::
-    - use the agenda restriction lock to set the agenda restriction lock to this file only ::
-      + on any line /before the first heading/ :: ==C-c C-x <==
-      + from anywhere in the file, using prefix ==C-u== :: ==C-u C-c C-x <==
-      + lock stays in effect until removed with :: ==C-c C-x >==
-    - same, lock to file, but from the agenda :: ==C-u C-c c-x <==
-    - by visiting org-file, and invoking agenda with :: ==F12 < a==
-      + can be used, to view in the agenda, a file not in ==org-agenda-files==
+**** Limiting the agenda to a file
+   + limit agenda view to one file ::
+     - use the agenda restriction lock to set the agenda restriction lock to this file only ::
+       + on any line /before the first heading/ :: ==C-c C-x <==
+       + from anywhere in the file, using prefix ==C-u== :: ==C-u C-c C-x <==
+       + lock stays in effect until removed with :: ==C-c C-x >==
+     - same, lock to file, but from the agenda :: ==C-u C-c c-x <==
+     - by visiting org-file, and invoking agenda with :: ==F12 < a==
+       + can be used, to view in the agenda, a file not in ==org-agenda-files==
 
-** Tuning further the Agenda Views
-*** Highlight the current agenda line
-  + keeping the current agenda line highlighted helps to know what task will be affected by commands issued in the agenda, and avoid acting on the wrong task by mistake
-  + settings also make clock modeline time shown with a reverse background
-  + setups ::
-    #+begin_src emacs-lisp
-    ;; Always highlight the current agenda line
-    (add-hook 'org-agenda-mode-hook
-              '(lambda () (hl-line-mode 1))
-              'append)
+*** Tuning further the Agenda Views
+**** Highlight the current agenda line
+   + keeping the current agenda line highlighted helps to know what task will be affected by commands issued in the agenda, and avoid acting on the wrong task by mistake
+   + settings also make clock modeline time shown with a reverse background
+   + setups ::
+     #+begin_src emacs-lisp
+     ;; Always highlight the current agenda line
+     (add-hook 'org-agenda-mode-hook
+               '(lambda () (hl-line-mode 1))
+               'append)
     
     
-    ;; The following custom-set-faces create the highlights
-    (custom-set-faces
-      ;; custom-set-faces was added by Custom.
-      ;; If you edit it by hand, you could mess it up, so be careful.
-      ;; Your init file should contain only one such instance.
-      ;; If there is more than one, they won't work right.
-     '(org-mode-line-clock ((t (:background "grey75" :foreground "red" :box (:line-width -1 :style released-button)))) t))
-    #+end_src
+     ;; The following custom-set-faces create the highlights
+     (custom-set-faces
+       ;; custom-set-faces was added by Custom.
+       ;; If you edit it by hand, you could mess it up, so be careful.
+       ;; Your init file should contain only one such instance.
+       ;; If there is more than one, they won't work right.
+      '(org-mode-line-clock ((t (:background "grey75" :foreground "red" :box (:line-width -1 :style released-button)))) t))
+     #+end_src
 
-*** Keep tasks with timestamps visible on the global todo lists
-  + context ::
-    - Tasks with dates (==SCHEDULED:==, ==DEADLINE:==, or active dates) show up in the agenda when appropriate. The block agenda view (==F12 a==) tries to keep tasks showing up only in one location (either in the calendar or other todo lists in later sections of the block agenda.)
-    - one needs to use global todo list search in org-mode (==F12 t==, ==F12 m==) if he is looking for a specific task
-    - with bh configs, the todo lists include _everything_ so one can just search for a needed item and move on
-  + the block agenda prevents display of tasks with deadlines or scheduled dates in the future, so those can safely be ignored until appropriate time
-  + setup :: 
-    #+begin_src emacs-lisp
-    ;; Keep tasks with dates on the global todo lists
-    (setq org-agenda-todo-ignore-with-date nil)
+**** Keep tasks with timestamps visible on the global todo lists
+   + context ::
+     - Tasks with dates (==SCHEDULED:==, ==DEADLINE:==, or active dates) show up in the agenda when appropriate. The block agenda view (==F12 a==) tries to keep tasks showing up only in one location (either in the calendar or other todo lists in later sections of the block agenda.)
+     - one needs to use global todo list search in org-mode (==F12 t==, ==F12 m==) if he is looking for a specific task
+     - with bh configs, the todo lists include _everything_ so one can just search for a needed item and move on
+   + the block agenda prevents display of tasks with deadlines or scheduled dates in the future, so those can safely be ignored until appropriate time
+   + setup :: 
+     #+begin_src emacs-lisp
+     ;; Keep tasks with dates on the global todo lists
+     (setq org-agenda-todo-ignore-with-date nil)
     
-    ;; Keep tasks with deadlines on the global todo lists
-    (setq org-agenda-todo-ignore-deadlines nil)
+     ;; Keep tasks with deadlines on the global todo lists
+     (setq org-agenda-todo-ignore-deadlines nil)
     
-    ;; Keep tasks with scheduled dates on the global todo lists
-    (setq org-agenda-todo-ignore-scheduled nil)
+     ;; Keep tasks with scheduled dates on the global todo lists
+     (setq org-agenda-todo-ignore-scheduled nil)
     
-    ;; Keep tasks with timestamps on the global todo lists
-    (setq org-agenda-todo-ignore-timestamp nil)
+     ;; Keep tasks with timestamps on the global todo lists
+     (setq org-agenda-todo-ignore-timestamp nil)
     
-    ;; Remove completed deadline tasks from the agenda view
-    (setq org-agenda-skip-deadline-if-done t)
+     ;; Remove completed deadline tasks from the agenda view
+     (setq org-agenda-skip-deadline-if-done t)
     
-    ;; Remove completed scheduled tasks from the agenda view
-    (setq org-agenda-skip-scheduled-if-done t)
+     ;; Remove completed scheduled tasks from the agenda view
+     (setq org-agenda-skip-scheduled-if-done t)
     
-    ;; Remove completed items from search results
-    (setq org-agenda-skip-timestamp-if-done t)
-    #+end_src
+     ;; Remove completed items from search results
+     (setq org-agenda-skip-timestamp-if-done t)
+     #+end_src
 
-*** Use the Diary for Holidays and Appointments
-  + remove use of emacs diary (can unset it if need of a diary), and set a 'diary' file that really contains important dates (holidays, appointments, etc.) ::
-    #+begin_src emacs-lisp
-    (setq org-agenda-include-diary nil)
-    (setq org-agenda-diary-file "~/Documents/repos/org/memacs/GTD/diary.org")
-    #+end_src
-  + this diary file keeps ==date-tree== entries created by the capture mode 'appointment' template ::
-    - can also be used for miscellaneous tasks needed to be clocked during interruptions
-  + instead of emacs diary, bh uses org-mode's /diary functions/ ::
-    - inserting entries with ==i== in the emacs agenda creates date entries in ~/Documents/repos/org/memacs/GTD/diary.org
-    - eg ::
-      + include holidays from the calendar in todo.org file ::
-	#+begin_src org :exports src
-	,#+FILETAGS: PERSONAL
-	,* Appointments
-          :PROPERTIES:
-          :CATEGORY: Appt
-          :ARCHIVE:  %s_archive::* Appointments
-          :END:      
-	,** Holidays
+**** Use the Diary for Holidays and Appointments
+   + remove use of emacs diary (can unset it if need of a diary), and set a 'diary' file that really contains important dates (holidays, appointments, etc.) ::
+     #+begin_src emacs-lisp
+     (setq org-agenda-include-diary nil)
+     (setq org-agenda-diary-file "~/Documents/repos/org/memacs/GTD/diary.org")
+     #+end_src
+   + this diary file keeps ==date-tree== entries created by the capture mode 'appointment' template ::
+     - can also be used for miscellaneous tasks needed to be clocked during interruptions
+   + instead of emacs diary, bh uses org-mode's /diary functions/ ::
+     - inserting entries with ==i== in the emacs agenda creates date entries in ~/Documents/repos/org/memacs/GTD/diary.org
+     - eg ::
+       + include holidays from the calendar in todo.org file ::
+	 #+begin_src org :exports src
+	 ,#+FILETAGS: PERSONAL
+	 ,* Appointments
            :PROPERTIES:
-           :Category: Holiday
-           :END:
-           %%(org-calendar-holiday)
-	,** Some other Appointment
-           ...
-	#+end_src
-  + setting for any time strings in the heading to be showned in the agenda ::
-    #+begin_src emacs-lisp
-    (setq org-agenda-insert-diary-extract-time t)
-    #+end_src
+           :CATEGORY: Appt
+           :ARCHIVE:  %s_archive::* Appointments
+           :END:      
+	 ,** Holidays
+            :PROPERTIES:
+            :Category: Holiday
+            :END:
+            %%(org-calendar-holiday)
+	 ,** Some other Appointment
+            ...
+	 #+end_src
+   + setting for any time strings in the heading to be showned in the agenda ::
+     #+begin_src emacs-lisp
+     (setq org-agenda-insert-diary-extract-time t)
+     #+end_src
 
-*** Set searches to include archive files
-  + tip : keep a single archive file for each org-mode project files :: allows searching the current file and the archive when need to dig up old information from the archives
-  + setup ::
-    #+begin_src emacs-lisp
-    ;; Include agenda archive files when searching for things
-    (setq org-agenda-text-search-extra-files (quote (agenda-archives)))
-    #+end_src
+**** Set searches to include archive files
+   + tip : keep a single archive file for each org-mode project files :: allows searching the current file and the archive when need to dig up old information from the archives
+   + setup ::
+     #+begin_src emacs-lisp
+     ;; Include agenda archive files when searching for things
+     (setq org-agenda-text-search-extra-files (quote (agenda-archives)))
+     #+end_src
 
-*** Agenda view tweaks
-  + tweaks for agenda customizations to control ::
-    - display of repeating tasks
-    - display of empty dates on the agenda
-    - task sort order
-    - start the agenda weekly view with Sunday
-    - display of the grid
-    - habits at the bottom
-  + bh customized a sorting function so that the daily agenda lists tasks in order of importance, with the following order ::
-    1. tasks with times at the top so they are hard to miss
-    2. entries for today (active timestamp headlines that are not scheduled or deadline tasks)
-    3. deadlines due today
-    4. late deadline tasks
-    5. scheduled items for today
-    6. pending deadlines (due soon)
-    7. late scheduled items
-    8. habits
-  + setup ::
-    #+begin_src emacs-lisp
-    ;; Show all future entries for repeating tasks
-    (setq org-agenda-repeating-timestamp-show-all t)
+**** Agenda view tweaks
+   + tweaks for agenda customizations to control ::
+     - display of repeating tasks
+     - display of empty dates on the agenda
+     - task sort order
+     - start the agenda weekly view with Sunday
+     - display of the grid
+     - habits at the bottom
+   + bh customized a sorting function so that the daily agenda lists tasks in order of importance, with the following order ::
+     1. tasks with times at the top so they are hard to miss
+     2. entries for today (active timestamp headlines that are not scheduled or deadline tasks)
+     3. deadlines due today
+     4. late deadline tasks
+     5. scheduled items for today
+     6. pending deadlines (due soon)
+     7. late scheduled items
+     8. habits
+   + setup ::
+     #+begin_src emacs-lisp
+     ;; Show all future entries for repeating tasks
+     (setq org-agenda-repeating-timestamp-show-all t)
     
-    ;; Show all agenda dates - even if they are empty
-    (setq org-agenda-show-all-dates t)
+     ;; Show all agenda dates - even if they are empty
+     (setq org-agenda-show-all-dates t)
     
-    ;; Sorting order for tasks on the agenda
-    (setq org-agenda-sorting-strategy
-          (quote ((agenda habit-down time-up user-defined-up effort-up category-keep)
-                  (todo category-up effort-up)
-                  (tags category-up effort-up)
-                  (search category-up))))
+     ;; Sorting order for tasks on the agenda
+     (setq org-agenda-sorting-strategy
+           (quote ((agenda habit-down time-up user-defined-up effort-up category-keep)
+                   (todo category-up effort-up)
+                   (tags category-up effort-up)
+                   (search category-up))))
     
-    ;; Start the weekly agenda on Monday
-    (setq org-agenda-start-on-weekday 1)
+     ;; Start the weekly agenda on Monday
+     (setq org-agenda-start-on-weekday 1)
     
-    ;; Enable display of the time grid so we can see the marker for the current time
-    (setq org-agenda-time-grid (quote ((daily today remove-match)
-                                       #("----------------" 0 16 (org-heading t))
-                                       (0900 1100 1300 1500 1700))))
+     ;; Enable display of the time grid so we can see the marker for the current time
+     (setq org-agenda-time-grid (quote ((daily today remove-match)
+					#("----------------" 0 16 (org-heading t))
+					(0900 1100 1300 1500 1700))))
     
-    ;; Display tags farther right
-    (setq org-agenda-tags-column -102)
+     ;; Display tags farther right
+     (setq org-agenda-tags-column -102)
     
-    ;;
-    ;; Agenda sorting functions
-    ;;
-    (setq org-agenda-cmp-user-defined 'bh/agenda-sort)
+     ;;
+     ;; Agenda sorting functions
+     ;;
+     (setq org-agenda-cmp-user-defined 'bh/agenda-sort)
     
-    (defun bh/agenda-sort (a b)
-      "Sorting strategy for agenda items.
-    Late deadlines first, then scheduled, then non-late deadlines"
-      (let (result num-a num-b)
-        (cond
-         ; time specific items are already sorted first by org-agenda-sorting-strategy
+     (defun bh/agenda-sort (a b)
+       "Sorting strategy for agenda items.
+     Late deadlines first, then scheduled, then non-late deadlines"
+       (let (result num-a num-b)
+         (cond
+          ; time specific items are already sorted first by org-agenda-sorting-strategy
     
-         ; non-deadline and non-scheduled items next
-         ((bh/agenda-sort-test 'bh/is-not-scheduled-or-deadline a b))
+          ; non-deadline and non-scheduled items next
+          ((bh/agenda-sort-test 'bh/is-not-scheduled-or-deadline a b))
     
-         ; deadlines for today next
-         ((bh/agenda-sort-test 'bh/is-due-deadline a b))
+          ; deadlines for today next
+          ((bh/agenda-sort-test 'bh/is-due-deadline a b))
     
-         ; late deadlines next
-         ((bh/agenda-sort-test-num 'bh/is-late-deadline '> a b))
+          ; late deadlines next
+          ((bh/agenda-sort-test-num 'bh/is-late-deadline '> a b))
     
-         ; scheduled items for today next
-         ((bh/agenda-sort-test 'bh/is-scheduled-today a b))
+          ; scheduled items for today next
+          ((bh/agenda-sort-test 'bh/is-scheduled-today a b))
     
-         ; late scheduled items next
-         ((bh/agenda-sort-test-num 'bh/is-scheduled-late '> a b))
+          ; late scheduled items next
+          ((bh/agenda-sort-test-num 'bh/is-scheduled-late '> a b))
     
-         ; pending deadlines last
-         ((bh/agenda-sort-test-num 'bh/is-pending-deadline '< a b))
+          ; pending deadlines last
+          ((bh/agenda-sort-test-num 'bh/is-pending-deadline '< a b))
     
-         ; finally default to unsorted
-         (t (setq result nil)))
-        result))
+          ; finally default to unsorted
+          (t (setq result nil)))
+         result))
     
-    (defmacro bh/agenda-sort-test (fn a b)
-      "Test for agenda sort"
-      `(cond
-        ; if both match leave them unsorted
-        ((and (apply ,fn (list ,a))
-              (apply ,fn (list ,b)))
-         (setq result nil))
-        ; if a matches put a first
-        ((apply ,fn (list ,a))
-         (setq result -1))
-        ; otherwise if b matches put b first
-        ((apply ,fn (list ,b))
-         (setq result 1))
-        ; if none match leave them unsorted
-        (t nil)))
+     (defmacro bh/agenda-sort-test (fn a b)
+       "Test for agenda sort"
+       `(cond
+         ; if both match leave them unsorted
+         ((and (apply ,fn (list ,a))
+               (apply ,fn (list ,b)))
+          (setq result nil))
+         ; if a matches put a first
+         ((apply ,fn (list ,a))
+          (setq result -1))
+         ; otherwise if b matches put b first
+         ((apply ,fn (list ,b))
+          (setq result 1))
+         ; if none match leave them unsorted
+         (t nil)))
     
-    (defmacro bh/agenda-sort-test-num (fn compfn a b)
-      `(cond
-        ((apply ,fn (list ,a))
-         (setq num-a (string-to-number (match-string 1 ,a)))
-         (if (apply ,fn (list ,b))
-             (progn
-               (setq num-b (string-to-number (match-string 1 ,b)))
-               (setq result (if (apply ,compfn (list num-a num-b))
-                                -1
-                              1)))
-           (setq result -1)))
-        ((apply ,fn (list ,b))
-         (setq result 1))
-        (t nil)))
+     (defmacro bh/agenda-sort-test-num (fn compfn a b)
+       `(cond
+         ((apply ,fn (list ,a))
+          (setq num-a (string-to-number (match-string 1 ,a)))
+          (if (apply ,fn (list ,b))
+              (progn
+		(setq num-b (string-to-number (match-string 1 ,b)))
+		(setq result (if (apply ,compfn (list num-a num-b))
+                                 -1
+                               1)))
+            (setq result -1)))
+         ((apply ,fn (list ,b))
+          (setq result 1))
+         (t nil)))
     
-    (defun bh/is-not-scheduled-or-deadline (date-str)
-      (and (not (bh/is-deadline date-str))
-           (not (bh/is-scheduled date-str))))
+     (defun bh/is-not-scheduled-or-deadline (date-str)
+       (and (not (bh/is-deadline date-str))
+            (not (bh/is-scheduled date-str))))
     
-    (defun bh/is-due-deadline (date-str)
-      (string-match "Deadline:" date-str))
+     (defun bh/is-due-deadline (date-str)
+       (string-match "Deadline:" date-str))
     
-    (defun bh/is-late-deadline (date-str)
-      (string-match "\\([0-9]*\\) d\. ago:" date-str))
+     (defun bh/is-late-deadline (date-str)
+       (string-match "\\([0-9]*\\) d\. ago:" date-str))
     
-    (defun bh/is-pending-deadline (date-str)
-      (string-match "In \\([^-]*\\)d\.:" date-str))
+     (defun bh/is-pending-deadline (date-str)
+       (string-match "In \\([^-]*\\)d\.:" date-str))
     
-    (defun bh/is-deadline (date-str)
-      (or (bh/is-due-deadline date-str)
-          (bh/is-late-deadline date-str)
-          (bh/is-pending-deadline date-str)))
+     (defun bh/is-deadline (date-str)
+       (or (bh/is-due-deadline date-str)
+           (bh/is-late-deadline date-str)
+           (bh/is-pending-deadline date-str)))
     
-    (defun bh/is-scheduled (date-str)
-      (or (bh/is-scheduled-today date-str)
-          (bh/is-scheduled-late date-str)))
+     (defun bh/is-scheduled (date-str)
+       (or (bh/is-scheduled-today date-str)
+           (bh/is-scheduled-late date-str)))
     
-    (defun bh/is-scheduled-today (date-str)
-      (string-match "Scheduled:" date-str))
+     (defun bh/is-scheduled-today (date-str)
+       (string-match "Scheduled:" date-str))
     
-    (defun bh/is-scheduled-late (date-str)
-      (string-match "Sched\.\\(.*\\)x:" date-str))
-    #+end_src
+     (defun bh/is-scheduled-late (date-str)
+       (string-match "Sched\.\\(.*\\)x:" date-str))
+     #+end_src
 
-*** Sticky Agendas
-  + Sticky agendas :: allows someone to have more than one agenda view created simultaneously
-    - can quickly switch to the other view without incurring an agenda rebuild by invoking the agenda custom command key that normally generates the agenda
-    - if it already exists it will display the existing view
-    - can force the regeneration of the agenda view with ==g==
-  + eg, and kbd :: can display two views :
-    - ==F12 a==  for the daily/weekly agenda ::
-    - ==F12 SPC== for a project management view ::
-  + setup ::
-    #+begin_src emacs-lisp
-    ;; Use sticky agenda's so they persist
-    (setq org-agenda-sticky t)
-    #+end_src
+**** Sticky Agendas
+   + Sticky agendas :: allows someone to have more than one agenda view created simultaneously
+     - can quickly switch to the other view without incurring an agenda rebuild by invoking the agenda custom command key that normally generates the agenda
+     - if it already exists it will display the existing view
+     - can force the regeneration of the agenda view with ==g==
+   + eg, and kbd :: can display two views :
+     - ==F12 a==  for the daily/weekly agenda ::
+     - ==F12 SPC== for a project management view ::
+   + setup ::
+     #+begin_src emacs-lisp
+     ;; Use sticky agenda's so they persist
+     (setq org-agenda-sticky t)
+     #+end_src
 
-** Handling checklists
-  + checklists :: great for repeated tasks with lots of things that need to be done
-    - for repeating tasks, instead of manually resetting the checklists when the task is ==DONE==, ==org-checklist== can automatically uncheck the boxes when the task is marked done ::
-  + setup ::
-    #+begin_src emacs-lisp
-    ; load org-checklist.el from org-contrib
-    (add-to-list 'load-path (expand-file-name "~/Documents/repos/opt/org-contrib/lisp"))
+*** Handling checklists
+   + checklists :: great for repeated tasks with lots of things that need to be done
+     - for repeating tasks, instead of manually resetting the checklists when the task is ==DONE==, ==org-checklist== can automatically uncheck the boxes when the task is marked done ::
+   + setup ::
+     #+begin_src emacs-lisp
+     ; load org-checklist.el from org-contrib
+     (add-to-list 'load-path (expand-file-name "~/Documents/repos/opt/org-contrib/lisp"))
     
-    (require 'org-checklist)
-    #+end_src
-  + use in a task :: simply set the property ==RESET_CHECK_BOXES== to ==t== :
-    #+begin_src org :exports src
-    ,* TODO Invoicing and Archive Tasks [0/7]
-      DEADLINE: <2009-07-01 Wed +1m -0d> 
-      :PROPERTIES:
-      :RESET_CHECK_BOXES: t
-      :END:
+     (require 'org-checklist)
+     #+end_src
+   + use in a task :: simply set the property ==RESET_CHECK_BOXES== to ==t== :
+     #+begin_src org :exports src
+     ,* TODO Invoicing and Archive Tasks [0/7]
+       DEADLINE: <2009-07-01 Wed +1m -0d> 
+       :PROPERTIES:
+       :RESET_CHECK_BOXES: t
+       :END:
     
-      - [ ] Do task 1
-      - [ ] Do task 2
+       - [ ] Do task 1
+       - [ ] Do task 2
+       ...
+       - [ ] Do task 7
+     #+end_src
+
+*** Dealing with blocked tasks
+   + reminder: blocked tasks :: tasks that have subtasks which are not in a done todo state
+     - with bh config :: blocked tasks show up in a grayed font by default in the agenda
+   + to enforce entries to not get ==DONE== while some tasks are in blocked state ::
+     - plus, if an entry has a property ==ORDERED==, each of its TODO children is *blocked* until *all earlier siblings* are marked as done
+   + enable tasks blocking ::
+     #+begin_src emacs-lisp
+     (setq org-enforce-todo-dependencies t)
+     #+end_src
+   + enable tasks blocking with ==ORDERED== property on subtasks, eg ::
+     #+begin_src org :exports src
+     ,* TODO Some Task
+       :PROPERTIES:
+       :ORDERED: t
+       :END:
+     ,** TODO Step 1
+     ,** TODO Step 2, needs to wait for Step 1
+     ,** TODO Step 3, needs to wait for Step 1 and Step 2  
+     #+end_src
+   + enable tasks blocking for repeating tasks ::
+     - does not work well for repeating tasks where not all of the subtasks need to be complete before the next repeat cycle
+       + workaround :: set a permanent property on repeating tasks by overriding the blocking setting :
+	 #+begin_src org :exports src
+	 ,* TODO New Repeating Task
+	   SCHEDULED: <2009-06-16 Tue +1w>
+	   :PROPERTIES:
+	   :NOBLOCKING: t
+	   :END:
+	   ...
+	 ,** TODO Subtask  
+	 #+end_src
+       + the property above prevents ==New Repeating Task== from being blocked if some of the items under it are not complete :: 
+
+*** Org Task structure and presentation (to control how tasks are displayed while working on org-mode files)
+**** org-indent mode
+   + org-indent removes indentation in org-file on lines that are not headlines, and displays prefixed them with virtual space as if they were indented to vertically align with the headline text 
+   + turn on ==org-indent== at startup ::
+     #+begin_src emacs-lisp
+     (setq org-startup-indented t)
+     #+end_src
+
+**** Handling blank lines
+   + automatically *hide* blank lines between headlines while (un)folding ((un)collapse) headlines (with ==TAB==) ::
+     #+begin_src emacs-lisp
+     (setq org-cycle-separator-lines 0)
+     #+end_src
+   + prevent creating blank lines before headings, but allow list items to adapt to existing blank lines around the items ::
+     #+begin_src emacs-lisp
+     (setq org-blank-before-new-entry (quote ((heading)
+                                              (plain-list-item . auto))))
+     #+end_src
+
+**** Adding new tasks quickly without disturbing the current task content
+   + fast insertion of new headings in a project (possibly with a ==TODO== keyword) with :: ==C-RET==, ==C-S-RET==, ==M-RET==, and ==M-S-RET== :
+     #+begin_src emacs-lisp
+     (setq org-insert-heading-respect-content nil)
+     #+end_src
+   + ==C-== vs ==M-== ::
+     + for the ==C-== version :: org respects the content (adds the new heading after the content of the current item)
+       - when entering ==C-S-RET== in the middle of an entry :: the new heading is added after the body of the current entry
+     + for the ==M-== version :: org inserts the heading at point
+       - with ==M-S-RET== :: can split an entry in the middle
+
+**** Notes at the top
+   + kbd ::
+     - entering notes :: ==C-c C-z==
+       + entering notes *in the agenda* :: ==z==
+   + changing tasks states can also prompt for a note (e.g. moving to ==WAITING== prompts for a note, then enter reason why task is waiting) ::
+     - these notes are saved at the top of the task so *unfolding the task shows the note first* :: 
+   + setup ::
+     #+begin_src emacs-lisp
+     (setq org-reverse-note-order nil)
+     #+end_src
+
+**** Showing results of searches
+   + reminder ::
+     - regex search on current file of *all* matching results in a collapsed view :: ==C-c / /==
+   + with bh settings ::
+     - org-mode show the hierarchy of tasks above the matched entries and also the immediately following sibling task (but not all siblings) ::
+       + advantage :: compact display, and mitigates accidental errors by cutting too much data from org file with ==C-k== for example (cutting folded data (including the …) cuts text, including following hidden uncollapsed subtrees)
+     - setup ::
+       #+begin_src emacs-lisp
+       (setq org-show-following-heading t)
+       (setq org-show-hierarchy-above t)
+       (setq org-show-siblings (quote ((default))))
+       #+end_src
+
+**** Editing and Special key handling
+   + notes ::
+     - org-mode allows special handling of the ==C-a==, ==C-e==, and ==C-k== keys when editing headlines
+     - plus, can also use the setting that yanks (pastes) subtrees and adjusts the levels to match the task where pasting to (see the docstring (==C-h v org-yank-adjust-subtrees==) for more details on each variable and what it does).
+     - settings ::
+       + ==org-special-ctrl-a/e== :: to enable special easy access to the beginning and end of headlines
+	 - can use ==M-m== or ==C-a C-a== to get to the beginning of the line so the speed commands work
+	 - and ==C-a== to give easy access to the beginning of the heading text when needed
+       + setups ::
+	 #+begin_src emacs-lisp
+	 (setq org-special-ctrl-a/e t)
+	 (setq org-special-ctrl-k t)
+	 (setq org-yank-adjusted-subtrees t)
+	 #+end_src
+
+*** Deadlines and Agenda Visibility
+   + set as default to see deadlines and due dates in the agenda 30 days before the due date :: to prepare for the task so that it is completed on or before the due date
+     #+begin_src emacs-lisp
+     (setq org-deadline-warning-days 30)
+     #+end_src
+   + can also use deadlines for repeating tasks ::
+     - if the task repeats more often than once per month, could always keep bugging on the agenda view
+     - can adapt to repeating tasks more often by setting directly on the property an explicit deadline warning date ::
+       + setup ::
+	 #+begin_src org :exports src
+	 ,* TODO Pay Wages
+	   DEADLINE: <2009-07-01 Wed +1m -0d>   
+	 #+end_src
+       + in example :: the task repeats monthly and shows up in the agenda on the day it is due (with no prior warning)
+     - can set any number of lead days on ==DEADLINES== using ==-Nd== where N is the number of days in advance the task should show up in the agenda
+     - if no value is specified the default ==org-deadline-warning-days== is used
+
+*** Logging
+   + logging setup ::
+     #+begin_src emacs-lisp
+     ;; my version
+     (setq org-log-done (quote ((time)     ;; keep track of when a todo item was done => when toggled to done, a line ‘CLOSED: [timestamp]’ is inserted just after the headline
+				(note))))  ;; to record a note along with the timestamp
+     ;; bh version
+     ;; (setq org-log-done (quote time))
+     (setq org-log-into-drawer t)
+     (setq org-log-state-notes-insert-after-drawers nil)
+     #+end_src
+   + from ==org-todo-keywords== (see config above), with logging settings, a log entry is added whenever a task moves to any of the following states ::
+     - to or out of ==DONE== status
+     - to ==WAITING== status (with a note) or out of ==WAITING== status
+     - to ==HOLD== status
+     - to ==CANCELLED== status (with a note) or out of ==CANCELLED== status
+   + clock times and states are kept in the ==LOGBOOK== drawer to keep tasks uncluttered ::
+     - eg ::
+       + if a task is ==WAITING== then the reason why is near the top of the ==LOGBOOK==, and unfolding the ==LOGBOOK== drawer provides that information
+       + from the agenda, simply hitting ==SPC== on the task will reveal the ==LOGBOOK== drawer
+
+*** Limiting time spent on tasks
+   + notes ::
+     - org-mode has this great feature for signalling alarms *when the estimated time for a task is reached*
+     - can be used to limit the amount of time spent on a task (during the day for example)
+   + eg ::
+     - suppose clocked on a task estimated at 1h ::
+       #+begin_src org :exports src
+       ,* NEXT Document my use of org-mode
+         :LOGBOOK:...
+         :PROPERTIES:
+         :CLOCK_MODELINE_TOTAL: today
+         :Effort:   1:00
+         :END:  
+       #+end_src
+     - when clocked in, the task shows the total in the mode-line as follows :: (35 minutes out of estimated 1 hour so far)
+       : --:**  org-mode.org   91% (2348,73) Git:master  (Org Fly yas Font)-----[0:35/1:00 (Document my use of org-mode)]-------
+     - alarm sets off + message stating to be done working on this task :: 
+   + if one switches task, and try to clock in on clock limited task again, the sound goes off each and every time the task is clocked on :: incentive to work on something else :-)
+   + set up alarm for when effort limit is passed (will show a message too) ::
+     #+begin_src emacs-lisp
+     (setq org-clock-sound "/usr/local/lib/mechanicus-Children_of_the_Omnissiah.mp3")
+     #+end_src
+   + similar setups for repeated tasks ::
+     - by default the last repeat time is recorded as a property when a repeating task is marked done
+     - for repeating tasks, the mode-line clock total counts since the last repeat time by default. This lets one accumulate time over multiple days and counts towards estimated effort limit
+
+*** Habits and org-mode
+**** Habit Tracking
+   + notes ::
+     - try to develop habits, good for health
+     - logging of ==DONE== states habits need to be enabled for habit tracking
+     - a habit is just like a regular task except it has a special ==PROPERTY== value setting and a special ==SCHEDULED== date entry for example like this ::
+       + example ::
+	 #+begin_src org :exports src
+	 ,* TODO Update Org Mode Doc
+	   SCHEDULED: <2009-11-21 Sat .+7d/30d>
+	   [2009-11-14 Sat 11:45]
+	   :PROPERTIES:
+	   :STYLE: habit
+	   :END:  
+	 #+end_src
+       + the property marks the task as a habit and separates it from the regular task display on the agenda
+       + can use the special ==SCHEDULED== entry to state that one wants to do this every day, but at least every 2 days
+	 - if 3 days go without marking it ==DONE==, it shows up RED on the agenda indicating that the habit has been neglected
+       + when a habit is ==DONE==, it shows up on the daily agenda the next time based on the first interval in the ==SCHEDULED== entry (==.+7d== in previous example)
+	 - the period (==.xd==), indicates that the task will reschedule the item x days after it is completed
+       + in case of delay, one can hide and display habits quickly using the ==K== key on the agenda
+   + kbd ::
+     - hide/display habits on the agenda :: ==K==
+   + settings for habit tracking :: 
+     #+begin_src emacs-lisp
+     ; Enable habit tracking (and a bunch of other modules)
+     (setq org-modules (quote (org-bbdb
+                               org-bibtex
+                               org-crypt
+                               org-gnus
+                               org-id
+                               org-info
+                               org-jsinfo
+                               org-habit
+                               org-inlinetask
+                               org-irc
+                               org-mew
+                               org-mhe
+                               org-protocol
+                               org-rmail
+                               org-vm
+                               org-wl
+                               org-w3m)))
+    
+     ; position the habit graph on the agenda to the right of the default
+     (setq org-habit-graph-column 50)
+     #+end_src
+   + recommended process ::
+     - during the day and when not needed, turn off the habit display in the agenda with ==K==
+       + and if kept Emacs running for days at a time, habits display don't come back
+     - but, to make sure that habits are displayed daily, one can have settings to redisplay the habits in the agenda each day
+     - eg, the following turns the habit display on again at 6AM each morning ::
+       #+begin_src emacs-lisp
+       (run-at-time "06:00" 86400 '(lambda () (setq org-habit-show-habits t)))
+       #+end_src
+
+**** Habits: only log ==DONE== state changes
+   + tips ::
+     - keep habits under a level 1 task ==* Habits== with a special logging property that only logs changes to ==DONE== state
+       + this allows cancelling a habit and not record a timestamp for it and mess up the habit graph
+	 - cancelling a habit just to get it off the agenda since for example it's undoable (like get up before 6AM) should not mark the habit as done today
+	 - should only cancel habits that repeat every day
+     - prefer having one habit heading in every org file that can have habits defined
+   + example :: 
+     #+begin_src org :exports src
+     ,* Habits
+       :PROPERTIES:
+       :LOGGING:  DONE(!)
+       :ARCHIVE:  %s_archive::* Habits
+       :END:  
+     #+end_src
+
+*** Minimizing number of Emacs Frames
+   + goal :: minimize the number of frames opened when opening links
+     - or in order words, to replace the current window with the new content
+   + setup to open link into the same window ::
+     #+begin_src emacs-lisp
+     (setq org-link-frame-setup (quote ((vm . vm-visit-folder)
+                                    (gnus . org-gnus-no-new-news)
+                                    (file . find-file))))
+
+     ; Use the current window for C-c ' source editing
+     (setq org-src-window-setup 'current-window)
+     #+end_src
+   + process for when working on multiple files ::
+     - manually create the second frame :: ==C-x 5 2==
+       + or split the window :: ==C-x 4 2== or ==C-X 4 3==
+
+*** Auto revert mode
+   + notes ::
+     - need :: when for example one needs to synchronize org-mode files between different machines (eg: laptop and workstation)
+       + not easy scenario with git ::
+	 1. save all latest changes
+	 2. push to a bare repo
+	 3. fetch on the other system
+	 4. revert all org-mode files to get the updated information
+     - easier alternative with ==global-auto-revert-mode== ::
+       + this automatically reverts the buffer when its visited file changes on disk
+       + ==global-auto-revert-mode== does that for all file buffers
+     - with the setting :: any files that change on disk, where there are no changes in the buffer, automatically revert to the on-disk version
+       + great for synchronizing org-mode files between systems
+       + saves step 4. above
+       + auto revert will not revert a buffer if it has unsaved changes, or if its file on disk is deleted or renamed
+   + activate setup :: 
+     #+begin_src emacs-lisp
+     (global-auto-revert-mode t)
+     #+end_src
+
+*** org-mode and encryption
+**** Handling encryption
+   + notes ::
+     - instead of using encryption wallets to store passwords, one can keep them in org-mode files with special tags
+     - encrypted data will be kept in the org-mode file associated with the raw file
+   + ==org-crypt== allows tag headings with a special tag ==crypt==, and org-mode can keep data in these headings encrypted when saved to disk
+     - can decrypt the heading temporarily when need access to the data and org-mode re-encrypts the heading as soon as you save the file
+     - any text below a headline that has a ==crypt== tag is automatically encrypted when the file is saved
+       + to use a different tag, can customize the ==org-crypt-tag-matcher== setting
+   + setups ::
+     - source :: official org-mode documentation (https://orgmode.org/manual/Org-Crypt.html)
+       #+begin_src emacs-lisp
+       (require 'org-crypt)
+       (org-crypt-use-before-save-magic)
+       (setq org-tags-exclude-from-inheritance '("crypt"))
+      
+       ;(setq org-crypt-key nil)
+       ;; GPG key to use for encryption.
+       ;; nil means  use symmetric encryption unconditionally.
+       ;; "" means use symmetric encryption unless heading sets CRYPTKEY property.
+      
+       (setq auto-save-default nil)
+       ;; Auto-saving does not cooperate with org-crypt.el: so you need to
+       ;; turn it off if you plan to use org-crypt.el quite often.  Otherwise,
+       ;; you'll get an (annoying) message each time you start Org.
+      
+       ;; To turn it off only locally, you can insert this:
+       ;;
+       ;; # -*- buffer-auto-save-file-name: nil; -*-
+       #+end_src
+     - bh config ::
+       #+begin_src emacs-lisp
+       ; (require 'org-crypt)
+      
+       ; Encrypt all entries before saving
+       ; (org-crypt-use-before-save-magic)
+       ; (setq org-tags-exclude-from-inheritance (quote ("crypt")))
+      
+       ; GPG key to use for encryption
+       (setq org-crypt-key "F0B66B40")
+       #+end_src
+   + process ::
+     - ==M-x org-decrypt-entry== prompts for the passphrase associated with the encryption key and replace the encrypted data where the point is with the plaintext details for your encrypted entry ::
+     - as soon as the file is saved, the data is re-encrypted for the key ::
+     - encrypting does not require prompting for the passphrase - that's only for looking at the plain text version of the data :: 
+   + tips ::
+     - prefer having a single level 1 encrypted entry per file (like ==* Passwords==)
+     - prevent the ==crypt== tag from using inheritance so not to have encrypted data inside encrypted data
+     - ==M-x org-decrypt-entries== prompting for the passphrase to decrypt data over and over again (once per entry to decrypt) can be too inconvenient
+       + so, try to leave entries encrypted unless need to look up data - decrypt on demand and then save the file again to re-encrypt the data, this keeps the data in plain text as short as possible
+   + possible to use different keys for different headings by specifying the respective key as property ==CRYPTKEY== ::
+     - e.g. ::
+       #+begin_src org :exports src
+       ,* Totally secret :crypt:
+         :PROPERTIES:
+         :CRYPTKEY: 0x0123456789012345678901234567890123456789
+         :END:  
+       #+end_src
+     - note that ==CRYPTKEY== property is only effective when ==org-crypt-key== is set to ==non-nil==
+       + ==nil== value of ==org-crypt-key== makes org-mode use symmetric encryption unconditionally
+   + excluding the ‘crypt’ tag from inheritance prevents already encrypted text from being encrypted again :: 
+
+**** Auto Save Files and encryption
+   + notes ::
+     - autosave feature is pretty great
+     - emacs temporarily saves buffers in an autosave file while one is editing their org buffer and a sufficient number of changes have accumulated
+     - if one has decrypted subtrees in their buffers, these will be written to disk *in plain text* which possibly leaks sensitive information
+     - to prevent this, org-mode now asks if one wants to disable the autosave functionality in the current buffer
+       + hence the utility seen previously of keep decrypted entries as minimal as possible, so that when autosaving the temporary file is also encrypted
+       + when need a clear encrypted entry lookup, do it and directly save it so that it is encrypted again
+   + setup to disable ==org-crypt-disable-auto-save== :: but *careful*, autosave will still be active
+     #+begin_src emacs-lisp
+     (setq org-crypt-disable-auto-save nil)
+     #+end_src
+
+*** Speed Commands with ==org-speed-commands==
+   + kbd (default speed command keys) ::
+     - ==I== and ==O== for clocking in and out
+     - ==J== to jump to current or last clocking task
+     - ==t== to change todo state
+   + speed commands :: allow access to frequently used commands when on the beginning of a headline (similar to one-key agenda commands)
+     - speed commands are user configurable and org-mode provides a good set of default commands
+   + tips ::
+     - can override the default settings for the 1, 2, and 3 keys if one doesn't use priorities
+     - disable cycling with ==c==, and add ==q== as a quick way to get back to the agenda and update the current view
+   + default org-speed ==org-speed-commands-default== already sets plenty of useful speed keys ::
+     - eg ::
+       + ==I== and ==O== :: for clocking in and out
+       + ==J== :: jump to current or last clocking task
+       + ==t== :: change todo state
+       + ==TAB== and ==S-TAB== :: for cycling
+       + ==c== and ==C== :: are disabled by bh so they do not accidentally self insert when not intended to
+     - example setup ::
+     #+begin_src org :exports src
+     ,(("Outline Navigation")
+      ("n" org-speed-move-safe 'outline-next-visible-heading)
+      ("p" org-speed-move-safe 'outline-previous-visible-heading)
       ...
-      - [ ] Do task 7
-    #+end_src
-
-** Dealing with blocked tasks
-  + reminder: blocked tasks :: tasks that have subtasks which are not in a done todo state
-    - with bh config :: blocked tasks show up in a grayed font by default in the agenda
-  + to enforce entries to not get ==DONE== while some tasks are in blocked state ::
-    - plus, if an entry has a property ==ORDERED==, each of its TODO children is *blocked* until *all earlier siblings* are marked as done
-  + enable tasks blocking ::
-    #+begin_src emacs-lisp
-    (setq org-enforce-todo-dependencies t)
-    #+end_src
-  + enable tasks blocking with ==ORDERED== property on subtasks, eg ::
-    #+begin_src org :exports src
-    ,* TODO Some Task
-      :PROPERTIES:
-      :ORDERED: t
-      :END:
-    ,** TODO Step 1
-    ,** TODO Step 2, needs to wait for Step 1
-    ,** TODO Step 3, needs to wait for Step 1 and Step 2  
-    #+end_src
-  + enable tasks blocking for repeating tasks ::
-    - does not work well for repeating tasks where not all of the subtasks need to be complete before the next repeat cycle
-      + workaround :: set a permanent property on repeating tasks by overriding the blocking setting :
-	#+begin_src org :exports src
-	,* TODO New Repeating Task
-	  SCHEDULED: <2009-06-16 Tue +1w>
-	  :PROPERTIES:
-	  :NOBLOCKING: t
-	  :END:
-	  ...
-	,** TODO Subtask  
-	#+end_src
-      + the property above prevents ==New Repeating Task== from being blocked if some of the items under it are not complete :: 
-
-** Org Task structure and presentation (to control how tasks are displayed while working on org-mode files)
-*** org-indent mode
-  + org-indent removes indentation in org-file on lines that are not headlines, and displays prefixed them with virtual space as if they were indented to vertically align with the headline text 
-  + turn on ==org-indent== at startup ::
-    #+begin_src emacs-lisp
-    (setq org-startup-indented t)
-    #+end_src
-
-*** Handling blank lines
-  + automatically *hide* blank lines between headlines while (un)folding ((un)collapse) headlines (with ==TAB==) ::
-    #+begin_src emacs-lisp
-    (setq org-cycle-separator-lines 0)
-    #+end_src
-  + prevent creating blank lines before headings, but allow list items to adapt to existing blank lines around the items ::
-    #+begin_src emacs-lisp
-    (setq org-blank-before-new-entry (quote ((heading)
-                                             (plain-list-item . auto))))
-    #+end_src
-
-*** Adding new tasks quickly without disturbing the current task content
-  + fast insertion of new headings in a project (possibly with a ==TODO== keyword) with :: ==C-RET==, ==C-S-RET==, ==M-RET==, and ==M-S-RET== :
-    #+begin_src emacs-lisp
-    (setq org-insert-heading-respect-content nil)
-    #+end_src
-  + ==C-== vs ==M-== ::
-    + for the ==C-== version :: org respects the content (adds the new heading after the content of the current item)
-      - when entering ==C-S-RET== in the middle of an entry :: the new heading is added after the body of the current entry
-    + for the ==M-== version :: org inserts the heading at point
-      - with ==M-S-RET== :: can split an entry in the middle
-
-*** Notes at the top
-  + kbd ::
-    - entering notes :: ==C-c C-z==
-      + entering notes *in the agenda* :: ==z==
-  + changing tasks states can also prompt for a note (e.g. moving to ==WAITING== prompts for a note, then enter reason why task is waiting) ::
-    - these notes are saved at the top of the task so *unfolding the task shows the note first* :: 
-  + setup ::
-    #+begin_src emacs-lisp
-    (setq org-reverse-note-order nil)
-    #+end_src
-
-*** Showing results of searches
-  + reminder ::
-    - regex search on current file of *all* matching results in a collapsed view :: ==C-c / /==
-  + with bh settings ::
-    - org-mode show the hierarchy of tasks above the matched entries and also the immediately following sibling task (but not all siblings) ::
-      + advantage :: compact display, and mitigates accidental errors by cutting too much data from org file with ==C-k== for example (cutting folded data (including the …) cuts text, including following hidden uncollapsed subtrees)
-    - setup ::
-      #+begin_src emacs-lisp
-      (setq org-show-following-heading t)
-      (setq org-show-hierarchy-above t)
-      (setq org-show-siblings (quote ((default))))
-      #+end_src
-
-*** Editing and Special key handling
-  + notes ::
-    - org-mode allows special handling of the ==C-a==, ==C-e==, and ==C-k== keys when editing headlines
-    - plus, can also use the setting that yanks (pastes) subtrees and adjusts the levels to match the task where pasting to (see the docstring (==C-h v org-yank-adjust-subtrees==) for more details on each variable and what it does).
-    - settings ::
-      + ==org-special-ctrl-a/e== :: to enable special easy access to the beginning and end of headlines
-	- can use ==M-m== or ==C-a C-a== to get to the beginning of the line so the speed commands work
-	- and ==C-a== to give easy access to the beginning of the heading text when needed
-      + setups ::
-	#+begin_src emacs-lisp
-	(setq org-special-ctrl-a/e t)
-	(setq org-special-ctrl-k t)
-	(setq org-yank-adjusted-subtrees t)
-	#+end_src
-
-** Attachments
-  + notes ::
-    - great for getting *large amounts* of data related to the project out of the org-mode files
-    - set up org-mode to generate unique attachment IDs with ==org-id-method== ::
-      #+begin_src emacs-lisp
-      (setq org-id-method (quote uuidgen))
-      #+end_src
-    - process ::
-      - let's say you want to attach file ==x.sql== to current buffer :: create it in ==/tmp/x.sql==, and save it
-      - attach the file with ==C-c C-a a==, and enter the filename: ==x.sql== ::
-	+ this generates a unique ID for the task and adds the file in the attachment directory ::
-	+ The attached file is saved for example in :: ==folderx/f1/d38e9a-ff70-4cc4-ab50-e8b58b2aaa7b/==
-	  - where it goes exactly isn't really important as long as it is saved and retrievable easily
-	  - org-mode copies the original file ==/tmp/x.sql== into the appropriate attachment directory
-	+ example of result ::
-	  #+begin_src org :exports src
-	  ,* Attachments                                                        :ATTACH:
-	    :PROPERTIES:
-	    :Attachments: x.sql
-	    :ID:       f1d38e9a-ff70-4cc4-ab50-e8b58b2aaa7b
-	    :END:  
-	  #+end_src
-    - further notes ::
-      + the ==ID== changes for every task header when a new ==ID== is generated
-      + tasks with attachments automatically get an ==ATTACH== tag
-	- so, easy to find tasks with attachments with a *tag search*
-      + to open the attachment for a task : ==C-c C-a o==
-	- prompts for the attachment to open, and ==TAB== completion works here
-      + possible to use named directories for attachments, but need to test it yourself
-  + kbd ::
-    - attach a file to current buffer :: ==C-c C-a a==
-    - to open the attachment for a task :: ==C-c C-a o==
-
-** Deadlines and Agenda Visibility
-  + set as default to see deadlines and due dates in the agenda 30 days before the due date :: to prepare for the task so that it is completed on or before the due date
-    #+begin_src emacs-lisp
-    (setq org-deadline-warning-days 30)
-    #+end_src
-  + can also use deadlines for repeating tasks ::
-    - if the task repeats more often than once per month, could always keep bugging on the agenda view
-    - can adapt to repeating tasks more often by setting directly on the property an explicit deadline warning date ::
-      + setup ::
-	#+begin_src org :exports src
-	,* TODO Pay Wages
-	  DEADLINE: <2009-07-01 Wed +1m -0d>   
-	#+end_src
-      + in example :: the task repeats monthly and shows up in the agenda on the day it is due (with no prior warning)
-    - can set any number of lead days on ==DEADLINES== using ==-Nd== where N is the number of days in advance the task should show up in the agenda
-    - if no value is specified the default ==org-deadline-warning-days== is used
-
-** Exporting Tables to CSV (comma delimited values)
-  + create csv by exporting org-mode tables as comma delimited values (can also export as TAB delimited values)
-  + set default value to csv ::
-    #+begin_src emacs-lisp
-    (setq org-table-export-default-format "orgtbl-to-csv")
-    #+end_src
-  + process ::
-    - put cursor inside table ::
-    - hit ==M-x org-table-export== :: prompts for a filename and the format which defaults to orgtbl-to-csv from setting above
-
-** Minimizing number of Emacs Frames
-  + goal :: minimize the number of frames opened when opening links
-    - or in order words, to replace the current window with the new content
-  + setup to open link into the same window ::
-    #+begin_src emacs-lisp
-    (setq org-link-frame-setup (quote ((vm . vm-visit-folder)
-                                   (gnus . org-gnus-no-new-news)
-                                   (file . find-file))))
-
-    ; Use the current window for C-c ' source editing
-    (setq org-src-window-setup 'current-window)
-    #+end_src
-  + process for when working on multiple files ::
-    - manually create the second frame :: ==C-x 5 2==
-      + or split the window :: ==C-x 4 2== or ==C-X 4 3==
-
-** Logging
-  + logging setup ::
-    #+begin_src emacs-lisp
-    ;; my version
-    (setq org-log-done (quote ((time)     ;; keep track of when a todo item was done => when toggled to done, a line ‘CLOSED: [timestamp]’ is inserted just after the headline
-                               (note))))  ;; to record a note along with the timestamp
-    ;; bh version
-    ;; (setq org-log-done (quote time))
-    (setq org-log-into-drawer t)
-    (setq org-log-state-notes-insert-after-drawers nil)
-    #+end_src
-  + from ==org-todo-keywords== (see config above), with logging settings, a log entry is added whenever a task moves to any of the following states ::
-    - to or out of ==DONE== status
-    - to ==WAITING== status (with a note) or out of ==WAITING== status
-    - to ==HOLD== status
-    - to ==CANCELLED== status (with a note) or out of ==CANCELLED== status
-  + clock times and states are kept in the ==LOGBOOK== drawer to keep tasks uncluttered ::
-    - eg ::
-      + if a task is ==WAITING== then the reason why is near the top of the ==LOGBOOK==, and unfolding the ==LOGBOOK== drawer provides that information
-      + from the agenda, simply hitting ==SPC== on the task will reveal the ==LOGBOOK== drawer
-
-** Limiting time spent on tasks
-  + notes ::
-    - org-mode has this great feature for signalling alarms *when the estimated time for a task is reached*
-    - can be used to limit the amount of time spent on a task (during the day for example)
-  + eg ::
-    - suppose clocked on a task estimated at 1h ::
-      #+begin_src org :exports src
-      ,* NEXT Document my use of org-mode
-        :LOGBOOK:...
-        :PROPERTIES:
-        :CLOCK_MODELINE_TOTAL: today
-        :Effort:   1:00
-        :END:  
-      #+end_src
-    - when clocked in, the task shows the total in the mode-line as follows :: (35 minutes out of estimated 1 hour so far)
-      : --:**  org-mode.org   91% (2348,73) Git:master  (Org Fly yas Font)-----[0:35/1:00 (Document my use of org-mode)]-------
-    - alarm sets off + message stating to be done working on this task :: 
-  + if one switches task, and try to clock in on clock limited task again, the sound goes off each and every time the task is clocked on :: incentive to work on something else :-)
-  + set up alarm for when effort limit is passed (will show a message too) ::
-    #+begin_src emacs-lisp
-    (setq org-clock-sound "/usr/local/lib/mechanicus-Children_of_the_Omnissiah.mp3")
-    #+end_src
-  + similar setups for repeated tasks ::
-    - by default the last repeat time is recorded as a property when a repeating task is marked done
-    - for repeating tasks, the mode-line clock total counts since the last repeat time by default. This lets one accumulate time over multiple days and counts towards estimated effort limit
-
-** Habits and org-mode
-*** Habit Tracking
-  + notes ::
-    - try to develop habits, good for health
-    - logging of ==DONE== states habits need to be enabled for habit tracking
-    - a habit is just like a regular task except it has a special ==PROPERTY== value setting and a special ==SCHEDULED== date entry for example like this ::
-      + example ::
-	#+begin_src org :exports src
-	,* TODO Update Org Mode Doc
-	  SCHEDULED: <2009-11-21 Sat .+7d/30d>
-	  [2009-11-14 Sat 11:45]
-	  :PROPERTIES:
-	  :STYLE: habit
-	  :END:  
-	#+end_src
-      + the property marks the task as a habit and separates it from the regular task display on the agenda
-      + can use the special ==SCHEDULED== entry to state that one wants to do this every day, but at least every 2 days
-	- if 3 days go without marking it ==DONE==, it shows up RED on the agenda indicating that the habit has been neglected
-      + when a habit is ==DONE==, it shows up on the daily agenda the next time based on the first interval in the ==SCHEDULED== entry (==.+7d== in previous example)
-	- the period (==.xd==), indicates that the task will reschedule the item x days after it is completed
-      + in case of delay, one can hide and display habits quickly using the ==K== key on the agenda
-  + kbd ::
-    - hide/display habits on the agenda :: ==K==
-  + settings for habit tracking :: 
-    #+begin_src emacs-lisp
-    ; Enable habit tracking (and a bunch of other modules)
-    (setq org-modules (quote (org-bbdb
-                              org-bibtex
-                              org-crypt
-                              org-gnus
-                              org-id
-                              org-info
-                              org-jsinfo
-                              org-habit
-                              org-inlinetask
-                              org-irc
-                              org-mew
-                              org-mhe
-                              org-protocol
-                              org-rmail
-                              org-vm
-                              org-wl
-                              org-w3m)))
+      ("g" org-refile t)
+      ("Outline Visibility")
+      ("c" . org-cycle)
+      ("C" . org-shifttab)
+      ...
+      ("Outline Structure Editing")
+      ("U" . org-shiftmetaup)
+      ("D" . org-shiftmetadown)
+      ...
+      ("#" . org-toggle-comment)
+      ("Clock Commands")
+      ("I" . org-clock-in)
+      ("O" . org-clock-out)
+      ("Meta Data Editing")
+      ("t" . org-todo)
+      ("," org-priority)
+      ("0" org-priority 32)
+      ("1" org-priority 65)
+      ("2" org-priority 66)
+      ...
+      ("W" lambda
+       (m)
+       (interactive "sMinutes before warning: ")
+       (org-entry-put
+	(point)
+	"APPT_WARNTIME" m))
+      ("Agenda Views etc")
+      ("v" . org-agenda)
+      ("/" . org-sparse-tree)
+      ("Misc")
+      ("o" . org-open-at-point)
+      ("?" . org-speed-command-help)
+      ("<" org-agenda-set-restriction-lock 'subtree)
+      (">" org-agenda-remove-restriction-lock))
+     #+end_src
+   + setup ::
+     #+begin_src emacs-lisp
+     (setq org-use-speed-commands t)
+     (setq org-speed-commands-user (quote (("0" . ignore)
+                                           ("1" . ignore)
+                                           ("2" . ignore)
+                                           ("3" . ignore)
+                                           ("4" . ignore)
+                                           ("5" . ignore)
+                                           ("6" . ignore)
+                                           ("7" . ignore)
+                                           ("8" . ignore)
+                                           ("9" . ignore)
     
-    ; position the habit graph on the agenda to the right of the default
-    (setq org-habit-graph-column 50)
-    #+end_src
-  + recommended process ::
-    - during the day and when not needed, turn off the habit display in the agenda with ==K==
-      + and if kept Emacs running for days at a time, habits display don't come back
-    - but, to make sure that habits are displayed daily, one can have settings to redisplay the habits in the agenda each day
-    - eg, the following turns the habit display on again at 6AM each morning ::
-      #+begin_src emacs-lisp
-      (run-at-time "06:00" 86400 '(lambda () (setq org-habit-show-habits t)))
-      #+end_src
-
-*** Habits: only log ==DONE== state changes
-  + tips ::
-    - keep habits under a level 1 task ==* Habits== with a special logging property that only logs changes to ==DONE== state
-      + this allows cancelling a habit and not record a timestamp for it and mess up the habit graph
-	- cancelling a habit just to get it off the agenda since for example it's undoable (like get up before 6AM) should not mark the habit as done today
-	- should only cancel habits that repeat every day
-    - prefer having one habit heading in every org file that can have habits defined
-  + example :: 
-    #+begin_src org :exports src
-    ,* Habits
-      :PROPERTIES:
-      :LOGGING:  DONE(!)
-      :ARCHIVE:  %s_archive::* Habits
-      :END:  
-    #+end_src
-
-** Auto revert mode
-  + notes ::
-    - need :: when for example one needs to synchronize org-mode files between different machines (eg: laptop and workstation)
-      + not easy scenario with git ::
-	1. save all latest changes
-	2. push to a bare repo
-	3. fetch on the other system
-	4. revert all org-mode files to get the updated information
-    - easier alternative with ==global-auto-revert-mode== ::
-      + this automatically reverts the buffer when its visited file changes on disk
-      + ==global-auto-revert-mode== does that for all file buffers
-    - with the setting :: any files that change on disk, where there are no changes in the buffer, automatically revert to the on-disk version
-      + great for synchronizing org-mode files between systems
-      + saves step 4. above
-      + auto revert will not revert a buffer if it has unsaved changes, or if its file on disk is deleted or renamed
-  + activate setup :: 
-    #+begin_src emacs-lisp
-    (global-auto-revert-mode t)
-    #+end_src
-
-** org-mode and encryption
-*** Handling encryption
-  + notes ::
-    - instead of using encryption wallets to store passwords, one can keep them in org-mode files with special tags
-    - encrypted data will be kept in the org-mode file associated with the raw file
-  + ==org-crypt== allows tag headings with a special tag ==crypt==, and org-mode can keep data in these headings encrypted when saved to disk
-    - can decrypt the heading temporarily when need access to the data and org-mode re-encrypts the heading as soon as you save the file
-    - any text below a headline that has a ==crypt== tag is automatically encrypted when the file is saved
-      + to use a different tag, can customize the ==org-crypt-tag-matcher== setting
-  + setups ::
-    - source :: official org-mode documentation (https://orgmode.org/manual/Org-Crypt.html)
-      #+begin_src emacs-lisp
-      (require 'org-crypt)
-      (org-crypt-use-before-save-magic)
-      (setq org-tags-exclude-from-inheritance '("crypt"))
-      
-      ;(setq org-crypt-key nil)
-      ;; GPG key to use for encryption.
-      ;; nil means  use symmetric encryption unconditionally.
-      ;; "" means use symmetric encryption unless heading sets CRYPTKEY property.
-      
-      (setq auto-save-default nil)
-      ;; Auto-saving does not cooperate with org-crypt.el: so you need to
-      ;; turn it off if you plan to use org-crypt.el quite often.  Otherwise,
-      ;; you'll get an (annoying) message each time you start Org.
-      
-      ;; To turn it off only locally, you can insert this:
-      ;;
-      ;; # -*- buffer-auto-save-file-name: nil; -*-
-      #+end_src
-    - bh config ::
-      #+begin_src emacs-lisp
-      ; (require 'org-crypt)
-      
-      ; Encrypt all entries before saving
-      ; (org-crypt-use-before-save-magic)
-      ; (setq org-tags-exclude-from-inheritance (quote ("crypt")))
-      
-      ; GPG key to use for encryption
-      (setq org-crypt-key "F0B66B40")
-      #+end_src
-  + process ::
-    - ==M-x org-decrypt-entry== prompts for the passphrase associated with the encryption key and replace the encrypted data where the point is with the plaintext details for your encrypted entry ::
-    - as soon as the file is saved, the data is re-encrypted for the key ::
-    - encrypting does not require prompting for the passphrase - that's only for looking at the plain text version of the data :: 
-  + tips ::
-    - prefer having a single level 1 encrypted entry per file (like ==* Passwords==)
-    - prevent the ==crypt== tag from using inheritance so not to have encrypted data inside encrypted data
-    - ==M-x org-decrypt-entries== prompting for the passphrase to decrypt data over and over again (once per entry to decrypt) can be too inconvenient
-      + so, try to leave entries encrypted unless need to look up data - decrypt on demand and then save the file again to re-encrypt the data, this keeps the data in plain text as short as possible
-  + possible to use different keys for different headings by specifying the respective key as property ==CRYPTKEY== ::
-    - e.g. ::
-      #+begin_src org :exports src
-      ,* Totally secret :crypt:
-        :PROPERTIES:
-        :CRYPTKEY: 0x0123456789012345678901234567890123456789
-        :END:  
-      #+end_src
-    - note that ==CRYPTKEY== property is only effective when ==org-crypt-key== is set to ==non-nil==
-      + ==nil== value of ==org-crypt-key== makes org-mode use symmetric encryption unconditionally
-  + excluding the ‘crypt’ tag from inheritance prevents already encrypted text from being encrypted again :: 
-
-*** Auto Save Files and encryption
-  + notes ::
-    - autosave feature is pretty great
-    - emacs temporarily saves buffers in an autosave file while one is editing their org buffer and a sufficient number of changes have accumulated
-    - if one has decrypted subtrees in their buffers, these will be written to disk *in plain text* which possibly leaks sensitive information
-    - to prevent this, org-mode now asks if one wants to disable the autosave functionality in the current buffer
-      + hence the utility seen previously of keep decrypted entries as minimal as possible, so that when autosaving the temporary file is also encrypted
-      + when need a clear encrypted entry lookup, do it and directly save it so that it is encrypted again
-  + setup to disable ==org-crypt-disable-auto-save== :: but *careful*, autosave will still be active
-    #+begin_src emacs-lisp
-    (setq org-crypt-disable-auto-save nil)
-    #+end_src
-
-** Speed Commands with ==org-speed-commands==
-  + kbd (default speed command keys) ::
-    - ==I== and ==O== for clocking in and out
-    - ==J== to jump to current or last clocking task
-    - ==t== to change todo state
-  + speed commands :: allow access to frequently used commands when on the beginning of a headline (similar to one-key agenda commands)
-    - speed commands are user configurable and org-mode provides a good set of default commands
-  + tips ::
-    - can override the default settings for the 1, 2, and 3 keys if one doesn't use priorities
-    - disable cycling with ==c==, and add ==q== as a quick way to get back to the agenda and update the current view
-  + default org-speed ==org-speed-commands-default== already sets plenty of useful speed keys ::
-    - eg ::
-      + ==I== and ==O== :: for clocking in and out
-      + ==J== :: jump to current or last clocking task
-      + ==t== :: change todo state
-      + ==TAB== and ==S-TAB== :: for cycling
-      + ==c== and ==C== :: are disabled by bh so they do not accidentally self insert when not intended to
-    - example setup ::
-    #+begin_src org :exports src
-    ,(("Outline Navigation")
-     ("n" org-speed-move-safe 'outline-next-visible-heading)
-     ("p" org-speed-move-safe 'outline-previous-visible-heading)
-     ...
-     ("g" org-refile t)
-     ("Outline Visibility")
-     ("c" . org-cycle)
-     ("C" . org-shifttab)
-     ...
-     ("Outline Structure Editing")
-     ("U" . org-shiftmetaup)
-     ("D" . org-shiftmetadown)
-     ...
-     ("#" . org-toggle-comment)
-     ("Clock Commands")
-     ("I" . org-clock-in)
-     ("O" . org-clock-out)
-     ("Meta Data Editing")
-     ("t" . org-todo)
-     ("," org-priority)
-     ("0" org-priority 32)
-     ("1" org-priority 65)
-     ("2" org-priority 66)
-     ...
-     ("W" lambda
-      (m)
-      (interactive "sMinutes before warning: ")
-      (org-entry-put
-       (point)
-       "APPT_WARNTIME" m))
-     ("Agenda Views etc")
-     ("v" . org-agenda)
-     ("/" . org-sparse-tree)
-     ("Misc")
-     ("o" . org-open-at-point)
-     ("?" . org-speed-command-help)
-     ("<" org-agenda-set-restriction-lock 'subtree)
-     (">" org-agenda-remove-restriction-lock))
-    #+end_src
-  + setup ::
-    #+begin_src emacs-lisp
-    (setq org-use-speed-commands t)
-    (setq org-speed-commands-user (quote (("0" . ignore)
-                                          ("1" . ignore)
-                                          ("2" . ignore)
-                                          ("3" . ignore)
-                                          ("4" . ignore)
-                                          ("5" . ignore)
-                                          ("6" . ignore)
-                                          ("7" . ignore)
-                                          ("8" . ignore)
-                                          ("9" . ignore)
+                                           ("a" . ignore)
+                                           ("d" . ignore)
+                                           ("h" . bh/hide-other)
+                                           ("i" progn
+                                            (forward-char 1)
+                                            (call-interactively 'org-insert-heading-respect-content))
+                                           ("k" . org-kill-note-or-show-branches)
+                                           ("l" . ignore)
+                                           ("m" . ignore)
+                                           ("q" . bh/show-org-agenda)
+                                           ("r" . ignore)
+                                           ("s" . org-save-all-org-buffers)
+                                           ("w" . org-refile)
+                                           ("x" . ignore)
+                                           ("y" . ignore)
+                                           ("z" . org-add-note)
     
-                                          ("a" . ignore)
-                                          ("d" . ignore)
-                                          ("h" . bh/hide-other)
-                                          ("i" progn
-                                           (forward-char 1)
-                                           (call-interactively 'org-insert-heading-respect-content))
-                                          ("k" . org-kill-note-or-show-branches)
-                                          ("l" . ignore)
-                                          ("m" . ignore)
-                                          ("q" . bh/show-org-agenda)
-                                          ("r" . ignore)
-                                          ("s" . org-save-all-org-buffers)
-                                          ("w" . org-refile)
-                                          ("x" . ignore)
-                                          ("y" . ignore)
-                                          ("z" . org-add-note)
+                                           ("A" . ignore)
+                                           ("B" . ignore)
+                                           ("E" . ignore)
+                                           ("F" . bh/restrict-to-file-or-follow)
+                                           ("G" . ignore)
+                                           ("H" . ignore)
+                                           ("J" . org-clock-goto)
+                                           ("K" . ignore)
+                                           ("L" . ignore)
+                                           ("M" . ignore)
+                                           ("N" . bh/narrow-to-org-subtree)
+                                           ("P" . bh/narrow-to-org-project)
+                                           ("Q" . ignore)
+                                           ("R" . ignore)
+                                           ("S" . ignore)
+                                           ("T" . bh/org-todo)
+                                           ("U" . bh/narrow-up-one-org-level)
+                                           ("V" . ignore)
+                                           ("W" . bh/widen)
+                                           ("X" . ignore)
+                                           ("Y" . ignore)
+                                           ("Z" . ignore))))
     
-                                          ("A" . ignore)
-                                          ("B" . ignore)
-                                          ("E" . ignore)
-                                          ("F" . bh/restrict-to-file-or-follow)
-                                          ("G" . ignore)
-                                          ("H" . ignore)
-                                          ("J" . org-clock-goto)
-                                          ("K" . ignore)
-                                          ("L" . ignore)
-                                          ("M" . ignore)
-                                          ("N" . bh/narrow-to-org-subtree)
-                                          ("P" . bh/narrow-to-org-project)
-                                          ("Q" . ignore)
-                                          ("R" . ignore)
-                                          ("S" . ignore)
-                                          ("T" . bh/org-todo)
-                                          ("U" . bh/narrow-up-one-org-level)
-                                          ("V" . ignore)
-                                          ("W" . bh/widen)
-                                          ("X" . ignore)
-                                          ("Y" . ignore)
-                                          ("Z" . ignore))))
-    
-    (defun bh/show-org-agenda ()
-      (interactive)
-      (if org-agenda-sticky
-          (switch-to-buffer "*Org Agenda( )*")
-        (switch-to-buffer "*Org Agenda*"))
-      (delete-other-windows))
-    #+end_src
-** Org Protocol (create capture notes in org-mode from other applications)
-  + utility ::  great way to create capture notes in org-mode from other applications
-    - for example, it's great way to create tasks to review interesting web pages visited from Firefox
-  + can have a special capture template set up for org-protocol to use (set up with ==w== key) :: 
-  + need to set bulk of the setup in the target application (Firefox in this case), so that ==C-c c== on a page in Firefox triggers the org-protocol capture template with details of the page currently being viewed (in firefox) ::
-    - can set up ==org-protocol== in firefox as described in  [[http://orgmode.org/worg/org-contrib/org-protocol.php#sec-9][Keybindings for Firefox]]
-  + org-mode setup for org-protocol is simple, it enables org-protocol and creates a single org-protocol capture template as described in [[#CaptureTemplates][Capture Templates]] ::
-    #+begin_src emacs-lisp
-    (require 'org-protocol)
-    #+end_src
+     (defun bh/show-org-agenda ()
+       (interactive)
+       (if org-agenda-sticky
+           (switch-to-buffer "*Org Agenda( )*")
+         (switch-to-buffer "*Org Agenda*"))
+       (delete-other-windows))
+     #+end_src
+*** Org Protocol (create capture notes in org-mode from other applications)
+   + utility ::  great way to create capture notes in org-mode from other applications
+     - for example, it's great way to create tasks to review interesting web pages visited from Firefox
+   + can have a special capture template set up for org-protocol to use (set up with ==w== key) :: 
+   + need to set bulk of the setup in the target application (Firefox in this case), so that ==C-c c== on a page in Firefox triggers the org-protocol capture template with details of the page currently being viewed (in firefox) ::
+     - can set up ==org-protocol== in firefox as described in  [[http://orgmode.org/worg/org-contrib/org-protocol.php#sec-9][Keybindings for Firefox]]
+   + org-mode setup for org-protocol is simple, it enables org-protocol and creates a single org-protocol capture template as described in [[#CaptureTemplates][Capture Templates]] ::
+     #+begin_src emacs-lisp
+     (require 'org-protocol)
+     #+end_src
 
-** Add (require) a final newline when saving files
-  + utility :: mainly for editing yasnippets (template system for Emacs, allows to type an abbreviation and automatically expand it into function templates)
-    - great for anything: programming autocomplete, orgmode, etc.
-    - settings helps to expand a snippet but stay on the same line
-    - perfect way to for replacing short strings or initials with full names for people during meeting notes
-  + thanks to ==abbrev-mode-==, no longer need to fuss :: when saving a file in Emacs, add a final newline that fits better with the source code projects that is usually worked on ::
-    #+begin_src emacs-lisp
-    (setq require-final-newline t)
-    #+end_src
+*** Add (require) a final newline when saving files
+   + utility :: mainly for editing yasnippets (template system for Emacs, allows to type an abbreviation and automatically expand it into function templates)
+     - great for anything: programming autocomplete, orgmode, etc.
+     - settings helps to expand a snippet but stay on the same line
+     - perfect way to for replacing short strings or initials with full names for people during meeting notes
+   + thanks to ==abbrev-mode-==, no longer need to fuss :: when saving a file in Emacs, add a final newline that fits better with the source code projects that is usually worked on ::
+     #+begin_src emacs-lisp
+     (setq require-final-newline t)
+     #+end_src
 
-** Insert inactive timestamps (for later references and remembering) and exclude from export
-  + notes ::
-    - inserting inactive timestamps when working on org-mode files is possible in order for example to remember when a task/something was created/done/blocked
-    - for ==remember== tasks, the timestamp is in the remember template, but for regular structure editing, one can want the timestamp automatically added when the headline is created
-    - bh made a function that is run by an org-mode hook to automatically insert the inactive timestamp whenever a headline is created
-      + adding the timestamp can be controlled with ==f9 T== which toggles the creation of the timestamp *on and off* for new headlines
-  + example ::
-    - when creating a heading (with ==M-RET== or ==M-S-RET==), the hook invokes bh's function and it inserts an inactive timestamp like this ::
-      #+begin_src org :exports src
-      ,* <point here>
-        [2009-11-22 Sun 18:45]  
-      #+end_src
-    - this keeps an automatic record of when tasks was created, which can be very useful ::
-  + kbd ::
-    - invoke insert inactive timestamp function on demand and anywhere :: ==f9 T==
-  + setup for timestamp hook insertion ::
-    #+begin_src emacs-lisp
-    (defvar bh/insert-inactive-timestamp t)
+*** Insert inactive timestamps (for later references and remembering) and exclude from export
+   + notes ::
+     - inserting inactive timestamps when working on org-mode files is possible in order for example to remember when a task/something was created/done/blocked
+     - for ==remember== tasks, the timestamp is in the remember template, but for regular structure editing, one can want the timestamp automatically added when the headline is created
+     - bh made a function that is run by an org-mode hook to automatically insert the inactive timestamp whenever a headline is created
+       + adding the timestamp can be controlled with ==f9 T== which toggles the creation of the timestamp *on and off* for new headlines
+   + example ::
+     - when creating a heading (with ==M-RET== or ==M-S-RET==), the hook invokes bh's function and it inserts an inactive timestamp like this ::
+       #+begin_src org :exports src
+       ,* <point here>
+         [2009-11-22 Sun 18:45]  
+       #+end_src
+     - this keeps an automatic record of when tasks was created, which can be very useful ::
+   + kbd ::
+     - invoke insert inactive timestamp function on demand and anywhere :: ==f9 T==
+   + setup for timestamp hook insertion ::
+     #+begin_src emacs-lisp
+     (defvar bh/insert-inactive-timestamp t)
     
-    (defun bh/toggle-insert-inactive-timestamp ()
-      (interactive)
-      (setq bh/insert-inactive-timestamp (not bh/insert-inactive-timestamp))
-      (message "Heading timestamps are %s" (if bh/insert-inactive-timestamp "ON" "OFF")))
+     (defun bh/toggle-insert-inactive-timestamp ()
+       (interactive)
+       (setq bh/insert-inactive-timestamp (not bh/insert-inactive-timestamp))
+       (message "Heading timestamps are %s" (if bh/insert-inactive-timestamp "ON" "OFF")))
     
-    (defun bh/insert-inactive-timestamp ()
-      (interactive)
-      (org-insert-time-stamp nil t t nil nil nil))
+     (defun bh/insert-inactive-timestamp ()
+       (interactive)
+       (org-insert-time-stamp nil t t nil nil nil))
     
-    (defun bh/insert-heading-inactive-timestamp ()
-      (save-excursion
-        (when bh/insert-inactive-timestamp
-          (org-return)
-          (org-cycle)
-          (bh/insert-inactive-timestamp))))
+     (defun bh/insert-heading-inactive-timestamp ()
+       (save-excursion
+         (when bh/insert-inactive-timestamp
+           (org-return)
+           (org-cycle)
+           (bh/insert-inactive-timestamp))))
     
-    (add-hook 'org-insert-heading-hook 'bh/insert-heading-inactive-timestamp 'append)
-    #+end_src
-  + setup for hotkeys ::
-    - invoke insert inactive timestamp function on demand and anywhere :: ==f9 T==
-      #+begin_src emacs-lisp
-      (global-set-key (kbd "<f9> t") 'bh/insert-inactive-timestamp)
-      #+end_src
-  + setup to prevent the timestamps from being exported in documents ::
-    #+begin_src emacs-lisp
-    (setq org-export-with-timestamps nil)
-    #+end_src
+     (add-hook 'org-insert-heading-hook 'bh/insert-heading-inactive-timestamp 'append)
+     #+end_src
+   + setup for hotkeys ::
+     - invoke insert inactive timestamp function on demand and anywhere :: ==f9 T==
+       #+begin_src emacs-lisp
+       (global-set-key (kbd "<f9> t") 'bh/insert-inactive-timestamp)
+       #+end_src
+   + setup to prevent the timestamps from being exported in documents ::
+     #+begin_src emacs-lisp
+     (setq org-export-with-timestamps nil)
+     #+end_src
 
-** Return follows links
+*** Highlight clock when running overtime
+  + 
+
+** Miscellaneous
+*** Attachments
+   + notes ::
+     - great for getting *large amounts* of data related to the project out of the org-mode files
+     - set up org-mode to generate unique attachment IDs with ==org-id-method== ::
+       #+begin_src emacs-lisp
+       (setq org-id-method (quote uuidgen))
+       #+end_src
+     - process ::
+       - let's say you want to attach file ==x.sql== to current buffer :: create it in ==/tmp/x.sql==, and save it
+       - attach the file with ==C-c C-a a==, and enter the filename: ==x.sql== ::
+	 + this generates a unique ID for the task and adds the file in the attachment directory ::
+	 + The attached file is saved for example in :: ==folderx/f1/d38e9a-ff70-4cc4-ab50-e8b58b2aaa7b/==
+	   - where it goes exactly isn't really important as long as it is saved and retrievable easily
+	   - org-mode copies the original file ==/tmp/x.sql== into the appropriate attachment directory
+	 + example of result ::
+	   #+begin_src org :exports src
+	   ,* Attachments                                                        :ATTACH:
+	     :PROPERTIES:
+	     :Attachments: x.sql
+	     :ID:       f1d38e9a-ff70-4cc4-ab50-e8b58b2aaa7b
+	     :END:  
+	   #+end_src
+     - further notes ::
+       + the ==ID== changes for every task header when a new ==ID== is generated
+       + tasks with attachments automatically get an ==ATTACH== tag
+	 - so, easy to find tasks with attachments with a *tag search*
+       + to open the attachment for a task : ==C-c C-a o==
+	 - prompts for the attachment to open, and ==TAB== completion works here
+       + possible to use named directories for attachments, but need to test it yourself
+   + kbd ::
+     - attach a file to current buffer :: ==C-c C-a a==
+     - to open the attachment for a task :: ==C-c C-a o==
+
+*** Exporting Tables to CSV (comma delimited values)
+   + create csv by exporting org-mode tables as comma delimited values (can also export as TAB delimited values)
+   + set default value to csv ::
+     #+begin_src emacs-lisp
+     (setq org-table-export-default-format "orgtbl-to-csv")
+     #+end_src
+   + process ::
+     - put cursor inside table ::
+     - hit ==M-x org-table-export== :: prompts for a filename and the format which defaults to orgtbl-to-csv from setting above
+
+*** Refrain from Opening a link, and insert a new line instead ("Return follows links")
+  + following setting makes ==RET== insert a new line instead of opening links ::
+    #+begin_src emacs-lisp
+    ; bh config : prefers to follow link instead of adding new line
+    ; personally, prefer to still open link with old ==C-c C-o==
+    ; (setq org-return-follows-link t)
+    #+end_src
 
 * Programming language specific
 
