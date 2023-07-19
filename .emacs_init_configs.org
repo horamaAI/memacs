@@ -4059,8 +4059,17 @@
     (add-to-list 'Info-default-directory-list "~/Documents/repos/opt/org-mode/doc")
     #+end_src
 
-*** Prefer future dates or not?
-  + 
+*** Prefer future dates or not? (set default year to look up into when searching incomplete date: 'Month Day', without the year)
+  + notes ::
+    - by default org-mode prefers dates in the future :: when today's date is May 2 and you enter April 30th (2 days ago), org-mode will jump to April 30th of next year
+    - can be annoying when one wants to look at what happened days before, since one needs to specify the year
+    - can use ==b== to go back relatively in the agenda
+    - one could make org-mode prefer the current year when entering dates with ==(setq org-read-date-prefer-future nil)==, but better to use =='time== so times before now (with no date specified) will default to tomorrow
+  + setup ::
+    #+begin_src emacs-lisp
+    (setq org-read-date-prefer-future 'time)
+    #+end_src
+  + kbd ::
 
 ** Miscellaneous
 *** Attachments
@@ -4113,6 +4122,8 @@
     ; personally, prefer to still open link with old ==C-c C-o==
     ; (setq org-return-follows-link t)
     #+end_src
+
+*** Automatically change list bullets
 
 * Programming language specific
 
