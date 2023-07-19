@@ -4032,6 +4032,28 @@
       #+end_src
 
 *** Remove Highlights after changes
+  + notes ::
+    - ==org-occur== (==C-c / r==, or ==C-c / /==) ::
+      + prompts for a regexp, and shows a sparse tree with all matches ::
+	- useful to find details in org-files
+	- if the match is in a headline, the headline is made visible
+	- if the match is in the body of an entry, headline and body are made visible
+	- in order to provide minimal context, also the full hierarchy of headlines above the match is shown, as well as the headline following the match
+	- each match is also highlighted
+	- the highlights disappear when the buffer is changed by an editing command, or with ==C-c C-c==
+	- when called with a ==C-u== prefix argument, previous highlights are kept, so several calls to this command can be stacked
+  + setups ::
+    - setting to keep the highlighted results of the search even after modifying the text ::
+      #+begin_src emacs-lisp
+      ; setting this variable to t (default config) will automatically remove the yellow highlights as soon as the buffer is modified
+      ;(setq org-remove-highlights-with-change nil)
+      #+end_src
+  + kbd ::
+    - ==C-c / r==, or ==C-c / /== :: regexp search, and show a sparse tree with all matches
+    - ==C-u C-c / r==, or ==C-u C-c / /== (previous org-occur, but with prefix ==C-u==) :: as previous, but also keep previous highlights, meaning that ==org-occur== calls can be stacked
+    - ==C-c C-c== :: "unhighlight" matches (remove highlights)
+
+*** Getting up-to-date org-mode info documentation
 
 ** Miscellaneous
 *** Attachments
