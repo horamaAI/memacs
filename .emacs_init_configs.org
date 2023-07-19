@@ -4070,6 +4070,7 @@
     (setq org-read-date-prefer-future 'time)
     #+end_src
   + kbd ::
+    - ==b== :: go back relatively in the agenda when searching for what happened in past days
 
 ** Miscellaneous
 *** Attachments
