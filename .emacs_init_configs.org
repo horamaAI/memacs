@@ -3958,7 +3958,80 @@
     #+end_src
 
 *** Register 'Meeting Notes'
-  + 
+  + meeting ::
+    - is a task and it is complete when the meeting is over
+    - can record meeting conversations in point-form using org-mode lists
+    - if action items are decided on in the meeting, can denote them with a bullet and a ==TODO:== or ==DONE:== flag
+    - the body of the task records all of the interesting meeting details
+    - if ==TODO== items are created in the meeting, one can make separate ==TODO== tasks from those
+    - can use ==abbrev-mode== to change people's initials to full names quickly during the meeting, this speeds up note taking and avoids mistyping people's names in meeting notes
+    - bh made the function ==bh/prepare-meeting-notes== to prepare the meeting notes for emailing to the participants (in a fixed-width font like "Courier New") ::
+      + then, as soon as the meeting is over, the notes are basically ready for distribution – no need to waste time rewriting the minutes before they go out
+  + eg ::
+    #+begin_src org :exports src
+    ,* TODO Sample Meeting
+      - Attendees
+        - [ ] Joe
+        - [X] Larry
+        - [X] Mary
+        - [X] Fred
+      - Joe is on vacation this week
+      - Status Updates
+        + Larry
+          - did this
+          - and that
+          - TODO: Needs to follow up on this
+        + Mary
+          - got a promotion for her recent efforts
+        + Fred
+          - completed all his tasks 2 days early
+          - needs more work
+          - DONE: everything  
+    #+end_src
+    
+    #+begin_src org :exports src
+    ,* TODO Sample Meeting
+       - Attendees
+         - [ ] Joe
+         - [X] Larry
+         - [X] Mary
+         - [X] Fred
+       - Joe is on vacation this week
+       - Status Updates
+         + Larry
+           - did this
+           - and that
+    >>>>>>>> TODO: Needs to follow up on this
+         + Mary
+           - got a promotion for her recent efforts
+         + Fred
+           - completed all his tasks 2 days early
+           - needs more work
+    >>>>>>>> DONE: everything  
+    #+end_src
+  + setup for the formatting function ::
+    - notes :: 
+      + just highlighting the region for the notes will turn tabs into spaces and highlights todo items
+      + the resulting notes are in the kill buffer ready to paste to another application
+    - setup ::
+      #+begin_src emacs-lisp
+      (defun bh/prepare-meeting-notes ()
+        "Prepare meeting notes for email
+         Take selected region and convert tabs to spaces, mark TODOs with leading >>>, and copy to kill ring for pasting"
+        (interactive)
+        (let (prefix)
+          (save-excursion
+            (save-restriction
+              (narrow-to-region (region-beginning) (region-end))
+              (untabify (point-min) (point-max))
+              (goto-char (point-min))
+              (while (re-search-forward "^\\( *-\\\) \\(TODO\\|DONE\\): " (point-max) t)
+                (replace-match (concat (make-string (length (match-string 1)) ?>) " " (match-string 2) ": ")))
+              (goto-char (point-min))
+              (kill-ring-save (point-min) (point-max))))))
+      #+end_src
+
+*** Remove Highlights after changes
 
 ** Miscellaneous
 *** Attachments
