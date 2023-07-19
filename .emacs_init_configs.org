@@ -4072,6 +4072,13 @@
   + kbd ::
     - ==b== :: go back relatively in the agenda when searching for what happened in past days
 
+*** Remove indentation on agenda tags view
+  + it's great to see all matching tasks (including sublevels) when one is doing an agenda tag search (==F12 m==)
+  + to make all of the matched headings for a tag show at the same level in the agenda, set the following variable ::
+    #+begin_src emacs-lisp
+    (setq org-tags-match-list-sublevels t)
+    #+end_src
+
 ** Miscellaneous
 *** Attachments
    + notes ::
@@ -4125,6 +4132,39 @@
     #+end_src
 
 *** Automatically change list bullets
+  + using a different bullet for a sub-list than that used for the current list-level does improve readability, so, customize ==org-list-demote-modify-bullet== and every time a sublist is started, then it will have different bullets than the current one
+  + the setting will use the following bullets when moving to a sub-list ::
+    | Current List Bullet | Next indented list bullet |
+    |---------------------+---------------------------|
+    | +                   | -                         |
+    | *                   | -                         |
+    | 1.                  | -                         |
+    | 1)                  | -                         |
+    | A)                  | -                         |
+    | B)                  | -                         |
+    | a)                  | -                         |
+    | b)                  | -                         |
+    | A.                  | -                         |
+    | B.                  | -                         |
+    | a.                  | -                         |
+    | b.                  | -                         |
+  + setup ::
+    #+begin_src emacs-lisp
+    (setq org-list-demote-modify-bullet (quote (("+" . "-")
+                                                ("*" . "-")
+                                                ("1." . "-")
+                                                ("1)" . "-")
+                                                ("A)" . "-")
+                                                ("B)" . "-")
+                                                ("a)" . "-")
+                                                ("b)" . "-")
+                                                ("A." . "-")
+                                                ("B." . "-")
+                                                ("a." . "-")
+                                                ("b." . "-"))))
+    #+end_src
+
+*** Fontify source blocks natively
 
 * Programming language specific
 
