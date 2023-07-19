@@ -4079,7 +4079,17 @@
     (setq org-tags-match-list-sublevels t)
     #+end_src
 
-*** Agenda persistent filters
+*** Agenda persistent filters (remembers agenda filter until changed)
+  + great feature!, making an agenda filters persistent means if one limits a search with ==/ TAB <SomeTag>==, the agenda remembers the filter until it is specifically changed
+  + the current filter is displayed in the modeline as =={+SomeTag}== so one can easily see what filter currently applies to the agenda view
+  + can use the feature for example with ==FILETAGS== to limit the displayed results to a single client or context
+  + enable persistent filters ::
+    #+begin_src emacs-lisp
+    (setq org-agenda-persistent-filter t)
+    #+end_src
+
+*** Add tags for flagged entries
+  + 
 
 ** Miscellaneous
 *** Attachments
