@@ -4079,6 +4079,8 @@
     (setq org-tags-match-list-sublevels t)
     #+end_src
 
+*** Agenda persistent filters
+
 ** Miscellaneous
 *** Attachments
    + notes ::
@@ -4163,8 +4165,6 @@
                                                 ("a." . "-")
                                                 ("b." . "-"))))
     #+end_src
-
-*** Fontify source blocks natively
 
 * Programming language specific
 

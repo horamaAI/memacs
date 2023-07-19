@@ -114,8 +114,8 @@
 	- add time-stamped note to ‘LOGBOOK’ drawer :: =C-c C-z=
 
 *** exporting org-mode files
-  - insert templates options for exporting :: C-c C-e # [category] // where [category] can be html, latex, ascii, etc.
-    + to change option :: C-c C-c
+  - insert templates options for exporting :: ==C-c C-e # [category]== // where [category] can be html, latex, ascii, etc.
+    + to change option :: ==C-c C-c==
   - insert customized templates (setup files) ::
     + need of directory to store setup files :: e.g. ~/.emacs.d/org-templates/
     + call setup file :: 
