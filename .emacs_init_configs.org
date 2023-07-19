@@ -3391,7 +3391,7 @@
    + setup ::
      #+begin_src emacs-lisp
      ; load org-checklist.el from org-contrib
-     (add-to-list 'load-path (expand-file-name "~/Documents/repos/opt/org-contrib/lisp"))
+     (add-to-list 'load-path (expand-file-name "~/Documents/repos/opt/org-mode/org-contrib/lisp"))
     
      (require 'org-checklist)
      #+end_src
@@ -4054,6 +4054,10 @@
     - ==C-c C-c== :: "unhighlight" matches (remove highlights)
 
 *** Getting up-to-date org-mode info documentation
+  + get up-to-date documentation from git before the regular (out of date) system versions ::
+    #+begin_src emacs-lisp
+    (add-to-list 'Info-default-directory-list "~/Documents/repos/opt/org-mode/doc")
+    #+end_src
 
 ** Miscellaneous
 *** Attachments
