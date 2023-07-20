@@ -1515,6 +1515,10 @@
        - can combine export with tag filters and ==C-u R== to limit the report to exactly the tags that people are interested in
 
 ** Tags
+:PROPERTIES:
+:CUSTOM_ID: OrgTagAlist
+:END:
+
   + notes :: 
     - main use ::
       + *filtering* todo lists and agenda views
@@ -4088,7 +4092,15 @@
     (setq org-agenda-persistent-filter t)
     #+end_src
 
-*** Add tags for flagged entries
+*** Add tags for flagged entries (and know that you are able to find something important in the future when needed: for these types of notes and tasks, add a special ==:FLAGGED:== tag)
+  + to find something special anytime needed :: tag it as ==:FLAGGED:==
+  + the tag gets a special fast-key ==?== :: which matches the search key in the agenda for flagged items
+  + see [[#OrgTagAlist][Tags]] for the setup of ==org-tag-alist== for the =FLAGGED= entry
+  + finding flag entries is simple :: just ==F12 ?==, and you get them all
+  + kbd ::
+    - finding *all* flag entries :: ==F12 ?==
+
+*** Mail links open compose-mail
   + 
 
 ** Miscellaneous
