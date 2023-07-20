@@ -4107,7 +4107,12 @@
     #+end_src
 
 **** Compose mail from org mode subtrees
-  + 
+  + it's possible to create mail from an org-mode subtree ::
+    - ==C-c M-o== :: start an email message with the details filled in from the current subtree
+    - can be used for repeating reminder tasks where needs to send an email to another recipient
+    - email contents are already contained in the org-mode subtree, all needed to do is ==C-c M-o== and any minor edits before sending it off
+  + kbd ::
+    - ==C-c M-o== :: start an email message with the details filled in from the current subtree
 
 ** Miscellaneous
 *** Attachments
