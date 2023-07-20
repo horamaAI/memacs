@@ -4114,6 +4114,32 @@
   + kbd ::
     - ==C-c M-o== :: start an email message with the details filled in from the current subtree
 
+*** Use Smex for M-x ido-completion
+  + Smex is a ==M-x== enhancement for Emacs built on top of IDO (Interactive Do) that hand crafts the completion experience for files and buffers
+  + smex provides a convenient interface to recently, most frequently used commands, and to all the other commands too
+  + commands are displayed in an Ido completion buffer, ordered by relevance
+  + the 7 most recently executed commands come first, the rest are sorted by frequency of use, command length, and in alphabetical order
+  + setup ::
+    #+begin_src emacs-lisp
+    (add-to-list 'load-path (expand-file-name "~/.emacs.d"))
+    ; auto-start Smex every time one opens Emacs
+    (require 'smex)
+    (smex-initialize)
+    
+    (global-set-key (kbd "M-x") 'smex)
+    (global-set-key (kbd "C-x x") 'smex)
+    (global-set-key (kbd "M-X") 'smex-major-mode-commands)
+    #+end_src
+  + kbd ::
+    - ==M-x==, or ==C-x x== :: call smex
+    - ==M-X== :: runs Smex, limited to commands that are relevant to the active major mode (can be tried with Dired or Magit for example)
+    - ==C-h f== :: while Smex is active, runs ==describe-function== on the currently selected command
+    - ==M-.== :: jumps to the definition of the selected command
+    - ==C-h w== :: shows the key bindings for the selected command (Via ==where-is==)
+
+*** Use Emacs bookmarks for fast navigation
+  + 
+
 ** Miscellaneous
 *** Attachments
    + notes ::
