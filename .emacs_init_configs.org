@@ -4101,6 +4101,12 @@
     - finding *all* flag entries :: ==F12 ?==
 
 *** Mail links open compose-mail
+  + make org-mode open ==mailto:== links using compose-mail ::
+    #+begin_src emacs-lisp
+    (setq org-link-mailto-program (quote (compose-mail "%a" "%s")))
+    #+end_src
+
+**** Compose mail from org mode subtrees
   + 
 
 ** Miscellaneous
