@@ -4247,7 +4247,14 @@
   + this uses the entries defined in the system ==mailcap== settings when opening file extensions
   + gives consistent behaviour when opening an link to some HTML file for example with ==C-c C-o== or when previewing an export
 
-*** Use the current window for the agenda
+*** Use current window for the agenda
+  + setup ::
+    #+begin_src emacs-lisp
+    ; Overwrite the current window with the agenda
+    (setq org-agenda-window-setup 'current-window)
+    #+end_src
+
+*** Delete IDs when cloning
   + 
 
 ** Miscellaneous
