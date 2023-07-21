@@ -4137,7 +4137,21 @@
     - ==M-.== :: jumps to the definition of the selected command
     - ==C-h w== :: shows the key bindings for the selected command (Via ==where-is==)
 
-*** Use Emacs bookmarks for fast navigation
+*** Emacs bookmarks
+  + Emacs bookmarks can be used for fast navigation to save (bookmark) a location, and easily retrieve it
+    - usecase :: when working on a long checklist, it's convenient to set a bookmark on the next item to check, then work on it, and return to the checkbox to mark it done
+  + setups ::
+    #+begin_src emacs-lisp
+    ;; Bookmark handling
+    (global-set-key (kbd "<C-f6>") '(lambda () (interactive) (bookmark-set "SAVED")))
+    (global-set-key (kbd "<f6>") '(lambda () (interactive) (bookmark-jump "SAVED")))
+    #+end_src
+  + kbds ::
+    - ==C-f6== :: save/bookmark current location
+    - ==f11== :: go back to current clocked task
+    - ==f6== :: go to bookmarked location (the same bookmark is overwritten each time a new position is set)
+
+*** Using org-mime to email
   + 
 
 ** Miscellaneous
