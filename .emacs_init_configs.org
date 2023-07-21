@@ -4237,6 +4237,17 @@
       #+end_src
 
 *** Use system settings for file-application selection (set system as the one opening some applications, eg: pdf, html, etc.)
+  + set consistent applications for opening tasks by setting the ==org-file-apps== variable ::
+    #+begin_src emacs-lisp
+    (setq org-file-apps (quote ((auto-mode . emacs)
+                                ("\\.mm\\'" . system)
+                                ("\\.x?html?\\'" . system)
+                                ("\\.pdf\\'" . system))))
+    #+end_src
+  + this uses the entries defined in the system ==mailcap== settings when opening file extensions
+  + gives consistent behaviour when opening an link to some HTML file for example with ==C-c C-o== or when previewing an export
+
+*** Use the current window for the agenda
   + 
 
 ** Miscellaneous
