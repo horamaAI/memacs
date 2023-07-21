@@ -4254,7 +4254,17 @@
     (setq org-agenda-window-setup 'current-window)
     #+end_src
 
-*** Cycling plain lists
+*** Cycling plain lists (allow folding completed list entries and focus on what is remaining easily)
+  + allow org-mode to fold (cycle) plain lists ::
+    - useful when one has repeating tasks with lots of sublists with checkboxes
+    - can then fold the completed list entries and focus on what is remaining easily
+  + setup ::
+    #+begin_src emacs-lisp
+    (setq org-cycle-include-plain-lists t)
+    #+end_src
+
+*** Showing source block syntax highlighting
+  + 
 
 ** Miscellaneous
 *** Attachments
