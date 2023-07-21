@@ -4161,7 +4161,14 @@
   + kbd ::
     - ==C-c M-o== :: generate mail from an org-mode subtree
 
-*** Remove multiple state change log details from the agenda
+*** Remove multiple state change log details from the agenda (skip multiple timestamps for the same entry in the agenda view)
+  + skip multiple timestamps for the same entry in the agenda view ::
+    #+begin_src emacs-lisp
+    (setq org-agenda-skip-additional-timestamps-same-entry t)
+    #+end_src
+  + the setting removes the clutter of extra state change log details when multiple timestamps exist in a single entry 
+
+*** Drop old style references in tables
   + 
 
 ** Miscellaneous
