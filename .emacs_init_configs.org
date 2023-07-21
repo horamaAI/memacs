@@ -4151,7 +4151,17 @@
     - ==f11== :: go back to current clocked task
     - ==f6== :: go to bookmarked location (the same bookmark is overwritten each time a new position is set)
 
-*** Using org-mime to email
+*** Org-mime for emails (useful for sending tables, fontified source code, and inline images in email)
+  + org-mime :: approximates a WYSiWYG HTML mail editor from within Emacs, and can be useful for sending tables, fontified source code, and inline images in email
+  + bh added keybinding ==C-c M-o== in ==org-mode-hook== to generate mail from an org-mode subtree (see ==bh/mail-subtree==)
+  + setup ::
+    #+begin_src emacs-lisp
+    (require 'org-mime)
+    #+end_src
+  + kbd ::
+    - ==C-c M-o== :: generate mail from an org-mode subtree
+
+*** Remove multiple state change log details from the agenda
   + 
 
 ** Miscellaneous
