@@ -4235,6 +4235,27 @@
       #+begin_src emacs-lisp
       (setq org-table-use-standard-references (quote from))
       #+end_src
+  + kbds ::
+    - ==C-c ?== in table field :: you get : ==line @2, col $4, ref @2$4 or D2==, which means: second row (or line) of fourth column, and the reference for this field is either ==@2$4== or ==D2== (reference visualization grid: 4th column D, 2nd line
+    - ==C-c }== :: turn on/off the reference visualization grid
+    - formulas ::
+      + in field ::
+	- ==:=vmean($2..$3)== :: finds mean of fields 2nd to 3rd _in this row_
+	- ==:=vmean(B&..C&)== :: same as above, (& character stands for "in this row", implicit in previous notation)
+      + =='=vmean($2..$3)'== ('​=' instead of ':​=') :: formula on column
+    - ==C-c C-c== in row :: eval formula
+    - ==C-u C-c *== :: reapply all formulas
+      + or ==C-c C-c== on #+TBLFM line
+    - interactive formulas ::
+      + ==​=== in a field :: start the definition for a column formula
+      + ==:​=== :: starts a definition for a field formula
+      + in minibuffer ::
+	- ==C-c ​=== :: for editing column formulas
+	- ==C-u C-c ​=== :: for field formulas
+      + in a dedicated buffer, using :: ==C-c '==
+	- new buffer lists all the formulas for the table at point and provides facilities to edit the references
+	- when the cursor is above a reference, the corresponding field in the table gets highlighted
+	- can select the reference with ==S-<left/right/up/down>==
 
 *** Use system settings for file-application selection (set system as the one opening some applications, eg: pdf, html, etc.)
   + set consistent applications for opening tasks by setting the ==org-file-apps== variable ::
@@ -4264,6 +4285,17 @@
     #+end_src
 
 *** Showing source block syntax highlighting
+  + possible to display org-mode source blocks fontified in their native mode ::
+    - allows colourization of keywords for C, shell script source, etc.
+  + to edit the source, use ==C-c '== to bring up the source window ::
+    - source window rendered with syntax highlighting in the native mode
+    - setting also shows the syntax highlighting when viewing in the org-mode buffer
+  + setup ::
+    #+begin_src emacs-lisp
+    (setq org-src-fontify-natively t)
+    #+end_src
+
+*** Inserting Structure Template Blocks
   + 
 
 ** Miscellaneous
