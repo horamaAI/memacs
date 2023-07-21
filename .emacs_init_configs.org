@@ -4254,9 +4254,6 @@
     (setq org-agenda-window-setup 'current-window)
     #+end_src
 
-*** Delete IDs when cloning
-  + 
-
 ** Miscellaneous
 *** Attachments
    + notes ::
@@ -4340,6 +4337,12 @@
                                                 ("B." . "-")
                                                 ("a." . "-")
                                                 ("b." . "-"))))
+    #+end_src
+
+*** Delete IDs when cloning
+  + setup ::
+    #+begin_src emacs-lisp
+    (setq org-clone-delete-id t)
     #+end_src
 
 * Programming language specific
