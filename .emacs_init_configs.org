@@ -4254,6 +4254,8 @@
     (setq org-agenda-window-setup 'current-window)
     #+end_src
 
+*** Cycling plain lists
+
 ** Miscellaneous
 *** Attachments
    + notes ::
