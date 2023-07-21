@@ -4168,8 +4168,9 @@
     #+end_src
   + the setting removes the clutter of extra state change log details when multiple timestamps exist in a single entry 
 
-*** Drop old style references in tables
-  + 
+*** Drop use of old style field references in tables
+  + Notes ::
+    - can do A LOT with emacs tables, even spreadsheet operations as an excel file
 
 ** Miscellaneous
 *** Attachments
