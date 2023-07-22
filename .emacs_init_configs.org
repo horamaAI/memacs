@@ -4357,8 +4357,24 @@
 	  (add-hook 'org-clock-in-hook 'bh/mark-next-parent-tasks-todo 'append)
 	  #+end_src
 
-*** Using orgstruct mode for mail
-  + 
+*** Using orgstruct mode for mail (to aid in creating structured email messages)
+  + ==orgstruct++-mode== is enabled in Gnus message buffers to aid in creating structured email messages
+    - // orgstruct seems to no longer be supported, check following sources and look for alternatives ::
+      + https://emacs.stackexchange.com/questions/47003/the-orgstruct-mode-seems-to-be-gone-from-the-org-plus-contrib
+      + https://orgmode.org/worg/org-tutorials/org-outside-org.html (One possibility to enjoy Org-mode's structure-editing and list-formatting facilities outside Org-mode buffers is *Orgstruct minor mode?*)
+  + setup ::
+    #+begin_src emacs-lisp
+    (add-hook 'message-mode-hook 'orgstruct++-mode 'append)
+    (add-hook 'message-mode-hook 'turn-on-auto-fill 'append)
+    (add-hook 'message-mode-hook 'bbdb-define-all-aliases 'append)
+    (add-hook 'message-mode-hook 'orgtbl-mode 'append)
+    (add-hook 'message-mode-hook 'turn-on-flyspell 'append)
+    (add-hook 'message-mode-hook
+              '(lambda () (setq fill-column 72))
+              'append)
+    #+end_src
+
+*** Using flyspell mode to reduce spelling errors
 
 ** Miscellaneous
 *** Attachments
