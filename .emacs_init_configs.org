@@ -4435,9 +4435,19 @@
   + kbd ::
     - ==C-c C-r== :: display where the point is if it is buried in invisible text to allow editing again
 
+*** Keep clock durations in hours
+  + 
+
 ** Miscellaneous
 *** Use utf-8 as default coding system
-  + 
+  + use utf-8 as the default coding system for all of org files ::
+    #+begin_src emacs-lisp
+    ; use utf-8 as the default coding system for all of org files
+    (setq org-export-coding-system 'utf-8)
+    (prefer-coding-system 'utf-8)
+    (set-charset-priority 'unicode)
+    (setq default-process-coding-system '(utf-8-unix . utf-8-unix))
+    #+end_src
 
 *** Attachments
    + notes ::
