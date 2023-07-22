@@ -4374,7 +4374,58 @@
               'append)
     #+end_src
 
-*** Using flyspell mode to reduce spelling errors
+*** Reduce spelling errors with flyspell mode
+  + ==flyspell-mode== is enabled for almost everything to help prevent creating documents with spelling errors
+  + setup ::
+    #+begin_src emacs-lisp
+    ;; flyspell mode for spell checking everywhere
+    (add-hook 'org-mode-hook 'turn-on-flyspell 'append)
+    
+    ;; Disable keys in org-mode
+    ;;    C-c [ 
+    ;;    C-c ]
+    ;;    C-c ;
+    ;;    C-c C-x C-q  cancelling the clock (we never want this)
+    (add-hook 'org-mode-hook
+              '(lambda ()
+                 ;; Undefine C-c [ and C-c ] since this breaks my
+                 ;; org-agenda files when directories are include It
+                 ;; expands the files in the directories individually
+                 (org-defkey org-mode-map "\C-c[" 'undefined)
+                 (org-defkey org-mode-map "\C-c]" 'undefined)
+                 (org-defkey org-mode-map "\C-c;" 'undefined)
+                 (org-defkey org-mode-map "\C-c\C-x\C-q" 'undefined))
+              'append)
+    
+    (add-hook 'org-mode-hook
+              (lambda ()
+                (local-set-key (kbd "C-c M-o") 'bh/mail-subtree))
+              'append)
+    
+    (defun bh/mail-subtree ()
+      (interactive)
+      (org-mark-subtree)
+      (org-mime-subtree))
+    #+end_src
+
+*** Preserving source block indentation (manage indentation in source blocks vs in org-files)
+  + notes ::
+    - preserving indentation for source blocks can be be messy with indented org-files
+    - one of the reason that makes preserving indentation is when TABs in files need to be preserved (e.g. Makefiles)
+      + if you normally do not edit these files much in org-mode, better to leave this setting turned off
+  + setup ::
+    - change the default block indentation so that it is not indented from the text in the org file ::
+      + this allows editing source blocks in place without requiring use of ==C-c '== so that code lines up correctly
+    - setup ::
+      #+begin_src emacs-lisp
+      (setq org-src-preserve-indentation nil)
+      (setq org-edit-src-content-indentation 0)
+      #+end_src
+  + kbd ::
+    - ==C-c '== :: make code lines up correctly
+
+*** Prevent editing invisible text
+  + 
 
 ** Miscellaneous
 *** Attachments
