@@ -4424,10 +4424,21 @@
   + kbd ::
     - ==C-c '== :: make code lines up correctly
 
-*** Prevent editing invisible text
-  + 
+*** Prevent editing invisible text (prevent accidental editing hidden text when the point is inside a folded region)
+  + used to prevent accidentally editing hidden text when the point is inside a folded region (can happen if one is in the body of a heading and globally fold the org-file with ==S-TAB==)
+  + invisible edits (and undo's) can be hard to deal with, so can set invisible text to not be edited
+    - ==C-c C-r== (==org-reveal==) will display where the point is if it is buried in invisible text to allow editing again
+  + setup ::
+    #+begin_src emacs-lisp
+    (setq org-catch-invisible-edits 'error)
+    #+end_src
+  + kbd ::
+    - ==C-c C-r== :: display where the point is if it is buried in invisible text to allow editing again
 
 ** Miscellaneous
+*** Use utf-8 as default coding system
+  + 
+
 *** Attachments
    + notes ::
      - great for getting *large amounts* of data related to the project out of the org-mode files
