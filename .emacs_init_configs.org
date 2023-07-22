@@ -4435,8 +4435,20 @@
   + kbd ::
     - ==C-c C-r== :: display where the point is if it is buried in invisible text to allow editing again
 
-*** Keep clock durations in hours
-  + 
+*** Keep clock durations in hours (instead of default 'days', which can be relative to one's need)
+  + notes ::
+    - default for clock durations has changed to include days which is 24 hours
+    - one could need to change the settings, for example, at work one can think of a day as 6 hours of work (the rest of the time is lost in meetings and other overhead on average)
+    - so displaying clock durations in days would not make sense to many
+  + setup to display clock durations in hours and minutes (with ==C-c C-x C-d==) ::
+    #+begin_src emacs-lisp
+    (setq org-time-clocksum-format
+          '(:hours "%d" :require-hours t :minutes ":%02d" :require-minutes t))
+    #+end_src
+  + kbd ::
+    - ==C-c C-x C-d== :: display clock durations in hours and minutes
+
+*** Create unique IDs for tasks when linking
 
 ** Miscellaneous
 *** Use utf-8 as default coding system
