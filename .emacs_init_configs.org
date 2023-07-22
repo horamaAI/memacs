@@ -4357,6 +4357,9 @@
 	  (add-hook 'org-clock-in-hook 'bh/mark-next-parent-tasks-todo 'append)
 	  #+end_src
 
+*** Using orgstruct mode for mail
+  + 
+
 ** Miscellaneous
 *** Attachments
    + notes ::
@@ -4451,7 +4454,18 @@
     #+end_src
 
 *** Allow alphabetical list entries
-  + allow character letter as bullet in item lists
+  + allow character letters as bullets in item lists
+  + eg ::
+    #+begin_src org :exports src
+    a. item one
+    b. item two
+    #+end_src
+  + setup ::
+    #+begin_src emacs-lisp
+    ; allow character letters as bullet in item lists
+    (setq org-alphabetical-lists t)
+    #+end_src
+  + in order for filling to work correctly this needs to be set *before the exporters are loaded*
 
 *** Delete IDs when cloning
   + setup ::
