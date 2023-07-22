@@ -4321,7 +4321,29 @@
                   ("I" "#+include %file ?" "<include file=%file markup=\"?\">"))))
     #+end_src
 
-*** NEXT is for tasks
+*** '==NEXT==' is for tasks (turn parent tasks of ==NEXT== task to ==TODO==)
+  + notes ::
+    - ==NEXT== keywords are for tasks and *not projects* ::
+      + bh config ::
+	- add function to todo state change hook and clock in hook :: so that any parent tasks marked ==NEXT== turn from ==NEXT== to ==TODO== since they are now projects and not tasks
+	- setup ::
+	  #+begin_src emacs-lisp
+	  (defun bh/mark-next-parent-tasks-todo ()
+	    "Visit each parent task and change NEXT states to TODO"
+	    (let ((mystate (or (and (fboundp 'org-state)
+	                            state)
+	                       (nth 2 (org-heading-components)))))
+	      (when mystate
+	        (save-excursion
+	          (while (org-up-heading-safe)
+	            (when (member (nth 2 (org-heading-components)) (list "NEXT"))
+	              (org-todo "TODO")))))))
+	  
+	  (add-hook 'org-after-todo-state-change-hook 'bh/mark-next-parent-tasks-todo 'append)
+	  (add-hook 'org-clock-in-hook 'bh/mark-next-parent-tasks-todo 'append)
+	  #+end_src
+
+*** Startup in folded view
   + 
 
 ** Miscellaneous
