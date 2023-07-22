@@ -1103,7 +1103,6 @@
     - on hold
     - about a hobby or any other task that needs infrequent or flexible work
   + config for ==/ RET== ::
-
     #+begin_src emacs-lisp
     ;; filter from agenda block tasks that not need to be worked on urgently
     (defun bh/org-auto-exclude-function (tag)
@@ -1719,6 +1718,7 @@
       + customization for stuck projects view is part of bh block agenda, displayed with ==F12 SPC==
       + set-up for disabling default ::
 	#+begin_src emacs-lisp
+	; disable the default org-mode stuck projects agenda view
 	(setq org-stuck-projects (quote ("" nil nil "")))
 	#+end_src
     - helper functions defined for projects which are used by agenda views ::          
@@ -2076,6 +2076,7 @@
   + prerequisites :: ==graphviz== and ==PlantUML== packages are need on the system
   + org-babel setup ::
     #+begin_src emacs-lisp
+    ; org-babel setups :: makes it easy to generate decent graphics using external packages like ditaa, graphviz, PlantUML, and others
     (setq org-ditaa-jar-path "~/Documents/repos/opt/service/web/lib/ditaa0_10.jar")
     ;;(org-babel-do-load-languages 'org-babel-load-languages '((ditaa . t))) ;; might be a previous config where used ditaa as an pre-installed package
     (setq org-plantuml-jar-path "~/Documents/repos/opt/plantuml/plantuml-1.2022.2.jar")
@@ -2592,6 +2593,7 @@
     - rare usecase :: where needed to override some org-mode variable for export, the settings allows exporting the document without a prompt
   + setup ::
     #+begin_src emacs-lisp
+    ; to allow #+BIND: variables to be set on export without confirmation
     (setq org-export-allow-BIND t)
     #+end_src
 
@@ -2922,10 +2924,12 @@
      - ==f5== (or some other widening speed key like ==U==, ==W==, ==F==) widens back to normal view
      - use of ==org-show-entry-below== to force showing the next headline, and prevent too many headlines from being folded together when working with collapsed trees ::
        #+begin_src emacs-lisp
+       ; force showing the next headline, and prevent too many headlines from being folded together when working with collapsed trees (see section 'Focusing On Current Work')
        (setq org-show-entry-below (quote ((default))))
        #+end_src
    + setup ::
      #+begin_src emacs-lisp
+     ; setups for 'Focusing On Current Work'
      ; (global-set-key (kbd "<f5>") 'bh/org-todo) ;; already set above
     
      (defun bh/org-todo (arg)
@@ -3109,6 +3113,7 @@
    + bh added key bindings for the agenda to allow using ==C-c C-x <== in the agenda to set the restriction lock to the current task directly ::
      - that is done with the following setup ::
        #+begin_src emacs-lisp
+       ; setups for 'Limiting the agenda to a subtree'
        (add-hook 'org-agenda-mode-hook
                  '(lambda () (org-defkey org-agenda-mode-map "\C-c\C-x<" 'bh/set-agenda-restriction-lock))
                  'append)
@@ -3201,6 +3206,7 @@
 **** Use the Diary for Holidays and Appointments
    + remove use of emacs diary (can unset it if need of a diary), and set a 'diary' file that really contains important dates (holidays, appointments, etc.) ::
      #+begin_src emacs-lisp
+     ; setups for 'Use the Diary for Holidays and Appointments'
      (setq org-agenda-include-diary nil)
      (setq org-agenda-diary-file "~/Documents/repos/org/memacs/GTD/diary.org")
      #+end_src
@@ -3227,6 +3233,7 @@
 	 #+end_src
    + setting for any time strings in the heading to be showned in the agenda ::
      #+begin_src emacs-lisp
+     ; for any time strings in the heading to be showned in the agenda
      (setq org-agenda-insert-diary-extract-time t)
      #+end_src
 
@@ -3394,6 +3401,7 @@
      - for repeating tasks, instead of manually resetting the checklists when the task is ==DONE==, ==org-checklist== can automatically uncheck the boxes when the task is marked done ::
    + setup ::
      #+begin_src emacs-lisp
+     ; setup for handling checklists
      ; load org-checklist.el from org-contrib
      (add-to-list 'load-path (expand-file-name "~/Documents/repos/opt/org-mode/org-contrib/lisp"))
     
@@ -3420,6 +3428,7 @@
      - plus, if an entry has a property ==ORDERED==, each of its TODO children is *blocked* until *all earlier siblings* are marked as done
    + enable tasks blocking ::
      #+begin_src emacs-lisp
+     ; enable tasks blocking
      (setq org-enforce-todo-dependencies t)
      #+end_src
    + enable tasks blocking with ==ORDERED== property on subtasks, eg ::
@@ -3451,16 +3460,19 @@
    + org-indent removes indentation in org-file on lines that are not headlines, and displays prefixed them with virtual space as if they were indented to vertically align with the headline text 
    + turn on ==org-indent== at startup ::
      #+begin_src emacs-lisp
+     ; turn on ==org-indent== at startup
      (setq org-startup-indented t)
      #+end_src
 
 **** Handling blank lines
    + automatically *hide* blank lines between headlines while (un)folding ((un)collapse) headlines (with ==TAB==) ::
      #+begin_src emacs-lisp
+     ; automatically *hide* blank lines between headlines while (un)folding ((un)collapse) headlines (with ==TAB==)
      (setq org-cycle-separator-lines 0)
      #+end_src
    + prevent creating blank lines before headings, but allow list items to adapt to existing blank lines around the items ::
      #+begin_src emacs-lisp
+     ; prevent creating blank lines before headings, but allow list items to adapt to existing blank lines around the items
      (setq org-blank-before-new-entry (quote ((heading)
                                               (plain-list-item . auto))))
      #+end_src
@@ -3468,6 +3480,7 @@
 **** Adding new tasks quickly without disturbing the current task content
    + fast insertion of new headings in a project (possibly with a ==TODO== keyword) with :: ==C-RET==, ==C-S-RET==, ==M-RET==, and ==M-S-RET== :
      #+begin_src emacs-lisp
+     ; fast insertion of new headings in a project (possibly with a ==TODO== keyword) with :: ==C-RET==, ==C-S-RET==, ==M-RET==, and ==M-S-RET==
      (setq org-insert-heading-respect-content nil)
      #+end_src
    + ==C-== vs ==M-== ::
@@ -3484,6 +3497,7 @@
      - these notes are saved at the top of the task so *unfolding the task shows the note first* :: 
    + setup ::
      #+begin_src emacs-lisp
+     ; so that unfolding the task shows the notes first
      (setq org-reverse-note-order nil)
      #+end_src
 
@@ -4343,9 +4357,6 @@
 	  (add-hook 'org-clock-in-hook 'bh/mark-next-parent-tasks-todo 'append)
 	  #+end_src
 
-*** Startup in folded view
-  + 
-
 ** Miscellaneous
 *** Attachments
    + notes ::
@@ -4431,9 +4442,21 @@
                                                 ("b." . "-"))))
     #+end_src
 
+*** Startup in folded view
+  + open org files in folded view by default
+  + setup ::
+    #+begin_src emacs-lisp
+    ; startup org-mode files in folded view
+    (setq org-startup-folded t)
+    #+end_src
+
+*** Allow alphabetical list entries
+  + allow character letter as bullet in item lists
+
 *** Delete IDs when cloning
   + setup ::
     #+begin_src emacs-lisp
+    ; delete IDs when cloning
     (setq org-clone-delete-id t)
     #+end_src
 

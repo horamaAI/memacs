@@ -133,10 +133,10 @@
   - add/remove file to org agenda :: C-c [ (remove : C-c ])
     + careful :: to be sure and use whole content of folder, prefer manual edit than C-c [
 
-**** org agenda todo and GTD (getting things done)
-  - add item with checkbox :: C-S-M-m
-  - toggle between todo states (TODO-DONE-etc) :: C-c C-t // will create todo task if not one already
-  - toggle checkbox ([ ] to [x]) :: C-c C-c
+**** org agenda todo, checklists, and GTD (getting things done)
+  - add item with checkbox :: ==C-S-M-m==
+  - toggle between todo states (TODO-DONE-etc) :: ==C-c C-t== // will create todo task if not one already
+  - toggle checkbox ([ ] to [x]) :: ==C-c C-c==
 ***** org-capture
    - call capture templates on task :: C-c t // t here is for task, not template
    - after finished entering details, file item in defined org-default-notes-file (will resume previous task) :: C-c C-c
