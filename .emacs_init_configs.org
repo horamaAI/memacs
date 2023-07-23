@@ -4586,7 +4586,17 @@
   + can be tempting, but archiving entire complete subtrees is more tempting, no worries to have bunch of tasks marked ==DONE== (but not archived) 
 
 *** Strike-through emphasis
-  + 
+  + strike-through emphasis can be unreadable and tends to only show up when pasting data from other files into org-mode
+  + setup to remove the strike-through completely which can be a lot nicer ::
+    #+begin_src emacs-lisp
+    (setq org-emphasis-alist (quote (("*" bold "<b>" "</b>")
+                                     ("/" italic "<i>" "</i>")
+                                     ("_" underline "<span style=\"text-decoration:underline;\">" "</span>")
+                                     ("=" org-code "<code>" "</code>" verbatim)
+                                     ("~" org-verbatim "<code>" "</code>" verbatim))))
+    #+end_src
+
+*** Subscripts and Superscripts
 
 * Programming language specific
 
