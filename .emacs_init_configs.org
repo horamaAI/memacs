@@ -4583,8 +4583,10 @@
 ** Deprecated use (things no longer used anymore by bh)
   + partial, ==org-mode== is huge with features, some features are not know about yet by bh, or haven't be explored, so list likely to not be complete
 *** Archive Sibling
-  + 
+  + can be tempting, but archiving entire complete subtrees is more tempting, no worries to have bunch of tasks marked ==DONE== (but not archived) 
 
+*** Strike-through emphasis
+  + 
 
 * Programming language specific
 
