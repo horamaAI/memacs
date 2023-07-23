@@ -4448,7 +4448,13 @@
   + kbd ::
     - ==C-c C-x C-d== :: display clock durations in hours and minutes
 
-*** Create unique IDs for tasks when linking
+*** Create unique IDs for tasks when linking (with ==PROPERTY== drawer, will keep unique ID and you will be able to move heading as wanted and the link will still work)
+  + setup to create a unique task ID for the heading in the ==PROPERTY== drawer (with ==C-c l==)
+    - allows to move the task around arbitrarily in org files and the link to it will still work
+  + setup ::
+    #+begin_src emacs-lisp
+    (setq org-id-link-to-org-use-id 'create-if-interactive-and-no-custom-id)
+    #+end_src
 
 ** Miscellaneous
 *** Use utf-8 as default coding system
@@ -4573,6 +4579,9 @@
     ; delete IDs when cloning
     (setq org-clone-delete-id t)
     #+end_src
+
+** Deprecated use (things no longer used anymore by bh)
+*** 
 
 * Programming language specific
 
