@@ -4581,7 +4581,10 @@
     #+end_src
 
 ** Deprecated use (things no longer used anymore by bh)
-*** 
+  + partial, ==org-mode== is huge with features, some features are not know about yet by bh, or haven't be explored, so list likely to not be complete
+*** Archive Sibling
+  + 
+
 
 * Programming language specific
 
