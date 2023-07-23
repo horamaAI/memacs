@@ -4597,6 +4597,17 @@
     #+end_src
 
 *** Subscripts and Superscripts
+  + if you don't need document that need subscripts and superscript support, you can disable handling of ==_== and ==^== for subscript and superscripts ::
+    #+begin_src emacs-lisp
+    (setq org-use-sub-superscripts nil)
+    #+end_src
+  + an alternative to cancelling sub/super-scripts by default is including a setup file with common property to every org files not needing those (following setup not evaluated) ::
+    #+begin_src org :exports src
+    , #+options: ^:nil _:nil
+    #+end_src
+
+*** Yasnippet
+  + 
 
 * Programming language specific
 
