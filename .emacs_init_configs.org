@@ -2625,7 +2625,7 @@
 
 ** Productivity Tools
   + miscellaneous emacs tools for more productivity
-*** abbrev-mode and skeletons
+*** Expand abbreviations into function template (with ==abbrev-mode== and ==skeletons==)
   + skeletons + abbrev-mode :: to quickly add preconfigured blocks to emacs edit buffers
   + eg blocks for creation ::
     - creating *generic blocks* in org-mode
@@ -4605,9 +4605,6 @@
     #+begin_src org :exports src
     , #+options: ^:nil _:nil
     #+end_src
-
-*** Yasnippet
-  + 
 
 * Programming language specific
 
