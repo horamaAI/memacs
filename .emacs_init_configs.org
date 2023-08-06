@@ -4498,7 +4498,7 @@
     done
     #+end_example
 
-**** Git - Edit files with confidence
+**** Git Repository synchronization
 
 ** Miscellaneous
 *** Use utf-8 as default coding system
