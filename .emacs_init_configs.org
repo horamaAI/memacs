@@ -4480,11 +4480,12 @@
   + what does :: loops through multiple repositories and commits any modified files
   + so far, has following org-mode repositories ::
     - ==memacs== :: contains most org files and is about GTD, learnings, TODOs, etc.
+    - ==ntwado.com== :: to be built website/blog
   + content ::
     #+begin_example
     #!/bin/sh
     # Add org file changes to the repository
-    REPOS="org doc.norang.ca www.norang.ca"
+    REPOS="memacs ntwado.com"
     
     for REPO in $REPOS
     do
@@ -4498,7 +4499,7 @@
     done
     #+end_example
 
-**** Git Repository synchronization
+**** Git Repository synchronization (synchronize all git repositories in one run of a script)
 
 ** Miscellaneous
 *** Use utf-8 as default coding system
