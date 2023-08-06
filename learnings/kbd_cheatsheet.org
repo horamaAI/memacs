@@ -14,7 +14,7 @@
  - C-h k [enter key or chain of key] : describe entered key
 
 ** help
- - describe tool :: C-h 'c' // where 'c' is what one wants described
+ - describe tool :: ==C-h 'c'== // where 'c' is what one wants described
    + describe bindings :: ==C-h b==
    + describe function :: ==C-h f==
    + describe variable :: ==C-h v==

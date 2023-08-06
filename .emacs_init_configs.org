@@ -4447,7 +4447,36 @@
     #+end_src
 
 ** Using Git for Automatic History, Backups, and Synchronization
-  + 
+  + Need :: when editing folded regions of org-mode files and change(s) corrupt the files
+  + Fix :: add org files in a Git repository
+  + Process ::
+    - setup saves org-files periodically and creates a commit with changes automatically
+      + this allow to go back in time and view the state of org files for any given moment over the lifetime of the document
+
+*** Automatic periodic Commits
+  + emacs setup for saving org buffers every 6 hours ::
+    #+begin_src emacs-lisp
+    (run-at-time "00:59" 21600 'org-save-all-org-buffers)
+    #+end_src
+  + understand setup (can get more details with calling help on function ==run-at-time==: ==C-h f 'run-at-time' -RET-==) ::
+    - format :: (run-at-time TIME REPEAT FUNCTION &rest ARGS)
+    - ==run-at-time== :: performs an action at time TIME, Repeat the action every REPEAT seconds if REPEAT is non-nil
+    - TIME can be ::
+      + a string giving: today’s time (eg: "11:23pm"), a relative time ("90" or "2 hours 35 minutes", the acceptable forms are a number of seconds without units or some combination of values using units in ‘timer-duration-words’)
+      + nil, meaning now
+      + a number of seconds from now
+      + a value from ‘encode-time’
+      + t (with non-nil REPEAT) meaning the next integral multiple of REPEAT
+    - the action is to call FUNCTION with arguments ARGS
+    - the function returns a timer object which can be used in ==cancel-timer== 
+  + a ==cron== job will run at the top of the 6 hours to commit any changes just saved by the call to ==org-save-all-org-buffers==
+  + bh is using a script to create the commits so that it can run on demand to easily commit all modified work when moving from one machine to another for example
+  + ==crontab== details ::
+    #+begin_example 
+    0 * * * * ~/bin/org-git-sync.sh >/dev/null
+    #+end_example
+
+**** Script : ~/bin/org-git-sync.sh
 
 ** Miscellaneous
 *** Use utf-8 as default coding system
