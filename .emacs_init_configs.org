@@ -663,20 +663,15 @@
        - 'Effort' in this case is a plain number, so can use operators: <,<=,>,>=,=,and <> (but with strings same operators apply too)
 
 **** Matching property drawers and column views
-
    - source :: https://orgmode.org/manual/Properties-and-Columns.html
-
    - a property (or more specifically a property /drawer/) is a key-value pair associated with an entry
-
    - Properties can be set so they are associated with a single entry, with every entry in a tree, or with the whole buffer
-
    - 2 main applications for properties in Org mode ::
      + properties are like tags, but with a value ::
        - Imagine maintaining a file where you document bugs and plan releases for a piece of software.
        - Instead of using tags like ‘release_1’, ‘release_2’, can use a property, say ‘Release’, that in different subtrees has different values (‘1.0’, ‘2.0’, etc.)
      + second, can use properties to implement (very basic) database capabilities in an Org buffer ::
        - Imagine keeping track of your music CDs, where properties could be things such as the album, artist, release date, number of tracks, etc.
-
    - Drawers :: 
      + for informations associated with an entry, but that not normally want to see
      + can contain anything *but* a headline and another drawer
@@ -757,7 +752,6 @@
 	   - can choose what heading to file archived items under, with the possibility to add them to a datetree in a file
 	 + when a subtree is moved, it receives a number of special properties that record context information like the file from where the entry came, its outline path, the archiving time etc.
 	   - can configure the variable =org-archive-save-context-info= to adjust the amount of information added
-
    - Property drawer forewords ::
      + Properties are key–value pairs
      + when associated with a single entry or with a tree, they need to be inserted into a special drawer with the name =PROPERTIES=, which has to be located right below a headline, and its planning line when applicable
@@ -806,7 +800,6 @@
 	 + note :: =org-schedule= and =org-deadline= supports setting the date by indicating a relative time, e.g.:
 	   - '+1d' :: sets the date to the next day after today
 	   - '--1w' :: sets the date to the previous week before any current timestamp:: 
-
    - Property drawer syntax ::
      + Again, properties are key–value pairs
      + and again, when associated with a single entry or with a tree, they need to be inserted into a special drawer with the name =PROPERTIES=, which has to be located right below a headline, and its planning line when applicable
@@ -873,7 +866,6 @@
 	     :END:
 	 #+end_src
      + Property values set with global variable =org-global-properties= can be inherited by all entries in all Org files
-
    - Property drawer commands ::
      + (autocomplete) after an initial colon in a line, complete property keys :: =M-TAB (pcomplete)=
        - all keys used in the current file are offered as possible completions
@@ -890,7 +882,6 @@
      + remove a property from the current entry :: =C-c C-c d (org-delete-property)=
      + globally remove a property, from all entries in the current file :: =C-c C-c D (org-delete-property-globally)=
      + compute the property at point, using the operator and scope from the nearest column format definition :: =C-c C-c c (org-compute-property-at-point)=
-
    - Special properties ::
      + provide an alternative access method to Org mode features, like the TODO state or the priority of an entry
      + exist so that can include these states in a column view, or to use them in queries
@@ -911,7 +902,6 @@
        - ‘TIMESTAMP’ :: the first keyword-less timestamp in the entry
        - ‘TIMESTAMP_IA’ :: the first inactive timestamp in the entry
        - ‘TODO’ :: the TODO keyword of the entry
-
    - Property searches (commands also work for Tag searches) :: to create sparse trees and special lists with selection based on properties
      + create a sparse tree with all matching entries :: =C-c / m or C-c \ (org-match-sparse-tree)=
        - with =C-u= prefix argument :: ignore headlines that are not a TODO line
@@ -922,11 +912,8 @@
        - a sparse tree is created with all entries that define this property with the given value
        - if value is enclosed in curly braces, it is interpreted as a regular expression and matched against the property values
      + syntax for the search string is described in :: [[#match_tags_props][Matching tags and properties]]
-
    - Column view :: to view and edit properties in an outline tree
-
    - test for properties combined with matching tags ::
-
    - Custom agenda views ::
      + notes ::
        - generating time of block agenda can be restraining, especially when one wants to view weighty data (checking clocking data, agenda block on weeks, months, etc) => generating a custom agenda view with only needed infos can be faster
@@ -4458,6 +4445,9 @@
     #+begin_src emacs-lisp
     (setq org-id-link-to-org-use-id 'create-if-interactive-and-no-custom-id)
     #+end_src
+
+** Using Git for Automatic History, Backups, and Synchronization
+  + 
 
 ** Miscellaneous
 *** Use utf-8 as default coding system
