@@ -4476,7 +4476,29 @@
     0 * * * * ~/bin/org-git-sync.sh >/dev/null
     #+end_example
 
-**** Script : ~/bin/org-git-sync.sh
+**** Script : ~/bin/org-git-sync.sh (to create commits for org-repositories)
+  + what does :: loops through multiple repositories and commits any modified files
+  + so far, has following org-mode repositories ::
+    - ==memacs== :: contains most org files and is about GTD, learnings, TODOs, etc.
+  + content ::
+    #+begin_example
+    #!/bin/sh
+    # Add org file changes to the repository
+    REPOS="org doc.norang.ca www.norang.ca"
+    
+    for REPO in $REPOS
+    do
+        echo "Repository: $REPO"
+        cd ~/git/$REPO
+        # Remove deleted files
+        git ls-files --deleted -z | xargs -0 git rm >/dev/null 2>&1
+        # Add new files
+        git add . >/dev/null 2>&1
+        git commit -m "$(date)"
+    done
+    #+end_example
+
+**** Git - Edit files with confidence
 
 ** Miscellaneous
 *** Use utf-8 as default coding system
