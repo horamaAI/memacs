@@ -4500,6 +4500,17 @@
     #+end_example
 
 **** Git Repository synchronization (synchronize all git repositories in one run of a script)
+  + process ::
+    - use script (==git-sync.sh==) to synchronize all changes in current local and commit-push latest changes, and then on the other machine run the same script to update local repositories
+  + ==git-sync.sh== :: for each repository on the current system:
+    - fetch objects from the remote
+    - for each branch that tracks a remote branch ::
+      + check if the ref can be moved
+      + fast-forwards if behind the remote repository and is fast-forwardable
+      + does nothing if ref is up to date
+      + pushes ref to remote repository if ref is ahead of remote repository and fast-forwardable
+      + fails if ref and remote have diverged
+  + all done automatically, only scenario where manual update is needed :: when a change on any PC and another one needs to be done at the same time: then, a manual merge is required
 
 ** Miscellaneous
 *** Use utf-8 as default coding system
