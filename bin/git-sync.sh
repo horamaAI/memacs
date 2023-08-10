@@ -2,8 +2,8 @@
 #
 
 # Local bare repository name
-syncrepo=norang
-reporoot=~/Documents/repos
+syncrepo=horamaai  # my custom remote branches
+reporoot=~/Documents/repos/org
 
 # Display repository name only once
 log_repo() {
@@ -87,6 +87,7 @@ check_refs () {
 #   Check all refs matching $syncrepo and fast-forward, or push as necessary
 #   to synchronize the ref with $syncrepo
 #   Bail out if ref is not fastforwardable so user can fix and rerun
+#   '|' is 'pipe', not bitwise or, and 'time' is a command
 time {
   retval=0
   if find $reporoot -type d -name '*.git' | { 
