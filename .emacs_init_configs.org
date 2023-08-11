@@ -102,14 +102,60 @@
     (package-install 'use-package))
     
     #+end_src
-  + other customizations :: 
-#+begin_src emacs-lisp
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; Note: some configs are managed by emacs, so order my change after evaluation
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-#+end_src
-
+  + other customizations ::
+    #+begin_src emacs-lisp
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    ;; Note: some configs are managed by emacs, so order my change after evaluation
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    
+    ;; always display line numbers
+    (global-display-line-numbers-mode)
+    
+    ;; show line fill column globally (note that it doesn't break automatically, just display the fill-column)
+    (global-display-fill-column-indicator-mode)
+    
+    ;; set company-mode (autocomplete) on all buffers
+    (add-hook 'after-init-hook 'global-company-mode)
+    
+    ;; get matching parentheses and other characters
+    (show-paren-mode +1)
+    
+    ;; use projectile for project management
+    (use-package projectile
+      :diminish projectile-mode
+      :config (projectile-mode)
+      :custom ((projectile-completion-system 'ivy))
+      :bind-keymap
+      ("C-c p" . projectile-command-map)
+      :init
+      ;; default projects home
+      (when (file-directory-p "~/Documents/repos/")
+        (setq projectile-project-search-path '("~/Documents/repos/")))
+      ;; first thing to do when switching project: load up 'dired' which list files in project
+      (setq projectile-switch-project-action #'projectile-dired)
+      (projectile-mode +1))
+    
+    ;; for c++ IDE
+    (require 'eglot)
+    (add-to-list 'eglot-server-programs '((c++-mode c-mode) "clangd")) ;; c++ language server clangd 
+    (add-hook 'c-mode-hook 'eglot-ensure)
+    (add-hook 'c++-mode-hook 'eglot-ensure)
+    
+    ;; file to open on start
+    (find-file "/home/myfirstdebianpc/Documents/repos/org/memacs/GTD/tasks_list.org")
+    
+    #+end_src
+  + --todo-- fix themes ::
+    #+begin_src emacs-lisp
+    ;;;; load darcula theme not dracula
+    ;;(use-package darcula-theme
+    ;;  :ensure t
+    ;;  :config(load-theme 'darcula t))
+    
+    ;; choose light version of timu-spacegrey
+    ;; (load-theme 'timu-spacegrey t)
+    ;; (setq timu-spacegrey-flavour "light")
+    #+end_src
 * My organization of org files tree (details in [[file:organisation_org_files.org][organisation_org_files.org]])
 #+INCLUDE: "./organisation_org_files.org::Folders and files:"
 
@@ -306,7 +352,6 @@
 
 - basic settings for task actions ::
   #+begin_src emacs-lisp
-  
   ;; action tasks status
   ;; vertical bar (|) used to separate TODO keywords (states that need action) from DONE states (needs no further action)
   ;; If not provided, the last state is used as DONE state.
@@ -317,7 +362,7 @@
   ;; customize design of trigger states
   (setq org-todo-keyword-faces
         (quote (("TODO" :foreground "red" :weight bold)
-  	      ("NEXT" :foreground "blue" :weight bold)
+  	      ("NEXT" :foreground "royal blue" :weight bold)
                 ("DONE" :foreground "forest green" :weight bold)
                 ("WAITING" :foreground "orange" :weight bold)
                 ("HOLD" :foreground "magenta" :weight bold)
@@ -659,6 +704,14 @@
        #+TAGS: { Context : @Home @Work @Call }
        #+end_src
        + when setting org-tag-alist you can use :startgroup and :endgroup instead of :startgrouptag and :endgrouptag to make the tags mutually exclusive
+	 #+begin_example
+	 ;; Tags that are mutually excluding example (use of dummy tags :startgroup and :endgroup)
+	 ;; (setq org-tag-alist '((:startgroup . nil)
+	 ;;                       ("@work" . ?w) ("@home" . ?h)
+	 ;;                       ("@tennisclub" . ?t)
+	 ;;                       (:endgroup . nil)
+	 ;; 		         ("laptop" . ?l) ("pc" . ?p)))
+	 #+end_example
      + members of a group tag can also be regular expressions, creating the possibility of a more dynamic and rule-based tag structure. The regular expressions in the group must be specified within curly brackets ::
        - expanded example ::
 	 #+begin_src org :exports src
@@ -1211,7 +1264,6 @@
     - clock history selection buffer :: ==C-u C-c C-x C-i==
   + the set up ::
     #+begin_src emacs-lisp
-    
      ;;
      ;; Resume clocking task when emacs is restarted
      (org-clock-persistence-insinuate)
@@ -1615,6 +1667,11 @@
     - with bh configs ::
       + most of phone calls is handled by capture mode
       + can use special capture template for phone calls combined with a custom function that replaces text with information from ==bbdb3== (bbdb3 is just bbdb version 3.XXX)
+	#+begin_src emacs-lisp
+	;; phone calls configs
+	;; (require 'bbdb) // commented since causing issues, is it deprecated ?
+	;; (require 'bbdb-com) // same
+	#+end_src
       + the phone call capture template starts the clock as soon as the phone rings, then one is free to lookup and replace the caller in ==bbdb== anytime during or after the call
 	- capture mode starts the clock using the ==:clock-in t== setting in the template
   + process ::
@@ -2093,7 +2150,10 @@
     (setq org-ditaa-jar-path "~/Documents/repos/opt/service/web/lib/ditaa0_10.jar")
     ;;(org-babel-do-load-languages 'org-babel-load-languages '((ditaa . t))) ;; might be a previous config where used ditaa as an pre-installed package
     (setq org-plantuml-jar-path "~/Documents/repos/opt/plantuml/plantuml-1.2022.2.jar")
-    
+
+    ;; to automatically enable plantuml-mode for files with extension .plantuml (https://github.com/skuro/plantuml-mode#installation)
+    (add-to-list 'auto-mode-alist '("\\.plantuml\\'" . plantuml-mode))
+
     (add-hook 'org-babel-after-execute-hook 'bh/display-inline-images 'append)
     
     ; Make babel results blocks lowercase
@@ -3566,7 +3626,8 @@
    + logging setup ::
      #+begin_src emacs-lisp
      ;; my version
-     (setq org-log-done (quote ((time)     ;; keep track of when a todo item was done => when toggled to done, a line ‘CLOSED: [timestamp]’ is inserted just after the headline
+     ;; keep track of when a todo item was done => when toggled to done, a line ‘CLOSED: [timestamp]’ is inserted just after the headline
+     (setq org-log-done (quote ((time)
 				(note))))  ;; to record a note along with the timestamp
      ;; bh version
      ;; (setq org-log-done (quote time))
@@ -4805,9 +4866,7 @@
     #+end_src
 
 * Programming language specific
-
 ** C++
-
  - notes ::
    + different sources, but mainly ::
      - c++ mode from official documentation :: https://www.emacswiki.org/emacs/CPlusPlusMode
@@ -4816,7 +4875,6 @@
    ;; M-x c++-mode :: to activate c++-mode on .h files that won't be opened as c++ files by default (otherwise, will be opened as c file)
    (add-to-list 'auto-mode-alist '("\\.h\\'" . c++-mode))
    #+end_src
-
 
 * Miscellaneous (good to know)
   + emacs windows vs frames ::
@@ -4834,182 +4892,35 @@
       + minor modes are independent one another, and of the selected major mode.
 
 * Raw (to be refiled)
-
- - setting excluding tags ::
- #+begin_src emacs-lisp
-
-
- ;; 'GTD' : TODO state triggers (TODOs, DONE, STARTED, etc. can tune as prefer)
- (eval-after-load "org"
-   '(progn
-      (define-prefix-command 'org-todo-state-map)
-
-      (define-key org-mode-map "\C-cx" 'org-todo-state-map)
-
-      (define-key org-todo-state-map "x"
-	#'(lambda nil (interactive) (org-todo "CANCELLED")))
-      (define-key org-todo-state-map "d"
-	#'(lambda nil (interactive) (org-todo "DONE")))
-      (define-key org-todo-state-map "f"
-	#'(lambda nil (interactive) (org-todo "DEFERRED")))
-      (define-key org-todo-state-map "l"
-	#'(lambda nil (interactive) (org-todo "DELEGATED")))
-      (define-key org-todo-state-map "s"
-	#'(lambda nil (interactive) (org-todo "STARTED")))
-      (define-key org-todo-state-map "w"
-	#'(lambda nil (interactive) (org-todo "WAITING")))))
-
- ;;     (define-key org-agenda-mode-map "\C-n" 'next-line)
- ;;     (define-key org-agenda-keymap "\C-n" 'next-line)
- ;;     (define-key org-agenda-mode-map "\C-p" 'previous-line)
- ;;     (define-key org-agenda-keymap "\C-p" 'previous-line)))
-
- #+end_src
-
-
-
-
-
-
- ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
- ;; begin clocking setup
- ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-
-
- ;; from here clock by id not really needed since can just use punch-in/out
- (require 'org-id)
- (defun bh/clock-in-task-by-id (id)
-   "Clock in a task by id"
-   (org-with-point-at (org-id-find id 'marker)
-     (org-clock-in nil)))
-
- (defun bh/clock-in-last-task (arg)
-   "Clock in the interrupted task if there is one
- Skip the default task and get the next one.
- A prefix arg forces clock in of the default task."
-   (interactive "p")
-   (let ((clock-in-to-task
-          (cond
-           ((eq arg 4) org-clock-default-task)
-           ((and (org-clock-is-active)
-                 (equal org-clock-default-task (cadr org-clock-history)))
-            (caddr org-clock-history))
-           ((org-clock-is-active) (cadr org-clock-history))
-           ((equal org-clock-default-task (car org-clock-history)) (cadr org-clock-history))
-           (t (car org-clock-history)))))
-     (widen)
-     (org-with-point-at clock-in-to-task
-       (org-clock-in nil))))
-
-
-
- ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
- ;; end clocking setup
- ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-
-
- ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
- ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-
-
-
- ;; publishing and exporting
-
-
-
- ;; phone calls configs
- ;; (require 'bbdb)
- ;; (require 'bbdb-com)
-
- ;;
-
- ;;;;;;;;;;;;;;;;;;;;;;;;;;
- ;; reminders setup
- ;;;;;;;;;;;;;;;;;;;;;;;;;;
-
- ;;;; load darcula theme not dracula
- ;;(use-package darcula-theme
- ;;  :ensure t
- ;;  :config(load-theme 'darcula t))
-
- ;; choose light version of timu-spacegrey
- ;; (load-theme 'timu-spacegrey t)
- ;; (setq timu-spacegrey-flavour "light")
-
-
-
- ;; always display line numbers
- (global-display-line-numbers-mode)
-
- ;; show line fill column globally (note that it doesn't break automatically, just display the fill-column)
- (global-display-fill-column-indicator-mode)
-
- ;; use projectile for project management
- (use-package projectile
-   :diminish projectile-mode
-   :config (projectile-mode)
-   :custom ((projectile-completion-system 'ivy))
-   :bind-keymap
-   ("C-c p" . projectile-command-map)
-   :init
-   ;; default projects home
-   (when (file-directory-p "~/Documents/repos/")
-     (setq projectile-project-search-path '("~/Documents/repos/")))
-   ;; first thing to do when switching project: load up 'dired' which list files in project
-   (setq projectile-switch-project-action #'projectile-dired)
-   (projectile-mode +1))
-
- ;; set company-mode (autocomplete) on all buffers
- (add-hook 'after-init-hook 'global-company-mode)
-
- ;; get matching parentheses and other characters
- (show-paren-mode +1)
-
- ;; for c++ IDE
- (require 'eglot)
- (add-to-list 'eglot-server-programs '((c++-mode c-mode) "clangd")) ;; c++ language server clangd 
- (add-hook 'c-mode-hook 'eglot-ensure)
- (add-hook 'c++-mode-hook 'eglot-ensure)
-
- ;; publish to html settings
- (require 'ox-publish)
- (setq org-publish-project-alist
-       '(("learnings-notes"
-	  :base-directory "~/Documents/repos/org/memacs/learnings" ; components root directory
-	  :base-extension "org"                         ; extension without dot
-	  :publishing-directory "~/public_html/learnings"        ; base directory where files will be published
-	  :recursive t                           ; if 't', include subdirectories, subdirectories in:publishing-directory created if don't exist
-	  :publishing-function org-html-publish-to-html ; if and how org process files in component => convert org files to HTML
-	  :headline-levels 4                            ; level of display in table of content
-	  :auto-preamble t
-	  :auto-sitemap t                ; Generate sitemap.org automagically...
-	  :sitemap-filename "sitemap.org"  ; ... call it sitemap.org (it's the default)...
-	  :sitemap-title "Sitemap"         ; ... with title 'Sitemap'.
-	  :section-numbers nil       ;; Don't include section numbers
-	  :time-stamp-file nil       ;; Don't include time stamp in file
-	  )
-	 ("learnings-static"
-	  :base-directory "~/Documents/repos/org/memacs/learnings"
-	  :base-extension "css\\|js\\|png\\|jpg\\|gif\\|pdf\\|mp3\\|ogg\\|swf"
-	  :publishing-directory "~/public_html/"
-	  :recursive t
-	  :publishing-function org-publish-attachment
-	  )
-	 ("learnings-project" :components ("learnings-notes" "learnings-static"))
-
-	 )
-       )
-
- ;; get rid of validate link at the bottom of published html files
- (setq org-html-validation-link nil)
-
-
- ;; open file on start
- (find-file "/home/myfirstdebianpc/Documents/repos/org/memacs/GTD/tasks_list.org")
-
+ - setting excluding tags (check if doesn't conflict with bh's configs) ::
+   #+begin_src emacs-lisp
+   
+   ;; 'GTD' : TODO state triggers (TODOs, DONE, STARTED, etc. can tune as prefer)
+   (eval-after-load "org"
+     '(progn
+        (define-prefix-command 'org-todo-state-map)
+   
+        (define-key org-mode-map "\C-cx" 'org-todo-state-map)
+   
+        (define-key org-todo-state-map "x"
+   	#'(lambda nil (interactive) (org-todo "CANCELLED")))
+        (define-key org-todo-state-map "d"
+   	#'(lambda nil (interactive) (org-todo "DONE")))
+        (define-key org-todo-state-map "f"
+   	#'(lambda nil (interactive) (org-todo "DEFERRED")))
+        (define-key org-todo-state-map "l"
+   	#'(lambda nil (interactive) (org-todo "DELEGATED")))
+        (define-key org-todo-state-map "s"
+   	#'(lambda nil (interactive) (org-todo "STARTED")))
+        (define-key org-todo-state-map "w"
+   	#'(lambda nil (interactive) (org-todo "WAITING")))))
+   
+   ;;     (define-key org-agenda-mode-map "\C-n" 'next-line)
+   ;;     (define-key org-agenda-keymap "\C-n" 'next-line)
+   ;;     (define-key org-agenda-mode-map "\C-p" 'previous-line)
+   ;;     (define-key org-agenda-keymap "\C-p" 'previous-line)))
+   
+   #+end_src
 
 * 
 
