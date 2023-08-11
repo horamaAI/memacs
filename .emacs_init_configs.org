@@ -3,85 +3,112 @@
 #+SETUPFILE: ~/set-up-files/basic-setups.org
 
 
-(custom-set-variables
- ;; custom-set-variables was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(ansi-color-faces-vector
-   [default default default italic underline success warning error])
- '(ansi-color-names-vector
-   ["#282a36" "#ff5555" "#50fa7b" "#f1fa8c" "#6272a4" "#bd93f9" "#8be9fd" "#f8f8f2"])
- '(custom-enabled-themes '(timu-spacegrey))
- '(custom-safe-themes
-   '("9b7f37885eec6ef0441bae9c5ea4a1dd2484eef4342aa3f88d1691722f769fba" "c7000071e9302bee62fbe0072d53063da398887115ac27470d664f9859cdd41d" "5f9b1b414d4e0b793f7907b1a48c7bc0591f06d8d9e8e144524b974d8bafa5ef" "79586dc4eb374231af28bbc36ba0880ed8e270249b07f814b0e6555bdcb71fab" "18bec4c258b4b4fb261671cf59197c1c3ba2a7a47cc776915c3e8db3334a0d25" default))
- '(ensime-sem-high-faces
-   '((var :foreground "#9876aa" :underline
-	  (:style wave :color "yellow"))
-     (val :foreground "#9876aa")
-     (varField :slant italic)
-     (valField :foreground "#9876aa" :slant italic)
-     (functionCall :foreground "#a9b7c6")
-     (implicitConversion :underline
-			 (:color "#808080"))
-     (implicitParams :underline
-		     (:color "#808080"))
-     (operator :foreground "#cc7832")
-     (param :foreground "#a9b7c6")
-     (class :foreground "#4e807d")
-     (trait :foreground "#4e807d" :slant italic)
-     (object :foreground "#6897bb" :slant italic)
-     (package :foreground "#cc7832")
-     (deprecated :strike-through "#a9b7c6")))
- '(org-agenda-custom-commands
-   '(("d" todo "DELEGATED" nil)
-     ("c" todo "DONE|DEFERRED|CANCELLED" nil)
-     ("w" todo "WAITING" nil)
-     ("W" agenda ""
-      ((org-agenda-ndays 21)))
-     ("A" agenda ""
-      ((org-agenda-skip-function
-	(lambda nil
-	  (org-agenda-skip-entry-if 'notregexp "\\=.*\\[#A\\]")))
-       (org-agenda-ndays 1)
-       (org-agenda-overriding-header "Today's Priority #A tasks: ")))
-     ("u" alltodo ""
-      ((org-agenda-skip-function
-	(lambda nil
-	  (org-agenda-skip-entry-if 'scheduled 'deadline 'regexp "
-]+>")))
-       (org-agenda-overriding-header "Unscheduled TODO entries: ")))))
- '(org-agenda-files nil)
- '(org-agenda-ndays 7)
- '(org-agenda-show-all-dates t)
- '(org-agenda-skip-deadline-if-done t)
- '(org-agenda-skip-scheduled-if-done t)
- '(org-agenda-start-on-weekday nil)
- '(org-deadline-warning-days 14)
- '(org-default-notes-file "~/refile.org")
- '(org-fast-tag-selection-single-key 'expert)
- '(org-reverse-note-order t)
- '(package-selected-packages
-   '(timu-spacegrey-theme use-package greymatters-theme hledger-mode undo-tree projectile iedit avy counsel lsp-mode darcula-theme dracula-theme company eglot)))
-(custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- )
-;; melpa archives
-(require 'package)
+* Preliminaries
+  + sources (different sources, but mains here) ::
+    - http://www.newartisans.com/2007/08/using-org-mode-as-a-day-planner/
+    - http://doc.norang.ca/org-mode.html
+  + first configs ::
+    #+begin_src emacs-lisp
+    ;; uncomment when emacs init orgmode version is ready
+    ;; (require 'org-install) ;; better than just 'org', and not even needed anymore, only applicable if using older version of Emacs that does not have  org-mode (https://emacs-orgmode.gnu.narkive.com/YIL4iBtt/orgmode-org-install-el-in-emacs-probably-should-be-removed)
+    ;; (org-babel-load-file
+    ;;  (expand-file-name "emacs-init.org"
+    ;;                    user-emacs-directory)) ;; user-emacs-directory to set custom user directory
+    
+    (custom-set-variables
+     ;; custom-set-variables was added by Custom.
+     ;; If you edit it by hand, you could mess it up, so be careful.
+     ;; Your init file should contain only one such instance.
+     ;; If there is more than one, they won't work right.
+     '(ansi-color-faces-vector
+       [default default default italic underline success warning error])
+     '(ansi-color-names-vector
+       ["#282a36" "#ff5555" "#50fa7b" "#f1fa8c" "#6272a4" "#bd93f9" "#8be9fd" "#f8f8f2"])
+     '(custom-enabled-themes '(spacemacs-dark))
+     '(custom-safe-themes
+       '("bffa9739ce0752a37d9b1eee78fc00ba159748f50dc328af4be661484848e476" "7f01d214ef35925074125b88da30eebd624836dcf09336d13bfe23827827e40b" "9b7f37885eec6ef0441bae9c5ea4a1dd2484eef4342aa3f88d1691722f769fba" "c7000071e9302bee62fbe0072d53063da398887115ac27470d664f9859cdd41d" "5f9b1b414d4e0b793f7907b1a48c7bc0591f06d8d9e8e144524b974d8bafa5ef" "79586dc4eb374231af28bbc36ba0880ed8e270249b07f814b0e6555bdcb71fab" "18bec4c258b4b4fb261671cf59197c1c3ba2a7a47cc776915c3e8db3334a0d25" default))
+     '(ensime-sem-high-faces
+       '((var :foreground "#9876aa" :underline
+    	  (:style wave :color "yellow"))
+         (val :foreground "#9876aa")
+         (varField :slant italic)
+         (valField :foreground "#9876aa" :slant italic)
+         (functionCall :foreground "#a9b7c6")
+         (implicitConversion :underline
+    			 (:color "#808080"))
+         (implicitParams :underline
+    		     (:color "#808080"))
+         (operator :foreground "#cc7832")
+         (param :foreground "#a9b7c6")
+         (class :foreground "#4e807d")
+         (trait :foreground "#4e807d" :slant italic)
+         (object :foreground "#6897bb" :slant italic)
+         (package :foreground "#cc7832")
+         (deprecated :strike-through "#a9b7c6")))
+     '(org-agenda-custom-commands
+       '(("d" todo "DELEGATED" nil)
+         ("c" todo "DONE|DEFERRED|CANCELLED" nil)
+         ("w" todo "WAITING" nil)
+         ("W" agenda ""
+          ((org-agenda-ndays 21)))
+         ("A" agenda ""
+          ((org-agenda-skip-function
+	   (lambda nil
+    	    (org-agenda-skip-entry-if 'notregexp "\\=.*\\[#A\\]")))
+           (org-agenda-ndays 1)
+           (org-agenda-overriding-header "Today's Priority #A tasks: ")))
+         ("u" alltodo ""
+          ((org-agenda-skip-function
+	    (lambda nil
+    	     (org-agenda-skip-entry-if 'scheduled 'deadline 'regexp "\n]+>")))
+           (org-agenda-overriding-header "Unscheduled TODO entries: ")))))
+     '(org-agenda-files
+       '("~/Documents/repos/org/memacs/GTD/" "~/Documents/repos/org/memacs/GTD-private/"))
+     '(org-agenda-ndays 7)
+     '(org-agenda-show-all-dates t)
+     '(org-agenda-skip-deadline-if-done t)
+     '(org-agenda-skip-scheduled-if-done t)
+     '(org-agenda-start-on-weekday nil)
+     '(org-deadline-warning-days 14)
+     '(org-default-notes-file "~/notes_to_refile.org")
+     '(org-fast-tag-selection-single-key 'expert)
+     '(org-reverse-note-order t)
+     '(package-selected-packages
+       '(bbdb spacemacs-theme plantuml-mode timu-spacegrey-theme use-package greymatters-theme hledger-mode undo-tree projectile iedit avy counsel lsp-mode darcula-theme dracula-theme company eglot)))
+    (custom-set-faces
+     ;; custom-set-faces was added by Custom.
+     ;; If you edit it by hand, you could mess it up, so be careful.
+     ;; Your init file should contain only one such instance.
+     ;; If there is more than one, they won't work right.
+     )
 
-(add-to-list 'package-archives
-	     '("melpa" . "http://melpa.org/packages/") t)
- 
-;; 'use-package' to ease further installations of packages
-(package-initialize)
+    ;; melpa archives
+    (require 'package)
+    
+    (add-to-list 'package-archives
+    	     '("melpa" . "http://melpa.org/packages/") t)
+    
+    ;; add directories/files to load-path so the files/directories can be found and used
+    ;; set where to look for themes
+    (add-to-list 'load-path "~/.emacs.d/themes/")
+    ;; new theme
+    ;; (require 'tomorrow-night-paradise-theme)
+    
+    ;; 'use-package' to ease further installations of packages
+    (package-initialize)
+    
+    (unless (package-installed-p 'use-package)
+    (package-refresh-contents)
+    (package-install 'use-package))
+    
+    #+end_src
+  + other customizations :: 
+#+begin_src emacs-lisp
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Note: some configs are managed by emacs, so order my change after evaluation
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(unless (package-installed-p 'use-package)
-(package-refresh-contents)
-(package-install 'use-package))
-
+#+end_src
 
 * My organization of org files tree (details in [[file:organisation_org_files.org][organisation_org_files.org]])
 #+INCLUDE: "./organisation_org_files.org::Folders and files:"
@@ -209,8 +236,7 @@
   ;; bh Custom Key Bindings
   ;; ======================
   ;; bh is from source Bernt Hansen : http://doc.norang.ca/org-mode.html
-  ;; main reason for special key bindings (like F11, and F12) is to have keys work in any mode. If for ex the Gnus summary buffer then C-u C-c C-x C-i doesn't work, but the C-F11 key combination does and this saves time since don't have to visit an org-mode buffer first just to clock in a recent task. 
-  
+  ;; main reason for special key bindings (like F11, and F12) is to have keys work in any mode. If for ex the Gnus summary buffer then C-u C-c C-x C-i doesn't work, but the C-F11 key combination does and this saves time since don't have to visit an org-mode buffer first just to clock in a recent task.
 
   (global-set-key (kbd "<f9> p") 'bh/phone-call)  
   (global-set-key (kbd "<f12>") 'org-agenda
@@ -220,8 +246,8 @@
   (global-set-key (kbd "<f8>") 'org-cycle-agenda-files) ;; Cycle through agenda file list, visiting one file after the other.
   (global-set-key (kbd "<f9> <f9>") 'bh/show-org-agenda)
   ;; (global-set-key (kbd "<f9> b") 'bbdb)
-  ;; (global-set-key (kbd "<f9> c") 'calendar)
-  ;; (global-set-key (kbd "<f9> f") 'boxquote-insert-file)
+  (global-set-key (kbd "<f9> c") 'calendar)
+  (global-set-key (kbd "<f9> f") 'boxquote-insert-file)
   ;; (global-set-key (kbd "<f9> g") 'gnus)
   (global-set-key (kbd "<f9> h") 'bh/hide-other)
   (global-set-key (kbd "<f9> n") 'bh/toggle-next-task-display)
@@ -231,22 +257,22 @@
   
   (global-set-key (kbd "<f9> o") 'bh/make-org-scratch)
   
-  ;; (global-set-key (kbd "<f9> r") 'boxquote-region)
+  (global-set-key (kbd "<f9> r") 'boxquote-region)
   (global-set-key (kbd "<f9> s") 'bh/switch-to-scratch)
   
   (global-set-key (kbd "<f9> t") 'bh/insert-inactive-timestamp)
   (global-set-key (kbd "<f9> T") 'bh/toggle-insert-inactive-timestamp)
   
   (global-set-key (kbd "<f9> v") 'visible-mode)
-  ;; (global-set-key (kbd "<f9> l") 'org-toggle-link-display)
+  (global-set-key (kbd "<f9> l") 'org-toggle-link-display)
   (global-set-key (kbd "<f9> SPC") 'bh/clock-in-last-task) ;; not needed much anymore thanks to punch-in/out (see http://doc.norang.ca/org-mode.html#ClockSetup) 
-  ;; (global-set-key (kbd "C-<f9>") 'previous-buffer)
-  ;; (global-set-key (kbd "M-<f9>") 'org-toggle-inline-images)
-  ;; (global-set-key (kbd "C-x n r") 'narrow-to-region)
-  ;; (global-set-key (kbd "C-<f10>") 'next-buffer)
+  (global-set-key (kbd "C-<f9>") 'previous-buffer)
+  (global-set-key (kbd "M-<f9>") 'org-toggle-inline-images)
+  (global-set-key (kbd "C-x n r") 'narrow-to-region)
+  (global-set-key (kbd "C-<f10>") 'next-buffer)
   (global-set-key (kbd "<f11>") 'org-clock-goto)
   (global-set-key (kbd "C-<f11>") 'org-clock-in)
-  ;; (global-set-key (kbd "C-s-<f12>") 'bh/save-then-publish) ;; needs first configs for publishing multiple files/project
+  (global-set-key (kbd "C-s-<f12>") 'bh/save-then-publish) ;; needs first configs for publishing multiple files/project
   ;; (global-set-key (kbd "C-c c") 'org-capture) ;; set before
   
   (defun bh/hide-other ()
