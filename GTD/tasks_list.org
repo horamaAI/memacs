@@ -49,6 +49,9 @@
   + connection :: rurayi@, ma*7
 *** TODO install ssh server on myfirstdebianpc : https://devconnected.com/how-to-install-and-enable-ssh-server-on-debian-10/
 *** TODO dependencies management : https://www.youtube.com/watch?v=7ZdMRLPZhFs
+*** TODO others
+  + [ ] saas, ansible vs jenkins, spring batch, multi agent system starcraft 2
+
 ** Cpp modern learning (file : cpp_learnings.org) [0/3]
   :PROPERTIES:
   :CATEGORY: cpp_learning
@@ -72,6 +75,7 @@
 	+ [ ] cppcon2015 stop teaching c, kate :: https://www.youtube.com/watch?v=YnWhqhNdYyk
 	+ [ ] cppcon2021 reaching aims of c++, bjarne stroustrup :: https://www.youtube.com/watch?v=15QF2q66NhU
 	+ [ ] cppcon2022 an C++ be 10x Simpler & Safer?, Herb Sutter :: https://www.youtube.com/watch?v=ELeZAKCN4tY
+	+ [ ] code europe 2023, C++hatGPT and AI tools' impact :: https://www.youtube.com/watch?v=trGJsOcA4hY
 	+ [ ] intro to c++ : Modern C++ Quick Start Tutorial - 90 Topics in 20 Minutes :: https://www.youtube.com/watch?v=VpqwCDSfgz0
 	  - [ ] 5 Step Plan For Deeper C++ Knowledge :: https://www.youtube.com/watch?v=287_oG4CNMc
      3) [ ] modern c++ ::
@@ -150,6 +154,7 @@
 	 + [ ] cppcon2021 c++ atomics :: https://www.youtube.com/watch?v=zE5IiaViVxk
      11) [ ] cppweekly :
 	 + [ ] ep326 deducing `this` :: https://www.youtube.com/watch?v=5EGw4_NKZlY
+	 + [ ] ep389 avoiding pointer arithmetic :: https://www.youtube.com/watch?v=YahYVRS1Ktg
 	 + [ ] ep312 stop using constexpr :: https://www.youtube.com/watch?v=4pKtPWcl1Go
 	 + [ ] ep259 CRTP :: https://www.youtube.com/watch?v=ZQ-8laAr9Dg
 	 + [ ] ep329 LTO makes program faster :: https://www.youtube.com/watch?v=9nzT1AFprYM
@@ -162,22 +167,54 @@
 	 - cppp2021 simd eve of a new era :: https://www.youtube.com/watch?v=Tqnz4IsmIFY
 	 - cppmeeting2021 simd eve of a new era :: https://www.youtube.com/watch?v=XAqMBLGJeXY
 
-*** TODO links cpp [0/15]
+*** TODO links cpp [0/18]
      1. [ ] file:///home/myfirstdebianpc/Downloads/978-1-4842-5949-8.pdf
      2. [ ] https://vittorioromeo.info/
      3. [ ] https://ocw.mit.edu/courses/electrical-engineering-and-computer-science/6-096-introduction-to-c-january-iap-2011/lecture-notes/MIT6_096IAP11_lec10.pdf
      4. [ ] https://devblogs.microsoft.com/cppblog/clear-functional-c-documentation-with-sphinx-breathe-doxygen-cmake/
      5. [ ] https://github.com/lefticus/cpp_weekly
-     6. [ ] https://github.com/AnthonyCalandra/modern-cpp-features
-     7. [ ] https://github.com/cpp-best-practices/cppbestpractices
-     8. [ ] https://github.com/olafurw/talk-cppp-webassembly
-     9. [ ] https://github.com/philsquared/cpponsea-slides/tree/master/2022
-     10. [ ] https://ocw.mit.edu/courses/electrical-engineering-and-computer-science/6-s096-effective-programming-in-c-and-c-january-iap-2014/lecture-notes/MIT6_S096IAP14_Lecture3A.pdf
-     11. [ ] https://ocw.mit.edu/courses/electrical-engineering-and-computer-science/6-s096-effective-programming-in-c-and-c-january-iap-2014/lecture-notes/
-     12. [ ] file:///home/myfirstdebianpc/Downloads/c++/cpp_indepth_series/Modern_Cpp_Intensive_for_Scientists_Engineers_Programmers.pdf
-     13. [ ] https://www.tutorialspoint.com/design_pattern/design_pattern_quick_guide.htm
-     14. [ ] https://refactoring.guru/design-patterns/cpp
-     15. [ ] https://sourcemaking.com/
+     6. [ ] https://www.modernescpp.com/index.php/my-new-blog/
+     7. [ ] https://github.com/AnthonyCalandra/modern-cpp-features
+     8. [ ] https://github.com/cpp-best-practices/cppbestpractices
+     9. [ ] https://github.com/olafurw/talk-cppp-webassembly
+     10. [ ] https://github.com/philsquared/cpponsea-slides/tree/master/2022
+     11. [ ] https://ocw.mit.edu/courses/electrical-engineering-and-computer-science/6-s096-effective-programming-in-c-and-c-january-iap-2014/lecture-notes/MIT6_S096IAP14_Lecture3A.pdf
+     12. [ ] https://ocw.mit.edu/courses/electrical-engineering-and-computer-science/6-s096-effective-programming-in-c-and-c-january-iap-2014/lecture-notes/
+     13. [ ] file:///home/myfirstdebianpc/Downloads/c++/cpp_indepth_series/Modern_Cpp_Intensive_for_Scientists_Engineers_Programmers.pdf
+     14. [ ] https://www.tutorialspoint.com/design_pattern/design_pattern_quick_guide.htm
+     15. [ ] https://refactoring.guru/design-patterns/cpp
+     16. [ ] https://sourcemaking.com/
+     17. [ ] https://en.cppreference.com/w/cpp/algorithm/set_union
+     18. [ ] https://github.com/GuillaumeDua
+
+*** TODO to read [0/27]
+  1. [ ] https://gist.github.com/GuillaumeDua/b0f5e3a40ce49468607dd62f7b7809b1
+  2. [ ] https://twitter.com/sosaaavage/status/1674704399929688065
+  3. [ ] https://twitter.com/incomputable/status/1669836426266005504
+  4. [ ] https://twitter.com/MichaelShah/status/1667434170602123265
+  5. [ ] https://twitter.com/incomputable/status/1677388729017573395
+  6. [ ] https://twitter.com/incomputable/status/1676216330402381826
+  7. [ ] https://twitter.com/code/status/1682435342610079761
+  8. [ ] https://stackoverflow.com/questions/18688763/why-is-istream-ostream-slow
+  9. [ ] https://twitter.com/rainer_grimm/status/1690980068095315968
+  10. [ ] https://twitter.com/kentingetpaid/status/1690854111023951872
+  11. [ ] https://twitter.com/MaxClerkwell/status/1689102351377092608
+  12. [ ] https://twitter.com/pati_gallardo/status/1680690490310549505
+  13. [ ] https://twitter.com/tsoding/status/1636036276687192068
+  14. [ ] https://twitter.com/kobi_ca/status/1690793773809451008
+  15. [ ] https://twitter.com/kobi_ca/status/1689376109069316096
+  16. [ ] https://twitter.com/lorendsr/status/1688593883419099137
+  17. [ ] https://twitter.com/gregthelaw/status/1686455377427054592
+  18. [ ] https://twitter.com/gregthelaw/status/1684265075152912400
+  19. [ ] https://twitter.com/MathisHammel/status/1680901570156806145
+  20. [ ] https://twitter.com/rainer_grimm/status/1688433934793650176
+  21. [ ] https://twitter.com/rainer_grimm/status/1683373681156685824
+  22. [ ] https://twitter.com/basit_ayantunde/status/1683117659540402178
+  23. [ ] https://github.com/lamarrr
+  24. [ ] https://twitter.com/georgemporter/status/1677378445658173442
+  25. [ ] https://www.amazon.fr/s?k=rainer+grimm&__mk_fr_FR=%C3%85M%C3%85%C5%BD%C3%95%C3%91&crid=143LCTIB8L40B&sprefix=rainer+grimm%2Caps%2C90&ref=nb_sb_noss
+  26. [ ] https://xata.io/blog/postgres-full-text-search-postgres-vs-elasticsearch
+  27. [ ] https://www.developing.dev/
 
 *** TODO optional cpp [0/5]
      - [ ] https://www.youtube.com/watch?v=xMBNCtFV8sI
@@ -202,54 +239,57 @@ https://cestlaz.github.io/stories/emacs/
   10. [ ] https://www.youtube.com/watch?v=MBhJBMYfWUo
   11. [ ] https://www.youtube.com/watch?v=2z-YBsd5snY
 
-*** TODO links [1/30]
+*** TODO links [1/32]
     SCHEDULED: <2023-01-18 Wed>
   1. [ ] magit :: https://www.masteringemacs.org/article/introduction-magit-emacs-mode-git
-  3. [X] https://orgmode.org/worg/org-tutorials/org4beginners.html
-  4. [ ] for GTDs:
+  2. [X] https://orgmode.org/worg/org-tutorials/org4beginners.html
+  3. [ ] for GTDs:
      + http://doc.norang.ca/org-mode.html#HowToUseThisDocument
      + https://orgmode.org/manual/Weekly_002fdaily-agenda.html
      + https://writequit.org/denver-emacs/presentations/2017-04-11-time-clocking-with-org.html
-  5. [ ] org mode linter : https://orgmode.org/manual/Org-Syntax.html
-  6. [ ] babel :
+  4. [ ] org mode linter : https://orgmode.org/manual/Org-Syntax.html
+  5. [ ] babel :
      + https://orgmode.org/worg/org-contrib/babel/intro.html
      + https://orgmode.org/worg/org-contrib/babel/languages/ob-doc-shell.html
      + https://orgmode.org/worg/org-contrib/babel/languages/ob-doc-eshell.html
-  7. [ ] http://www.newartisans.com/2007/08/using-org-mode-as-a-day-planner/
+  6. [ ] http://www.newartisans.com/2007/08/using-org-mode-as-a-day-planner/
      + https://list.orgmode.org/orgmode/m2myw3fa2f.fsf@newartisans.com/
      + https://list.orgmode.org/orgmode/m21wc7dz4r.fsf@newartisans.com/
-  8. [ ] http://members.optusnet.com.au/~charles57/GTD/gtd_workflow.html
+  7. [ ] http://members.optusnet.com.au/~charles57/GTD/gtd_workflow.html
      + supersede of deprecated: http://members.optusnet.com.au/~charles57/GTD/orgmode.html
-  9. [ ] complete tutorial: https://orgmode.org/worg/org-tutorials/index.html
-  10. [ ] 'remember' replaced by 'capture' : http://howardism.org/Technical/Emacs/capturing-intro.html
-      + https://orgmode.org/manual/Capture.html#Capture 
-      + check again https://orgmode.org/manual/Capture-templates.html
-  11. [ ] https://www.emacswiki.org/emacs/GnusTutorial
-  12. [ ] https://sachachua.com/blog/2008/04/wicked-cool-emacs-bbdb-set-up-bbdb/
-  13. [ ] https://emacs.cafe/emacs/orgmode/gtd/2017/06/30/orgmode-gtd.html
-  14. [ ] https://orgmode.org/manual/Include-Files.html
+  8. [ ] complete tutorial: https://orgmode.org/worg/org-tutorials/index.html
+  9. [ ] 'remember' replaced by 'capture' : http://howardism.org/Technical/Emacs/capturing-intro.html
+     + https://orgmode.org/manual/Capture.html#Capture 
+     + check again https://orgmode.org/manual/Capture-templates.html
+  10. [ ] https://www.emacswiki.org/emacs/GnusTutorial
+  11. [ ] https://sachachua.com/blog/2008/04/wicked-cool-emacs-bbdb-set-up-bbdb/
+  12. [ ] https://emacs.cafe/emacs/orgmode/gtd/2017/06/30/orgmode-gtd.html
+  13. [ ] https://orgmode.org/manual/Include-Files.html
       + https://stackoverflow.com/questions/10968034/in-org-mode-how-do-i-include-other-org-files-from-a-main-org-file
       + https://github.com/dangom/org-thesis
       + https://write.as/dani/writing-a-phd-thesis-with-org-mode
-  15. [ ] https://orgmode.org/worg/org-gtd-etc.html
-  16. [ ] https://www.emacswiki.org/emacs/GnusTutorial
-  17. [ ] https://lgfang.github.io/mynotes/emacs/emacs-xml.html
-  18. [ ] https://orgmode.org/org.html#Sparse-Trees
-  19. [ ] https://www.gnu.org/software/emacs/manual/pdf/eintr.pdf
-  20. [ ] https://orgmode.org/worg/org-gtd-etc.html
-  21. [ ] https://orgmode.org/worg/org-tutorials/orgtutorial_dto.html
-  22. [ ] https://orgmode.org/manual/Structure-Editing.html
-  23. [ ] http://doc.norang.ca/org-mode.html#Publishing
+  14. [ ] https://orgmode.org/worg/org-gtd-etc.html
+  15. [ ] https://www.emacswiki.org/emacs/GnusTutorial
+  16. [ ] https://lgfang.github.io/mynotes/emacs/emacs-xml.html
+  17. [ ] https://orgmode.org/org.html#Sparse-Trees
+  18. [ ] https://www.gnu.org/software/emacs/manual/pdf/eintr.pdf
+  19. [ ] https://orgmode.org/worg/org-gtd-etc.html
+  20. [ ] https://orgmode.org/worg/org-tutorials/orgtutorial_dto.html
+  21. [ ] https://orgmode.org/manual/Structure-Editing.html
+  22. [ ] http://doc.norang.ca/org-mode.html#Publishing
       - more details :: https://orgmode.org/manual/Exporting.html
-  24. [ ] https://www.emacswiki.org/emacs/LaTeX
-  25. [ ] https://www.emacswiki.org/emacs/EmacsScreencasts
-  26. [ ] https://github.com/hlissner/doom-emacs
-  27. [ ] https://people.cs.pitt.edu/~milos/courses/cs2740/Lectures/LispTutorial.pdf
-  28. [ ] https://www.emacswiki.org/emacs/LearnEmacsLisp
-  29. [ ] https://opensource.com/article/21/5/learn-lisp
-  30. [ ] https://github.com/jwiegley/use-package
-  31. [ ] https://emacstil.com/til/2021/09/09/fold-heading/
-  32. [ ] https://orgmode.org/worg/org-tutorials/index.html
+  23. [ ] https://www.emacswiki.org/emacs/LaTeX
+  24. [ ] https://www.emacswiki.org/emacs/EmacsScreencasts
+  25. [ ] https://github.com/hlissner/doom-emacs
+  26. [ ] https://people.cs.pitt.edu/~milos/courses/cs2740/Lectures/LispTutorial.pdf
+  27. [ ] https://www.emacswiki.org/emacs/LearnEmacsLisp
+  28. [ ] https://opensource.com/article/21/5/learn-lisp
+  29. [ ] https://github.com/jwiegley/use-package
+  30. [ ] https://emacstil.com/til/2021/09/09/fold-heading/
+  31. [ ] https://orgmode.org/worg/org-tutorials/index.html
+  32. [ ] org mode and android [0/2] ::
+      - [ ] https://www.youtube.com/watch?v=NmcCKUdH9yw
+      - [ ] https://orgmode.org/manual/Org-Mobile.html
 
 *** TODO optional
      - https://www.youtube.com/watch?v=InNlNAoExik
@@ -347,6 +387,15 @@ version 3.22 already installed
 *** TODO optional
      - https://www.localsolver.com/doccenter.html
 
+** Online courses
+  + [ ] linear algebra :: https://www.youtube.com/watch?v=fNk_zzaMoSs&list=PLZHQObOWTQDPD3MizzM2xVFitgF8hE_ab
+  + [ ] statistics :: https://www.youtube.com/watch?v=9FtHB7V14Fo&list=PL5102DFDC6790F3D0
+  + [ ] probability :: https://www.youtube.com/watch?v=KbB0FjPg0mw&list=PL2SOU6wwxB0uwwH80KTQ6ht66KWxbzTIo
+  + [ ] graph theory ::
+    - [ ] https://www.youtube.com/watch?v=RDO6Py97IDg&list=PLUl4u3cNGP62qauV_CpT1zKaGG_Vj5igX
+    - [ ] https://www.youtube.com/watch?v=h9wxtqoa1jY&list=PL6MpDZWD2gTF3mz26HSufmsIO-COKKb5j
+  + [ ] game theory :: https://www.youtube.com/watch?v=nM3rTU927io&list=PL6EF60E1027E1A10B
+
 ** Other learning tasks
 *** TODO git repository backup : https://bruhtus.github.io/posts/git-repo-backup/
 *** TODO Web assembly
@@ -387,12 +436,14 @@ version 3.22 already installed
      - https://openclassrooms.com/fr/courses/7170491-initiez-vous-a-linux?archived-source=43538
 
 *** TODO SC2
-     - https://github.com/N00byEdge/BWEM-community
-     - https://ocw.mit.edu/courses/electrical-engineering-and-computer-science/6-370-the-battlecode-programming-competition-january-iap-2013/syllabus/
-     - http://richoux.github.io/GHOST/
-     - https://github.com/davechurchill/commandcenter/blob/master/src/BaseLocation.cpp
-     - https://github.com/ddumez
-     - https://github.com/SKTBrain/awesome-starcraftAI
+     - [ ] https://github.com/N00byEdge/BWEM-community
+     - [ ] https://ocw.mit.edu/courses/electrical-engineering-and-computer-science/6-370-the-battlecode-programming-competition-january-iap-2013/syllabus/
+     - [ ] http://richoux.github.io/GHOST/
+     - [ ] https://github.com/davechurchill/commandcenter/blob/master/src/BaseLocation.cpp
+     - [ ] https://github.com/ddumez
+     - [ ] https://github.com/SKTBrain/awesome-starcraftAI
+     - [ ] https://arxiv.org/pdf/1902.04043.pdf
+     - [ ] https://www.deepmind.com/blog/alphastar-grandmaster-level-in-starcraft-ii-using-multi-agent-reinforcement-learning
 
 *** TODO multicore programming
      - https://ocw.mit.edu/courses/electrical-engineering-and-computer-science/6-189-multicore-programming-primer-january-iap-2007/syllabus/

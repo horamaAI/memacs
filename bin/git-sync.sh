@@ -95,6 +95,7 @@ time {
       do
         repo=${repo/\/.git/}
         cd ${repo}
+	printf "checking folder ${repo}\n"
         upd=$(git remote update $syncrepo 2>&1 || retval=1)
         [ "x$upd" = "xFetching $syncrepo" ] || {
           log_repo
