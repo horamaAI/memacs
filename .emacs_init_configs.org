@@ -1,6 +1,11 @@
 # -*- mode: org -*-
 #+title: my emacs init file configs but in orgmode
 #+SETUPFILE: ~/set-up-files/basic-setups.org
+#+PROPERTY: header-args :tangle ./emacsinituser.org
+#+LANGUAGE: en
+#+OPTIONS: timestamp:t
+#+DESCRIPTION: My org-mode configs and descriptions (got most of them from Bernt Hansen (http://doc.norang.ca/org-mode.html))
+#+KEYWORDS:  org-mode Emacs organization GTD getting-things-done git
 
 
 * Preliminaries
@@ -349,6 +354,9 @@
     (switch-to-buffer "*scratch*"))  
   #+end_src
 ** Org Mode TODO states, triggers, and project definition
+:PROPERTIES:
+:CUSTOM_ID: TodoKeywords
+:END:
 
 - basic settings for task actions ::
   #+begin_src emacs-lisp
@@ -362,7 +370,7 @@
   ;; customize design of trigger states
   (setq org-todo-keyword-faces
         (quote (("TODO" :foreground "red" :weight bold)
-  	      ("NEXT" :foreground "royal blue" :weight bold)
+                ("NEXT" :foreground "royal blue" :weight bold)
                 ("DONE" :foreground "forest green" :weight bold)
                 ("WAITING" :foreground "orange" :weight bold)
                 ("HOLD" :foreground "magenta" :weight bold)
@@ -3634,7 +3642,7 @@
      (setq org-log-into-drawer t)
      (setq org-log-state-notes-insert-after-drawers nil)
      #+end_src
-   + from ==org-todo-keywords== (see config above), with logging settings, a log entry is added whenever a task moves to any of the following states ::
+   + from ==org-todo-keywords== (configs in section [[#ToDokeywords][Org Mode TODO states, triggers, and project definition]]), with logging settings, a log entry is added whenever a task moves to any of the following states ::
      - to or out of ==DONE== status
      - to ==WAITING== status (with a note) or out of ==WAITING== status
      - to ==HOLD== status
