@@ -1,5 +1,5 @@
 # -*- mode: org -*-
-#+title: my emacs init file configs but in orgmode
+#+TITLE: my emacs init file configs but in orgmode
 #+SETUPFILE: ~/set-up-files/basic-setups.org
 #+PROPERTY: header-args :tangle ./emacsinituser.org
 #+LANGUAGE: en
@@ -13,6 +13,7 @@
     - http://www.newartisans.com/2007/08/using-org-mode-as-a-day-planner/
     - http://doc.norang.ca/org-mode.html
   + first configs ::
+    #+header: :tangle yes
     #+begin_src emacs-lisp
     ;; uncomment when emacs init orgmode version is ready
     ;; (require 'org-install) ;; better than just 'org', and not even needed anymore, only applicable if using older version of Emacs that does not have  org-mode (https://emacs-orgmode.gnu.narkive.com/YIL4iBtt/orgmode-org-install-el-in-emacs-probably-should-be-removed)
@@ -108,6 +109,7 @@
     
     #+end_src
   + other customizations ::
+    #+header: :tangle yes
     #+begin_src emacs-lisp
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     ;; Note: some configs are managed by emacs, so order my change after evaluation
@@ -151,6 +153,7 @@
     
     #+end_src
   + --todo-- fix themes ::
+    #+header: :tangle yes
     #+begin_src emacs-lisp
     ;;;; load darcula theme not dracula
     ;;(use-package darcula-theme
@@ -190,6 +193,7 @@
     #+end_src
 
 - basic org mode settings ::
+  #+header: :tangle yes
   #+begin_src emacs-lisp
   ;; set which extensions will use orgmode: .org, .org_archive, and .txt
   (add-to-list 'auto-mode-alist '("\\.\\(org\\|org_archive\\|txt\\)$" . org-mode))
@@ -243,6 +247,7 @@
   
   #+end_src
 - keybindings (kbd) ::  
+  #+header: :tangle yes
   #+begin_src emacs-lisp
   ; my kbd
   ;; By default Org mode buffers need Font Lock to be turned on. So, for a better experience, these three Org commands ought to be accessible anywhere in Emacs
@@ -359,6 +364,7 @@
 :END:
 
 - basic settings for task actions ::
+  #+header: :tangle yes
   #+begin_src emacs-lisp
   ;; action tasks status
   ;; vertical bar (|) used to separate TODO keywords (states that need action) from DONE states (needs no further action)
@@ -381,6 +387,7 @@
 
 - fast Todo Selection ::
   + allows changing from any todo task state to any other state directly by selecting the appropriate key from the fast todo selection key menu.
+    #+header: :tangle yes
     #+begin_src emacs-lisp
     
     ;; allow for faster task state change, using shortcut defined in 'org-todo-keywords'
@@ -436,6 +443,7 @@
       WAITING --> DONE
       #+end_src
     - task states transition definition ::
+      #+header: :tangle yes
       #+begin_src emacs-lisp    
       ;; "TODO state triggers" (automatically assign tags to tasks on state changes.)
       ;; ex: Moving task to done state removes WAITING and HOLD tags
@@ -492,6 +500,7 @@
   + can clock task in capture mode ::
   + can remove empty lock drawers (marked with logbook) when clocking lines is 0 :: 
     - hence, use mechanism to remove empty logbooks when occuring ::
+      #+header: :tangle yes
       #+begin_src emacs-lisp
       ;; quick clocking in/out of capture mode tasks often takes less than a minute to capture new task details => can leave empty clock drawers in tasks which aren't really useful. If remove clocking lines with 0:00 length, one might end up with empty LOGBOOK (clock drawer). Hence, need to remove those empty LOGBOOK drawers when they occur on clock out
       ;; remove empty LOGBOOK drawers on clock out
@@ -505,6 +514,7 @@
       #+end_src
   + capture templates definitions :: meetings, phone calls, etc.
   + better to have just one file with different subtask, than may files ::    
+    #+header: :tangle yes
     #+begin_src emacs-lisp
     ;; 'capture' for notes (previously known as 'remember')
     ;; not quite helpful to have lot of capture templates, use minimal to capture quicknote and resume current task, then after refile them properly
@@ -562,6 +572,7 @@
 	  3. type: =us.e C-SPC to inv RET=
 	  4. done
       - refile configs ::
+	#+header: :tangle yes
 	#+begin_src emacs-lisp
 	; Targets include this file and any file contributing to the agenda - up to 9 levels deep
 	(setq org-refile-targets (quote ((nil :maxlevel . 9)
@@ -1019,6 +1030,7 @@
 
 *** bh custom agenda views configs + mine, eventually :) (for this, use custom tag/identification ?)
     
+    #+header: :tangle yes
     #+begin_src emacs-lisp
     ;; Do not dim blocked tasks
     (setq org-agenda-dim-blocked-tasks nil)
@@ -1177,6 +1189,7 @@
     - on hold
     - about a hobby or any other task that needs infrequent or flexible work
   + config for ==/ RET== ::
+    #+header: :tangle yes
     #+begin_src emacs-lisp
     ;; filter from agenda block tasks that not need to be worked on urgently
     (defun bh/org-auto-exclude-function (tag)
@@ -1271,6 +1284,7 @@
     - show menu list with prefix for clocking in a task :: ==C-F11==
     - clock history selection buffer :: ==C-u C-c C-x C-i==
   + the set up ::
+    #+header: :tangle yes
     #+begin_src emacs-lisp
      ;;
      ;; Resume clocking task when emacs is restarted
@@ -1459,6 +1473,7 @@
       4. put cursor on the part of the date needing edition (use keyboard not mouse, clicking on the timestamp with the mouse goes back to the agenda for that day)
       5. hit ==S-<up arrow>== or ==S-<down arrow>== keys to change time
   + setup for time editing using discrete minute intervals (no rounding) increments ::
+      #+header: :tangle yes
       #+begin_src emacs-lisp
       ;; makes time editing use discrete minute intervals (no rounding) increments
       (setq org-time-stamp-rounding-minutes (quote (1 1)))
@@ -1468,6 +1483,7 @@
     - can do that by viewing them with log mode on in the agenda
     - can use view in the agenda for this :: ==v c== in the daily agenda and clock gaps and overlaps are identified
   + setup for more accuracy of clock entries, following setting shows 1 minute clocking gaps ::
+    #+header: :tangle yes
     #+begin_src emacs-lisp
     ;; for more accuracy of clock entries, following setting shows 1 minute clocking gaps
     (setq org-agenda-clock-consistency-checks
@@ -1512,6 +1528,7 @@
        - and generates a clock report
   + Agenda clock report summarizing parameters ::
     - by default clock report shows only 5 levels with links to the task. For wider reports than default compact, override value for ':narrow'
+      #+header: :tangle yes
       #+begin_src emacs-lisp
       ;; Agenda clock report parameters
       (setq org-agenda-clockreport-parameter-plist
@@ -1522,6 +1539,7 @@
 ***** Creating a task estimate with column mode
   + bh :: use ==properties== and ==column view== to do project estimates
   + set up for estimates with global column view :: 
+    #+header: :tangle yes
     #+begin_src emacs-lisp
     ; Set default column view headings: Task Effort Clock_Summary
     (setq org-columns-default-format "%80ITEM(Task) %10Effort(Effort){:} %10CLOCKSUM")
@@ -1529,6 +1547,7 @@
     - makes column view show estimated task effort and clocked times side-by-side
     - property ==Effort== records the estimated amount of time a given task will take to complete. Estimate times used by bh are one of: 10mins, 30mins, 1hour, 2hours, ..., 8hours
     - these estimate times are stored for easy use in ==column mode== in the global property ==Effort_ALL== ::
+    #+header: :tangle yes
     #+begin_src emacs-lisp
     ;; creating task estimates (column mode, in global property 'Effort_ALL')
     ; global Effort estimate values : 15 minutes, 30', 45', 1hour, etc.
@@ -1575,6 +1594,7 @@
 ***** Providing progress reports to others
   + to provide latest details on ongoing work, simply generate a log report in the agenda with completed tasks and state changes combined with a clock report for the appropriate time period
   + settings to show closed tasks and state changes in the agenda. Combined with the agenda clock report (==R==), it's possible to quickly generate all of the details required ::
+    #+header: :tangle yes
     #+begin_src emacs-lisp
     ;; Agenda log mode items to display (show closed and state changes by default)
     (setq org-agenda-log-mode-items (quote (closed state)))
@@ -1617,6 +1637,7 @@
   + kbd ::
     - add or remove tag or apply the tag for filtering on the agenda :: ==C-c C-q==
   + set up ::
+    #+header: :tangle yes
     #+begin_src emacs-lisp
     ; Tags with fast selection keys, eg: type O to select tag ORG
     (setq org-tag-alist (quote ((:startgroup)
@@ -1675,11 +1696,12 @@
     - with bh configs ::
       + most of phone calls is handled by capture mode
       + can use special capture template for phone calls combined with a custom function that replaces text with information from ==bbdb3== (bbdb3 is just bbdb version 3.XXX)
-	#+begin_src emacs-lisp
-	;; phone calls configs
-	;; (require 'bbdb) // commented since causing issues, is it deprecated ?
-	;; (require 'bbdb-com) // same
-	#+end_src
+        #+header: :tangle yes
+        #+begin_src emacs-lisp
+        ;; phone calls configs
+        ;; (require 'bbdb) // commented since causing issues, is it deprecated ?
+        ;; (require 'bbdb-com) // same
+        #+end_src
       + the phone call capture template starts the clock as soon as the phone rings, then one is free to lookup and replace the caller in ==bbdb== anytime during or after the call
 	- capture mode starts the clock using the ==:clock-in t== setting in the template
   + process ::
@@ -1691,6 +1713,7 @@
   + set-up ::
     - see "Phone call" section in org-capture-templates
     - see kbd "<f9> p" for 'bh/phone-call
+    #+header: :tangle yes
     #+begin_src emacs-lisp
     ;; Phone capture template handling with BBDB lookup
     ;; Adapted from code by Gregory J. Grubbs
@@ -1732,6 +1755,7 @@
   + once a week, do a review (monday/friday)
   + keep a list to remind yourself what needs to be done for the coming week
   + set-up for weekly review ::
+    #+header: :tangle yes
     #+begin_src emacs-lisp
     ;; to make org-agenda fast
     ;; show only today's date by default, no need to know much details
@@ -1795,11 +1819,13 @@
       + prevents org-mode from trying to show incorrect data if select the default stuck project view with ==F12 #== from the agenda menu
       + customization for stuck projects view is part of bh block agenda, displayed with ==F12 SPC==
       + set-up for disabling default ::
-	#+begin_src emacs-lisp
-	; disable the default org-mode stuck projects agenda view
-	(setq org-stuck-projects (quote ("" nil nil "")))
-	#+end_src
+        #+header: :tangle yes
+        #+begin_src emacs-lisp
+        ; disable the default org-mode stuck projects agenda view
+        (setq org-stuck-projects (quote ("" nil nil "")))
+        #+end_src
     - helper functions defined for projects which are used by agenda views ::          
+      #+header: :tangle yes
       #+begin_src emacs-lisp
       ;; helper functions for projects used by agenda views
       (defun bh/is-project-p ()
@@ -2081,34 +2107,35 @@
       + archiving function does not keep the project trees intact, it archives done state tasks when they are old enough and are removed from the main org file
       + theoretically, it should be possible to reconstruct the original tree from the archive detail properties, but bh never tried, so if you would ever need it, you'll need to sort it out yourself
       + archiving function setup ::
-	#+begin_src emacs-lisp
-	;; archiving set up
-	(setq org-archive-mark-done nil)
-	(setq org-archive-location "%s_archive::* Archived Tasks") ;; will archive in [name_of_org_file]_archive
-
-	(defun bh/skip-non-archivable-tasks ()
-	  "Skip trees that are not available for archiving"
-	  (save-restriction
-	    (widen)
-	    ;; Consider only tasks with done todo headings as archivable candidates
-	    (let ((next-headline (save-excursion (or (outline-next-heading) (point-max))))
-	          (subtree-end (save-excursion (org-end-of-subtree t))))
-	      (if (member (org-get-todo-state) org-todo-keywords-1)
-	          (if (member (org-get-todo-state) org-done-keywords)
-	              (let* ((daynr (string-to-int (format-time-string "%d" (current-time))))
-	                     (a-month-ago (* 60 60 24 (+ daynr 1)))
-	                     (last-month (format-time-string "%Y-%m-" (time-subtract (current-time) (seconds-to-time a-month-ago))))
-	                     (this-month (format-time-string "%Y-%m-" (current-time)))
-	                     (subtree-is-current (save-excursion
-	                                           (forward-line 1)
-	                                           (and (< (point) subtree-end)
-	                                                (re-search-forward (concat last-month "\\|" this-month) subtree-end t)))))
-	                (if subtree-is-current
-	                    subtree-end ; Has a date in this month or last month, skip it
-	                  nil))  ; available to archive
-	            (or subtree-end (point-max)))
-	        next-headline))))
-	#+end_src
+        #+header: :tangle yes
+        #+begin_src emacs-lisp
+        ;; archiving set up
+        (setq org-archive-mark-done nil)
+        (setq org-archive-location "%s_archive::* Archived Tasks") ;; will archive in [name_of_org_file]_archive
+        
+        (defun bh/skip-non-archivable-tasks ()
+          "Skip trees that are not available for archiving"
+          (save-restriction
+            (widen)
+            ;; Consider only tasks with done todo headings as archivable candidates
+            (let ((next-headline (save-excursion (or (outline-next-heading) (point-max))))
+                  (subtree-end (save-excursion (org-end-of-subtree t))))
+              (if (member (org-get-todo-state) org-todo-keywords-1)
+                  (if (member (org-get-todo-state) org-done-keywords)
+                      (let* ((daynr (string-to-int (format-time-string "%d" (current-time))))
+                             (a-month-ago (* 60 60 24 (+ daynr 1)))
+                             (last-month (format-time-string "%Y-%m-" (time-subtract (current-time) (seconds-to-time a-month-ago))))
+                             (this-month (format-time-string "%Y-%m-" (current-time)))
+                             (subtree-is-current (save-excursion
+                                                   (forward-line 1)
+                                                   (and (< (point) subtree-end)
+                                                        (re-search-forward (concat last-month "\\|" this-month) subtree-end t)))))
+                        (if subtree-is-current
+                            subtree-end ; Has a date in this month or last month, skip it
+                          nil))  ; available to archive
+                    (or subtree-end (point-max)))
+                next-headline))))
+        #+end_src
 
 *** when to archive
   + archiving *monthly* works well, as with procedure given previously
@@ -2120,6 +2147,7 @@
   + org-mode can export to a variety of publishing formats including (but not limited to) ::
     - Latex, ASCII (plain text - but not the original org-mode file), HTML, LaTeX, Docbook (enables getting to lots of other formats like ODF, XML, etc), PDF (via LaTeX or Docbook), iCal (iCalendar), etc.
   + /new/ exporter basic configs :: /new/ as it is an additional layer on top of default org-mode exporters
+    #+header: :tangle yes
     #+begin_src emacs-lisp
     ;; for using letters as delimiters on list of items
     (setq org-alphabetical-lists t)
@@ -2153,6 +2181,7 @@
   + org-babel :: makes it easy to generate decent graphics using external packages like ditaa, graphviz, PlantUML, and others
   + prerequisites :: ==graphviz== and ==PlantUML== packages are need on the system
   + org-babel setup ::
+    #+header: :tangle yes
     #+begin_src emacs-lisp
     ; org-babel setups :: makes it easy to generate decent graphics using external packages like ditaa, graphviz, PlantUML, and others
     (setq org-ditaa-jar-path "~/Documents/repos/opt/service/web/lib/ditaa0_10.jar")
@@ -2203,6 +2232,7 @@
     3. build the pictures :: ==C-c C-c==
     4. can toggle display of inline images with :: ==C-c C-x C-v==
   + better to disable default startup with inline images since when accessing org-files from an SSH session with no X (X window system, eg: Android phone) it fails to display the images and breaks ::
+    #+header: :tangle yes
     #+begin_src emacs-lisp
     ;; Don't enable this because it breaks access to emacs from my Android phone
     (setq org-startup-with-inline-images nil)
@@ -2421,6 +2451,7 @@
   + in bh config, can use emporary publishing site for testing exports and validation :: see ==tmp== site which takes files from ==/tmp/publish== and exports them to a website publishing directory
     - makes it easy to try new throw-away things on a live server ::
   + setup for publishing project ::
+    #+header: :tangle yes
     #+begin_src emacs-lisp
     ; experimenting with docbook exports - not finished
     (setq org-export-docbook-xsl-fo-proc-command "fop %s %s")
@@ -2656,6 +2687,7 @@
   + collection of export and publishing related settings for latex,  HTML without XML header, and others
 **** HTML without XML header
   + setup ::
+    #+header: :tangle yes
     #+begin_src emacs-lisp
     ; remove xml header line for HTML exports
     ; the xml line confuses Open Office when opening the HTML to convert to ODT
@@ -2665,6 +2697,7 @@
     #+end_src
 **** Latex
   + setup ::
+    #+header: :tangle yes
     #+begin_src emacs-lisp
     ; for fontified listings from source blocks
     (setq org-latex-listings t)
@@ -2673,6 +2706,7 @@
   + setting to allows #+BIND: variables to be set on export without confirmation ::
     - rare usecase :: where needed to override some org-mode variable for export, the settings allows exporting the document without a prompt
   + setup ::
+    #+header: :tangle yes
     #+begin_src emacs-lisp
     ; to allow #+BIND: variables to be set on export without confirmation
     (setq org-export-allow-BIND t)
@@ -2684,6 +2718,7 @@
   + everytime the agenda is displayed (try to do it as most as possible) :: the appointment list is erased and rebuilt from the current agenda details for today
     - hence :: everytime something that is time related is rescheduled (tasks is added or removed), the *appointment list is automatically updated* the next time the agenda is looked up
   + reminder setup ::
+    #+header: :tangle yes
     #+begin_src emacs-lisp
     ; Erase all reminders and rebuilt reminders for today from the agenda
     (defun bh/org-agenda-to-appt ()
@@ -2735,6 +2770,7 @@
     - for example, with bh configs, when using abbrev-mode in notes, when typing ==i== followed by the initials of people, it gets expanded to their complete name in notes
       + so, when writing ==imm==, it gets automatically expanded to ==Mickey Mouse== as being typed
   + setup :: 
+    #+header: :tangle yes
     #+begin_src emacs-lisp
     ;; Enable abbrev-mode
     (add-hook 'org-mode-hook (lambda () (abbrev-mode 1)))
@@ -3007,11 +3043,13 @@
      - ==f5== (or the ==T== speed key) basically does a ==org-narrow-to-subtree== and ==C-c / t== combination leaving the buffer in a narrowed state
      - ==f5== (or some other widening speed key like ==U==, ==W==, ==F==) widens back to normal view
      - use of ==org-show-entry-below== to force showing the next headline, and prevent too many headlines from being folded together when working with collapsed trees ::
+       #+header: :tangle yes
        #+begin_src emacs-lisp
        ; force showing the next headline, and prevent too many headlines from being folded together when working with collapsed trees (see section 'Focusing On Current Work')
        (setq org-show-entry-below (quote ((default))))
        #+end_src
    + setup ::
+     #+header: :tangle yes
      #+begin_src emacs-lisp
      ; setups for 'Focusing On Current Work'
      ; (global-set-key (kbd "<f5>") 'bh/org-todo) ;; already set above
@@ -3196,6 +3234,7 @@
        + ==W== removes the restriction :: widens the buffer
    + bh added key bindings for the agenda to allow using ==C-c C-x <== in the agenda to set the restriction lock to the current task directly ::
      - that is done with the following setup ::
+       #+header: :tangle yes
        #+begin_src emacs-lisp
        ; setups for 'Limiting the agenda to a subtree'
        (add-hook 'org-agenda-mode-hook
@@ -3221,6 +3260,7 @@
                    (org-agenda-set-restriction-lock restriction-type))))))))
        #+end_src
    + set restrictions highlighting to only affect the headline (headings) and not the entire body of the agenda restriction ::
+     #+header: :tangle yes
      #+begin_src emacs-lisp
      ;; Limit restriction lock highlighting to the headline only
      (setq org-agenda-restriction-lock-highlight-subtree nil)
@@ -3241,6 +3281,7 @@
    + keeping the current agenda line highlighted helps to know what task will be affected by commands issued in the agenda, and avoid acting on the wrong task by mistake
    + settings also make clock modeline time shown with a reverse background
    + setups ::
+     #+header: :tangle yes
      #+begin_src emacs-lisp
      ;; Always highlight the current agenda line
      (add-hook 'org-agenda-mode-hook
@@ -3264,6 +3305,7 @@
      - with bh configs, the todo lists include _everything_ so one can just search for a needed item and move on
    + the block agenda prevents display of tasks with deadlines or scheduled dates in the future, so those can safely be ignored until appropriate time
    + setup :: 
+     #+header: :tangle yes
      #+begin_src emacs-lisp
      ;; Keep tasks with dates on the global todo lists
      (setq org-agenda-todo-ignore-with-date nil)
@@ -3289,6 +3331,7 @@
 
 **** Use the Diary for Holidays and Appointments
    + remove use of emacs diary (can unset it if need of a diary), and set a 'diary' file that really contains important dates (holidays, appointments, etc.) ::
+     #+header: :tangle yes
      #+begin_src emacs-lisp
      ; setups for 'Use the Diary for Holidays and Appointments'
      (setq org-agenda-include-diary nil)
@@ -3316,6 +3359,7 @@
             ...
 	 #+end_src
    + setting for any time strings in the heading to be showned in the agenda ::
+     #+header: :tangle yes
      #+begin_src emacs-lisp
      ; for any time strings in the heading to be showned in the agenda
      (setq org-agenda-insert-diary-extract-time t)
@@ -3324,6 +3368,7 @@
 **** Set searches to include archive files
    + tip : keep a single archive file for each org-mode project files :: allows searching the current file and the archive when need to dig up old information from the archives
    + setup ::
+     #+header: :tangle yes
      #+begin_src emacs-lisp
      ;; Include agenda archive files when searching for things
      (setq org-agenda-text-search-extra-files (quote (agenda-archives)))
@@ -3347,6 +3392,7 @@
      7. late scheduled items
      8. habits
    + setup ::
+     #+header: :tangle yes
      #+begin_src emacs-lisp
      ;; Show all future entries for repeating tasks
      (setq org-agenda-repeating-timestamp-show-all t)
@@ -3475,6 +3521,7 @@
      - ==F12 a==  for the daily/weekly agenda ::
      - ==F12 SPC== for a project management view ::
    + setup ::
+     #+header: :tangle yes
      #+begin_src emacs-lisp
      ;; Use sticky agenda's so they persist
      (setq org-agenda-sticky t)
@@ -3484,6 +3531,7 @@
    + checklists :: great for repeated tasks with lots of things that need to be done
      - for repeating tasks, instead of manually resetting the checklists when the task is ==DONE==, ==org-checklist== can automatically uncheck the boxes when the task is marked done ::
    + setup ::
+     #+header: :tangle yes
      #+begin_src emacs-lisp
      ; setup for handling checklists
      ; load org-checklist.el from org-contrib
@@ -3511,6 +3559,7 @@
    + to enforce entries to not get ==DONE== while some tasks are in blocked state ::
      - plus, if an entry has a property ==ORDERED==, each of its TODO children is *blocked* until *all earlier siblings* are marked as done
    + enable tasks blocking ::
+     #+header: :tangle yes
      #+begin_src emacs-lisp
      ; enable tasks blocking
      (setq org-enforce-todo-dependencies t)
@@ -3543,6 +3592,7 @@
 **** org-indent mode
    + org-indent removes indentation in org-file on lines that are not headlines, and displays prefixed them with virtual space as if they were indented to vertically align with the headline text
    + turn on ==org-indent== at startup ::
+     #+header: :tangle yes
      #+begin_src emacs-lisp
      ; turn on ==org-indent== at startup
      (setq org-startup-indented t)
@@ -3550,11 +3600,13 @@
 
 **** Handling blank lines
    + automatically *hide* blank lines between headlines while (un)folding ((un)collapse) headlines (with ==TAB==) ::
+     #+header: :tangle yes
      #+begin_src emacs-lisp
      ; automatically *hide* blank lines between headlines while (un)folding ((un)collapse) headlines (with ==TAB==)
      (setq org-cycle-separator-lines 0)
      #+end_src
    + prevent creating blank lines before headings, but allow list items to adapt to existing blank lines around the items ::
+     #+header: :tangle yes
      #+begin_src emacs-lisp
      ; prevent creating blank lines before headings, but allow list items to adapt to existing blank lines around the items
      (setq org-blank-before-new-entry (quote ((heading)
@@ -3563,6 +3615,7 @@
 
 **** Adding new tasks quickly without disturbing the current task content
    + fast insertion of new headings in a project (possibly with a ==TODO== keyword) with :: ==C-RET==, ==C-S-RET==, ==M-RET==, and ==M-S-RET== :
+     #+header: :tangle yes
      #+begin_src emacs-lisp
      ; fast insertion of new headings in a project (possibly with a ==TODO== keyword) with :: ==C-RET==, ==C-S-RET==, ==M-RET==, and ==M-S-RET==
      (setq org-insert-heading-respect-content nil)
@@ -3580,6 +3633,7 @@
    + changing tasks states can also prompt for a note (e.g. moving to ==WAITING== prompts for a note, then enter reason why task is waiting) ::
      - these notes are saved at the top of the task so *unfolding the task shows the note first* :: 
    + setup ::
+     #+header: :tangle yes
      #+begin_src emacs-lisp
      ; so that unfolding the task shows the notes first
      (setq org-reverse-note-order nil)
@@ -3592,6 +3646,7 @@
      - org-mode show the hierarchy of tasks above the matched entries and also the immediately following sibling task (but not all siblings) ::
        + advantage :: compact display, and mitigates accidental errors by cutting too much data from org file with ==C-k== for example (cutting folded data (including the …) cuts text, including following hidden uncollapsed subtrees)
      - setup ::
+       #+header: :tangle yes
        #+begin_src emacs-lisp
        (setq org-show-following-heading t)
        (setq org-show-hierarchy-above t)
@@ -3607,14 +3662,16 @@
 	 - can use ==M-m== or ==C-a C-a== to get to the beginning of the line so the speed commands work
 	 - and ==C-a== to give easy access to the beginning of the heading text when needed
        + setups ::
-	 #+begin_src emacs-lisp
-	 (setq org-special-ctrl-a/e t)
-	 (setq org-special-ctrl-k t)
-	 (setq org-yank-adjusted-subtrees t)
-	 #+end_src
+         #+header: :tangle yes
+         #+begin_src emacs-lisp
+         (setq org-special-ctrl-a/e t)
+         (setq org-special-ctrl-k t)
+         (setq org-yank-adjusted-subtrees t)
+         #+end_src
 
 *** Deadlines and Agenda Visibility
    + set as default to see deadlines and due dates in the agenda 30 days before the due date :: to prepare for the task so that it is completed on or before the due date
+     #+header: :tangle yes
      #+begin_src emacs-lisp
      (setq org-deadline-warning-days 30)
      #+end_src
@@ -3632,6 +3689,7 @@
 
 *** Logging
    + logging setup ::
+     #+header: :tangle yes
      #+begin_src emacs-lisp
      ;; my version
      ;; keep track of when a todo item was done => when toggled to done, a line ‘CLOSED: [timestamp]’ is inserted just after the headline
@@ -3671,6 +3729,7 @@
      - alarm sets off + message stating to be done working on this task :: 
    + if one switches task, and try to clock in on clock limited task again, the sound goes off each and every time the task is clocked on :: incentive to work on something else :-)
    + set up alarm for when effort limit is passed (will show a message too) ::
+     #+header: :tangle yes
      #+begin_src emacs-lisp
      (setq org-clock-sound "/usr/local/lib/mechanicus-Children_of_the_Omnissiah.mp3")
      #+end_src
@@ -3702,6 +3761,7 @@
    + kbd ::
      - hide/display habits on the agenda :: ==K==
    + settings for habit tracking :: 
+     #+header: :tangle yes
      #+begin_src emacs-lisp
      ; Enable habit tracking (and a bunch of other modules)
      (setq org-modules (quote (org-bbdb
@@ -3730,6 +3790,7 @@
        + and if kept Emacs running for days at a time, habits display don't come back
      - but, to make sure that habits are displayed daily, one can have settings to redisplay the habits in the agenda each day
      - eg, the following turns the habit display on again at 6AM each morning ::
+       #+header: :tangle yes
        #+begin_src emacs-lisp
        (run-at-time "06:00" 86400 '(lambda () (setq org-habit-show-habits t)))
        #+end_src
@@ -3754,6 +3815,7 @@
    + goal :: minimize the number of frames opened when opening links
      - or in order words, to replace the current window with the new content
    + setup to open link into the same window ::
+     #+header: :tangle yes
      #+begin_src emacs-lisp
      (setq org-link-frame-setup (quote ((vm . vm-visit-folder)
                                     (gnus . org-gnus-no-new-news)
@@ -3782,6 +3844,7 @@
        + saves step 4. above
        + auto revert will not revert a buffer if it has unsaved changes, or if its file on disk is deleted or renamed
    + activate setup :: 
+     #+header: :tangle yes
      #+begin_src emacs-lisp
      (global-auto-revert-mode t)
      #+end_src
@@ -3797,6 +3860,7 @@
        + to use a different tag, can customize the ==org-crypt-tag-matcher== setting
    + setups ::
      - source :: official org-mode documentation (https://orgmode.org/manual/Org-Crypt.html)
+       #+header: :tangle yes
        #+begin_src emacs-lisp
        (require 'org-crypt)
        (org-crypt-use-before-save-magic)
@@ -3817,6 +3881,7 @@
        ;; # -*- buffer-auto-save-file-name: nil; -*-
        #+end_src
      - bh config ::
+       #+header: :tangle yes
        #+begin_src emacs-lisp
        ; (require 'org-crypt)
       
@@ -3857,6 +3922,7 @@
        + hence the utility seen previously of keep decrypted entries as minimal as possible, so that when autosaving the temporary file is also encrypted
        + when need a clear encrypted entry lookup, do it and directly save it so that it is encrypted again
    + setup to disable ==org-crypt-disable-auto-save== :: but *careful*, autosave will still be active
+     #+header: :tangle yes
      #+begin_src emacs-lisp
      (setq org-crypt-disable-auto-save nil)
      #+end_src
@@ -3920,6 +3986,7 @@
       (">" org-agenda-remove-restriction-lock))
      #+end_src
    + setup ::
+     #+header: :tangle yes
      #+begin_src emacs-lisp
      (setq org-use-speed-commands t)
      (setq org-speed-commands-user (quote (("0" . ignore)
@@ -3987,6 +4054,7 @@
    + need to set bulk of the setup in the target application (Firefox in this case), so that ==C-c c== on a page in Firefox triggers the org-protocol capture template with details of the page currently being viewed (in firefox) ::
      - can set up ==org-protocol== in firefox as described in  [[http://orgmode.org/worg/org-contrib/org-protocol.php#sec-9][Keybindings for Firefox]]
    + org-mode setup for org-protocol is simple, it enables org-protocol and creates a single org-protocol capture template as described in [[#CaptureTemplates][Capture Templates]] ::
+     #+header: :tangle yes
      #+begin_src emacs-lisp
      (require 'org-protocol)
      #+end_src
@@ -3997,6 +4065,7 @@
      - settings helps to expand a snippet but stay on the same line
      - perfect way to for replacing short strings or initials with full names for people during meeting notes
    + thanks to ==abbrev-mode-==, no longer need to fuss :: when saving a file in Emacs, add a final newline that fits better with the source code projects that is usually worked on ::
+     #+header: :tangle yes
      #+begin_src emacs-lisp
      (setq require-final-newline t)
      #+end_src
@@ -4017,6 +4086,7 @@
    + kbd ::
      - invoke insert inactive timestamp function on demand and anywhere :: ==f9 T==
    + setup for timestamp hook insertion ::
+     #+header: :tangle yes
      #+begin_src emacs-lisp
      (defvar bh/insert-inactive-timestamp t)
     
@@ -4040,10 +4110,12 @@
      #+end_src
    + setup for hotkeys ::
      - invoke insert inactive timestamp function on demand and anywhere :: ==f9 T==
+       #+header: :tangle yes
        #+begin_src emacs-lisp
        (global-set-key (kbd "<f9> t") 'bh/insert-inactive-timestamp)
        #+end_src
    + setup to prevent the timestamps from being exported in documents ::
+     #+header: :tangle yes
      #+begin_src emacs-lisp
      (setq org-export-with-timestamps nil)
      #+end_src
@@ -4051,6 +4123,7 @@
 *** Highlight clock when running overtime
   + current clocking task is displayed on the ==modeline== (which appears at the bottom of every Emacs internal window, and displays as much infos about the buffer as possible, such as buffer name being used, it's major/minor mode, the current cursor line, etc., see [[https://www.emacswiki.org/emacs/ModeLine][modeline]] for more details)
   + if current task has an estimated time and it is run over the limit, make this stand out on the modeline by changing the background to red as follows ::
+    #+header: :tangle yes
     #+begin_src emacs-lisp
     (custom-set-faces
       ;; custom-set-faces was added by Custom.
@@ -4117,6 +4190,7 @@
       + just highlighting the region for the notes will turn tabs into spaces and highlights todo items
       + the resulting notes are in the kill buffer ready to paste to another application
     - setup ::
+      #+header: :tangle yes
       #+begin_src emacs-lisp
       (defun bh/prepare-meeting-notes ()
         "Prepare meeting notes for email
@@ -4147,6 +4221,7 @@
 	- when called with a ==C-u== prefix argument, previous highlights are kept, so several calls to this command can be stacked
   + setups ::
     - setting to keep the highlighted results of the search even after modifying the text ::
+      #+header: :tangle yes
       #+begin_src emacs-lisp
       ; setting this variable to t (default config) will automatically remove the yellow highlights as soon as the buffer is modified
       ;(setq org-remove-highlights-with-change nil)
@@ -4158,6 +4233,7 @@
 
 *** Getting up-to-date org-mode info documentation
   + get up-to-date documentation from git before the regular (out of date) system versions ::
+    #+header: :tangle yes
     #+begin_src emacs-lisp
     (add-to-list 'Info-default-directory-list "~/Documents/repos/opt/org-mode/doc")
     #+end_src
@@ -4169,6 +4245,7 @@
     - can use ==b== to go back relatively in the agenda
     - one could make org-mode prefer the current year when entering dates with ==(setq org-read-date-prefer-future nil)==, but better to use =='time== so times before now (with no date specified) will default to tomorrow
   + setup ::
+    #+header: :tangle yes
     #+begin_src emacs-lisp
     (setq org-read-date-prefer-future 'time)
     #+end_src
@@ -4178,6 +4255,7 @@
 *** Remove indentation on agenda tags view
   + it's great to see all matching tasks (including sublevels) when one is doing an agenda tag search (==F12 m==)
   + to make all of the matched headings for a tag show at the same level in the agenda, set the following variable ::
+    #+header: :tangle yes
     #+begin_src emacs-lisp
     (setq org-tags-match-list-sublevels t)
     #+end_src
@@ -4187,6 +4265,7 @@
   + the current filter is displayed in the modeline as =={+SomeTag}== so one can easily see what filter currently applies to the agenda view
   + can use the feature for example with ==FILETAGS== to limit the displayed results to a single client or context
   + enable persistent filters ::
+    #+header: :tangle yes
     #+begin_src emacs-lisp
     (setq org-agenda-persistent-filter t)
     #+end_src
@@ -4201,6 +4280,7 @@
 
 *** Mail links open compose-mail
   + make org-mode open ==mailto:== links using compose-mail ::
+    #+header: :tangle yes
     #+begin_src emacs-lisp
     (setq org-link-mailto-program (quote (compose-mail "%a" "%s")))
     #+end_src
@@ -4219,6 +4299,7 @@
   + commands are displayed in an Ido completion buffer, ordered by relevance
   + the 7 most recently executed commands come first, the rest are sorted by frequency of use, command length, and in alphabetical order
   + setup ::
+    #+header: :tangle yes
     #+begin_src emacs-lisp
     (add-to-list 'load-path (expand-file-name "~/.emacs.d"))
     ; auto-start Smex every time one opens Emacs
@@ -4240,6 +4321,7 @@
   + Emacs bookmarks can be used for fast navigation to save (bookmark) a location, and easily retrieve it
     - usecase :: when working on a long checklist, it's convenient to set a bookmark on the next item to check, then work on it, and return to the checkbox to mark it done
   + setups ::
+    #+header: :tangle yes
     #+begin_src emacs-lisp
     ;; Bookmark handling
     (global-set-key (kbd "<C-f6>") '(lambda () (interactive) (bookmark-set "SAVED")))
@@ -4254,6 +4336,7 @@
   + org-mime :: approximates a WYSiWYG HTML mail editor from within Emacs, and can be useful for sending tables, fontified source code, and inline images in email
   + bh added keybinding ==C-c M-o== in ==org-mode-hook== to generate mail from an org-mode subtree (see ==bh/mail-subtree==)
   + setup ::
+    #+header: :tangle yes
     #+begin_src emacs-lisp
     (require 'org-mime)
     #+end_src
@@ -4262,6 +4345,7 @@
 
 *** Remove multiple state change log details from the agenda (skip multiple timestamps for the same entry in the agenda view)
   + skip multiple timestamps for the same entry in the agenda view ::
+    #+header: :tangle yes
     #+begin_src emacs-lisp
     (setq org-agenda-skip-additional-timestamps-same-entry t)
     #+end_src
@@ -4331,6 +4415,7 @@
     - even more (Calc and Elisp formulas, debugging formulas, etc.) in :: https://orgmode.org/worg/org-tutorials/org-spreadsheet-intro.html
   + bh config ::
     - drop the old A3/B4 style references from tables when editing ::
+      #+header: :tangle yes
       #+begin_src emacs-lisp
       (setq org-table-use-standard-references (quote from))
       #+end_src
@@ -4358,6 +4443,7 @@
 
 *** Use system settings for file-application selection (set system as the one opening some applications, eg: pdf, html, etc.)
   + set consistent applications for opening tasks by setting the ==org-file-apps== variable ::
+    #+header: :tangle yes
     #+begin_src emacs-lisp
     (setq org-file-apps (quote ((auto-mode . emacs)
                                 ("\\.mm\\'" . system)
@@ -4369,6 +4455,7 @@
 
 *** Use current window for the agenda
   + setup ::
+    #+header: :tangle yes
     #+begin_src emacs-lisp
     ; Overwrite the current window with the agenda
     (setq org-agenda-window-setup 'current-window)
@@ -4379,6 +4466,7 @@
     - useful when one has repeating tasks with lots of sublists with checkboxes
     - can then fold the completed list entries and focus on what is remaining easily
   + setup ::
+    #+header: :tangle yes
     #+begin_src emacs-lisp
     (setq org-cycle-include-plain-lists t)
     #+end_src
@@ -4390,6 +4478,7 @@
     - source window rendered with syntax highlighting in the native mode
     - setting also shows the syntax highlighting when viewing in the org-mode buffer
   + setup ::
+    #+header: :tangle yes
     #+begin_src emacs-lisp
     (setq org-src-fontify-natively t)
     #+end_src
@@ -4403,6 +4492,7 @@
     | ==< e TAB==  | #+begin_example ... #+end_example |
   + can even add a block for saving email text which are copied from MS Outlook in order to have context associated with my org-mode tasks
   + setup (makes the blocks lowercase instead of the default upper case in org-mode) ::
+    #+header: :tangle yes
     #+begin_src emacs-lisp
     (setq org-structure-template-alist
           (quote (("s" "#+begin_src ?\n\n#+end_src" "<src lang=\"?\">\n\n</src>")
@@ -4426,21 +4516,22 @@
       + bh config ::
 	- add function to todo state change hook and clock in hook :: so that any parent tasks marked ==NEXT== turn from ==NEXT== to ==TODO== since they are now projects and not tasks
 	- setup ::
-	  #+begin_src emacs-lisp
-	  (defun bh/mark-next-parent-tasks-todo ()
-	    "Visit each parent task and change NEXT states to TODO"
-	    (let ((mystate (or (and (fboundp 'org-state)
-	                            state)
-	                       (nth 2 (org-heading-components)))))
-	      (when mystate
-	        (save-excursion
-	          (while (org-up-heading-safe)
-	            (when (member (nth 2 (org-heading-components)) (list "NEXT"))
-	              (org-todo "TODO")))))))
-	  
-	  (add-hook 'org-after-todo-state-change-hook 'bh/mark-next-parent-tasks-todo 'append)
-	  (add-hook 'org-clock-in-hook 'bh/mark-next-parent-tasks-todo 'append)
-	  #+end_src
+          #+header: :tangle yes
+          #+begin_src emacs-lisp
+          (defun bh/mark-next-parent-tasks-todo ()
+            "Visit each parent task and change NEXT states to TODO"
+            (let ((mystate (or (and (fboundp 'org-state)
+                                    state)
+                               (nth 2 (org-heading-components)))))
+              (when mystate
+                (save-excursion
+                  (while (org-up-heading-safe)
+                    (when (member (nth 2 (org-heading-components)) (list "NEXT"))
+                      (org-todo "TODO")))))))
+          
+          (add-hook 'org-after-todo-state-change-hook 'bh/mark-next-parent-tasks-todo 'append)
+          (add-hook 'org-clock-in-hook 'bh/mark-next-parent-tasks-todo 'append)
+          #+end_src
 
 *** Using orgstruct mode for mail (to aid in creating structured email messages)
   + ==orgstruct++-mode== is enabled in Gnus message buffers to aid in creating structured email messages
@@ -4448,6 +4539,7 @@
       + https://emacs.stackexchange.com/questions/47003/the-orgstruct-mode-seems-to-be-gone-from-the-org-plus-contrib
       + https://orgmode.org/worg/org-tutorials/org-outside-org.html (One possibility to enjoy Org-mode's structure-editing and list-formatting facilities outside Org-mode buffers is *Orgstruct minor mode?*)
   + setup ::
+    #+header: :tangle yes
     #+begin_src emacs-lisp
     (add-hook 'message-mode-hook 'orgstruct++-mode 'append)
     (add-hook 'message-mode-hook 'turn-on-auto-fill 'append)
@@ -4462,6 +4554,7 @@
 *** Reduce spelling errors with flyspell mode
   + ==flyspell-mode== is enabled for almost everything to help prevent creating documents with spelling errors
   + setup ::
+    #+header: :tangle yes
     #+begin_src emacs-lisp
     ;; flyspell mode for spell checking everywhere
     (add-hook 'org-mode-hook 'turn-on-flyspell 'append)
@@ -4502,6 +4595,7 @@
     - change the default block indentation so that it is not indented from the text in the org file ::
       + this allows editing source blocks in place without requiring use of ==C-c '== so that code lines up correctly
     - setup ::
+      #+header: :tangle yes
       #+begin_src emacs-lisp
       (setq org-src-preserve-indentation nil)
       (setq org-edit-src-content-indentation 0)
@@ -4514,6 +4608,7 @@
   + invisible edits (and undo's) can be hard to deal with, so can set invisible text to not be edited
     - ==C-c C-r== (==org-reveal==) will display where the point is if it is buried in invisible text to allow editing again
   + setup ::
+    #+header: :tangle yes
     #+begin_src emacs-lisp
     (setq org-catch-invisible-edits 'error)
     #+end_src
@@ -4526,6 +4621,7 @@
     - one could need to change the settings, for example, at work one can think of a day as 6 hours of work (the rest of the time is lost in meetings and other overhead on average)
     - so displaying clock durations in days would not make sense to many
   + setup to display clock durations in hours and minutes (with ==C-c C-x C-d==) ::
+    #+header: :tangle yes
     #+begin_src emacs-lisp
     (setq org-time-clocksum-format
           '(:hours "%d" :require-hours t :minutes ":%02d" :require-minutes t))
@@ -4537,6 +4633,7 @@
   + setup to create a unique task ID for the heading in the ==PROPERTY== drawer (with ==C-c l==)
     - allows to move the task around arbitrarily in org files and the link to it will still work
   + setup ::
+    #+header: :tangle yes
     #+begin_src emacs-lisp
     (setq org-id-link-to-org-use-id 'create-if-interactive-and-no-custom-id)
     #+end_src
@@ -4550,6 +4647,7 @@
 
 *** Automatic periodic Commits
   + emacs setup for saving org buffers every 6 hours ::
+    #+header: :tangle yes
     #+begin_src emacs-lisp
     (run-at-time "00:59" 21600 'org-save-all-org-buffers)
     #+end_src
@@ -4726,6 +4824,7 @@
 ** Miscellaneous
 *** Use utf-8 as default coding system
   + use utf-8 as the default coding system for all of org files ::
+    #+header: :tangle yes
     #+begin_src emacs-lisp
     ; use utf-8 as the default coding system for all of org files
     (setq org-export-coding-system 'utf-8)
@@ -4738,6 +4837,7 @@
    + notes ::
      - great for getting *large amounts* of data related to the project out of the org-mode files
      - set up org-mode to generate unique attachment IDs with ==org-id-method== ::
+       #+header: :tangle yes
        #+begin_src emacs-lisp
        (setq org-id-method (quote uuidgen))
        #+end_src
@@ -4770,6 +4870,7 @@
 *** Exporting Tables to CSV (comma delimited values)
    + create csv by exporting org-mode tables as comma delimited values (can also export as TAB delimited values)
    + set default value to csv ::
+     #+header: :tangle yes
      #+begin_src emacs-lisp
      (setq org-table-export-default-format "orgtbl-to-csv")
      #+end_src
@@ -4779,6 +4880,7 @@
 
 *** Refrain from Opening a link, and insert a new line instead ("Return follows links")
   + following setting makes ==RET== insert a new line instead of opening links ::
+    #+header: :tangle yes
     #+begin_src emacs-lisp
     ; bh config : prefers to follow link instead of adding new line
     ; personally, prefer to still open link with old ==C-c C-o==
@@ -4803,6 +4905,7 @@
     | a.                  | -                         |
     | b.                  | -                         |
   + setup ::
+    #+header: :tangle yes
     #+begin_src emacs-lisp
     (setq org-list-demote-modify-bullet (quote (("+" . "-")
                                                 ("*" . "-")
@@ -4821,6 +4924,7 @@
 *** Startup in folded view
   + open org files in folded view by default
   + setup ::
+    #+header: :tangle yes
     #+begin_src emacs-lisp
     ; startup org-mode files in folded view
     (setq org-startup-folded t)
@@ -4834,6 +4938,7 @@
     b. item two
     #+end_src
   + setup ::
+    #+header: :tangle yes
     #+begin_src emacs-lisp
     ; allow character letters as bullet in item lists
     (setq org-alphabetical-lists t)
@@ -4842,6 +4947,7 @@
 
 *** Delete IDs when cloning
   + setup ::
+    #+header: :tangle yes
     #+begin_src emacs-lisp
     ; delete IDs when cloning
     (setq org-clone-delete-id t)
@@ -4855,6 +4961,7 @@
 *** Strike-through emphasis
   + strike-through emphasis can be unreadable and tends to only show up when pasting data from other files into org-mode
   + setup to remove the strike-through completely which can be a lot nicer ::
+    #+header: :tangle yes
     #+begin_src emacs-lisp
     (setq org-emphasis-alist (quote (("*" bold "<b>" "</b>")
                                      ("/" italic "<i>" "</i>")
@@ -4865,6 +4972,7 @@
 
 *** Subscripts and Superscripts
   + if you don't need document that need subscripts and superscript support, you can disable handling of ==_== and ==^== for subscript and superscripts ::
+    #+header: :tangle yes
     #+begin_src emacs-lisp
     (setq org-use-sub-superscripts nil)
     #+end_src
@@ -4879,6 +4987,7 @@
    + different sources, but mainly ::
      - c++ mode from official documentation :: https://www.emacswiki.org/emacs/CPlusPlusMode
  - basic configs ::
+   #+header: :tangle yes
    #+begin_src emacs-lisp
    ;; M-x c++-mode :: to activate c++-mode on .h files that won't be opened as c++ files by default (otherwise, will be opened as c file)
    (add-to-list 'auto-mode-alist '("\\.h\\'" . c++-mode))
@@ -4901,6 +5010,7 @@
 
 * Raw (to be refiled)
  - setting excluding tags (check if doesn't conflict with bh's configs) ::
+   #+header: :tangle yes
    #+begin_src emacs-lisp
    
    ;; 'GTD' : TODO state triggers (TODOs, DONE, STARTED, etc. can tune as prefer)
