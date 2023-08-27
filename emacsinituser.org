@@ -1,0 +1,492 @@
+example for use of categories
+* Health and Recreation
+  :PROPERTIES:
+  :CATEGORY: Health
+  :END:
+  ...
+* House Maintenance
+  :PROPERTIES:
+  :CATEGORY: House
+  :END:
+
+#+TAGS: [ GTD : Control Persp ]
+
+#+TAGS: [ Control : Context Task ]
+#+TAGS: [ Persp : Vision Goal AOF Project ]
+
+(setq org-tag-alist '((:startgrouptag)
+		("GTD")
+		(:grouptags)
+		("Control")
+		("Persp")
+		(:endgrouptag)
+		(:startgrouptag)
+		("Control")
+		(:grouptags)
+		("Context")
+		("Task")
+		(:endgrouptag)))
+
+#+TAGS: { Context : @Home @Work @Call }
+
+#+TAGS: [ Vision : {V@.+} ]
+#+TAGS: [ Goal : {G@.+} ]
+#+TAGS: [ AOF : {AOF@.+} ]
+#+TAGS: [ Project : {P@.+} ]
+
++work-boss+PRIORITY="A"+Coffee="unlimited"+Effort<2+With={Sarah\|Denny}+SCHEDULED>="<2008-10-11>"
+
+** This is a headline
+Still outside the drawer
+:DRAWERNAME:
+This is inside the drawer.
+:END:
+After the drawer.
+
+(setq org-todo-keywords
+    '((sequence "TODO(t)" "WAIT(w@/!)" "|" "DONE(d!)" "CANCELED(c@)")))
+
+#+TODO: TODO(t) WAIT(w@/!) | DONE(d!) CANCELED(c@)
+
+;; * TODO Log each state with only a time
+;;   :PROPERTIES:
+;;   :LOGGING: TODO(!) WAIT(!) DONE(!) CANCELED(!)
+;;   :END:
+;; * TODO Only log when switching to WAIT, and when repeating
+;;   :PROPERTIES:
+;;   :LOGGING: WAIT(@) logrepeat
+;;   :END:
+;; * TODO No logging at all
+;;   :PROPERTIES:
+;;   :LOGGING: nil
+;;   :END:
+
+;; *** TODO write article about the Earth for the Guide
+;; DEADLINE: <2004-02-29 Sun>
+;; The editor in charge is [[bbdb:Ford Prefect]]
+
+;; *** TODO Call Trillian for a date on New Years Eve.
+;;     SCHEDULED: <2004-12-25 Sat>
+
+* CD collection
+** Classic
+*** Goldberg Variations
+   :PROPERTIES:
+   :Title:     Goldberg Variations
+   :Composer:  J.S. Bach
+   :Artist:    Glenn Gould
+   :Publisher: Deutsche Grammophon
+   :NDisks:    1
+   :END:
+
+* CD collection
+:PROPERTIES:
+:NDisks_ALL:  1 2 3 4
+:Publisher_ALL: "Deutsche Grammophon" Philips EMI
+:END:
+
+#+PROPERTY: NDisks_ALL 1 2 3 4
+
+#+PROPERTY: var  foo=1
+#+PROPERTY: var+ bar=2
+
+* CD collection
+** Classic
+    :PROPERTIES:
+    :Genres: Classic
+    :END:
+*** Goldberg Variations
+    :PROPERTIES:
+    :Title:     Goldberg Variations
+    :Composer:  J.S. Bach
+    :Artist:    Glenn Gould
+    :Publisher: Deutsche Grammophon
+    :NDisks:    1
+    :Genres+:   Baroque
+    :END:
+
+#+FILETAGS: PERSONAL
+...
+* Tasks
+** Organization
+   :PROPERTIES:
+   :CLOCK_MODELINE_TOTAL: today
+   :ID:       eb155a82-92b2-4f25-a3c6-0304591af2f9
+   :END:
+   ...
+
+* TODO Project A
+** NEXT TASK 1
+** TODO TASK 2
+** TODO TASK 3
+* Tasks
+** TODO Some miscellaneous task
+
+Original Estimate
+#+BEGIN: columnview :hlines 1 :id local
+| Task                        | Estimated Effort | CLOCKSUM |
+|-----------------------------+------------------+----------|
+| ** TODO Project to estimate |             5:40 |          |
+| *** TODO Step 1             |             0:10 |          |
+| *** TODO Step 2             |             0:10 |          |
+| *** TODO Step 3             |             5:10 |          |
+| **** TODO Step 3.1          |             2:00 |          |
+| **** TODO Step 3.2          |             3:00 |          |
+| **** TODO Step 3.3          |             0:10 |          |
+| *** TODO Step 4             |             0:10 |          |
+#+END:
+
+* NEXT Weekly Review [0/6]
+  SCHEDULED: <2009-05-18 Mon ++1w> 
+  :LOGBOOK:...
+  :PROPERTIES:...
+
+  What to review:
+
+   - [ ] Check follow-up folder (physical or virtual place/folder to keep documents/files/letters to read and process (stuff that needs to be taken care of, but in no particular hurry to deal with))
+   - [ ] Review weekly agenda =F12 a w //=
+   - [ ] Check clocking data for past week =v c=
+   - [ ] Review clock report for past week =R=
+     - Check where we spent time (too much or too little) and rectify this week
+   - [ ] Look at entire agenda for today  =F12 SPC=
+   - [ ] Review projects =F12 SPC //= and =V= repeatedly to view each project
+
+   - start work
+     - daily agenda first - knock off items
+     - then work on NEXT tasks
+
+* Category
+** TODO Stuck Project A
+*** TODO Task B
+** TODO Project C
+*** TODO Stuck Sub Project D
+**** TODO SubTask E
+*** TODO Sub Project F
+**** NEXT SubTask G
+**** TODO SubTask H
+*** NEXT Task I
+*** TODO Task J
+
+#+begin_src ditaa :file some_filename.png :cmdline -r -s 0.8
+  <context of ditaa source goes here>
+#+end_src
+
+#+begin_src dot :file some_filename.png :cmdline -Kdot -Tpng
+  <context of graphViz source goes here>
+#+end_src
+
+#+begin_src plantuml :file some_filename.png
+  <context of plantuml source goes here>
+#+end_src
+
+#+FILETAGS: PERSONAL
+* Appointments
+  :PROPERTIES:
+  :CATEGORY: Appt
+  :ARCHIVE:  %s_archive::* Appointments
+  :END:      
+** Holidays
+   :PROPERTIES:
+   :Category: Holiday
+   :END:
+   %%(org-calendar-holiday)
+** Some other Appointment
+   ...
+
+* TODO Invoicing and Archive Tasks [0/7]
+  DEADLINE: <2009-07-01 Wed +1m -0d> 
+  :PROPERTIES:
+  :RESET_CHECK_BOXES: t
+  :END:
+
+  - [ ] Do task 1
+  - [ ] Do task 2
+  ...
+  - [ ] Do task 7
+
+* TODO Some Task
+  :PROPERTIES:
+  :ORDERED: t
+  :END:
+** TODO Step 1
+** TODO Step 2, needs to wait for Step 1
+** TODO Step 3, needs to wait for Step 1 and Step 2
+
+* TODO New Repeating Task
+  SCHEDULED: <2009-06-16 Tue +1w>
+  :PROPERTIES:
+  :NOBLOCKING: t
+  :END:
+  ...
+** TODO Subtask
+
+* TODO Pay Wages
+  DEADLINE: <2009-07-01 Wed +1m -0d>
+
+* NEXT Document my use of org-mode
+  :LOGBOOK:...
+  :PROPERTIES:
+  :CLOCK_MODELINE_TOTAL: today
+  :Effort:   1:00
+  :END:
+
+* TODO Update Org Mode Doc
+  SCHEDULED: <2009-11-21 Sat .+7d/30d>
+  [2009-11-14 Sat 11:45]
+  :PROPERTIES:
+  :STYLE: habit
+  :END:
+
+* Habits
+  :PROPERTIES:
+  :LOGGING:  DONE(!)
+  :ARCHIVE:  %s_archive::* Habits
+  :END:
+
+* Totally secret :crypt:
+  :PROPERTIES:
+  :CRYPTKEY: 0x0123456789012345678901234567890123456789
+  :END:
+
+,(("Outline Navigation")
+ ("n" org-speed-move-safe 'outline-next-visible-heading)
+ ("p" org-speed-move-safe 'outline-previous-visible-heading)
+ ...
+ ("g" org-refile t)
+ ("Outline Visibility")
+ ("c" . org-cycle)
+ ("C" . org-shifttab)
+ ...
+ ("Outline Structure Editing")
+ ("U" . org-shiftmetaup)
+ ("D" . org-shiftmetadown)
+ ...
+ ("#" . org-toggle-comment)
+ ("Clock Commands")
+ ("I" . org-clock-in)
+ ("O" . org-clock-out)
+ ("Meta Data Editing")
+ ("t" . org-todo)
+ ("," org-priority)
+ ("0" org-priority 32)
+ ("1" org-priority 65)
+ ("2" org-priority 66)
+ ...
+ ("W" lambda
+  (m)
+  (interactive "sMinutes before warning: ")
+  (org-entry-put
+   (point)
+   "APPT_WARNTIME" m))
+ ("Agenda Views etc")
+ ("v" . org-agenda)
+ ("/" . org-sparse-tree)
+ ("Misc")
+ ("o" . org-open-at-point)
+ ("?" . org-speed-command-help)
+ ("<" org-agenda-set-restriction-lock 'subtree)
+ (">" org-agenda-remove-restriction-lock))
+
+* <point here>
+  [2009-11-22 Sun 18:45]
+
+* TODO Sample Meeting
+  - Attendees
+    - [ ] Joe
+    - [X] Larry
+    - [X] Mary
+    - [X] Fred
+  - Joe is on vacation this week
+  - Status Updates
+    + Larry
+      - did this
+      - and that
+      - TODO: Needs to follow up on this
+    + Mary
+      - got a promotion for her recent efforts
+    + Fred
+      - completed all his tasks 2 days early
+      - needs more work
+      - DONE: everything
+
+* TODO Sample Meeting
+   - Attendees
+     - [ ] Joe
+     - [X] Larry
+     - [X] Mary
+     - [X] Fred
+   - Joe is on vacation this week
+   - Status Updates
+     + Larry
+       - did this
+       - and that
+>>>>>>>> TODO: Needs to follow up on this
+     + Mary
+       - got a promotion for her recent efforts
+     + Fred
+       - completed all his tasks 2 days early
+       - needs more work
+>>>>>>>> DONE: everything
+
+* Attachments                                                        :ATTACH:
+  :PROPERTIES:
+  :Attachments: x.sql
+  :ID:       f1d38e9a-ff70-4cc4-ab50-e8b58b2aaa7b
+  :END:
+
+a. item one
+b. item two
+
+, #+options: ^:nil _:nil
+
+title Task States
+[*] -> TODO
+TODO -> NEXT
+TODO -> DONE
+NEXT -> DONE
+DONE -> [*]
+TODO --> WAITING
+WAITING --> TODO
+NEXT --> WAITING
+WAITING --> NEXT
+HOLD --> CANCELLED
+WAITING --> CANCELLED
+CANCELLED --> [*]
+TODO --> HOLD
+HOLD --> TODO
+TODO --> CANCELLED
+TODO: t
+NEXT: n
+DONE: d
+WAITING:w
+note right of WAITING: Note records\nwhat it is waiting for
+HOLD:h
+note right of CANCELLED: Note records\nwhy it was cancelled
+CANCELLED:c
+WAITING --> DONE
+
+title Phone Call Task State
+[*] -> PHONE
+PHONE -> [*]
+
+title Meeting Task State
+[*] -> MEETING
+MEETING -> [*]
+
+title Example Sequence Diagram
+activate Client
+Client -> Server: Session Initiation
+note right: Client requests new session
+activate Server
+Client <-- Server: Authorization Request
+note left: Server requires authentication
+Client -> Server: Authorization Response
+note right: Client provides authentication details
+Server --> Client: Session Token
+note left: Session established
+deactivate Server
+Client -> Client: Saves token
+deactivate Client
+
+title Example Activity Diagram
+note right: Example Function
+(*)--> "Step 1"
+--> "Step 2"
+-> "Step 3"
+--> "Step 4"
+--> === STARTLOOP ===
+note top: For each element in the array
+if "Are we done?" then
+  -> [no] "Do this"
+  -> "Do that"
+  note bottom: Important note\ngoes here
+  -up-> "Increment counters"
+  --> === STARTLOOP ===
+else
+  --> [yes] === ENDLOOP ===
+endif
+--> "Last Step"
+--> (*)
+
+LabUser --> (Runs Simulation)
+LabUser --> (Analyses Results)
+
+Object1 <|-- Object2
+Object1: someVar
+Object1: execute()
+Object2: getState()
+Object2: setState()
+Object2: state
+
+[*] --> Start
+Start -> State2
+State2 -> State3
+note right of State3: Notes can be\nattached to states
+State2 --> State4
+State4 -> Finish
+State3 --> Finish
+Finish --> [*]
+
++-----------+        +---------+  
+    |    PLC    |        |         |                
+    |  Network  +<------>+   PLC   +<---=---------+ 
+    |    cRED   |        |  c707   |              | 
+    +-----------+        +----+----+              | 
+                              ^                   | 
+                              |                   | 
+                              |  +----------------|-----------------+
+                              |  |                |                 |
+                              v  v                v                 v
+      +----------+       +----+--+--+      +-------+---+      +-----+-----+       Windows clients
+      |          |       |          |      |           |      |           |      +----+      +----+
+      | Database +<----->+  Shared  +<---->+ Executive +<-=-->+ Operator  +<---->|cYEL| . . .|cYEL|
+      |   c707   |       |  Memory  |      |   c707    |      | Server    |      |    |      |    |
+      +--+----+--+       |{d} cGRE  |      +------+----+      |   c707    |      +----+      +----+
+         ^    ^          +----------+             ^           +-------+---+
+         |    |                                   |                        
+         |    +--------=--------------------------+                    
+         v                                                             
++--------+--------+                                                         
+|                 |                                                         
+| Millwide System |            -------- Data ---------                      
+| cBLU            |            --=----- Signals ---=--                      
++-----------------+
+
+digraph G {
+  size="8,6"
+  ratio=expand
+  edge [dir=both]
+  plcnet [shape=box, label="PLC Network"]
+  subgraph cluster_wrapline {
+    label="Wrapline Control System"
+    color=purple
+    subgraph {
+    rank=same
+    exec
+    sharedmem [style=filled, fillcolor=lightgrey, shape=box]
+    }
+    edge[style=dotted, dir=none]
+    exec -> opserver
+    exec -> db
+    plc -> exec
+    edge [style=line, dir=both]
+    exec -> sharedmem
+    sharedmem -> db
+    plc -> sharedmem
+    sharedmem -> opserver
+  }
+  plcnet -> plc [constraint=false]
+  millwide [shape=box, label="Millwide System"]
+  db -> millwide
+
+  subgraph cluster_opclients {
+    color=blue
+    label="Operator Clients"
+    rankdir=LR
+    labelloc=b
+    node[label=client]
+    opserver -> client1
+    opserver -> client2
+    opserver -> client3
+  }
+}
