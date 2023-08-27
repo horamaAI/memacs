@@ -234,8 +234,8 @@
 ;; bh is from source Bernt Hansen : http://doc.norang.ca/org-mode.html
 ;; main reason for special key bindings (like F11, and F12) is to have keys work in any mode. If for ex the Gnus summary buffer then C-u C-c C-x C-i doesn't work, but the C-F11 key combination does and this saves time since don't have to visit an org-mode buffer first just to clock in a recent task.
 
-(global-set-key (kbd "<f9> p") 'bh/phone-call)  
-(global-set-key (kbd "<f12>") 'org-agenda
+(global-set-key (kbd "<f9> p") 'bh/phone-call)
+(global-set-key (kbd "<f12>") 'org-agenda)
 (global-set-key (kbd "<f5>") 'bh/org-todo)
 (global-set-key (kbd "<S-f5>") 'bh/widen)
 (global-set-key (kbd "<f7>") 'bh/set-truncate-lines)
@@ -2034,7 +2034,7 @@ Late deadlines first, then scheduled, then non-late deadlines"
 
 (setq org-link-mailto-program (quote (compose-mail "%a" "%s")))
 
-(add-to-list 'load-path (expand-file-name "~/.emacs.d"))
+(add-to-list 'load-path (expand-file-name "~/Documents/repos/opt/org-mode/smex/"))
 ; auto-start Smex every time one opens Emacs
 (require 'smex)
 (smex-initialize)
@@ -2047,6 +2047,7 @@ Late deadlines first, then scheduled, then non-late deadlines"
 (global-set-key (kbd "<C-f6>") '(lambda () (interactive) (bookmark-set "SAVED")))
 (global-set-key (kbd "<f6>") '(lambda () (interactive) (bookmark-jump "SAVED")))
 
+(add-to-list 'load-path (expand-file-name "~/Documents/repos/opt/org-mode/org-mime/"))
 (require 'org-mime)
 
 (setq org-agenda-skip-additional-timestamps-same-entry t)
