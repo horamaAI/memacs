@@ -5007,6 +5007,38 @@
     - minor mode ::
       + are optional features which can be turned on/off, not necessarily specific to a type of file or buffer (eg: Auto Fill mode is a minor mode in which ==SPC== breaks lines between words as typeed)
       + minor modes are independent one another, and of the selected major mode.
+  + ==CATEGORY== vs ==TAG== drawers ::
+    - Categories :: method for assigning single classifications, each heading is part of exactly one category, not many
+      + from https://karl-voit.at/2019/09/25/categories-versus-tags/ ::
+        - characteristics, three different ways of assigning categories ::
+          + One per file
+          + Category per project within a file
+          + Multi-file
+        - eg of multi-file categories ::
+          + Multi-file :: when several Org files share a category
+            - eg :: using category ==company== for files 'company.org' (miscellaneous general todos), 'company_projectX.org' (related to one specific project), company_projectY.org (related to a different project), etc.
+            - if one does not manually tamper with assigning categories, Org mode is uses the file name of the current file as category by default, eg : company.org results in the category "company" for all of its headings
+            - in case one needs finer grained categories, one has the possibility to assign a category for any given sub-hierarchy, eg for file 'company.org'
+            - eg ::
+              #+begin_src org :exports src
+              ,* Project X
+              ,** TODO Contact Bill Gates
+              ,** TODO Make business
+              ,* Project Y
+              ,  :PROPERTIES:
+              ,  :CATEGORY: ProjectY
+              ,  :END:
+              ,** TODO Find a business plan
+              ,** SOMEDAY Follow the business plan
+              ,** SOMEDAY Get rich
+              #+end_src
+            - notes ::
+              + the todos of Project X do have the default category ==company==, derived from the file 'company.org'
+              + all todos within the Project Y hierarchy do share the category "ProjectY" instead because this is defined via the ==CATEGORY== property in the drawer
+                - when being on a line whose task is categorised with ==ProjectY==, the agenda now only shows tasks of this category, hiding everything else
+    - Tags :: allow for multi-classification. A heading is able to have a set of assigned tags
+      + a heading is able to inherit the combined set of all tags assigned to its parent headings, if activated
+    - tag vs categories :: limit categories to a minimum, mostly by using the default: one category per Org mode file
 
 * Raw (to be refiled)
  - setting excluding tags (check if doesn't conflict with bh's configs) ::

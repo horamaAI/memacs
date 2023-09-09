@@ -1,0 +1,19 @@
+# -*- mode: org -*-
+#+TITLE: Universidad of sevilla research topic related
+#+SETUPFILE: ~/set-up-files/basic-setups.org
+#+LANGUAGE: en
+#+OPTIONS: timestamp:t
+#+DESCRIPTION: Super root org-agenda file for all us.es related topics.
+#+KEYWORDS:  org-mode Emacs organization GTD getting-things-done git Us.es
+#+TAGS: Us.es
+
+
+* TODOs
+  :PROPERTIES:
+  :TAGS: Us.es_todos
+  :END:
+
+* Thesis
+  :PROPERTIES:
+  :TAGS: Us.es_thesis
+  :END:
