@@ -6,6 +6,7 @@
 #+DESCRIPTION: Super root org-agenda file for all us.es related topics.
 #+KEYWORDS:  org-mode Emacs organization GTD getting-things-done git Us.es
 #+TAGS: Us.es
+#+TODO: TODO(t) WAIT(w@/!) | DONE(d!) CANCELED(c@)
 
 
 * TODOs

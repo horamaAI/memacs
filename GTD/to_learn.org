@@ -1,3 +1,4 @@
+# -*- mode: org -*-
 #+TITLE: Org Mode - My things to learn
 #+LANGUAGE:  en
 #+AUTHOR: me
@@ -7,16 +8,18 @@
 #+DESCRIPTION: A description of things I would like to learn. The schedule contributes to calendar.
 #+KEYWORDS:  org-mode Emacs organization GTD getting-things-done to-learn
 #+INFOJS_OPT: view:nil toc:t ltoc:t mouse:underline buttons:0 path:http://orgmode.org/org-info.js
+#+CATEGORY: To-learn
+#+TAGS: to-learn
 #+EXPORT_SELECT_TAGS: export
 #+EXPORT_EXCLUDE_TAGS: noexport
-
-
+#+TODO: TODO(t) WAIT(w@/!) | DONE(d!) CANCELED(c@)
 
 * To learn
-  :PROPERTIES:
-  :CATEGORY: To_learn_tag
-  :END:
 ** Task todo asap
+  :PROPERTIES:
+  :TAGS: To-learn_todos
+  :END:
+
 *** TODO Mooc: Recherche reproductible : principes méthodologiques pour une science transparente (org-mode in research)
   + link :: https://lms.fun-mooc.fr/courses/course-v1:inria+41016+self-paced/courseware/4ab137e597734d239618e813ff3287c9/
   + connection :: rurayi@, ma*7
@@ -27,7 +30,7 @@
 
 ** Cpp modern learning (file : cpp_learnings.org) [0/3]
   :PROPERTIES:
-  :CATEGORY: cpp_learning
+  :TAGS: To-learn_cpp
   :END:
 *** TODO videos cpp [0/13]
     SCHEDULED: <2023-01-18 Wed>
@@ -197,8 +200,12 @@
      - [ ] file:///home/myfirstdebianpc/Downloads/c++/cpp-best-practices.pdf
 
 ** emacs in general (file emacs_learnings.org) [0/3]
-https://www.emacswiki.org/emacs/LearningEmacs
-https://cestlaz.github.io/stories/emacs/
+  :PROPERTIES:
+  :TAGS: To-learn_emacs
+  :END:
+*** check sources:
+- https://www.emacswiki.org/emacs/LearningEmacs
+- https://cestlaz.github.io/stories/emacs/
 *** NEXT videos [0/11]
   1. [ ] https://www.youtube.com/watch?v=qJhlHmDj7BI
   2. [ ] https://www.youtube.com/watch?v=SzA2YODtgK4
@@ -269,6 +276,9 @@ https://cestlaz.github.io/stories/emacs/
      - https://alphapapa.github.io/org-almanac/
 
 ** TODO emacs as IDE (file emacs_learnings.org) [0/3]
+  :PROPERTIES:
+  :TAGS: To-learn_emacs-as-IDE
+  :END:
 *** TODO videos [0/2]
      1. [ ] https://www.youtube.com/watch?v=INTu30BHZGk
      2. [ ] https://www.youtube.com/watch?v=RDrG-_kapaQ
@@ -294,7 +304,9 @@ https://cestlaz.github.io/stories/emacs/
      - 
 
 ** CMAKE (file emacs_learnings.org)
-version 3.22 already installed
+  :PROPERTIES:
+  :TAGS: To-learn_CMAKE
+  :END:
 *** TODO current
      - https://gist.github.com/GuillaumeDua/a2e9cdeaf1a26906e2a92ad07137366f
      - https://www.youtube.com/watch?v=5FQwQ0QWBTU
@@ -319,6 +331,9 @@ version 3.22 already installed
      - 
 
 ** hledger, emacs finance and accounting (file emacs_finance_hledger_learnings.org)
+  :PROPERTIES:
+  :TAGS: To-learn_finance-accounting
+  :END:
 *** TODO current
      - https://www.youtube.com/watch?v=cjoCNRpLanY
      - https://hledger.org/start.html
@@ -338,6 +353,9 @@ version 3.22 already installed
      - https://github.com/awalker4
 
 ** US.es
+  :PROPERTIES:
+  :TAGS: To-learn_us.es
+  :END:
 *** TODO refactor code
     - check design pattern :: object pool (https://sourcemaking.com/design_patterns/object_pool/cpp/1)
 *** TODO readings
@@ -361,6 +379,9 @@ version 3.22 already installed
      - https://www.localsolver.com/doccenter.html
 
 ** Online courses
+  :PROPERTIES:
+  :TAGS: To-learn_moocs
+  :END:
   + [ ] linear algebra :: https://www.youtube.com/watch?v=fNk_zzaMoSs&list=PLZHQObOWTQDPD3MizzM2xVFitgF8hE_ab
   + [ ] statistics :: https://www.youtube.com/watch?v=9FtHB7V14Fo&list=PL5102DFDC6790F3D0
   + [ ] probability :: https://www.youtube.com/watch?v=KbB0FjPg0mw&list=PL2SOU6wwxB0uwwH80KTQ6ht66KWxbzTIo
@@ -370,6 +391,9 @@ version 3.22 already installed
   + [ ] game theory :: https://www.youtube.com/watch?v=nM3rTU927io&list=PL6EF60E1027E1A10B
 
 ** Other learning tasks
+  :PROPERTIES:
+  :TAGS: To-learn_misc
+  :END:
 *** TODO git repository backup : https://bruhtus.github.io/posts/git-repo-backup/
 *** TODO Web assembly
      - https://www.youtube.com/watch?v=3sU557ZKjUs
