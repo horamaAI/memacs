@@ -3,8 +3,9 @@
 #+SETUPFILE: ~/set-up-files/basic-setups.org
 #+LANGUAGE: en
 #+OPTIONS: timestamp:t
-#+DESCRIPTION: Super root org-agenda file for all us.es related topics.
+#+DESCRIPTION: Super root org-agenda file for all us.es related topics and tasks (codebase refactoring, todos reading, etc.).
 #+KEYWORDS:  org-mode Emacs organization GTD getting-things-done git Us.es
+#+CATEGORY: Us.es
 #+TAGS: Us.es
 #+TODO: TODO(t) WAIT(w@/!) | DONE(d!) CANCELED(c@)
 

@@ -1,15 +1,15 @@
 # -*- mode: org -*-
-#+TITLE: Universidad of sevilla research related (Notes)
+#+TITLE: Org Mode - Everything (almost) money related
 #+LANGUAGE:  en
 #+AUTHOR: me
 #+OPTIONS:   H:3 num:t   toc:3 \n:nil @:t ::t |:t ^:nil -:t f:t *:t <:nil
 #+OPTIONS:   TeX:t LaTeX:nil skip:nil d:nil todo:t pri:nil tags:not-in-toc
 #+OPTIONS:   author:t creator:t timestamp:t email:t
-#+SETUPFILE: ~/set-up-files/basic-setups.org
-#+KEYWORDS:  org-mode Emacs organization GTD getting-things-done Us.es Notes
+#+DESCRIPTION: A description of anything money related: finance, compta, things need to release reliable, robuste, and useful code.
+#+KEYWORDS:  org-mode Emacs organization GTD getting-things-done finance
 #+INFOJS_OPT: view:nil toc:t ltoc:t mouse:underline buttons:0 path:http://orgmode.org/org-info.js
-#+CATEGORY: Us.es
-#+TAGS: Us.es Notes
+#+CATEGORY: Finance
+#+TAGS: Finance Compta Eco
 #+EXPORT_SELECT_TAGS: export
 #+EXPORT_EXCLUDE_TAGS: noexport
 #+TODO: TODO(t) WAIT(w@/!) | DONE(d!) CANCELED(c@)
