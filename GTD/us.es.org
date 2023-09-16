@@ -9,12 +9,15 @@
 #+TODO: TODO(t) WAIT(w@/!) | DONE(d!) CANCELED(c@)
 
 
-* TODOs
+* TODO TODOs
   :PROPERTIES:
   :TAGS: Us.es_todos
   :END:
+  - [ ] Review state of the art
+  - [ ] Refactor code
 
-* Thesis
+* TODO Thesis
   :PROPERTIES:
   :TAGS: Us.es_thesis
   :END:
+  - [ ] built structure of thesis
