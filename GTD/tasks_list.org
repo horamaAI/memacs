@@ -41,8 +41,12 @@
 
 * Weekly review
   SCHEDULED: <2023-06-26 Mon ++1w>
-  ,, :LOGBOOK:...
-  ,, :PROPERTIES:...
+  :PROPERTIES:
+  :CATEGORY: WeeklyReview
+  :TAGS: WeeklyReview GTDWeeklyReview
+  :LOGGING:  DONE(!)
+  :ARCHIVE:  %s_archive::* Weekly review
+  :END:
   What to review:
   - [ ] Check 'follow-up' folder (physical/virtual folder for stuff that should be dealt with, but not urgently) ::
   - [ ] Review weekly agenda :: =F12 a w //=
@@ -55,16 +59,12 @@
   - start work
     + daily agenda first - knock off items
     + then work on ==NEXT== tasks
-* Finances
-  :PROPERTIES:
-  :CATEGORY: Finances
-  :END:
 
 * Habit
   :PROPERTIES:
   :CATEGORY: Habit
   :LOGGING:  DONE(!)
-  :ARCHIVE:  %s_archive::* Habits
+  :ARCHIVE:  %s_archive::* Habit
   :END:
 
 * Health
