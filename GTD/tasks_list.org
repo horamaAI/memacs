@@ -10,8 +10,8 @@
   - this is the default punching in/out task
 
 * Current
-- [ ] finish rest project for user-manager :: file:///home/myfirstdebianpc/Desktop/project-res-user_manager.org
-- [ ] watch "productivity tool" video ASAP :: '/home/myfirstdebianpc/Downloads/Tech_Talks_-_Productivity_Tips_&_Tools.mp4'
+- [ ] finish rest project for user-manager :: file://~/Documents/repos/org/memacs/GTD/org-mode-files/project-res-user_manager.org
+- [ ] watch "productivity tool" video ASAP :: '~/Documents/repos/org/memacs/GTD/org-mode-files/Tech_Talks_-_Productivity_Tips_&_Tools.mp4'
 - [ ] start capgemini 'next' platform trainings ::
   + https://degreed.com/ -> my profile -> pathways + plans
 - [ ] tags-todo: add extra condition only matching todo headlines :: use https://orgmode.org/manual/Matching-tags-and-properties.html, and complete emacs config file (.emacs_init_configs.org)

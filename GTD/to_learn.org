@@ -23,7 +23,7 @@
 ** TODO Mooc: Recherche reproductible : principes méthodologiques pour une science transparente (org-mode in research)
   + link :: https://lms.fun-mooc.fr/courses/course-v1:inria+41016+self-paced/courseware/4ab137e597734d239618e813ff3287c9/
   + connection :: rurayi@, ma*7
-** TODO install ssh server on myfirstdebianpc : https://devconnected.com/how-to-install-and-enable-ssh-server-on-debian-10/
+** TODO install ssh server (on myfirstdebianpc), and clients on other machines when needed : https://devconnected.com/how-to-install-and-enable-ssh-server-on-debian-10/
 ** TODO dependencies management : https://www.youtube.com/watch?v=7ZdMRLPZhFs
 ** TODO others
   + [ ] saas, ansible vs jenkins, spring batch, multi agent system starcraft 2
@@ -171,7 +171,7 @@
         - cppmeeting2021 simd eve of a new era :: https://www.youtube.com/watch?v=XAqMBLGJeXY
 
 ** TODO links cpp [0/18]
-     1. [ ] file:///home/myfirstdebianpc/Downloads/978-1-4842-5949-8.pdf
+     1. [ ] file://~/Documents/books/books-learning/c++/clean_C++20.pdf
      2. [ ] https://vittorioromeo.info/
      3. [ ] https://ocw.mit.edu/courses/electrical-engineering-and-computer-science/6-096-introduction-to-c-january-iap-2011/lecture-notes/MIT6_096IAP11_lec10.pdf
      4. [ ] https://devblogs.microsoft.com/cppblog/clear-functional-c-documentation-with-sphinx-breathe-doxygen-cmake/
@@ -183,7 +183,7 @@
      10. [ ] https://github.com/philsquared/cpponsea-slides/tree/master/2022
      11. [ ] https://ocw.mit.edu/courses/electrical-engineering-and-computer-science/6-s096-effective-programming-in-c-and-c-january-iap-2014/lecture-notes/MIT6_S096IAP14_Lecture3A.pdf
      12. [ ] https://ocw.mit.edu/courses/electrical-engineering-and-computer-science/6-s096-effective-programming-in-c-and-c-january-iap-2014/lecture-notes/
-     13. [ ] file:///home/myfirstdebianpc/Downloads/c++/cpp_indepth_series/Modern_Cpp_Intensive_for_Scientists_Engineers_Programmers.pdf
+     13. [ ] file://~/Documents/repos/books/books-learning/c++/cpp_indepth_series/Modern_Cpp_Intensive_for_Scientists_Engineers_Programmers.pdf
      14. [ ] https://www.tutorialspoint.com/design_pattern/design_pattern_quick_guide.htm
      15. [ ] https://refactoring.guru/design-patterns/cpp
      16. [ ] https://sourcemaking.com/
@@ -224,7 +224,7 @@
      - [ ] https://www.youtube.com/watch?v=owK_0LGtkOI
      - [ ] https://www.youtube.com/watch?v=Z8NPRfyqNoY
      - [ ] https://www.youtube.com/watch?v=_qaKkHuHYE0
-     - [ ] file:///home/myfirstdebianpc/Downloads/c++/cpp-best-practices.pdf
+     - [ ] file://~/Documents/repos/books/books-learning/c++/cpp-best-practices.pdf
 
 * emacs in general (file emacs_learnings.org) [0/3]
   :PROPERTIES:
@@ -392,7 +392,7 @@
      -
 
 ** TODO links
-     - file:///home/myfirstdebianpc/Downloads/books-learning/us.es/LocalSolver.pdf
+     - file://~/Documents/repos/books/books-learning/c++/books-learning/us.es/LocalSolver.pdf
      - https://www.localsolver.com/docs/last/quickstart/index.html
      - https://www.localsolver.com/docs/last/exampletour/kmeans.html
      - https://www.localsolver.com/clientpasco.html
@@ -437,7 +437,7 @@
      - https://angular.io/start
      - https://reactjs.org/tutorial/tutorial.html
      - https://www.tutorialspoint.com/angular2/angular2_metadata.htm
-     - file:///home/myfirstdebianpc/Downloads/angular.pdf
+     - file://~/Documents/repos/books/books-learning/others/angular.pdf
      - https://angular.io/guide/cheatsheet
      - https://www.tutorialspoint.com/angular4/angular4_services.htm
      - https://www.youtube.com/watch?v=IZEolKjcjks

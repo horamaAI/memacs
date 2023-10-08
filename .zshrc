@@ -85,6 +85,6 @@ export CPATH=/usr/local/include/igraph:$CPATH
 
 #BEGIN - GENERATED CONTENT, DO NOT EDIT !!!
   [ "$COMMON_ENV_DEBUG" = "1" ] && echo "Sourcing '$0' ..." >&2
-  source "/home/myfirstdebianpc/Documents/repos/common_env/tools/shell/source/shellrc.sh"
+  source "~/Documents/repos/common_env/tools/shell/source/shellrc.sh"
 #END - GENERATED CONTENT, DO NOT EDIT !!!
 
