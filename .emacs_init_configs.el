@@ -128,7 +128,7 @@
 (add-hook 'c++-mode-hook 'eglot-ensure)
 
 ;; file to open on start
-(find-file "/home/myfirstdebianpc/Documents/repos/org/memacs/GTD/tasks_list.org")
+(find-file "~/Documents/repos/org/memacs/GTD/tasks_list.org")
 
 ;;;; load darcula theme not dracula
 ;;(use-package darcula-theme

@@ -1,0 +1,131 @@
+
+* project rest user-manager
+
+- Spring Initializr (https://start.spring.io/) to generate a new Spring Boot project. Make sure to include the following dependencies
+  * when added dependencies and generated, the resulting ZIP file is an archive of applications is configured with selected choices
+
+- structure of code ::
+src/
+   main/
+      java/
+         com.example.myapp/
+            controller/
+               UserController.java    // expose the REST endpoints for registering and retrieving models details
+            dao/
+               UserRepository.java    // for CRUDs
+            model/
+               User.java
+            service/
+               UserService.java       // business logic
+               UserServiceImpl.java
+	    aspect/
+	       UserAspect.java        // to handle the aspect of logging the method calls
+      resources/
+         application.properties
+   test/
+      java/
+         com.example.myapp/
+            controller/
+               UserControllerTest.java
+            service/
+               UserServiceTest.java
+      resources/
+         test.properties
+
+
+
+#+begin_src org :exports src
+Project       : Maven
+Language      : Java 11
+Springboot    : 3.0.5
+Group         : com.peppermint
+Artifact      : rest-user-manager
+Name          : rest-user-manager
+Description   : Simple user input-output manager of users.
+Package name  : com.peppermint.rest-user-manager
+Packaging     : War
+Dependencies :
+    Spring Web
+    Spring Data MongoDB
+    Spring AOP // for Aspect Oriented Programming: programming paradigm that aims to increase modularity by allowing the separation of cross-cutting concerns, and validating inputs
+    Lombok
+#+end_src
+
+** Notes
+*** Miscs
+    - Dto :: for "Data Transfer Object", carries data between processes to facilitate communication between two systems (like an API and a server) without potentially exposing sensitive information
+      + source :: https://www.baeldung.com/java-dto-pattern
+      + context :: OOP environments rely on "calls.", each one a bit like a data lookup, thus requiring both time and processing speed. If programmer not careful, calls can also expose sensitive data, eg :: employee addresses, account numbers, social security numbers, etc.
+	- a Dto can help send only the required information, not everything in the database
+	- Dtos are objects that carry data between processes in order to reduce the number of methods calls
+	- purpose is to reduce roundtrips to the server by batching up multiple parameters in a single call => reduces the network overhead in such remote operations
+	- other benefit is the encapsulation of the serialization's logic
+	  + serialization :: mechanism that translates the object structure and data to a specific format that can be stored and transferred
+	- DTO should just contain data, not business logic
+	- how to use Dtos ::
+	  + DTOs normally are created as POJOs (Plain Old Java Objects)
+	    - only contain storage, accessors and eventually methods related to serialization or parsing
+	    - data is mapped from the domain models to the DTOs, normally through a mapper component in the presentation or facade layer
+	      + front (html, json, etc.) exchange with presentation layer ::
+		- presentation layer ::
+		  + Dto only point communicating with front
+		  + to request data, Dto goes through *only* the mapper and gathers only the data required for the front
+		  + Dto can gather content of different models, eg :: Dto (userName, roleName), combines data from two models: User, and Role
+    - binding results :: general interface that represents binding results, extends the interface for error registration capabilities, allowing for a Validator to be applied, and adds binding-specific analysis and model building
+    - AOP ::
+      + source ::
+	- https://www.baeldung.com/spring-aop
+	- https://www.baeldung.com/spring-aop-annotation
+      + AOPs are a way of adding behavior to existing code without modifying that code
+      + eg ::
+	- method 'afterReturn' which takes one argument of type Object and logs in that value
+	#+begin_src org :exports src
+	public class AdderAfterReturnAspect {
+	    private Logger logger = LoggerFactory.getLogger(this.getClass());
+	    public void afterReturn(Object returnValue) throws Throwable {
+	        logger.info("value return was {}",  returnValue);
+	    }
+	}
+	#+end_src
+    - Mongo ::
+      + basic commands (start, stop, status, etc.) :: https://www.mongodb.com/docs/manual/tutorial/install-mongodb-on-debian/
+	- mongosh :: command to run mongodb in cli (default database: 'test')
+	  + switch database :: ==use <db>== // swith to database name 'db'
+	  + in database, show content :: ==db.<collection>.find( {} )==
+	    - eg :: db.user.find( {} ) // show all content from collection user
+      + ==@Document(collection = "<name_of_collection_to_use>")== annotation needed by spring to know which mongodb collection to query :: 
+
+*** annotations
+    - @RequestBody :: maps the HttpRequest body to a transfer or domain object, enabling automatic deserialization of the inbound HttpRequest body onto a Java object
+    - @PathVariable :: can be used to handle template variables in the request URI mapping, and set them as method parameters
+      #+begin_src org :exports src
+      @GetMapping("/api/employees/{id}")
+      @ResponseBody
+      public String getEmployeesById(@PathVariable String id) {
+        return "ID: " + id;
+      }
+      #+end_src
+      + will extract the templated part of the URI (represented by the variable {id})
+    - @Document :: annotation used for the same purpose as @Entity annotation in JPA
+    - @SpringBootTest :: creates an application context to be used in a test
+*** dependencies
+    - ModelMapper :: provides a drop-in solution when our source and destination objects are similar to each other
+*** debugging
+    + "no java projects found in the current workspace vscode" :: java project structure not correct
+    + "Class has been compiled by a more recent version of the Java Environment" :: spring framework not compatible with jre, eg: with jre 11 matches spring framework 2.x.x, not above
+    + "Illegalstate failed to load applicationcontext" :: occured on test class, added annotation '@SpringBootTest'
+      - could be object in unit test not properly instantiated
+      - could be issue with already build version => try to rebuild project
+	+ eg, with vscode :: 'file explorer' -> 'JAVA projects' -> right click on project -> 'rebuild project/all'
+    + "java.lang.IllegalArgumentException: warning no match for this type name: com.example.demo.service.UserService [Xlint:invalidAbsoluteTypeName]" ::
+    + "No qualifying bean of type 'org.springframework.test.web.servlet.MockMvc' available" :: could be object MockMvc not properly instantiated. Add  ==@AutoConfigureMockMvc== to enable and configure auto-configuration of MockMvc
+    + "Resolved [org.springframework.web.HttpMediaTypeNotSupportedException: Content type 'text/plain;charset=UTF-8' not supported]" :: raw Postman not supported.
+      - Solution :: in postman, set 'Headers' of http request to : key: 'Content-type', value: 'application/json'
+    + " expected:[201] but was:[404]" :: means request was not found. => try to check if url path is correct
+    + " expected:[201] but was:[400]" :: well, since http error 400 is bad request, means request is a bad request
+    + conversion of Localdate to json :: add json serialize/deserialize to output dto
+      - eg ::
+          #+begin_src org :exports src
+	    @JsonDeserialize(using = LocalDateDeserializer.class)
+            @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
+          #+end_src
