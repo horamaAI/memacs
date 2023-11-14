@@ -367,7 +367,7 @@
   #+header: :tangle yes
   #+begin_src emacs-lisp
   ;; action tasks status
-  ;; vertical bar (|) used to separate TODO keywords (states that need action) from DONE states (needs no further action)
+  ;; vertical bar (|) used to separate TODO keywords (states that need action) from other states in the sequence (eg: DONE state, needs no further action)
   ;; If not provided, the last state is used as DONE state.
   (setq org-todo-keywords
         (quote ((sequence "TODO(t)" "NEXT(n)" "|" "DONE(d)")
