@@ -104,6 +104,15 @@
 - ODR violations ::
 
 * Assembler
+** Sources
+- cheatsheet :: https://cs.brown.edu/courses/cs033/docs/guides/x64_cheatsheet.pdf
+- cppcon2021, "Just Enough Assembly for Compiler Explorer" :: https://www.youtube.com/watch?v=_sSFtJwgVYQ
+** Notes
+*** keywords
+- "byte" refers to a one-byte integer
+- "word" refers to a two-byte integer
+- "doubleword" refers to a four-byte integer
+- "quadword" refers to an eight-byte value
 * Best practices
 * Design, metaprogramming
 ** Design patterns
