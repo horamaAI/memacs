@@ -1,3 +1,164 @@
+# -*- mode: org -*-
+#+title: Java web programming learnings
+#+SETUPFILE: ~/set-up-files/basic-setups.org
+
+
+* JAVA
+** Notes
+- Targeted JAVA version: JAVA 17
+- IDE used : IntelliJ ::
+  + pros :: does lots of stuff for us from elements that are hinted by the dev : (install a small cli java compiler when there is none defined, update external libraries, etc.)
+** Compile and run
+- JRE :: java runtime environment, that makes it able for java applications to run.
+  + The jre is cross platform, it takes standard 'bytecodes' (compiled classes that are OS agnostic), and through the JVM (Java Virtual Machine) and additional standar java libraries, adapt those bytecodes to the local environment.
+- JDK :: Java development kit: JRE + compiler, debugger, javadoc, keytool, etc.
+- flow :: *.java --[JDK]--> *.class --[JRE]--> execute
+- comments ::
+  + usual comments :: line comment (==//...==), block comment (==/*...*/==)
+  + javadoc comments :: ==/**...*/== : same as block comments, but can be generated as javadocumentation
+** Fundamentals
+*** Java fundamentals and structural assumptions
+**** Structure and conventions
++ naming conventions ::
+  - packages ::
+    + all lowercase,
+    + use of reverse domain name notation to assure global *uniqueness* (there is an authority that makes sure the domain name is not used by someone else) : [domain_extension].[domain_main_name[.more_extension]*][...], eg : org.mydomain
+    + add further qualifiers to assure uniqueness within company/group (eg: all code related to searching within domain 'mydomain' can be added to package ==org.mydomain.search==, ie. ==package org.mydomain.search;==)
+      - same, the dev group in the sales department could use the following reversed dns ==org.mydomain.sales==
+      - furthermore, if the devs in the sales department created an app that manages the sales account, they could use 'accounts management' in the reversed dns ==org.mydomain.sales.accountmanagement== => this avoids collisions in case another department create a sales account application.
+  - type names are qualified by their package :: package org.mydomain.sales, qualifies class 'A' that is declared within it, and then, type name of A is now org.mydomain.sales.A (now they're globally unique)
+    + when qualified, the executable part of the code is also qualified, ie: instead of running in cli ==java Main==, just run the qualified version ==java org.mydomain.sales.Main==
+  - variables naming conventions :: only letters and numbers, no starting with number, camelCase (not start with uppercase)
+  - methods :: same as variables
+       
+*** Variables, types, data type conversions, and operators arithmetics
+[2023-11-29 Wed 12:08]
+[2023-11-28 Tue 19:32]
+**** Operators and types
+[2023-11-28 Tue 19:37]
+- Variables :: named area of storage (Java strongly typed language)
+- primitive types ::
+  + primitive types are stored *by value* (copies when assigning)
+  + chars :: single unicode char, eg: 'u' or '\u00DA' (for 'u' with accent: \u followed by 4digits hex value of char)
+  + integer :: byte (8bits), short (16bits), int (32bits), long (eg: 9L)
+  + decimal :: float (32bits, eg: 3.14f), double (64bits, eg: 3.14 or 3.14d)
+  + boolean :: true/false (primitive)
+    - note ::
+      + xor operator ==^== is true only when the two operands are differents (0^1 or 1^0)
+      + conditional logical operators (&& and ||) evalueate the right side only when needed (in case of ||, only evaluate right hand side when left is false)
+- ==var== "type" :: type then inferred with first assignment, no need then to explicitly define the type of the variable
+  + constraints :: need to be assigned when declared, and variable is statically typed (cannot change the type of assigned value), therefore need for cast when assigning a non matching value
+- ==final== :: constant variable/attributes/classes/methods
+- ==static== :: set what's defined to only one instance of object/class/method/etc., and have persistent lifetime
+  + static variables get loaded when class is loaded by ClassLoader, and removed when Classloader used is garbage collected
+- operators ::
+  + operators precedence :: left to right when equivalent or when tied
+    - precedence order :: postfix, prefix, multiplicative (==* / %==), additive (==+ -==)
+      - table ::
+        +-----+----------+--------------+-------------+
+        | 16  | ()       |parentheses   |left-to-right|
+        +-----+----------+--------------+-------------+
+        |     | []       |   array      |             |
+        |     |          |  access      |             |
+        +-----+----------+--------------+-------------+
+        |     |  .       |  member      |             |
+        |     |          |  access      |             |
+        +-----+----------+--------------+-------------+
+        | 15  | ++       |    unary     |left-to-right|
+        |     |          |post-increment|             |
+        +-----+----------+--------------+-------------+
+        |     | --       |    unary     |             |
+        |     |          |post-decrement|             |
+        +-----+----------+--------------+-------------+
+        | 14  |  +       |  unary plus  |right-to-left|
+        +-----+----------+--------------+-------------+
+        |     |  -       | unary minus  |             |
+        +-----+----------+--------------+-------------+
+        |     |  !       |unary logical |             |
+        |     |          |     NOT      |             |
+        +-----+----------+--------------+-------------+
+        |     |  ~       |unary bitwise |             |
+        |     |          |     NOT      |             |
+        +-----+----------+--------------+-------------+
+        |     | ++       |    unary     |             |
+        |     |          |pre-increment |             |
+        +-----+----------+--------------+-------------+
+        |     | --       |    unary     |             |
+        |     |          |pre-decrement |             |
+        +-----+----------+--------------+-------------+
+        | 13  | ()       |     cast     |right-to-left|
+        +-----+----------+--------------+-------------+
+        |     | new      |    object    |             |
+        |     |          |   creation   |             |
+        +-----+----------+--------------+-------------+
+        | 12  |* / %     |multiplicative|left-to-right|
+        +-----+----------+--------------+-------------+
+        | 11  | + -      |   additive   |left-to-right|
+        +-----+----------+--------------+-------------+
+        |     |  +       |    string    |             |
+        |     |          |concatenation |             |
+        +-----+----------+--------------+-------------+
+        | 10  |<< >>     |    shift     |left-to-right|
+        +-----+----------+--------------+-------------+
+        |     | >>>      |              |             |
+        +-----+----------+--------------+-------------+
+        |  9  |< <=      |  relational  |left-to-right|
+        +-----+----------+--------------+-------------+
+        |     |> >=      |              |             |
+        +-----+----------+--------------+-------------+
+        |     |instanceof|              |             |
+        +-----+----------+--------------+-------------+
+        |  8  |    ==    |   equality   |left-to-right|
+        +-----+----------+--------------+-------------+
+        |     |    !=    |              |             |
+        +-----+----------+--------------+-------------+
+        |  7  |    &     | bitwise AND  |left-to-right|
+        +-----+----------+--------------+-------------+
+        |  6  |    ^     | bitwise XOR  |left-to-right|
+        +-----+----------+--------------+-------------+
+        |  5  |    |     |  bitwise OR  |left-to-right|
+        +-----+----------+--------------+-------------+
+        |  4  |    &&    | logical AND  |left-to-right|
+        +-----+----------+--------------+-------------+
+        |  3  |    ||    |  logical OR  |left-to-right|
+        +-----+----------+--------------+-------------+
+        |  2  |    ?:    |   ternary    |right-to-left|
+        +-----+----------+--------------+-------------+
+        |  1  | =   +=   |  assignment  |right-to-left|
+        |     |    -=    |              |             |
+        +-----+----------+--------------+-------------+
+        |     |*=   /=   |              |             |
+        |     |    %=    |              |             |
+        +-----+----------+--------------+-------------+
+        |     |&=   ^=   |              |             |
+        |     |    |=    |              |             |
+        +-----+----------+--------------+-------------+
+        |     | <<=  >>= |              |             |
+        |     |   >>>=   |              |             |
+        +-----+----------+--------------+-------------+
+        |  0  |    ->    |    lambda    |right-to-left|
+        |     |          |  expression  |             |
+        |     |          |    arrow     |             |
+        +-----+----------+--------------+-------------+
+- Type conversion ::
+  + implicit :: performed by compiler (eg: long valLong = valInt; // where valInt is explicitly declared as int, said as "widening conversion")
+  + explicit :: with cast operator (eg: int valInt = (int) valLong; // where valLong is explicitly declared as long, careful of *side-effects*: precision loss, and compiling errors)
+- conditional logic and operators ::
+  + ==switch default== cases :: only supported on primitive types: byte, char, short, int, long
+    - format :: ==switch(val) {case k0: ...; break;...;default:...;break;}
+- arrays :: format : ==type[] = new type[nElements];==, or with list initialization : ==type[] = {ele1, ..., eleN};==
+  + size of array :: ==arrayVar.length;==
+*** Methods, Class, Objects
+[2023-11-29 Wed 14:05]
+**** 
+*** Algorithms and standard library
+- foreach :: ==for(loop-variable : array)==
+** Design
+
+** Definitions
+- Classloader :: object that is responsible for loading classes
+- Class vs Object :: object is an instance of a class, and a Class is its blueprint or template from which the object is created
+
 
 * project rest user-manager
 
