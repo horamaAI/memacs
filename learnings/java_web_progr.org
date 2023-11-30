@@ -1,7 +1,7 @@
 # -*- mode: org -*-
 #+title: Java web programming learnings
 #+SETUPFILE: ~/set-up-files/basic-setups.org
-
+#+TAGS: Java
 
 * JAVA
 ** Notes
@@ -29,8 +29,8 @@
   - type names are qualified by their package :: package org.mydomain.sales, qualifies class 'A' that is declared within it, and then, type name of A is now org.mydomain.sales.A (now they're globally unique)
     + when qualified, the executable part of the code is also qualified, ie: instead of running in cli ==java Main==, just run the qualified version ==java org.mydomain.sales.Main==
   - variables naming conventions :: only letters and numbers, no starting with number, camelCase (not start with uppercase)
+  - classes :: same as variables, but first letter capitalized, name of class must be the same as file name :: class Toto => file Toto.java
   - methods :: same as variables
-       
 *** Variables, types, data type conversions, and operators arithmetics
 [2023-11-29 Wed 12:08]
 [2023-11-28 Tue 19:32]
@@ -146,13 +146,70 @@
 - conditional logic and operators ::
   + ==switch default== cases :: only supported on primitive types: byte, char, short, int, long
     - format :: ==switch(val) {case k0: ...; break;...;default:...;break;}
-- arrays :: format : ==type[] = new type[nElements];==, or with list initialization : ==type[] = {ele1, ..., eleN};==
-  + size of array :: ==arrayVar.length;==
+- Non primitive types ::
+  + non primitive types do not directly hold object values, but rather hold references to values => new instances of the objects are created
+    - eg = doing ~String str = "I";~ and then ~str += ' Love'; str += " you"~, will create 3 string instances : "I", "I Love", "I Love you", and then str will reference the 3 strings in order until the last => *BE CAREFUL*
+    - can use StringBuilder for more efficiency
+  + equality operator =='=='== DOES NOT check equality of values, but rather if the operands are pointing to the same reference
+  + strings ::
+    - 
+  + arrays :: format : ==type[] = new type[nElements];==, or with list initialization : ==type[] = {ele1, ..., eleN};==
+    - size of array :: ==arrayVar.length;==
 *** Methods, Class, Objects
 [2023-11-29 Wed 14:05]
-**** 
+**** Notes
+- members of class (its 'fields') can also be called its 'states'
+- same as all non primitive types, classes instanciations (using ==new==) allocate new memory the size of the class specified. So, each time the variable is re-assigned with 'new', a new instance of the class is created, and the reference of the variable is changed to the new object, the old one being lost if not referenced anywhere else
 *** Algorithms and standard library
 - foreach :: ==for(loop-variable : array)==
+- parsing ::
+  + parse string as double :: Double.parseDouble(str);
+- strings ::
+  + strings are the same :: ==str1.equals(str2)==
+    - can still use equality operator through "interning strings" (method ==str.intern()==) :: intern checks if no other string *reference* does not have the same content as str, and if it exists, then a new object won’t be created and the new reference will point to this other string
+      #+begin_src java
+      @Test
+      public void whenIntern_thenCorrect() {
+          String s1 = "abc";
+          String s2 = new String("abc");
+          String s3 = new String("foo");
+          String s4 = s1.intern();
+          String s5 = s2.intern();
+          
+          assertFalse(s3 == s4);
+          assertTrue(s1 == s5);
+      }
+      #+end_src
+      + *BE AWARE OF OVERHEADS!!!** with interning
+  + useful String methods :: length, charAt, substring, replace, concat, toLowerCase, split (with separator given as regex ~str.split(",")~), format, contains, endsWith, compareToIgnoreCase, lastIndexOf, valueOf (convert primitive type to string, can also be done implicitly, eg : ~String res = 10 + " is an integer"~)
+  + StringBuilder ::
+    - provides mutable string buffer :: efficient, add new content with ==append==, add new content within with ==insert==
+    - however :: need to extract string at the end with ==toString==, but can still keep using the string builder
+      #+begin_src java
+      String str = "toto";
+      int n = 1;
+      Stringbuilder strBuilder = new StringBuilder(40);
+      strBuilder.append("I");
+      strBuilder.append(" say");
+      strBuilder.append(" I am ");
+      strBuilder.append(str);
+      strBuilder.append(" number ");
+      strBuilder.append(n);
+      String msg = strBuilder.toString(); // msg = I say I am toto number 1
+      int pos = strBuilder.indexOf(" I am"); // can still work on the string builder
+      String addendum = " will you tell him";
+      strBuilder.insert(pos, addendum);
+      msg = strBuilder.toString(); // msg = I say will you tell him I am toto number 1
+      #+end_src
+- CLI interactive ::
+  + IO from cli :: object ==Scanner==
+    #+begin_src java
+    import java.util.scanner;
+    ...
+    Scanner scanner = new Scanner(System.in);
+    scanner.nextLine(); // reads user input until end of key or EOF
+    ...
+    #+end_src
 ** Design
 
 ** Definitions
