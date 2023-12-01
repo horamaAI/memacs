@@ -49,8 +49,45 @@
 - ==var== "type" :: type then inferred with first assignment, no need then to explicitly define the type of the variable
   + constraints :: need to be assigned when declared, and variable is statically typed (cannot change the type of assigned value), therefore need for cast when assigning a non matching value
 - ==final== :: constant variable/attributes/classes/methods
-- ==static== :: set what's defined to only one instance of object/class/method/etc., and have persistent lifetime
+- ==static== :: set what's defined to only one instance of object/class/method/etc., and have persistent lifetime (object is associated to the class)
   + static variables get loaded when class is loaded by ClassLoader, and removed when Classloader used is garbage collected
+  + static methods *only* work with static variables
+  + "static import statement" ::
+    - "import statement" :: allows a type name to be used without being package-qualified (give the full package path: ~package com.example.etc~)
+    - "static import statement" :: used with static methods, allows method name to be used without being class qualified
+      #+begin_src java
+      // instead of importing using : import com.example.something.AClass;
+      // use static keyword with the full path to the static member
+      import static com.example.something.AClass.staticMember;
+
+      staticMember; // and now the static member can be called without the call to the class (without "qualifying" the member by its class)
+
+      // can do even better by referencing all static members of class AClass:
+      // import static com.example.something.AClass.*;
+      #+end_src
+  + static initializer :: run only once, before type's first use (can be used for example for using connection services)
+    - has access to static members only
+    - static keyword preceded
+    - and *out of any constructor or method*
+      #+begin_src java
+      public class A {
+          private int member1;
+          private static bool statMember;
+
+          static { // will run only once, before class A is used
+              AdminService admin = new AdminService(); // dummy service that hypothetically check if there is no restriction exists based on some implementation
+              admin.connect();
+              statMember = admin.anyRestriction() ? false : true;
+              admin.close();
+              }
+
+          public A(int member1) {
+              this.member1 = member1;
+              }
+
+          }
+      #+end_src
+
 - operators ::
   + operators precedence :: left to right when equivalent or when tied
     - precedence order :: postfix, prefix, multiplicative (==* / %==), additive (==+ -==)
@@ -153,13 +190,53 @@
   + equality operator =='=='== DOES NOT check equality of values, but rather if the operands are pointing to the same reference
   + strings ::
     - 
-  + arrays :: format : ==type[] = new type[nElements];==, or with list initialization : ==type[] = {ele1, ..., eleN};==
+  + arrays :: format : ==type[] = new type[nElements];==, or with list initialization: ==type[] = {ele1, ..., eleN};==
     - size of array :: ==arrayVar.length;==
 *** Methods, Class, Objects
 [2023-11-29 Wed 14:05]
 **** Notes
 - members of class (its 'fields') can also be called its 'states'
-- same as all non primitive types, classes instanciations (using ==new==) allocate new memory the size of the class specified. So, each time the variable is re-assigned with 'new', a new instance of the class is created, and the reference of the variable is changed to the new object, the old one being lost if not referenced anywhere else
+- default access modifiers :: 'package-private': members are only visible within the package (inside the same package to which the class belongs)
+- default constructors in java will fill default values where possible (primitive types and default constructors for embedded object)
+  + *careful* :: java generates default constructors only when none is provided, thus if custom constructors are provided, then all the different constructors have also to be provided for the different type of signatures that will be needed
+  + when constructors are provided, the constructor with no arguments is then called the default constructor
+- "chained constructors": embedded constructors calls :: to avoid boilerplates and use available constructors to cascade all the parameters until the top (no order in the constructors declaration needed)
+  #+begin_src java
+  public class A {
+      int member1;
+      int member2;
+      public A(int member1, int member2) {
+          this(member1);
+          this.member2 = member2;
+          }
+      }
+      public A(int member1) {
+          this.member1 = member1;
+          }
+      }
+  #+end_src
+- "initialization blocks" :: code that runs during object creation (not related to default constructor, works as completely separate (but interdependent))
+  + initialization order :: field initializers -> initialization blocks -> constructors
+  #+begin_src java
+  public class A {
+      int n = 5;
+      boolean[] arrBool = new boolean[n];
+      int member1;
+      
+      { // initialization block
+          for(int i = 0; i < n; i++) {
+              arrBool[i] = true;
+          }
+      }
+      public A(int member1) {
+          // initialization block above will run
+          this.member1 = member1;
+          }
+      }
+  #+end_src 
+- null in java : ==null==
+- "accessors" and "mutators" :: eg: getSmthing(), setSmthing(smthing)
+- same as all non primitive types, classes instanciations (using ==new==) allocate new memory the size of the class specified. So, each time the variable is re-assigned with 'new', a new instance of the class is created, and the reference of the variable is changed to the new object, the old one being lost if not referenced anywhere else.
 *** Algorithms and standard library
 - foreach :: ==for(loop-variable : array)==
 - parsing ::
@@ -213,6 +290,7 @@
 ** Design
 
 ** Definitions
+- Encapsulation :: hiding the implementation of the details about methods, members variables, etc. inside a class
 - Classloader :: object that is responsible for loading classes
 - Class vs Object :: object is an instance of a class, and a Class is its blueprint or template from which the object is created
 
