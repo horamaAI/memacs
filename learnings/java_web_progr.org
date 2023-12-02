@@ -31,14 +31,15 @@
   - variables naming conventions :: only letters and numbers, no starting with number, camelCase (not start with uppercase)
   - classes :: same as variables, but first letter capitalized, name of class must be the same as file name :: class Toto => file Toto.java
   - methods :: same as variables
-*** Variables, types, data type conversions, and operators arithmetics
+  - enums :: enum class naming convention same as usual classes (first char uppercase, camelCase), values: all in uppercase
+*** Variables, types, operators data type conversions, and operators arithmetics
 [2023-11-29 Wed 12:08]
 [2023-11-28 Tue 19:32]
 **** Operators and types
 [2023-11-28 Tue 19:37]
 - Variables :: named area of storage (Java strongly typed language)
 - primitive types ::
-  + primitive types are stored *by value* (copies when assigning)
+  + primitive types are stored *by value* (directly store the *values* when assigning, in contrast to classes that store references to instantiated objects). They represent only data, they're not able to provide methods for operating on that data
   + chars :: single unicode char, eg: 'u' or '\u00DA' (for 'u' with accent: \u followed by 4digits hex value of char)
   + integer :: byte (8bits), short (16bits), int (32bits), long (eg: 9L)
   + decimal :: float (32bits, eg: 3.14f), double (64bits, eg: 3.14 or 3.14d)
@@ -87,7 +88,6 @@
 
           }
       #+end_src
-
 - operators ::
   + operators precedence :: left to right when equivalent or when tied
     - precedence order :: postfix, prefix, multiplicative (==* / %==), additive (==+ -==)
@@ -177,6 +177,7 @@
         |     |          |  expression  |             |
         |     |          |    arrow     |             |
         +-----+----------+--------------+-------------+
+  + operator 'instanceof' :: ~(object) instanceof (type)~, checks if object is of type 'type'
 - Type conversion ::
   + implicit :: performed by compiler (eg: long valLong = valInt; // where valInt is explicitly declared as int, said as "widening conversion")
   + explicit :: with cast operator (eg: int valInt = (int) valLong; // where valLong is explicitly declared as long, careful of *side-effects*: precision loss, and compiling errors)
@@ -195,6 +196,7 @@
 *** Methods, Class, Objects
 [2023-11-29 Wed 14:05]
 **** Notes
+[2023-12-02 Sat 02:14]
 - members of class (its 'fields') can also be called its 'states'
 - default access modifiers :: 'package-private': members are only visible within the package (inside the same package to which the class belongs)
 - default constructors in java will fill default values where possible (primitive types and default constructors for embedded object)
@@ -237,7 +239,113 @@
 - null in java : ==null==
 - "accessors" and "mutators" :: eg: getSmthing(), setSmthing(smthing)
 - same as all non primitive types, classes instanciations (using ==new==) allocate new memory the size of the class specified. So, each time the variable is re-assigned with 'new', a new instance of the class is created, and the reference of the variable is changed to the new object, the old one being lost if not referenced anywhere else.
+**** Methods
+- Method arguments :: in java, every non primitive objects are references to objects. So when declaring a new object, it's just a reference to an instance. Furthermore, when calling a method, this method will create copy references of the arguments
+  + wrong modifications of objects :: where changes have no effect outside of the method, as may be intended
+    #+begin_src java
+    // file A.java
+    public class A {
+      int i;
+      public A(int i) {
+          this.i = i;
+      }
+
+      static void swap (A a1, A a2) {
+          A buff = a1; // here, a new reference 'buff' is pointing to the same instance as 'a1'
+          a1 = a2; // the reference a1 is a new local reference (reference copy of the content passed as argument to method swap). So a1 will point to the same content as the reference used when calling method swap. new copy reference a1 == 20
+          a2 = buff; // same as for a1, the new local copy reference a2 will then point to the content of reference buff, ie. a2 will point to the same content as buff <=> a2 == 10, but the content of the calling reference used on 'swap' will still point to the same content as before (no swap outside of the method)
+      }
+    }
+
+    // Main
+    public class Main {
+
+      public static void main(String[] args) {
+          A a1 = new A(10);
+          A a2 = new A(20);
+
+          A.swap(a1, a2); // when calling swap, the method will create copy reference, in that case the content is unchanged, ie. a1.i == 10; a2.i == 20
+      }
+    }
+    #+end_src
+  + right way of applying changes outside of the method :: changes apply on the *content* of the calling references (using setters and getters)
+    #+begin_src java
+    // file A.java
+    public class A {
+        // same as above, but with accessors and mutators
+        ...
+        static void swap (A a1, A a2) {
+          A buff = a1.aGetter(); // buff member is a new reference to the content of copy reference a1
+          a1.aSetter(a2); // here the changes apply on the *content* of the instance referenced by a1, ie. a1 points to object where the content is modified to 20 <=> a1.i == 20, and applies also outside of the method
+          a2.aSetter(buff); // same as above, a2.i == 10
+      }
+    }
+
+    // Main
+    public class Main {
+
+      public static void main(String[] args) {
+          A a1 = new A(10);
+          A a2 = new A(20);
+
+          A.swap(a1, a2); // the content of the instances referenced by a1 and a2 were properly swapped: a1.i == 20; a2.i == 10;
+      }
+    }
+    #+end_src
+- Overloading :: when there is no signature for an overladed method that matches the one, the java compiler will cope: eg: if exists signature ~method(int)~, and one passes ~method(short)~, then the short can be promoted as an int to match the existing signature.
+  + for more details about the steps of method selection at compile and run time, see [[https://docs.oracle.com/javase/specs/jls/se17/html/jls-15.html#jls-15.12][dedicated oracle page]]
+    - runtime for overriding, and compile time for overloading
+**** Wrapper classes, enums, and records
+[2023-12-02 Sat 19:35]
+- primitive wrapper classes :: are classes that can hold primitive data values, *and* also provide methods (since they're classes), and enable compatibility with richer aspects of java type system
+  + each primitive types have wrapper classes :: eg: Integer is the wrapper classes for integers int
+  + "boxing" :: process to convert primitive types to their wrapper classes (often done implicitly by the compiler, and creates a new *copy* of the source primitive type, it doesn't just create a reference to the value)
+  + "unboxing" :: the opposite of boxing, create a primitive type from a wrapper (same, creates a new copy)
+- enums :: useful for defining a type with a list of *finite* valid values (use of keyword ==enum==)
+  + enum support equality tests as content, not as reference
+  + enum values are ordered from first value as lowest to last value as highest, so value can be quantitatively compared (relative comparisons with method ~compareTo~ that returns a negative, 0, or positive value)
+  + supports switch cases, and enum switch case labels must be unqualified (~ENUMVALUE~, instead of ~EnumClass.ENUMVALUE~)
+  + enums are classes :: explicit inheritance of java's ~Enum~ class, can have members, constructors, methods, etc.
+    - main difference with usual classes ::
+  #+begin_src java
+  public enum Weekends {
+      SATURDAY,
+      SUNDAY;
+      }
+  // Main
+  ...
+  Weekends day1 = Weekends.SATURDAY;
+  Weekends day2 = Weekends.SUNDAY;
+  assertTrue(day2 == Weekends.SUNDAY); // Yaayy!!
+  assertFalse(day1 == day2); // Yaayy!!
+  #+end_src
 *** Algorithms and standard library
+**** Basics
+- class 'Object' main methods  ::
+  + clone :: create a duplicate instance of the source
+  + toString :: by default prints reference numbers, not content (need to override)
+  + equals :: compare content of objects for equality. By default, same as ~==~ and compare equality of references, not the content => needs for specialization (overriding Object's default equals) within the class:
+    #+begin_src java
+    public class A {
+        private int member;
+        A(int member) {
+            this.member = member;
+            }
+        public boolean equals(Object o) {
+            if (!(o instanceof A))
+                return false;
+            return this.member == ((A)o).member;
+            }
+        }
+    #+end_src
+  + getClass :: returns type information of the source
+  + hashCode :: objects with same content have equal hash code, but different objects do not need to return different hash codes
+    - hashCode algorithm contract ::
+      1. same object must consistently return the same value (provided not modified meanwhile, and hash value can change through different execution)
+      2. if objects are equal according to the equals(Object) method, hashCode() method on each of the two objects must produce the same value
+      3. if two objects are unequal according to the equals(java.lang.Object) method, calling hashCode method on each of the two objects doesn’t need to produce distinct integer results. However, developers should be aware that producing distinct integer results for unequal objects improves the performance of hash tables
+- Wrapper classes :: converting to/from other primitive types (eg: ~Double.parseDouble(doubleAsString);~), extracting values from strings (for eg when strings contains integers), finding max/min values, etc.
+- enums :: ~values~ (returns an array that contains all the enum values), ~valueOf~, etc.
 - foreach :: ==for(loop-variable : array)==
 - parsing ::
   + parse string as double :: Double.parseDouble(str);
@@ -278,7 +386,7 @@
       strBuilder.insert(pos, addendum);
       msg = strBuilder.toString(); // msg = I say will you tell him I am toto number 1
       #+end_src
-- CLI interactive ::
+- CLI IO interactive ::
   + IO from cli :: object ==Scanner==
     #+begin_src java
     import java.util.scanner;
@@ -291,6 +399,7 @@
 
 ** Definitions
 - Encapsulation :: hiding the implementation of the details about methods, members variables, etc. inside a class
+- overloading vs overriding :: former: changing the signature of a method with different types of arguments, the latter: use in inheritance context, sets which method will be called, the base or the derived
 - Classloader :: object that is responsible for loading classes
 - Class vs Object :: object is an instance of a class, and a Class is its blueprint or template from which the object is created
 
