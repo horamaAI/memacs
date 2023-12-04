@@ -1,0 +1,156 @@
+# -*- mode: org -*-
+#+title: Software crafting in general, careful though, some topics not available on all programming languages
+#+SETUPFILE: ~/set-up-files/basic-setups.org
+#+TAGS: Cpp C++
+
+
+* SOLID principles
+[2023-12-04 Mon 09:30]
+- dangers of not using SOLID :: (main cause of technical debt)
+  + code fragility :: tendency of software to break in many places every time it is changed
+  + code rigidity :: tendency of software to be difficult to change even in simple ways: every change causes a cascade of subsequent changes in dependent modules
+- SOLID :: design principles
+  + Single-responsibility principle (SRP) :: every function/class/module, have one and only one reason to change (single responsability: logging, a business logic, orchestration, persistence, etc.)
+    - pros :: makes code easy to read and understand, fix, maintain; less coupling, more resilient to change; more testable design, thus avoid side effects
+    - trick on identifying multiple reasons to change ::
+      + if else statements :: usually logics into if else statements can be changed into different methods/classes
+      + switch case statements :: each case represent a logic => can be split into different methods/classes
+      + Monster methods :: usually have large number of lines of codes, and/or mix levels of abstraction within the implementation, eg of monster code
+        #+begin_src java
+        // eg 1
+        Income getIncome(Employee e) {
+            Income income = employeeRepository.getIncome(e.id);
+            StateAuthorityApi.sent(income, e.fullName); // doesn't follow SRP, since instead of just fetching the income, it also generates payslips in json and sends them. Lots of dependencies that are not related to getting income
+            Payslip payslip = PlayslipGenerator.get(income);
+            JsonObject payslipJson = converToJson(payslip);
+            EmailService.send(e.email, payslipJson);
+            // ...
+            return income;
+            }
+
+        // eg 2
+        class Utils { // prefer more specialized classes instead of one vague: UtilsDB, UtilsConversion, UtilsLoggingn, UtilsSerialize, etc.
+            // this example does too much and does not follow the SRP
+            void saveToDb(Object o) {/*...*/}
+            void convertToJson(Object o) {/*...*/}
+            byte[] serialize(Object o) {/*...*/}
+            void log(String msg) {/*...*/}
+            String toFriendlyDate(LocalDateTime date) {/*...*/}
+            int roundDoubleToInt(double a) {/*...*/}
+            }
+
+        // eg 3
+        Report generate() {
+            // suppose method is used by both HR and Management departement, but since all criteria don't apply given the departement, in order to avoid changes to apply on both, better to split the method for each departement.
+            // SRP is just not about the code and the business logic, but also on the actors using the application
+            }
+
+        // eg 4: tight coupling
+        Income getIncome(Employee e) {
+            RepositoryImpl repo = new RepositoryImpl(srv, port, db); // Tight coupling. If for ex the repository constructor changes => code rigidity, but also code fragility since code will break => solution: pass asbtraction of repository as argument to getIncome
+
+            return repo.getIncome(e.id);
+            }
+
+        #+end_src
+      + in a nutshell :: in good SRP context, the names should be explicit, and the functions and features should be in line with that purpose
+  + Open–closed principle :: open for extension, but closed for modification.
+  + Liskov substitution principle :: Functions that use pointers or references so that base classes must be able to use objects of derived classes without knowing it.
+  + Interface segregation principle ::
+  + Dependency inversion principle :: "Depend upon abstractions, [not] concretions."
+
+* Design patterns
+** Creational patterns :: all about class instantiation
+    - Notes ::
+      + deals with object creation mechanisms, trying to create objects in a manner suitable to the situation. The basic form of object creation could result in design problems or added complexity to the design. Creational design patterns solve this problem by somehow controlling this object creation
+      + often, designs start out using Factory Method (less complicated, more customizable, subclasses proliferate) and evolve toward Abstract Factory, Prototype, or Builder (more flexible, more complex) as the designer discovers where more flexibility is needed.
+    - can be further divided into two parts ::
+      + class-creation patterns :: use inheritance effectively in the instantiation process
+      + object-creation patterns :: use delegation effectively to get the job done
+    - main :: builder, factory, factory method, abstract factory, prototype, singleton
+    - builder :: separates object construction from its representation
+      + pattern allows a client object to construct a complex object by specifying only its type and content, not its details
+      + separates object construction from its representation
+      + this way the construction process can be used to create different representations.
+      + eg ::
+	- Pizza: Object we want to build
+	- PizzaBuilder: HawaiianPizzaBuilder, SpicyPizzaBuilder, with unique_ptr<Pizza> m_pizza;
+	  + // hawaiianpizzabuilder and spicypizzabuilder inherits of Pizzabuilder
+	  + // they are also associated to Pizza since in Pizzabuilder from which they inherit they contain the object Pizza
+	- Cook (also called Director): PizzaBuilder* m_pizzaBuilder; // calls the builder
+	- Client: Use cook to create and open pizza :: HawaiianPizzaBuilder hawaiianPizzaBuilder; cook.createPizza(&hawaiianPizzaBuilder); etc.
+    - abstract factory :: creates instance of several families of classes
+      + provides an interface for creating families of related or dependent objects without specifying their concrete classes.
+      + provides hierarchy that encapsulates: many possible "platforms", and the construction of a suite of "products".
+      + 'new' operator considered harmful.
+      + Abstract Factory classes are often implemented with Factory Methods, but they can be implemented using Prototype.
+    - factory :: creates an instance of a class from a family of derived classes.
+      + problem :: once added new concrete product call, should also modify the Factory class. Not very flexible and violates open-close principle.
+    - factory method :: defines interface for creating an object, but leaves choice of its type to the subclasses, creation being deferred at run-time.
+      + use of 'static' and avoiding 'new' => object re-use
+      + it refers to the newly created object through a common interface.
+      + similar to Abstract Factory but without the emphasis on families.
+      + Factory Method: creation through inheritance. Prototype: creation through delegation.
+    - object pool :: avoid expensive acquisition and release of resources by recycling objects that are no longer in use
+      + used to manage the object caching.
+      + good option when cost of initializing class instance high, rate of instantiation of class is high, and number of instantiations in use at any one time is low
+    - prototype :: fully initialized instance to be copied or cloned
+      + specify the kinds of objects to create using a prototypical instance, and create new objects by copying this prototype.
+      + 'new' operator considered harmful
+      + whereas factory methods are created through inheritance, prototypes are created through delegation
+      + prototype doesn't require subclassing, but does require "initialize" operation. Factory Method requires subclassing, but doesn't require Initialize
+      + designs that make heavy use of Composite and Decorator patterns often can benefit from Prototype
+      + prototype co-opts one instance of a class for use as a breeder of all future instances
+      + prototypes are useful when object initialization is expensive, and one anticipates few variations on the initialization parameters. In this context, Prototype can avoid expensive "creation from scratch", and support cheap cloning of a pre-initialized prototype
+      + prototype is unique among others creational patterns in that it doesn't require a class – only an object.
+    - singleton :: class of which only a single instance can exist, global scope
+      + declare instance as private static data member
+      + provide a public static member function that encapsulates all initialization code, and provides access to the instance
+      + should be considered only if all three criteria are satisfied ::
+	- ownership of the single instance cannot be reasonably assigned
+	- lazy initialization is desirable
+	- global access is not otherwise provided for
+      + deleting a Singleton class/instance is a non-trivial design problem
+** Structural patterns
+    - Note :: design Patterns that ease the design by identifying a simple way to realize relationships between entities
+    - main :: adapter, bridge, composite, decorator, facade, flyweight, proxy, CRTP
+    - adapter :: match interfaces of different classes
+      + can be implemented either with inheritance or with aggregation
+      + adapter makes things work after they're designed; Bridge makes them work before they are.
+      + adapter provides a different interface to its subject, proxy provides the same interface, decorator provides an enhanced interface
+      + adapter is meant to change the interface of an existing object. Decorator enhances another object without changing its interface
+      + facade defines a new interface, whereas adapter reuses an old interface
+      + // in my opinion :: VERY UGLY, workaround to avoid refactoring (but refactoring VERY HEAVY though...)
+    - bridge :: separates an object's interface from its implementation
+      + 
+    - composite :: tree structure of simple and composite objects
+    - decorator :: add responsibilities to objects dynamically
+    - facade :: single class that represents an entire subsystem
+    - flyweight :: fine-grained instance used for efficient sharing
+    - private Class Data :: restricts accessor/mutator access
+    - proxy :: object representing another object
+** Behavioral patterns
+    - Note :: design patterns that identify common communication patterns between objects and realize these patterns. By doing so, these patterns increase flexibility in carrying out this communication
+    - observer :: way of notifying change to a number of classes
+    - chain of responsibility :: way of passing a request between a chain of objects
+    - interpreter :: way to include language elements in a program
+    - strategy :: encapsulates an algorithm inside a class
+    - state :: alter object's behavior when its state changes
+    - visitor :: defines new operation to a class without change
+    - iterator :: sequentially access the elements of a collection
+    - command :: encapsulate command request as an object
+    - mediator :: defines simplified communication between classes
+    - memento :: capture and restore an object's internal state
+    - null Object :: designed to act as a default value of an object
+    - template method :: defer exact steps of an algorithm to a subclass
+
+* Definitions
+[2023-12-04 Mon 09:50]
+- refactoring :: systematic process of improving code without creating new functionality that can transform a mess into clean code and simple design (solid principles, design patterns, decouple components, tests, etc.)
+- coupling :: level of inter-dependency between the various software components
+- technical debt :: cost of prioritizing fast delivery (which is not time consuming) over code quality (takes longer, but maintainable) for long periods of time
+  + loop through continuous improvement to minimize technical debt :: write code (fast delivery) <--> refactor (to reduce technical debt)
+* Acronyms
+- RAII :: Resource Acquisition Is Initialization
+- CRTP :: Curiously Recurring Template Pattern
+- SFINAE :: Substitution failure is not an error
