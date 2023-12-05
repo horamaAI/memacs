@@ -72,7 +72,7 @@
       #+begin_src java
       public class A {
           private int member1;
-          private static bool statMember;
+          private static boolean statMember;
 
           static { // will run only once, before class A is used
               AdminService admin = new AdminService(); // dummy service that hypothetically check if there is no restriction exists based on some implementation
@@ -419,14 +419,15 @@
     #+end_src
 **** Streams
 [2023-12-05 Tue 12:51]
-- foreach :: eg:
+- filter, foreach :: eg:
   #+begin_src java
   List<AircraftTarget> targets; // suppose it is initialized with latitudes and longitudes (integers)
   var aircraftInRange = targets.stream()
       .filter(a -> {
               var distance = (int) Math.sqrt((originLat - a.lat()) * (originLat - a.lat()) +(originLon - a.lon()) * (originLon - a.lon()));
-              return distance <= range;});
+              return distance <= range;}).foreach(System.out.println);
   #+end_src
+  
 *** Annotations
 [2023-12-03 Sun 00:35]
 **** Notes

@@ -191,7 +191,7 @@
 
 ** Open–closed principle (OCP)
 - OCP :: classes/methods/modules should be open for extension (component should be extendable to make it behave in new ways), but closed for modification (each new feature should not modify existing code)
-- pros :: easier to add new features, minimizes risk of regression bugs, enforces decoupling by isolating changes in specific components (which is good too for SRP)
+- pros :: easier to add new features and test, minimizes risk of regression bugs, enforces decoupling by isolating changes in specific components (which is good too for SRP)
 - OCP implementation strategies :: inheritance (but still exists couplings between base and derived class), and/or design pattern: strategy pattern
   + eg :: context: add feature for international money transfers when national already existed with method tranferMoney of class BankAccount
     - problematic :: international and national transfers are not processed the same way due to: fees, currency rate, etc.
@@ -199,9 +199,97 @@
     - con of solution 1 :: tight coupling, InternationalBankAccount depends on BankAccount, whereas InternationalBankAccount might have its own specificity that is not shared with BankAccount
     - solution 2, better :: use strategy pattern: create an interface for the feature transferMoney, and make both BankAccount and InternationBankAccount implement it => no coupling between the two, each can compute transferMoney in its own way
 - Tips ::
-  + start small, improve progressively when needed
+  + start small, improve progressively when needed. When fixing bugs it is safe to make small changes as long as they are covered by tests. When big changes are needed and runtime decisions seems to be needed, consider interfaces and patterns like decorator and strategy
+  + the main idea is implement components that can be extended easily
   + bug fixes don't always need applying OCP, so fix them without necessarily applying OCP
-  + if area of code likely to change a lot over time, prefer to start with inheritance, if strategy pattern could greatly improve the code, then do it
+  + strategy and decorator design patterns can be a great way to effectively implement OCP
+  + eg ::
+    #+begin_src java
+    // if we want to take into considerations luggage with the following code:
+    public class AircraftWeightService {
+        private int nbPax;
+        private int fuelQuantity;
+
+        public int calculate() {
+            final int avgWeightKg = 70;
+            return nbPax * avgWeightKg + fuelquantity;
+            }
+        }
+    // solution 1: tempting and easy to modify the class members and the method 'calculate', but that would be bad since that might break other modules of the program
+    // solution 2: add new method 'calculateWithLuggage(luggageWeight)' and return the calculation with all the parameters taken into consideration: return nbPax * avgWeightKg + fuelquantity + luggageWeight;
+    // better than solution 1 since the class is not really modified, but extended with method not yet used. However, that is still rudimentary and not really efficient
+    // solution 3: extend AircraftWeightService
+    public class AircraftWithLuggageWeightService extends AircraftWeightService {
+        private int luggageWeight;
+
+        @Override
+        public int calculate() {
+            return super.calculateWithLuggage() + luggageWeight;
+            }
+        }
+
+    #+end_src
+  + if area of code likely to change a lot over time, prefer to start with inheritance, and if strategy pattern could greatly improve the code, then do it. Strategy pattern helps the algorithm behavior to be decided at runtime
+    #+begin_src java
+    // how to add a new requirement for planes that are flying at more than 3000 meters, it's safer-ish 
+    public class SeparationCalculator {
+        private Aircraft a1;
+        private Aircraft a2;
+        private final int minDistanceMeters = 2000;
+
+        public boolean areAircraftTooClose() { // modifying this method is too critical a risk to do, so better to use strategy pattern
+            var distance = calculateDistance(a1, a2);
+            if (distance < minDistanceMeters) {
+                return true;
+                }
+            return false;
+            }
+        }
+    // new requirement with strategy pattern
+    public interface SeparationCalculator {
+        boolean areAircraftTooClose();
+        }
+    public class LowerAltitudeSeparationCalculator implements SeparationCalculator { // uses the standard separation calculator of 2000m
+        private Aircraft a1;
+        private Aircraft a2;
+        private final int lowerMinDistanceMeters = 2000;
+
+        public boolean areAircraftTooClose() {
+            var distance = calculateDistance(a1, a2);
+            if (distance < lowerMinDistanceMeters) {
+                return true;
+                }
+            return false;
+            }
+        }
+    public class UpperAltitudeSeparationCalculator implements SeparationCalculator { // adds the new requirement
+        private Aircraft a1;
+        private Aircraft a2;
+        private final int upperMinDistanceMeters = 1500;
+
+        public boolean areAircraftTooClose() { // modifying this method is too critical a risk to do, so better to use strategy pattern
+            var distance = calculateDistance(a1, a2);
+            if (distance < upperMinDistanceMeters) {
+                return true;
+                }
+            return false;
+            }
+        }
+    // the factory that decides which algorithm to use at runtime
+    // which is nice since new requirements can be added without breaking the standard use => add new strategy and modify the factory
+    public interface SeparationCalculatorFactory {
+        private Aircraft a1;
+        private Aircraft a2;
+
+        public SeparationCalculator build() {
+            if (a1.getAltitude() > 3000 && a2.getAltitude() > 3000) {
+                return new UpperAltitudeSeparationCalculator();
+                }
+            return new LowerAltitudeSeparationCalculator;
+            }
+        }
+
+    #+end_src
   + when creating APIs, be aware of retro compatibility when changing methods signatures, clients tools/applications might fail otherwise => use OCP and make the API open for extensions, closed for modifications
   + OCP can also allow APIs clients to extend your libraries with their own implementations: declare an abstract interface for an unsuitable class, and the client can implement the class in their own class
     #+begin_src java
@@ -215,55 +303,91 @@
         /*Client business logic*/
         }
     #+end_src
-  + best practices on changing APIs ::
-    - don't change existing public contracts
-    - expose abstractions to customer so they add new features on top of the framework
-    - if a breaking change is inevitable, give time for client to prepare
+  + best practices when changing APIs ::
+    - DON'T change existing public contracts
+    - expose abstractions to customer so they can add new features on top of the framework
+    - if a breaking change is inevitable, give time for client to prepare :: notify the clients, mark the feature as ==deprecated==, and overload the deprecated method with the new one
       
 ** Liskov substitution principle (LSP)
 - LSP :: any object of a type must be substitutable by objects of a derived type without altering the correctness of the program. Functions that use pointers or references to base classes must be able to use objects of derived classes without knowing it.
-- wrong relationship between types can cause lots of issues, so inheritance should not be seen as a relationship of type 'is a' (an ostrich is a bird), but rather as 'is substitutable by' (is a rectangle substitutable by a square). In the case of the ostrich it is biologically a bird, but in inheritance context an ostrich cannot bu fully substituted to a bird since it cannot implement the function 'fly' (an ostrich cannot fly)
+- wrong relationship between types can cause lots of issues, so inheritance should not be seen as a relationship of type 'is a' (an ostrich is a bird), but rather as *'is substitutable by'* (is a rectangle substitutable by a square?). In the case of the ostrich it is biologically a bird, but in inheritance context an ostrich cannot bu fully substituted to a bird since it cannot implement the function 'fly' (an ostrich cannot fly)
 - detecting LSP violations :: (some symptoms)
-  + violating "not substitutable by" relationship :: eg: a rectangle is not substitutable by a square (unless setWidth and setHeight reset both height and width at the same time, which is not really efficient). So, a rectangle is not substitutable by a square and should not inherit from each other
-  + violating LSP with partially implemented interfaces :: also possible to violate LSP with interfaces if not paid attention, if for example some class implements some of the interface methods, but not all (in that case better to break down the interface into smaller pieces)
+  + violating "not substitutable by" relationship :: examples:
+    - a rectangle is not substitutable by a square :: unless setWidth and setHeight reset both height and width at the same time, which is not really efficient. So, a rectangle is not substitutable by a square and should not inherit from each other
+    - an 2d point is not substitutable by a 3d point :: the distance implemented between two points doesn't yield the same result if the height coordinates is not taken into account
+  + violating LSP with partially implemented interfaces :: also possible to violate LSP with interfaces if not paid attention to, if for example some class implements some of the interface methods, but not all (in that case better to break down the interface into smaller pieces)
+    #+begin_src java
+    // bad
+    public interface Aircraft {
+        public void land();
+        public void takeoff();
+        public void brake(int brakingPower);
+        }
+    // interface ok for a plane, but not ok for helicopter that doesn't really "brake" (no breaking power)
+    public class Helicopter implements Aircraft {
+        @Override
+        public void land() {/*...*/}
+        @Override
+        public void takeoff() {/*...*/}
+        @Override
+        public void brake(int brakingPower) {/*...*/} // NOPE!! but have to implement the complete interface => BOUM!!!
+        }
+    
+    // better to break the interface into smaller pieces
+    public interface Aircraft {
+        public void land();
+        public void takeoff();
+        }
+    // special interface for planes and other that can brake
+    public interface Plane extends Aircraft {
+        public void break(int brakingPower);
+        }
+    // now ok
+    public class Helicopter implements Aircraft {
+        @Override
+        public void land() {/*...*/}
+        @Override
+        public void takeoff() {/*...*/}
+        }
+    #+end_src
   + violating LSP with type checking :: if not all types can be substituted properly, eg: by filtering out some cases with if/else
-  + tricks to eliminate LSP violations ::
-    - move out incorrect relations between objects
-    - for type checking violations, use the "tell don't ask" principle to eliminate type checking and casting
-      + "tell don't ask": instead of checking types with if/else (asking), it's better to "tell" by creating a class that extends (inherits) the "normal" class, override the method that comes after the usual case, and move the additional part of the code that is done in the type checking
-        #+begin_src java
-        // Bad
-        for (Task task: tasks) {
-            if (task instanceof BugFix) { // type checking and casting, LSP violation
-                BugFix bf = (BugFix) task;
-                bf.initializeBugDescription();
-                }
-            task.setInProgress();
-            }
+- tricks to eliminate LSP violations ::
+  + move out incorrect relations between objects
+  + for type checking violations, use the "tell don't ask" principle to eliminate type checking and casting
+    - "tell don't ask": instead of checking types with if/else (asking), it's better to "tell" by creating a class that extends (inherits) the "normal" class, override the method that comes after the usual case, and move the additional part of the code that is done in the type checking
+      #+begin_src java
+      // Bad
+      for (Task task: tasks) {
+          if (task instanceof BugFix) { // type checking and casting, LSP violation
+              BugFix bf = (BugFix) task;
+              bf.initializeBugDescription();
+              }
+          task.setInProgress();
+          }
 
-        // Better
-        class BugFix extends Task {
-            @Override
-            public void setInProgress() {
-                this.initializeBugDescription();
-                super.setInProgress();
-                }
-            }
-        // ...
-        for (Task task: tasks) {
-            // no more type checking
-            task.setInProgress();
-            }
-        #+end_src
+      // Better
+      class BugFix extends Task {
+          @Override
+          public void setInProgress() {
+              this.initializeBugDescription();
+              super.setInProgress();
+              }
+          }
+      // ...
+      for (Task task: tasks) {
+          // no more type checking
+          task.setInProgress();
+          }
+      #+end_src
         
 ** Interface segregation principle (ISP)
 - ISP :: don't try to force clients to depend on methods that they don't need
 - understand "interface" in general :: interfaces, abstract classes, any public method the classes depend upon
-- pros :: lean and focused interfaces minimize tight couplings, reinforces LSP and SRP
-- identigying "fat" interfaces :: too many methods in the interface, methods that throw exceptions (or empty methods) when used because they extend/implement classes/interfaces that are not really needed, interfaces with low cohesion or not granular enough (eg: adding payment related methods in class 'ShoppingCart')
+- pros :: gives lean and focused interfaces that minimize tight couplings, provides more composable interfaces with more flexibility, and reinforce LSP and SRP
+- identigying "fat" interfaces :: too many methods in the interface, methods that throw exceptions (or empty methods) when used because they extend/implement classes/interfaces that are not really needed, interfaces with low cohesion or not granular enough (eg: adding payment related methods in a class 'ShoppingCart')
 - tricks ::
-  + reduce as much as possible the interfaces and break tight couplings
-  + on legacy code where one doesn't have a way to control the code, better to use the design pattern 'Adapter'
+  + reduce as much as possible the interfaces size (not number) and break tight couplings by creating interfaces that are lean and focused
+  + on external or legacy code where one doesn't have a way to control the code, better to use the design pattern 'Adapter' (basically create a set of classes that will translate the transactions between your interface that is exposed to the client, and the legacy framework)
 - eg ::
   #+begin_src java
   // bad
@@ -279,6 +403,7 @@
   interface LocalMoneyTransferCapability {
       void processLocalPayment(double amount);
       }
+  // anytime a user wants to extend or implement the interface his own way, he just can do it
   interface InternationalMoneyTransferCapability {
       void processInternationalPayment(double amount);
       }
@@ -293,9 +418,23 @@
   #+end_src
   
 ** Dependency inversion principle (DIP)
-- DIP :: "Depend upon abstractions, not concretions.": high level modules (features that are mapped to business domain, what the software should do, not how they should do it) should not depend on low level ones (implementation details, how the software should do the tasks), both should depend on abstractions. Abstractions should not depend on details, details should depend on abstractions
+- DIP :: "Depend upon abstractions, not concretions.": high level modules (features that are mapped to business domain, what the software should do, not how they should do it) should not depend on low level ones (implementation details, how the software should do the tasks: logging, network, data access, UI, IO, etc.), both should depend on abstractions. Abstractions should not depend on details, details should depend on abstractions
 - by dictating that both high-level and low-level objects must depend on the same abstraction, DIP inverts the way some people may think about object-oriented programming
 - pros :: minimize coupling, the high level should not depend on the low level and vice-versa, otherwise one could find that changing any of the concrete level will induce changes on other levels
+- Dependency Injection (DI) :: pattern different than DIP, but often used together. It's a technique that makes a class independent of its dependencies. It allows the creation of dependent objects outside of a class and provides those objects to the class. Note: Using setters not efficient since might leave the object in uninitialized state
+  + DI approach ::
+    - declare dependencies as abstractions in the constructor
+    - have a component that creates and passes them in the constructor
+  + Note ::
+    - in example above, PaymentProcessor is still dependent of ProductRepoFactory. Dependencies are inevitable, but rather than instantiating within methods and classes, which creates tight coupling, one can pass the dependencies as arguments to constructors and assign them to local members. That reduces the coupling, and makes it easier to use the dependencies outside of the method/class, for example by mocking with tests
+  + we've seen above that setters are not the ideal for dependency injection, but there is other solutions ::
+    - declaring dependencies in constructor (most used DI) :: eg: ~PaymentProcessor(ProductRepo productRepo)~
+      + however, can be tiresome if done manually and have lots of dependencies injections (lots of parameters to pass to a class constructor), of some dependencies need to be singletons => use design pattern "inversion of control"
+    - Inversion of control design pattern (IOP) :: takes away the responsibility to create objects manually. IOC is a design principle in which the control of object creation, configuration, and lifecycle is passed to a container or a framework (no 'new'). The process of creating new objects is left to the "IOC container".
+      + control of object is "inverted" (as in *inversion* of control) :: it's not the programmer but something else that controls the objects
+      + makes sense to use IOC for some objects in the application (service, data access, controllers), *however* for some other entities it should still be left to the coder (entities, values objects, etc.), don't use it for all objects
+      + pros of IOC :: easy to switch between different implementations at runtime, increase program modularity, manages objects lifecycle and their configuration
+      + some popular IOC containers :: spring, google guice, dagger
 - eg ::
   #+begin_src java
   // bad
@@ -322,7 +461,7 @@
           }
       }
   class ProductRepoFactory {
-      public static ProductRepo create() {
+      public static ProductRepo create() { // the return type is an interface, to allow for diverse concrete types to be returned
           return new SqlProductRepo(); // for now, but can implement further objects, and create objects based on runtime parameters, or any other option defined by the developer eg based on an input argument:
           // public static ProductRepo create(String type) {
           //     if (type.equals("mongo")) {
@@ -333,22 +472,21 @@
           }
       }
   class PaymentProcessor { // High level class
+      ProductRepo repo; // abstraction
+      public PaymentProcessor(ProductRepo repo) { // abstraction passed as argument (DI)
+          this.repo = repo;// we get an abstraction ProductRepo interface that is created from a factory (generates a concrete MongoProductRepo, ExcelProductRepo, etc.), and that does not directly depend on concrete implementation of ProductRepo
+          // easy to test too by passing a mocked repo object 
+          }
       public void pay(String productId) {
-          ProductRepo repo = new ProductRepoFactory.create(); // we get an abstraction ProductRepo interface that is created from a factory (generates a concrete MongoProductRepo, ExcelProductRepo, etc.), and that does not directly depend on concrete implementation of ProductRepo
           Product product = repo.getById(productId);
           this.processPayment(product);
           }
       }
+  // outside of the class, create repo and pass it as argument
+  // var repo = new ProductRepoFactory.create();
+  // var payProcessor = new PaymentProcessor(repo);
+  // payProcessor.pay(employeeToto.getById);
   #+end_src
-- Dependency Injection (DI) :: different than DIP, but often used together. It's a technique that makes a class independent of its dependencies (allows the creation of dependent objects outside of a class and provides those objects to the class. Note: Using setters not efficient since might leave the object in uninitialized state)
-  - Note :: in example above, PaymentProcessor is still dependent of ProductRepoFactory. Dependencies are inevitable, but rather than instantiating within methods and classes, which creates tight coupling, one can pass the dependencies as arguments to constructors and assign them to local members. That reduces the coupling, and makes it easier to use the dependencies outside of the method/class, for example by mocking with tests
-  - we've seen above that setters are not the ideal for dependency injection, but there is other solutions ::
-    + declaring dependencies in constructor (most used DI) :: eg: ~PaymentProcessor(ProductRepo productRepo)~
-      - however, can be tiresome if done manually and have lots of dependencies injections (lots of parameters to pass to a class constructor), of some dependencies need to be singletons => use design pattern "inversion of control"
-    + Inversion of control design pattern (IOP) :: takes away the responsibility to create objects manually. IOC is a design principle in which the control of object creation, configuration, and lifecycle is passed to a container or a framework (no 'new'). The process of creating new objects is left to the "IOC container".
-      - control of object is "inverted" (as in *inversion* of control) :: it's not the programmer but something else that controls the objects
-      - makes sense to use IOC for some objects in the application (service, data access, controllers), *however* for some other entities it should still be left to the coder (entities, values objects, etc.)
-      - pros of IOC :: easy to switch between different implementations at runtime, increase program modularity, manages objects lifecycle and their configuration
         
 * Design patterns
 ** Creational patterns :: all about class instantiation
@@ -427,7 +565,7 @@
 - observer :: way of notifying change to a number of classes
 - chain of responsibility :: way of passing a request between a chain of objects
 - interpreter :: way to include language elements in a program
-- strategy :: encapsulates an algorithm inside a class or interface
+- strategy :: encapsulates an algorithm inside a class or interface, enables the methods/classes behavior to be decided at runtime
 - state :: alter object's behavior when its state changes
 - visitor :: defines new operation to a class without change
 - iterator :: sequentially access the elements of a collection
