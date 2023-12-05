@@ -1,7 +1,7 @@
 # -*- mode: org -*-
 #+title: Software crafting in general, careful though, some topics not available on all programming languages
 #+SETUPFILE: ~/set-up-files/basic-setups.org
-#+TAGS: Cpp C++
+#+TAGS: Cpp C++ Java Craft
 
 
 * SOLID principles
@@ -52,13 +52,146 @@
             return repo.getIncome(e.id);
             }
 
+        // eg 5:
+        // Bad
+        public void save(Employee emp) { // 'save' is a persistent method, so should be in appropriate class, eg: EmployeeRepo in persistency package
+            // can be reduced to much readable code following SRP
+
+            try {
+
+                // serialization SRP, EmplyeeFileSerializer in persistency package
+                StringBuilder buffStr = new StringBuilder();
+                buffStr.append("==Employee record==");
+                buffStr.append(System.lineSeparator());
+                buffStr.append("=NAME=");
+                buffStr.append(emp.firstName() + " " + emp.lastName());
+                buffStr.append(System.lineSeparator());
+                buffStr.append("==POSITION==");
+                buffStr.append(emp.getClass().getTypeName());
+                buffStr.append(System.lineSeparator());
+                buffStr.append("==MONTHLY WAGE==");
+                buffStr.append(emp.getMonthlyIncome());
+                buffStr.append(System.lineSeparator());
+
+                // File access SRP, 
+                Path path = Paths.get(emp.getFullName().replace(" ", "_") + ".rec");
+                Files.write(path, sb.toString().getBytes());
+
+                // ...
+                // Logging SRP, ConsoleLogger
+            } catch (IOException exc) {
+                // Logging SRP
+            }
+
+        }
+        // better
+        public void save(Employee emp) throws IOException { // In model class Employee, and stating throw in signature so that the caller catches the exception
+            String serializedString = this.serializer.serialize(employee);
+
+            Path path = Paths.get(emp.getFullName().replace(" ", "_") + ".rec");
+            Files.write(path, sb.toString().getBytes());
+
+        }
         #+end_src
       + in a nutshell :: in good SRP context, the names should be explicit, and the functions and features should be in line with that purpose
-  + Open–closed principle :: open for extension, but closed for modification.
-  + Liskov substitution principle :: Functions that use pointers or references so that base classes must be able to use objects of derived classes without knowing it.
-  + Interface segregation principle ::
-  + Dependency inversion principle :: "Depend upon abstractions, [not] concretions."
+  + Open–closed principle (OCP) :: classes/methods/modules should be open for extension (component should be extendable to make it behave in new ways), but closed for modification (each new feature should not modify existing code)
+    - pros :: easier to add new features, minimizes risk of regression bugs, enforces decoupling by isolating changes in specific components (which is good too for SRP)
+    - OCP implementation strategies :: inheritance (but still exists couplings between base and derived class), and/or design pattern: strategy pattern
+      + eg :: context: add feature for international money transfers when national already existed with method tranferMoney of class BankAccount
+        - problematic :: international and national transfers are not processed the same way due to: fees, currency rate, etc.
+        - solution 1 :: create class InternationalBankAccount that extends BankAccount
+        - con of solution 1 :: tight coupling, InternationalBankAccount depends on BankAccount, whereas InternationalBankAccount might have its own specificity that is not shared with BankAccount
+        - solution 2, better :: use strategy pattern: create an interface for the feature transferMoney, and make both BankAccount and InternationBankAccount implement it => no coupling between the two, each can compute transferMoney in its own way
+      + Tips ::
+        - start small, improve progressively when needed
+        - bug fixes don't always need applying OCP, so fix them without necessarily applying OCP
+        - if area of code likely to change a lot over time, prefer to start with inheritance, if strategy pattern could greatly improve the code, then do it
+        - when creating APIs, be aware of retro compatibility when changing methods signatures, clients tools/applications might fail otherwise => use OCP and make the API open for extensions, closed for modifications
+        - OCP can also allow APIs clients to extend your libraries with their own implementations: declare an abstract interface for an unsuitable class, and the client can implement the class in their own class
+          #+begin_src java
+          // Library side
+          public interface AnOpenForExtensionClass {
+              /*...*/
+              }
 
+          // Client side
+          class TheImplementationOnClientSide implements AnOpenForExtensionClass {
+              /*Client business logic*/
+              }
+          #+end_src
+        - best practices on changing APIs ::
+          + don't change existing public contracts
+          + expose abstractions to customer so they add new features on top of the framework
+          + if a breaking change is inevitable, give time for client to prepare
+  + Liskov substitution principle (LSP) :: any object of a type must be substitutable by objects of a derived type without altering the correctness of the program. Functions that use pointers or references to base classes must be able to use objects of derived classes without knowing it.
+    - wrong relationship between types can cause lots of issues, so inheritance should not be seen as a relationship of type 'is a' (an ostrich is a bird), but rather as 'is substitutable by' (is a rectangle substitutable by a square). In the case of the ostrich it is biologically a bird, but in inheritance context an ostrich cannot bu fully substituted to a bird since it cannot implement the function 'fly' (an ostrich cannot fly)
+    - detecting LSP violations :: (some symptoms)
+      + violating "not substitutable by" relationship :: eg: a rectangle is not substitutable by a square (unless setWidth and setHeight reset both height and width at the same time, which is not really efficient). So, a rectangle is not substitutable by a square and should not inherit from each other
+      + violating LSP with partially implemented interfaces :: also possible to violate LSP with interfaces if not paid attention, if for example some class implements some of the interface methods, but not all (in that case better to break down the interface into smaller pieces)
+      + violating LSP with type checking :: if not all types can be substituted properly, eg: by filtering out some cases with if/else
+    - tricks to eliminate LSP violations ::
+      + move out incorrect relations between objects
+      + for type checking violations, use the "tell don't ask" principle to eliminate type checking and casting
+        - "tell don't ask": instead of checking types with if/else (asking), it's better to "tell" by creating a class that extends (inherits) the "normal" class, override the method that comes after the usual case, and move the additional part of the code that is done in the type checking
+          #+begin_src java
+          // Bad
+          for (Task task: tasks) {
+              if (task instanceof BugFix) { // type checking and casting, LSP violation
+                  BugFix bf = (BugFix) task;
+                  bf.initializeBugDescription();
+                  }
+              task.setInProgress();
+              }
+
+          // Better
+          class BugFix extends Task {
+              @Override
+              public void setInProgress() {
+                  this.initializeBugDescription();
+                  super.setInProgress();
+                  }
+              }
+          // ...
+          for (Task task: tasks) {
+              // no more type checking
+              task.setInProgress();
+              }
+          #+end_src
+  + Interface segregation principle :: don't try to force clients to depend on methods that they don't need
+    - understand "interface" in general :: interfaces, abstract classes, any public method the classes depend upon
+    - pros :: lean and focused interfaces minimize tight couplings, reinforces LSP and SRP
+    - identigying "fat" interfaces :: too many methods in the interface, methods that throw exceptions (or empty methods) when used because they extend/implement classes/interfaces that are not really needed, interfaces with low cohesion or not granular enough (eg: adding payment related methods in class 'ShoppingCart')
+    - tricks ::
+      + reduce as much as possible the interfaces and break tight couplings
+      + on legacy code where one doesn't have a way to control the code, better to use the design pattern 'Adapter'
+    - eg ::
+      #+begin_src java
+      // bad
+      interface Account {
+          double getBalance();
+          void processLocalPayment(double amount);
+          void processInternationalPayment(double amount); // International payment does need further data that local payment doesn't have
+          }
+      // better
+      interface BaseAccount {
+          double getBalance();
+          }
+      interface LocalMoneyTransferCapability {
+          void processLocalPayment(double amount);
+          }
+      interface InternationalMoneyTransferCapability {
+          void processInternationalPayment(double amount);
+          }
+      public class SchoolAccount implements BaseAccount, LocalMoneyTransferCapability {
+          // ... only the implementation needed
+          }
+      // can even reuse interface
+      public class InternationLoanService implements InternationalMoneyTransferCapability {
+          // ...
+          public void processInternationalPayment(double amount);
+          }
+      #+end_src
+  + Dependency inversion principle :: "Depend upon abstractions, not concretions.": high level modules (features that are mapped to business domain, what the software should do, not how they should do it) should not depend on low level ones (implementation details, how the software should do the tasks), both should depend on abstractions. Abstractions should not depend on details, details should depend on abstractions
 * Design patterns
 ** Creational patterns :: all about class instantiation
     - Notes ::
@@ -134,7 +267,7 @@
     - observer :: way of notifying change to a number of classes
     - chain of responsibility :: way of passing a request between a chain of objects
     - interpreter :: way to include language elements in a program
-    - strategy :: encapsulates an algorithm inside a class
+    - strategy :: encapsulates an algorithm inside a class or interface
     - state :: alter object's behavior when its state changes
     - visitor :: defines new operation to a class without change
     - iterator :: sequentially access the elements of a collection
@@ -146,6 +279,8 @@
 
 * Definitions
 [2023-12-04 Mon 09:50]
+- API :: contract/agreement between different software components on how they should work together
+- Abstraction :: things not concrete, can't use 'new', but rather abstract classes or interfaces
 - refactoring :: systematic process of improving code without creating new functionality that can transform a mess into clean code and simple design (solid principles, design patterns, decouple components, tests, etc.)
 - coupling :: level of inter-dependency between the various software components
 - technical debt :: cost of prioritizing fast delivery (which is not time consuming) over code quality (takes longer, but maintainable) for long periods of time
