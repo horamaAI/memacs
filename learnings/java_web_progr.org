@@ -4,7 +4,7 @@
 #+TAGS: Java
 * JAVA
 ** Notes
-- Targeted JAVA version: JAVA 17
+- Targeted JAVA version :: JAVA 17
 - IDE used : IntelliJ ::
   + pros :: does lots of stuff for us from elements that are hinted by the dev : (install a small cli java compiler when there is none defined, update external libraries, etc.)
 ** Compile and run
@@ -417,6 +417,16 @@
     scanner.nextLine(); // reads user input until end of key or EOF
     ...
     #+end_src
+**** Streams
+[2023-12-05 Tue 12:51]
+- foreach :: eg:
+  #+begin_src java
+  List<AircraftTarget> targets; // suppose it is initialized with latitudes and longitudes (integers)
+  var aircraftInRange = targets.stream()
+      .filter(a -> {
+              var distance = (int) Math.sqrt((originLat - a.lat()) * (originLat - a.lat()) +(originLon - a.lon()) * (originLon - a.lon()));
+              return distance <= range;});
+  #+end_src
 *** Annotations
 [2023-12-03 Sun 00:35]
 **** Notes
@@ -426,7 +436,7 @@
 - can even use annotations within the program, by writing programs that interpret needed annotations
 - annotations are preceded by ==@== :: @Override (used by the java core platform), @Deprecated (to say that the marked element should no longer be used, and the compiler will generate warnings when used, but will still work), @SuppressWarnings (to indicate to the compiler to not generate certain kind of warnings, eg: to suppress deprecated compiler warnings: ~@SupressWarnings("deprecation")~)
 - annotations can be used anywhere, so it's always good to reduce their scope so that one doesn't miss anything, eg for the case of SuppressWarnings, better to place ~@SupressWarnings("deprecation")~ on the deprecated method, instead of its whole class
-** Design
+** Design with JAVA
 
 ** Definitions
 - Fields :: same as saying class members

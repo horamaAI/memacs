@@ -6,285 +6,445 @@
 
 * SOLID principles
 [2023-12-04 Mon 09:30]
+- Notes :: examples are
+- SOLID :: design principles 
 - dangers of not using SOLID :: (main cause of technical debt)
   + code fragility :: tendency of software to break in many places every time it is changed
   + code rigidity :: tendency of software to be difficult to change even in simple ways: every change causes a cascade of subsequent changes in dependent modules
-- SOLID :: design principles
-  + Single-responsibility principle (SRP) :: every function/class/module, have one and only one reason to change (single responsability: logging, a business logic, orchestration, persistence, etc.)
-    - pros :: makes code easy to read and understand, fix, maintain; less coupling, more resilient to change; more testable design, thus avoid side effects
-    - trick on identifying multiple reasons to change ::
-      + if else statements :: usually logics into if else statements can be changed into different methods/classes
-      + switch case statements :: each case represent a logic => can be split into different methods/classes
-      + Monster methods :: usually have large number of lines of codes, and/or mix levels of abstraction within the implementation, eg of monster code
-        #+begin_src java
-        // eg 1
-        Income getIncome(Employee e) {
-            Income income = employeeRepository.getIncome(e.id);
-            StateAuthorityApi.sent(income, e.fullName); // doesn't follow SRP, since instead of just fetching the income, it also generates payslips in json and sends them. Lots of dependencies that are not related to getting income
-            Payslip payslip = PlayslipGenerator.get(income);
-            JsonObject payslipJson = converToJson(payslip);
-            EmailService.send(e.email, payslipJson);
-            // ...
-            return income;
+  + technical debt :: cost of prioritizing fast delivery (which is not time consuming) over code quality (takes longer, but maintainable) for long periods of time
+    - loop through continuous improvement to minimize technical debt :: write code (fast delivery) <--> refactor (to reduce technical debt)
+- Pyramid of clean code :: (from foundational to advanced): SOLID, design patterns, TDD, continuous refactoring
+      
+** Single-responsibility principle (SRP)
+- SRP :: every function/class/module, have one and only one reason to change (responsabilities examples: logging, a business logic, orchestration, persistence, end users, networking, IO, error handling, etc.)
+- pros :: makes code easy to read and understand, fix, maintain; less coupling, more resilient to change; more testable design, thus avoid side effects
+- symptoms :: hardly readable, low maintainability and evolution, hard to test, high coupling
+- trick on identifying multiple reasons to change ::
+  + if else statements :: usually logics into if else statements can be changed into different methods/classes
+    - note that not all if/else, switch cases are bad. As long that there is no logic or algorithm with changes apply, they're ok.
+    #+begin_src java
+    // bad
+    public double isSeparationSafe(Aircraft otherAirCraft, Airspace airSpace) { // has lots of reason to change
+        var distance = this.calculateDistanceTo(otherAirCraft);
+        if (this.altitudeFeet > 2000) { // need for changes when altitude not right
+            // check upper altitude rules
             }
-
-        // eg 2
-        class Utils { // prefer more specialized classes instead of one vague: UtilsDB, UtilsConversion, UtilsLoggingn, UtilsSerialize, etc.
-            // this example does too much and does not follow the SRP
-            void saveToDb(Object o) {/*...*/}
-            void convertToJson(Object o) {/*...*/}
-            byte[] serialize(Object o) {/*...*/}
-            void log(String msg) {/*...*/}
-            String toFriendlyDate(LocalDateTime date) {/*...*/}
-            int roundDoubleToInt(double a) {/*...*/}
+        else {
+            if (this.inAirSpace(airSpace)) { // need for changes when air space changes
+                // check air space rules
+                }
+            if (this.isRSVMEquipped) { // more changes needed
+                // check RSVM reduced rules
+                }
             }
-
-        // eg 3
-        Report generate() {
-            // suppose method is used by both HR and Management departement, but since all criteria don't apply given the departement, in order to avoid changes to apply on both, better to split the method for each departement.
-            // SRP is just not about the code and the business logic, but also on the actors using the application
-            }
-
-        // eg 4: tight coupling
-        Income getIncome(Employee e) {
-            RepositoryImpl repo = new RepositoryImpl(srv, port, db); // Tight coupling. If for ex the repository constructor changes => code rigidity, but also code fragility since code will break => solution: pass asbtraction of repository as argument to getIncome
-
-            return repo.getIncome(e.id);
-            }
-
-        // eg 5:
-        // Bad
-        public void save(Employee emp) { // 'save' is a persistent method, so should be in appropriate class, eg: EmployeeRepo in persistency package
-            // can be reduced to much readable code following SRP
-
-            try {
-
-                // serialization SRP, EmplyeeFileSerializer in persistency package
-                StringBuilder buffStr = new StringBuilder();
-                buffStr.append("==Employee record==");
-                buffStr.append(System.lineSeparator());
-                buffStr.append("=NAME=");
-                buffStr.append(emp.firstName() + " " + emp.lastName());
-                buffStr.append(System.lineSeparator());
-                buffStr.append("==POSITION==");
-                buffStr.append(emp.getClass().getTypeName());
-                buffStr.append(System.lineSeparator());
-                buffStr.append("==MONTHLY WAGE==");
-                buffStr.append(emp.getMonthlyIncome());
-                buffStr.append(System.lineSeparator());
-
-                // File access SRP, 
-                Path path = Paths.get(emp.getFullName().replace(" ", "_") + ".rec");
-                Files.write(path, sb.toString().getBytes());
-
-                // ...
-                // Logging SRP, ConsoleLogger
-            } catch (IOException exc) {
-                // Logging SRP
-            }
-
         }
-        // better
-        public void save(Employee emp) throws IOException { // In model class Employee, and stating throw in signature so that the caller catches the exception
-            String serializedString = this.serializer.serialize(employee);
+    // better: move calculation of safe separation in a separate class or specialized service to handle the rules. Thus, the aircraft will call the service to check if separation is safe, but won't be burdened with internal details on how the calculations are made
+    #+end_src
+  + switch case statements :: each case represent a logic => can be split into different methods/classes
+  + "Monster methods" and "God classes" :: usually have large number of lines of codes, and/or mix levels of abstraction within the implementation. The methods and/or classes are not focused and very specialized, examples:
+    #+begin_src java
+    // eg 1
+    Income getIncome(Employee e) {
+        Income income = employeeRepository.getIncome(e.id);
+        StateAuthorityApi.sent(income, e.fullName); // doesn't follow SRP, since instead of just fetching the income, it also generates payslips in json and sends them. Lots of dependencies that are not related to getting income
+        Payslip payslip = PlayslipGenerator.get(income);
+        JsonObject payslipJson = converToJson(payslip);
+        EmailService.send(e.email, payslipJson);
+        // ...
+        return income;
+        }
 
+    // eg 2
+    class Utils { // prefer more specialized classes instead of one vague: UtilsDB, UtilsConversion, UtilsLoggingn, UtilsSerialize, etc.
+        // this example does too much and does not follow the SRP
+        void saveToDb(Object o) {/*...*/}
+        void convertToJson(Object o) {/*...*/}
+        byte[] serialize(Object o) {/*...*/}
+        void log(String msg) {/*...*/}
+        String toFriendlyDate(LocalDateTime date) {/*...*/}
+        int roundDoubleToInt(double a) {/*...*/}
+        }
+
+    // eg 3
+    Report generate() {
+        // suppose method is used by both HR and Management departement, but since all criteria don't apply given the department, in order to avoid changes to apply on both, better to split the method for each department.
+        // SRP is just not about the code and the business logic, but also on the actors using the application
+        }
+
+    // eg 4: tight coupling
+    Income getIncome(Employee e) {
+        RepositoryImpl repo = new RepositoryImpl(srv, port, db); // Tight coupling. If for ex the repository constructor changes => code rigidity, but also code fragility since code will break => solution: pass asbtraction of repository as argument to getIncome
+
+        return repo.getIncome(e.id);
+        }
+
+    // eg 5:
+    // Bad
+    public void save(Employee emp) { // 'save' is a persistent method, so should be in appropriate class, eg: EmployeeRepo in persistency package
+        // can be reduced to much readable code following SRP
+
+        try {
+
+            // serialization SRP, EmplyeeFileSerializer in persistency package
+            StringBuilder buffStr = new StringBuilder();
+            buffStr.append("==Employee record==");
+            buffStr.append(System.lineSeparator());
+            buffStr.append("=NAME=");
+            buffStr.append(emp.firstName() + " " + emp.lastName());
+            buffStr.append(System.lineSeparator());
+            buffStr.append("==POSITION==");
+            buffStr.append(emp.getClass().getTypeName());
+            buffStr.append(System.lineSeparator());
+            buffStr.append("==MONTHLY WAGE==");
+            buffStr.append(emp.getMonthlyIncome());
+            buffStr.append(System.lineSeparator());
+
+            // File access SRP, 
             Path path = Paths.get(emp.getFullName().replace(" ", "_") + ".rec");
             Files.write(path, sb.toString().getBytes());
 
+            // ...
+            // Logging SRP, ConsoleLogger
+        } catch (IOException exc) {
+            // Logging SRP
         }
+
+    }
+    // better
+    public void save(Employee emp) throws IOException { // In model class Employee, and stating throw in signature so that the caller catches the exception
+        String serializedString = this.serializer.serialize(employee);
+
+        Path path = Paths.get(emp.getFullName().replace(" ", "_") + ".rec");
+        Files.write(path, sb.toString().getBytes());
+
+    }
+    #+end_src
+  + People or roles :: the responsibilities seem related at first sight, but when looked into details, some roles imply different behavior or parameters (usually done by adding if/else/switch). In that case better to duplicate code, sometimes code duplication is exactly what's needed
+    #+begin_src java
+    // bad
+    FlightReport generate() {
+        // could be different depending on the role of the actor doing the generation and its rights, eg: HR, Training department, technical staff, etc.
+        }
+    // better
+    FlightReport generateForHR() {
+        // ...
+        }
+    FlightReport generateForTrainingDepartment() {
+        // ...
+        }
+    FlightReport generateForTechnicalStaff() {
+        // ...
+        }
+    #+end_src
+  + orchestration :: components responsible for handling coordination and orchestration have a habits of needing too many dependencies, thus resulting in RSP violations
+    #+begin_src java
+    // bad-ish
+    public class FlightPlanScheduler {
+        private DatabaseRepo repo;
+        private Emailservice emailService;
+        private AirportDashboardService airportDashboardService;
+
+        // responsibility should only be to orchestrate the scheduling of a flight plan
+        public void scheduleFlightPlan(FlightPlan fp) {
+            var availableTimeSlot = this.repo.getFreeTimeSlot();
+            if (availableTimeSlot == null) {
+                Logger.writeWarning("No free time available");
+                return;
+            }
+
+            this.repo.assignTimeSlot(fp, availableTimeSlot);
+
+            // can regroup this two responsibilities in a separate responsibility to handle the events that will occur
+            this.emailService.notifyPassengers(fp, availableTimeSlot);
+            this.airportDashboardService.updateWithPlan(fp, availableTimeSlot);
+        }
+    // better
+    public class FlightPlanScheduler {
+        private DatabaseRepo repo;
+        private EventHandler eventHandler;
+
+        // By adding an event handler, the method will not change if more parties are involved when a flight plan is scheduled. It will be done by the publishing responsibility
+        public void scheduleFlightPlan(FlightPlan fp) {
+            var availableTimeSlot = this.repo.getFreeTimeSlot();
+            if (availableTimeSlot == null) { // No: this responsibility do not belong here
+                Logger.writeWarning("No free time available");
+                return;
+            }
+
+            this.repo.assignTimeSlot(fp, availableTimeSlot);
+
+            // schedule new flight, and notify all interested parties
+            this.eventHandler.publish(new FlightPlanScheduleEvent(fp, availableTimeSlot));
+        }
+    // EmailService is one component that need to react when a flight plan is scheduled, but there can be others, and they will be able to implement their own ways as many handlers as needed without modifying the code for the flight scheduling
+    public class EmailService implements Handler<FlightPlanScheduleEvent> {
+        @Override
+        public void handle(FlightPlanScheduleEvent eventData) {
+            // logic to send mails to pax interested in the flight
+            }
+        }
+    #+end_src
+- in good SRP context, the names should be explicit, and the functions and features should be in line with that purpose
+- when more than one reasons to change are identified one can ::
+  + move responsibilities to separate methods, classes, packages, but the structure has to stay coherent 
+  + for more complex processes, can help to use events to limit coupling between components
+
+** Open–closed principle (OCP)
+- OCP :: classes/methods/modules should be open for extension (component should be extendable to make it behave in new ways), but closed for modification (each new feature should not modify existing code)
+- pros :: easier to add new features, minimizes risk of regression bugs, enforces decoupling by isolating changes in specific components (which is good too for SRP)
+- OCP implementation strategies :: inheritance (but still exists couplings between base and derived class), and/or design pattern: strategy pattern
+  + eg :: context: add feature for international money transfers when national already existed with method tranferMoney of class BankAccount
+    - problematic :: international and national transfers are not processed the same way due to: fees, currency rate, etc.
+    - solution 1 :: create class InternationalBankAccount that extends BankAccount
+    - con of solution 1 :: tight coupling, InternationalBankAccount depends on BankAccount, whereas InternationalBankAccount might have its own specificity that is not shared with BankAccount
+    - solution 2, better :: use strategy pattern: create an interface for the feature transferMoney, and make both BankAccount and InternationBankAccount implement it => no coupling between the two, each can compute transferMoney in its own way
+- Tips ::
+  + start small, improve progressively when needed
+  + bug fixes don't always need applying OCP, so fix them without necessarily applying OCP
+  + if area of code likely to change a lot over time, prefer to start with inheritance, if strategy pattern could greatly improve the code, then do it
+  + when creating APIs, be aware of retro compatibility when changing methods signatures, clients tools/applications might fail otherwise => use OCP and make the API open for extensions, closed for modifications
+  + OCP can also allow APIs clients to extend your libraries with their own implementations: declare an abstract interface for an unsuitable class, and the client can implement the class in their own class
+    #+begin_src java
+    // Library side
+    public interface AnOpenForExtensionClass {
+        /*...*/
+        }
+
+    // Client side
+    class TheImplementationOnClientSide implements AnOpenForExtensionClass {
+        /*Client business logic*/
+        }
+    #+end_src
+  + best practices on changing APIs ::
+    - don't change existing public contracts
+    - expose abstractions to customer so they add new features on top of the framework
+    - if a breaking change is inevitable, give time for client to prepare
+      
+** Liskov substitution principle (LSP)
+- LSP :: any object of a type must be substitutable by objects of a derived type without altering the correctness of the program. Functions that use pointers or references to base classes must be able to use objects of derived classes without knowing it.
+- wrong relationship between types can cause lots of issues, so inheritance should not be seen as a relationship of type 'is a' (an ostrich is a bird), but rather as 'is substitutable by' (is a rectangle substitutable by a square). In the case of the ostrich it is biologically a bird, but in inheritance context an ostrich cannot bu fully substituted to a bird since it cannot implement the function 'fly' (an ostrich cannot fly)
+- detecting LSP violations :: (some symptoms)
+  + violating "not substitutable by" relationship :: eg: a rectangle is not substitutable by a square (unless setWidth and setHeight reset both height and width at the same time, which is not really efficient). So, a rectangle is not substitutable by a square and should not inherit from each other
+  + violating LSP with partially implemented interfaces :: also possible to violate LSP with interfaces if not paid attention, if for example some class implements some of the interface methods, but not all (in that case better to break down the interface into smaller pieces)
+  + violating LSP with type checking :: if not all types can be substituted properly, eg: by filtering out some cases with if/else
+  + tricks to eliminate LSP violations ::
+    - move out incorrect relations between objects
+    - for type checking violations, use the "tell don't ask" principle to eliminate type checking and casting
+      + "tell don't ask": instead of checking types with if/else (asking), it's better to "tell" by creating a class that extends (inherits) the "normal" class, override the method that comes after the usual case, and move the additional part of the code that is done in the type checking
+        #+begin_src java
+        // Bad
+        for (Task task: tasks) {
+            if (task instanceof BugFix) { // type checking and casting, LSP violation
+                BugFix bf = (BugFix) task;
+                bf.initializeBugDescription();
+                }
+            task.setInProgress();
+            }
+
+        // Better
+        class BugFix extends Task {
+            @Override
+            public void setInProgress() {
+                this.initializeBugDescription();
+                super.setInProgress();
+                }
+            }
+        // ...
+        for (Task task: tasks) {
+            // no more type checking
+            task.setInProgress();
+            }
         #+end_src
-      + in a nutshell :: in good SRP context, the names should be explicit, and the functions and features should be in line with that purpose
-  + Open–closed principle (OCP) :: classes/methods/modules should be open for extension (component should be extendable to make it behave in new ways), but closed for modification (each new feature should not modify existing code)
-    - pros :: easier to add new features, minimizes risk of regression bugs, enforces decoupling by isolating changes in specific components (which is good too for SRP)
-    - OCP implementation strategies :: inheritance (but still exists couplings between base and derived class), and/or design pattern: strategy pattern
-      + eg :: context: add feature for international money transfers when national already existed with method tranferMoney of class BankAccount
-        - problematic :: international and national transfers are not processed the same way due to: fees, currency rate, etc.
-        - solution 1 :: create class InternationalBankAccount that extends BankAccount
-        - con of solution 1 :: tight coupling, InternationalBankAccount depends on BankAccount, whereas InternationalBankAccount might have its own specificity that is not shared with BankAccount
-        - solution 2, better :: use strategy pattern: create an interface for the feature transferMoney, and make both BankAccount and InternationBankAccount implement it => no coupling between the two, each can compute transferMoney in its own way
-      + Tips ::
-        - start small, improve progressively when needed
-        - bug fixes don't always need applying OCP, so fix them without necessarily applying OCP
-        - if area of code likely to change a lot over time, prefer to start with inheritance, if strategy pattern could greatly improve the code, then do it
-        - when creating APIs, be aware of retro compatibility when changing methods signatures, clients tools/applications might fail otherwise => use OCP and make the API open for extensions, closed for modifications
-        - OCP can also allow APIs clients to extend your libraries with their own implementations: declare an abstract interface for an unsuitable class, and the client can implement the class in their own class
-          #+begin_src java
-          // Library side
-          public interface AnOpenForExtensionClass {
-              /*...*/
-              }
-
-          // Client side
-          class TheImplementationOnClientSide implements AnOpenForExtensionClass {
-              /*Client business logic*/
-              }
-          #+end_src
-        - best practices on changing APIs ::
-          + don't change existing public contracts
-          + expose abstractions to customer so they add new features on top of the framework
-          + if a breaking change is inevitable, give time for client to prepare
-  + Liskov substitution principle (LSP) :: any object of a type must be substitutable by objects of a derived type without altering the correctness of the program. Functions that use pointers or references to base classes must be able to use objects of derived classes without knowing it.
-    - wrong relationship between types can cause lots of issues, so inheritance should not be seen as a relationship of type 'is a' (an ostrich is a bird), but rather as 'is substitutable by' (is a rectangle substitutable by a square). In the case of the ostrich it is biologically a bird, but in inheritance context an ostrich cannot bu fully substituted to a bird since it cannot implement the function 'fly' (an ostrich cannot fly)
-    - detecting LSP violations :: (some symptoms)
-      + violating "not substitutable by" relationship :: eg: a rectangle is not substitutable by a square (unless setWidth and setHeight reset both height and width at the same time, which is not really efficient). So, a rectangle is not substitutable by a square and should not inherit from each other
-      + violating LSP with partially implemented interfaces :: also possible to violate LSP with interfaces if not paid attention, if for example some class implements some of the interface methods, but not all (in that case better to break down the interface into smaller pieces)
-      + violating LSP with type checking :: if not all types can be substituted properly, eg: by filtering out some cases with if/else
-    - tricks to eliminate LSP violations ::
-      + move out incorrect relations between objects
-      + for type checking violations, use the "tell don't ask" principle to eliminate type checking and casting
-        - "tell don't ask": instead of checking types with if/else (asking), it's better to "tell" by creating a class that extends (inherits) the "normal" class, override the method that comes after the usual case, and move the additional part of the code that is done in the type checking
-          #+begin_src java
-          // Bad
-          for (Task task: tasks) {
-              if (task instanceof BugFix) { // type checking and casting, LSP violation
-                  BugFix bf = (BugFix) task;
-                  bf.initializeBugDescription();
-                  }
-              task.setInProgress();
-              }
-
-          // Better
-          class BugFix extends Task {
-              @Override
-              public void setInProgress() {
-                  this.initializeBugDescription();
-                  super.setInProgress();
-                  }
-              }
-          // ...
-          for (Task task: tasks) {
-              // no more type checking
-              task.setInProgress();
-              }
-          #+end_src
-  + Interface segregation principle :: don't try to force clients to depend on methods that they don't need
-    - understand "interface" in general :: interfaces, abstract classes, any public method the classes depend upon
-    - pros :: lean and focused interfaces minimize tight couplings, reinforces LSP and SRP
-    - identigying "fat" interfaces :: too many methods in the interface, methods that throw exceptions (or empty methods) when used because they extend/implement classes/interfaces that are not really needed, interfaces with low cohesion or not granular enough (eg: adding payment related methods in class 'ShoppingCart')
-    - tricks ::
-      + reduce as much as possible the interfaces and break tight couplings
-      + on legacy code where one doesn't have a way to control the code, better to use the design pattern 'Adapter'
-    - eg ::
-      #+begin_src java
-      // bad
-      interface Account {
-          double getBalance();
-          void processLocalPayment(double amount);
-          void processInternationalPayment(double amount); // International payment does need further data that local payment doesn't have
+        
+** Interface segregation principle (ISP)
+- ISP :: don't try to force clients to depend on methods that they don't need
+- understand "interface" in general :: interfaces, abstract classes, any public method the classes depend upon
+- pros :: lean and focused interfaces minimize tight couplings, reinforces LSP and SRP
+- identigying "fat" interfaces :: too many methods in the interface, methods that throw exceptions (or empty methods) when used because they extend/implement classes/interfaces that are not really needed, interfaces with low cohesion or not granular enough (eg: adding payment related methods in class 'ShoppingCart')
+- tricks ::
+  + reduce as much as possible the interfaces and break tight couplings
+  + on legacy code where one doesn't have a way to control the code, better to use the design pattern 'Adapter'
+- eg ::
+  #+begin_src java
+  // bad
+  interface Account {
+      double getBalance();
+      void processLocalPayment(double amount);
+      void processInternationalPayment(double amount); // International payment does need further data that local payment doesn't have
+      }
+  // better
+  interface BaseAccount {
+      double getBalance();
+      }
+  interface LocalMoneyTransferCapability {
+      void processLocalPayment(double amount);
+      }
+  interface InternationalMoneyTransferCapability {
+      void processInternationalPayment(double amount);
+      }
+  public class SchoolAccount implements BaseAccount, LocalMoneyTransferCapability {
+      // ... only the implementation needed
+      }
+  // can even reuse interface
+  public class InternationLoanService implements InternationalMoneyTransferCapability {
+      // ...
+      public void processInternationalPayment(double amount);
+      }
+  #+end_src
+  
+** Dependency inversion principle (DIP)
+- DIP :: "Depend upon abstractions, not concretions.": high level modules (features that are mapped to business domain, what the software should do, not how they should do it) should not depend on low level ones (implementation details, how the software should do the tasks), both should depend on abstractions. Abstractions should not depend on details, details should depend on abstractions
+- by dictating that both high-level and low-level objects must depend on the same abstraction, DIP inverts the way some people may think about object-oriented programming
+- pros :: minimize coupling, the high level should not depend on the low level and vice-versa, otherwise one could find that changing any of the concrete level will induce changes on other levels
+- eg ::
+  #+begin_src java
+  // bad
+  class SqlProductRepo { // Low level class
+      public Product getById(String productId) {
+          // fetch by id
           }
-      // better
-      interface BaseAccount {
-          double getBalance();
+      }
+  class PaymentProcessor { // High level class
+      public void pay(String productId) {
+          SqlProductRepo repo = new SqlProductRepo(); // Low level module, and the High level module 'PaymentProcessor' has a direct dependency with SqlProductRepo (low level module), which violates DIP
+          Product product = repo.getById(productId);
+          this.processPayment(product);
           }
-      interface LocalMoneyTransferCapability {
-          void processLocalPayment(double amount);
+      }
+  // better
+  interface ProductRepo {
+      Product getById(String productId); // the source of the product is unknown, could be from any data source
+      }
+  class SqlProductRepo implements ProductRepo { // Low level, and now implements abstraction ProductRepo, eg: MongoProductRepo, ExcelProductRepo, etc.
+      @Override // any other source can now override getById
+      public Product getById(String productId) {
+          // concrete details for fetching a product
           }
-      interface InternationalMoneyTransferCapability {
-          void processInternationalPayment(double amount);
+      }
+  class ProductRepoFactory {
+      public static ProductRepo create() {
+          return new SqlProductRepo(); // for now, but can implement further objects, and create objects based on runtime parameters, or any other option defined by the developer eg based on an input argument:
+          // public static ProductRepo create(String type) {
+          //     if (type.equals("mongo")) {
+          //         return new MongoProductRepo();
+          //         }
+          //     return new SqlProductRepo();
+          //     }
           }
-      public class SchoolAccount implements BaseAccount, LocalMoneyTransferCapability {
-          // ... only the implementation needed
+      }
+  class PaymentProcessor { // High level class
+      public void pay(String productId) {
+          ProductRepo repo = new ProductRepoFactory.create(); // we get an abstraction ProductRepo interface that is created from a factory (generates a concrete MongoProductRepo, ExcelProductRepo, etc.), and that does not directly depend on concrete implementation of ProductRepo
+          Product product = repo.getById(productId);
+          this.processPayment(product);
           }
-      // can even reuse interface
-      public class InternationLoanService implements InternationalMoneyTransferCapability {
-          // ...
-          public void processInternationalPayment(double amount);
-          }
-      #+end_src
-  + Dependency inversion principle :: "Depend upon abstractions, not concretions.": high level modules (features that are mapped to business domain, what the software should do, not how they should do it) should not depend on low level ones (implementation details, how the software should do the tasks), both should depend on abstractions. Abstractions should not depend on details, details should depend on abstractions
+      }
+  #+end_src
+- Dependency Injection (DI) :: different than DIP, but often used together. It's a technique that makes a class independent of its dependencies (allows the creation of dependent objects outside of a class and provides those objects to the class. Note: Using setters not efficient since might leave the object in uninitialized state)
+  - Note :: in example above, PaymentProcessor is still dependent of ProductRepoFactory. Dependencies are inevitable, but rather than instantiating within methods and classes, which creates tight coupling, one can pass the dependencies as arguments to constructors and assign them to local members. That reduces the coupling, and makes it easier to use the dependencies outside of the method/class, for example by mocking with tests
+  - we've seen above that setters are not the ideal for dependency injection, but there is other solutions ::
+    + declaring dependencies in constructor (most used DI) :: eg: ~PaymentProcessor(ProductRepo productRepo)~
+      - however, can be tiresome if done manually and have lots of dependencies injections (lots of parameters to pass to a class constructor), of some dependencies need to be singletons => use design pattern "inversion of control"
+    + Inversion of control design pattern (IOP) :: takes away the responsibility to create objects manually. IOC is a design principle in which the control of object creation, configuration, and lifecycle is passed to a container or a framework (no 'new'). The process of creating new objects is left to the "IOC container".
+      - control of object is "inverted" (as in *inversion* of control) :: it's not the programmer but something else that controls the objects
+      - makes sense to use IOC for some objects in the application (service, data access, controllers), *however* for some other entities it should still be left to the coder (entities, values objects, etc.)
+      - pros of IOC :: easy to switch between different implementations at runtime, increase program modularity, manages objects lifecycle and their configuration
+        
 * Design patterns
 ** Creational patterns :: all about class instantiation
-    - Notes ::
-      + deals with object creation mechanisms, trying to create objects in a manner suitable to the situation. The basic form of object creation could result in design problems or added complexity to the design. Creational design patterns solve this problem by somehow controlling this object creation
-      + often, designs start out using Factory Method (less complicated, more customizable, subclasses proliferate) and evolve toward Abstract Factory, Prototype, or Builder (more flexible, more complex) as the designer discovers where more flexibility is needed.
-    - can be further divided into two parts ::
-      + class-creation patterns :: use inheritance effectively in the instantiation process
-      + object-creation patterns :: use delegation effectively to get the job done
-    - main :: builder, factory, factory method, abstract factory, prototype, singleton
-    - builder :: separates object construction from its representation
-      + pattern allows a client object to construct a complex object by specifying only its type and content, not its details
-      + separates object construction from its representation
-      + this way the construction process can be used to create different representations.
-      + eg ::
-	- Pizza: Object we want to build
-	- PizzaBuilder: HawaiianPizzaBuilder, SpicyPizzaBuilder, with unique_ptr<Pizza> m_pizza;
-	  + // hawaiianpizzabuilder and spicypizzabuilder inherits of Pizzabuilder
-	  + // they are also associated to Pizza since in Pizzabuilder from which they inherit they contain the object Pizza
-	- Cook (also called Director): PizzaBuilder* m_pizzaBuilder; // calls the builder
-	- Client: Use cook to create and open pizza :: HawaiianPizzaBuilder hawaiianPizzaBuilder; cook.createPizza(&hawaiianPizzaBuilder); etc.
-    - abstract factory :: creates instance of several families of classes
-      + provides an interface for creating families of related or dependent objects without specifying their concrete classes.
-      + provides hierarchy that encapsulates: many possible "platforms", and the construction of a suite of "products".
-      + 'new' operator considered harmful.
-      + Abstract Factory classes are often implemented with Factory Methods, but they can be implemented using Prototype.
-    - factory :: creates an instance of a class from a family of derived classes.
-      + problem :: once added new concrete product call, should also modify the Factory class. Not very flexible and violates open-close principle.
-    - factory method :: defines interface for creating an object, but leaves choice of its type to the subclasses, creation being deferred at run-time.
-      + use of 'static' and avoiding 'new' => object re-use
-      + it refers to the newly created object through a common interface.
-      + similar to Abstract Factory but without the emphasis on families.
-      + Factory Method: creation through inheritance. Prototype: creation through delegation.
-    - object pool :: avoid expensive acquisition and release of resources by recycling objects that are no longer in use
-      + used to manage the object caching.
-      + good option when cost of initializing class instance high, rate of instantiation of class is high, and number of instantiations in use at any one time is low
-    - prototype :: fully initialized instance to be copied or cloned
-      + specify the kinds of objects to create using a prototypical instance, and create new objects by copying this prototype.
-      + 'new' operator considered harmful
-      + whereas factory methods are created through inheritance, prototypes are created through delegation
-      + prototype doesn't require subclassing, but does require "initialize" operation. Factory Method requires subclassing, but doesn't require Initialize
-      + designs that make heavy use of Composite and Decorator patterns often can benefit from Prototype
-      + prototype co-opts one instance of a class for use as a breeder of all future instances
-      + prototypes are useful when object initialization is expensive, and one anticipates few variations on the initialization parameters. In this context, Prototype can avoid expensive "creation from scratch", and support cheap cloning of a pre-initialized prototype
-      + prototype is unique among others creational patterns in that it doesn't require a class – only an object.
-    - singleton :: class of which only a single instance can exist, global scope
-      + declare instance as private static data member
-      + provide a public static member function that encapsulates all initialization code, and provides access to the instance
-      + should be considered only if all three criteria are satisfied ::
-	- ownership of the single instance cannot be reasonably assigned
-	- lazy initialization is desirable
-	- global access is not otherwise provided for
-      + deleting a Singleton class/instance is a non-trivial design problem
+- Notes ::
+  + deals with object creation mechanisms, trying to create objects in a manner suitable to the situation. The basic form of object creation could result in design problems or added complexity to the design. Creational design patterns solve this problem by somehow controlling this object creation
+  + often, designs start out using Factory Method (less complicated, more customizable, subclasses proliferate) and evolve toward Abstract Factory, Prototype, or Builder (more flexible, more complex) as the designer discovers where more flexibility is needed.
+- can be further divided into two parts ::
+  + class-creation patterns :: use inheritance effectively in the instantiation process
+  + object-creation patterns :: use delegation effectively to get the job done
+- main :: builder, factory, factory method, abstract factory, prototype, singleton
+- builder :: separates object construction from its representation
+  + pattern allows a client object to construct a complex object by specifying only its type and content, not its details
+  + separates object construction from its representation
+  + this way the construction process can be used to create different representations.
+  + eg ::
+    - Pizza: Object we want to build
+    - PizzaBuilder: HawaiianPizzaBuilder, SpicyPizzaBuilder, with unique_ptr<Pizza> m_pizza;
+      + // hawaiianpizzabuilder and spicypizzabuilder inherits of Pizzabuilder
+      + // they are also associated to Pizza since in Pizzabuilder from which they inherit they contain the object Pizza
+    - Cook (also called Director): PizzaBuilder* m_pizzaBuilder; // calls the builder
+    - Client: Use cook to create and open pizza :: HawaiianPizzaBuilder hawaiianPizzaBuilder; cook.createPizza(&hawaiianPizzaBuilder); etc.
+- abstract factory :: creates instance of several families of classes
+  + provides an interface for creating families of related or dependent objects without specifying their concrete classes.
+  + provides hierarchy that encapsulates: many possible "platforms", and the construction of a suite of "products".
+  + 'new' operator considered harmful.
+  + Abstract Factory classes are often implemented with Factory Methods, but they can be implemented using Prototype.
+- factory :: creates an instance of a class from a family of derived classes.
+  + problem :: once added new concrete product call, should also modify the Factory class. Not very flexible and violates open-close principle.
+- factory method :: defines interface for creating an object, but leaves choice of its type to the subclasses, creation being deferred at run-time.
+  + use of 'static' and avoiding 'new' => object re-use
+  + it refers to the newly created object through a common interface.
+  + similar to Abstract Factory but without the emphasis on families.
+  + Factory Method: creation through inheritance. Prototype: creation through delegation.
+- object pool :: avoid expensive acquisition and release of resources by recycling objects that are no longer in use
+  + used to manage the object caching.
+  + good option when cost of initializing class instance high, rate of instantiation of class is high, and number of instantiations in use at any one time is low
+- prototype :: fully initialized instance to be copied or cloned
+  + specify the kinds of objects to create using a prototypical instance, and create new objects by copying this prototype.
+  + 'new' operator considered harmful
+  + whereas factory methods are created through inheritance, prototypes are created through delegation
+  + prototype doesn't require subclassing, but does require "initialize" operation. Factory Method requires subclassing, but doesn't require Initialize
+  + designs that make heavy use of Composite and Decorator patterns often can benefit from Prototype
+  + prototype co-opts one instance of a class for use as a breeder of all future instances
+  + prototypes are useful when object initialization is expensive, and one anticipates few variations on the initialization parameters. In this context, Prototype can avoid expensive "creation from scratch", and support cheap cloning of a pre-initialized prototype
+  + prototype is unique among others creational patterns in that it doesn't require a class – only an object.
+- singleton :: class of which only a single instance can exist, global scope
+  + declare instance as private static data member
+  + provide a public static member function that encapsulates all initialization code, and provides access to the instance
+  + should be considered only if all three criteria are satisfied ::
+    - ownership of the single instance cannot be reasonably assigned
+    - lazy initialization is desirable
+    - global access is not otherwise provided for
+  + deleting a Singleton class/instance is a non-trivial design problem
+    
 ** Structural patterns
-    - Note :: design Patterns that ease the design by identifying a simple way to realize relationships between entities
-    - main :: adapter, bridge, composite, decorator, facade, flyweight, proxy, CRTP
-    - adapter :: match interfaces of different classes
-      + can be implemented either with inheritance or with aggregation
-      + adapter makes things work after they're designed; Bridge makes them work before they are.
-      + adapter provides a different interface to its subject, proxy provides the same interface, decorator provides an enhanced interface
-      + adapter is meant to change the interface of an existing object. Decorator enhances another object without changing its interface
-      + facade defines a new interface, whereas adapter reuses an old interface
-      + // in my opinion :: VERY UGLY, workaround to avoid refactoring (but refactoring VERY HEAVY though...)
-    - bridge :: separates an object's interface from its implementation
-      + 
-    - composite :: tree structure of simple and composite objects
-    - decorator :: add responsibilities to objects dynamically
-    - facade :: single class that represents an entire subsystem
-    - flyweight :: fine-grained instance used for efficient sharing
-    - private Class Data :: restricts accessor/mutator access
-    - proxy :: object representing another object
+- Note :: design Patterns that ease the design by identifying a simple way to realize relationships between entities
+- main :: adapter, bridge, composite, decorator, facade, flyweight, proxy, CRTP
+- adapter :: match interfaces of different classes
+  + can be implemented either with inheritance or with aggregation
+  + adapter makes things work after they're designed; Bridge makes them work before they are.
+  + adapter provides a different interface to its subject, proxy provides the same interface, decorator provides an enhanced interface
+  + adapter is meant to change the interface of an existing object. Decorator enhances another object without changing its interface
+  + facade defines a new interface, whereas adapter reuses an old interface
+  + // in my opinion :: VERY UGLY, workaround to avoid refactoring (but refactoring VERY HEAVY though...)
+- bridge :: separates an object's interface from its implementation
+  + 
+- composite :: tree structure of simple and composite objects
+- decorator :: add responsibilities to objects dynamically
+- facade :: single class that represents an entire subsystem
+- flyweight :: fine-grained instance used for efficient sharing
+- private Class Data :: restricts accessor/mutator access
+- proxy :: object representing another object
+  
 ** Behavioral patterns
-    - Note :: design patterns that identify common communication patterns between objects and realize these patterns. By doing so, these patterns increase flexibility in carrying out this communication
-    - observer :: way of notifying change to a number of classes
-    - chain of responsibility :: way of passing a request between a chain of objects
-    - interpreter :: way to include language elements in a program
-    - strategy :: encapsulates an algorithm inside a class or interface
-    - state :: alter object's behavior when its state changes
-    - visitor :: defines new operation to a class without change
-    - iterator :: sequentially access the elements of a collection
-    - command :: encapsulate command request as an object
-    - mediator :: defines simplified communication between classes
-    - memento :: capture and restore an object's internal state
-    - null Object :: designed to act as a default value of an object
-    - template method :: defer exact steps of an algorithm to a subclass
+- Note :: design patterns that identify common communication patterns between objects and realize these patterns. By doing so, these patterns increase flexibility in carrying out this communication
+- observer :: way of notifying change to a number of classes
+- chain of responsibility :: way of passing a request between a chain of objects
+- interpreter :: way to include language elements in a program
+- strategy :: encapsulates an algorithm inside a class or interface
+- state :: alter object's behavior when its state changes
+- visitor :: defines new operation to a class without change
+- iterator :: sequentially access the elements of a collection
+- command :: encapsulate command request as an object
+- mediator :: defines simplified communication between classes
+- memento :: capture and restore an object's internal state
+- null Object :: designed to act as a default value of an object
+- template method :: defer exact steps of an algorithm to a subclass
 
 * Definitions
 [2023-12-04 Mon 09:50]
 - API :: contract/agreement between different software components on how they should work together
 - Abstraction :: things not concrete, can't use 'new', but rather abstract classes or interfaces
-- refactoring :: systematic process of improving code without creating new functionality that can transform a mess into clean code and simple design (solid principles, design patterns, decouple components, tests, etc.)
+- component :: basic software unit: method, class, package, etc.
 - coupling :: level of inter-dependency between the various software components
-- technical debt :: cost of prioritizing fast delivery (which is not time consuming) over code quality (takes longer, but maintainable) for long periods of time
-  + loop through continuous improvement to minimize technical debt :: write code (fast delivery) <--> refactor (to reduce technical debt)
+- refactoring :: systematic process of improving code without creating new functionality that can transform a mess into clean code and simple design (solid principles, design patterns, decouple components, tests, etc.)
+  
 * Acronyms
 - RAII :: Resource Acquisition Is Initialization
 - CRTP :: Curiously Recurring Template Pattern
