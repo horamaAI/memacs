@@ -2,6 +2,8 @@
 #+title: Java web programming learnings
 #+SETUPFILE: ~/set-up-files/basic-setups.org
 #+TAGS: Java
+
+
 * JAVA
 ** Notes
 - Targeted JAVA version :: JAVA 17

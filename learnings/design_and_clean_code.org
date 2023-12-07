@@ -4,6 +4,132 @@
 #+TAGS: Cpp C++ Java Craft
 
 
+* Conventions
+[2023-12-06 Wed 09:39]
+** Notes
+[2023-12-06 Wed 09:52]
+- QAs should also review their own codes for quality
+- basically use DRY (don't repeat yourself) : avoid boilerplates (as much as one can)
+- avoid abbreviations (not all abbreviations are used everywhere, eg: km not recognized in the us)
+- careful with typos and spelling (can affect searching the method with misspelling with the right keyword)
+  
+** Naming conventions and best practices
+*** java
+[2023-12-06 Wed 09:45]
+- variables ::
+  + never a single letter, always be specific, descriptive, and concise, ideally 1-2 words (*words*, not chars), camelCase
+  + bool prefixed with "is" (isValid, isActive)
+  + constants :: all caps, and with underscores (ALL_CAPS)
+- class ::
+  + *noun*, *specific* and detailed in order to adhere to SRP solid principle. Even for helper classes, should try to be as specific as possible
+  + eg ::
+    - class CommonUtils shouldn't contain every helper of the program (countOccurences(String stringToSearch, char charToFind) that works on strings, printNewYorkTime on dates, generateRandomNumberBetween(int low, int high) on ints, etc.). solution 1: rename class to 'StringAndTimeAndNumberUtils' (nooope), solution 2: split helpers into smaller utils: TimeUtils, StringUtils, NumberUtils
+  + can refine class name by having a look at the methods it implements: 'Client' is too vague, if it has a method that sends http requests, then it should be renamed to 'WebHttpClient'
+  + avoid using catch-all or vague terms (Coordinator, Manager, Runner, etc). Those can be used to name a higher scope tool (eg: ApplicationManager)
+    - prefer or narrow down the scope by adding a qualifier: Builder, Writer, Reader, Handler, Container (eg: Filepath)
+  + if class implements a design pattern role, manifest it in the name of the class (StringBuilder, CarFactory, etc.)
+  + keep the names short though, *don't overdo* it and clutter the code eg (SingletonCarFactoryProxyHandler)
+  + tips on fixing bad class names: split class, rename, use 
+- methods ::
+  + if one needs to look inside the method to know what it does,
+  + should reveal intent: do what (verb), to what (noun): eg 1: load (do what) page (to what) => loadPage, 2: set (do what) price (to what) => setPrice, 3: convert (do what) currency (to what) => convertCurrency
+    - *attention*, same as classes, avoid too vague terms: data, value, request, calculate, etc., eg:
+      - loadData (NOPE) => loadCustomerDetails;
+      - setValue (NOPE) => setPrice;
+      - sendRequest (NOPE) => sendHttpRequest (or if more details can be found in the class name, just the type of the request then: if class name is WebHttpClient, then can just name the method 'setGet' for get methods requests)
+      - preCalculate (NOPE) => convertToLocalCurrency
+  + exceptions to the rule ::
+    - if specificity and clarity are better than suggested rules, then can apply them, eg of methods not following the rules: endsWith, concat, append, charAt, etc.
+    - static factory methods, builder patterns, "fluent interface" patterns, method chaining :: for which focus is more on readability than the rule "verb + noun", eg: stream(), andThen(), orElseThrow(), etc.
+      + static factory methods :: eg: Optional.empty(), String.valueOf(1), etc. none of those respect the naming rule (but some those)
+  + Anti-patterns (what to avoid) ::
+    - method does more than what its name says :: no 'convertCurrency' but also changes the state of an unrelated object, then the name is not correct 
+    - no use of: "and", "or", "if" :: checkout single responsibility principle SRP
+*** cpp
+
+** Implementing methods and constructors
+[2023-12-06 Wed 09:55]
+*** java
+**** Implementing constructors
+[2023-12-06 Wed 17:49]
+- static factory methods :: static factory methods encapsulate the construction logic, so they can be a good alternative for constructors replacement
+- constructor chaining :: cascading constructors to avoid duplicating codes (go up from smallest constructor, and propagate up until reach the biggest one that will be the one doing the field assignment logic)
+    #+begin_src java
+    public class A {
+    int i, j, k;
+    public A() {
+        this(0);
+    }
+    public A(int i) {
+        this(i,0);
+    }
+    public A(int i, int j, int k) {
+        this.i = i;
+        this.j = j;
+        this.k = k;
+    }
+    }
+    #+end_src
+
+  + builder pattern :: 
+- constructor telescoping anti-pattern :: drawback of constructor chaining when there are too many fields to assign, and lots of combinations need to have its own constructor
+  + possible solution: use a builder pattern, downside:
+    #+begin_src java
+    // eg: select which ingredients to put in a pizza
+    // bad
+    Pizza(int size) {/*...*/}
+    Pizza(int size, boolean cheese) ...
+    Pizza(int size, boolean cheese, boolean ham) ...
+    Pizza(int size, boolean cheese, boolean ham, ...) ...
+
+    // better, ugly (boilerplate, embedded classes), but better rendition
+    // rendition:
+    var pizza = new Pizza.Builder(12)
+                              .cheese(true)
+                              .ham(false)
+                              .build();
+
+    class Pizza {
+        static class Builder {
+            // mandatory
+            private final int size;
+
+            // default is false
+            private boolean int size;
+            private boolean int size;
+
+            Builder(int size) {
+                this.size = size;
+                }
+
+            Builder cheese(boolean value) {
+                this.cheese = value;
+                return this;
+                }
+
+            Builder ham(boolean value) {
+                this.ham = value;
+                return this;
+                }
+            }
+        }
+
+
+    #+end_src
+
+**** Implementing methods
+*** cpp
+[2023-12-06 Wed 17:09]
+
+** Class Organization
+[2023-12-06 Wed 09:57]
+
+** Handling exceptions
+[2023-12-06 Wed 09:56]
+
+** Maintaining clean code
+[2023-12-06 Wed 09:58]
+
 * SOLID principles
 [2023-12-04 Mon 09:30]
 - Notes :: examples are
@@ -579,9 +705,20 @@
 [2023-12-04 Mon 09:50]
 - API :: contract/agreement between different software components on how they should work together
 - Abstraction :: things not concrete, can't use 'new', but rather abstract classes or interfaces
-- component :: basic software unit: method, class, package, etc.
-- coupling :: level of inter-dependency between the various software components
-- refactoring :: systematic process of improving code without creating new functionality that can transform a mess into clean code and simple design (solid principles, design patterns, decouple components, tests, etc.)
+- Component :: basic software unit: method, class, package, etc.
+- Coupling :: level of inter-dependency between the various software components
+- "Chaining" ::
+  + constructor chaining :: cascading constructors
+  + method chaining :: syntax for invoking multiple method calls, where each method returns an object, allowing the calls to be chained together in a single statement without requiring variables to store the intermediate results
+    #+begin_src java
+    somethings
+        .filter(x => x.count > 10)
+        .sort((a, b) => a.count - b.count)
+        .map(x => x.name)
+    #+end_src
+- Refactoring :: systematic process of improving code without creating new functionality that can transform a mess into clean code and simple design (solid principles, design patterns, decouple components, tests, etc.)
+- Static Factory Methods ::
+- fluent interface patterns :: 
   
 * Acronyms
 - RAII :: Resource Acquisition Is Initialization
