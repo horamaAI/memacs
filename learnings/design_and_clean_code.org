@@ -4,14 +4,20 @@
 #+TAGS: Cpp C++ Java Craft
 
 
-* Conventions
+* Conventions and best practices
 [2023-12-06 Wed 09:39]
 ** Notes
+[2023-12-07 Thu 14:30]
 [2023-12-06 Wed 09:52]
 - QAs should also review their own codes for quality
-- basically use DRY (don't repeat yourself) : avoid boilerplates (as much as one can)
+- DRY vs WET: avoid duplications <=> avoid WET (Write Every Time), always seek DRY (don't repeat yourself), basically avoid boilerplates and duplications (as much as one can, some are inevitable)
 - avoid abbreviations (not all abbreviations are used everywhere, eg: km not recognized in the us)
 - careful with typos and spelling (can affect searching the method with misspelling with the right keyword)
+  
+*** Clean code concepts
+- cyclomatic complexity (CYC) :: software metric to indicate the complexity of a program
+  + basically, the more there are: ifs, for, while, or, etc. the complexity grows => aim for a low CYC
+- signal vs noise :: former: clean, useful code; whereas noise preventing from understanding the code (CYC, poor names, bad comments, duplications, etc.)
   
 ** Naming conventions and best practices
 *** java
@@ -113,19 +119,136 @@
                 }
             }
         }
-
-
     #+end_src
 
 **** Implementing methods
+- things to not return ::
+  + avoid to ever have to return null value :: 1. not everyone knows the internal implementation, and might end up with null instance; 2. they know about the return null, and they have to implement an if to check if the variables are not null (at least +1 of CYC, but will increase anytime the method returning null is called). So avoid as much as possible to return null
+    - eg: instead of returning null for object of type List<String>, prefer returning Collections.emptyList()
+  + special values (magic numbers) :: numbers whose purpose isn't obvious, eg: -1, 0, 1, etc.: they might mean something to you, but not to everyone (particularly client code)
+    - prefer to create expressive variables, or throw exceptions
+- method parameters ::
+  + methods with too many arguments ::
+    - have higher CYC, are difficult to read and understand, do too many things (split), use too many primitive types when could be using objects
+    - take a boolean flag (remove, for example with splitting) ::
+      #+begin_src java
+      void switchLights(room, true);
+      // becomes:
+      void switchLightsOn(room);
+      void switchLightsOff(room);
+      #+end_src
+    - still magic numbers (check also in "things to not return") :: 
+  + fewer argument methods are always better :: up to 2 ok, 3 not really but still acceptable, 4+ needs refactoring
+    +---------+-----------------------------------+-------------------+
+    |   OK    | not really, but still acceptable  | needs refactoring |
+    +---------+-----------------------------------+-------------------+
+    |0-2 args | 3                                 | 4+                |
+    +---------+-----------------------------------+-------------------+
+- prefer "fail fast" over "fail safe" ::
+  + fail fast: immediately report any failure asap (toward the beginning of the method, perfect for debugging), vs fail safe: try to keep the program running (the system will crash anyway, but in a weird state that is difficult to analyze)
+  + fail fast eg: checking if list/string is empty before resuming with the remainder of the method
+  + some available preconditions libraries ::
+    - native java :: Objects.isNull();
+    - guava :: Preconditions.checkArgument()
+    - apache :: ObjectUtils.isNotEmpty();
+  #+begin_src java
+  private static int getTotalCompensation(int someBonusVariable) { // suppose someBonusVariable is == 0
+      if (someBonusVariable <= 0) {// fail fast, will fail before division by 0; plus has now more expressive error message
+          throw new IllegalArgumentException("variable cannot be 0 or less than 0");
+          }
+      int immediateResult = getBaseSalary() * someBonusVariable;
+      int secondIntermediateResult = convertToLocalCurrency(immediateResult);
+      return getSomeOtherMetric()/secondIntermediateResult; // if fails here it's fail safe (divide by 0)
+      }
+  #+end_src
+- return asap :: in case there are many embedded ifs to determine which result to return, it can be easy to forget about the previous conditions and get mixed up in reading the code
+  + suggested solution :: try to convert it so that results can be returned asap, much better for readability
+  + eg ::
+    #+begin_src java
+    // bad, fail safe, and return late
+    public String getPersonalInfo(Person person, int pin) {
+        if (systemIsUP) {
+            if (person != null && person.getName().equals("")) {
+                if (person.getPin() != pin) {
+                    return "Invalid pin";
+                    }
+                return "Invalid Name";
+                }
+            return "System is down for the moment";
+            }
+        return person.getPersonalinfo();
+        }
+    // better, fail fast, return early, and much easier to read
+    public String getPersonalInfo(Person person, int pin) {
+        if (!systemIsUP) {return "System is down for the moment";}
+        if (person != null && person.getName().equals("")) {return "Invalid Name";}
+        if (person.getPin() != pin) {return "Invalid pin";}
+        return person.getPersonalinfo();
+        }
+    #+end_src
+- fine tune conditions ::
+  + eg: from ~if(!doorClosed==false)~ (1. doorClosed already boolean, no need for equality check; 2. boolean variable starts with 'is'; 3. !isDoorClosed makes less sense than isDoorOpen) => ~if(isDoorOpen)~
+  + check if not better to change conditions into a more expressive method ::
+    #+begin_src java
+    // bad
+    int hour = getHourOfDay();
+    if (hour > 6 && hour < 22) {
+        // day time logic
+        }
+    else {
+        // night time logic
+        }
+    // better
+    int hour = getHourOfDay();
+    if (isDay(hour)) {
+        // day time logic
+        }
+    else {
+        // night time logic
+        }
+    public boolean isDay(int hour) {
+        return (hour > 6 && hour < 22);
+        }
+    #+end_src
+- ternary expressions :: guidelines: *avoid nested ternary expressions* (complex, awful to read)
+  + turn nested ternaries into if/else and simple ternary (only one condition) 
+
 *** cpp
 [2023-12-06 Wed 17:09]
 
-** Class Organization
-[2023-12-06 Wed 09:57]
-
 ** Handling exceptions
 [2023-12-06 Wed 09:56]
+*** java
+- Note ::
+  + don't catch ::
+    - too high level exceptions, might catch exceptions we're not supposed to manage (eg: 'Throwable' catches: out of memory, internal error; 'Exception' catches runtime exception, particularly 'null pointer runtime exception' which are usually programming errors, and when caught it's just basically covering up programming mistakes)
+  + 'catch' block ::
+    - instead of multiple catch statements, can just use ==|== :: (NO, NEVER use ifs in catch statements)
+      #+begin_src java
+      try {
+          readFile();
+          }
+      catch (IOException | SQLException exc) { // catch multiple in one catch
+          // blabla exc
+          }
+      #+end_src
+    - (anti-pattern) catch block shouldn't :: be empty, have only comments, contain unhelpful code
+      + usual way of handling exceptions :: when creating exception be expressive in the message, log the error, rethrow
+  + finally block :: avoid exceptions in finally, it can mask exceptions and make the investigation very hard
+    #+begin_src java
+    try {
+        int res = 1/0; // arithmetic exception
+        }
+    finally { // 'finally' will mask the arithmetic exception, and throw IllegalStateException
+        cleanUp();
+        }
+    private static void cleanUP() {
+        throw new IllegalStateException();
+        }
+    #+end_src
+
+** Class Organization
+[2023-12-06 Wed 09:57]
 
 ** Maintaining clean code
 [2023-12-06 Wed 09:58]
