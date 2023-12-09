@@ -17,7 +17,7 @@
 *** Clean code concepts
 - cyclomatic complexity (CYC) :: software metric to indicate the complexity of a program
   + basically, the more there are: ifs, for, while, or, etc. the complexity grows => aim for a low CYC
-- signal vs noise :: former: clean, useful code; whereas noise preventing from understanding the code (CYC, poor names, bad comments, duplications, etc.)
+- signal vs noise :: signal: clean, useful code; noise: what prevents from understanding the code (CYC, poor names, bad comments, duplications, etc.). noise to signal ratio should be lowest as possible (ideally closest to 0)
   
 ** Naming conventions and best practices
 *** java
@@ -249,9 +249,127 @@
 
 ** Class Organization
 [2023-12-06 Wed 09:57]
+- Notes :: overall, apply first conventions, best practices, solid, design patterns, etc. and then have a better look at the code for further improvements
+- cohesion (better when high) :: degree to which elements inside a class or a module (package, system, etc.) belong together (put together fields and methods that are related and co-dependent). class with proper amount of fields (not too many, not too few) has more cohesion than class with just one. SRP != cohesion, but goes together
+  + eg of cohesive but not SRP ::
+    #+begin_src java
+    User user;
+    void saveChanges() {
+        dbContext.save();
+        logger.log("User updated with " + whatever);
+        raiseEvent(new EmailNotification(user)); // cohesive since raiseEvent, use of 'user' are used together; but not SRP since logging and repo handling done in same place
+        }
+    void raiseEvent() {
+        // ...
+        }
+    #+end_src
+- coupling (better when low) :: be careful of abiding by solid principles, set coupling as loose as possible: adhere to SRP, DIP, ISP, etc. (basically all solid principles); increase cohesion; and try to maintain strong encapsulation (keep things as private as possible: to avoid methods/fields being used when not needing to be exposed thus creating unnecessary coupling. Don't make methods just because, particularly with getters and setters)
+  #+begin_src java
+  public class CoupledExample {
+      LinkedList<String> list = new LinkedList<>(); // what if need to use ArrayList instead ? will have to replace all occurences of type LinkedList, and potentially will not compile if class doesn't have methods getFirst, getLast
 
+      void doSomething(LinkedList<String> aList) { // naming violation
+          String firstElement = aList.getFirst();
+          // ...
+          }
+      }
+      void doSomethingElse(LinkedList<String> aList) { // naming violation
+          String lastElement = aList.getLast();
+          // ...
+          }
+      }
+  // better solution: ISP
+  // use core interface 'List' that abstracts method 'get': aList.get(0) for getfirst; aList.get(aList.size() - 1) for getlast
+  #+end_src
+- principle of proximity (or priximity rule) :: organize code as a way of a book or an article (from top to bottom, don't make reader keep scrolling between messed up and organization mixed to find methods: structure code with respect to the way the call to other methods are done. place related methods close)
+  #+begin_src java
+  class ProximityPrinciple {
+      void methodA() {
+          methodB();
+          }
+      void methodB() {
+          methodC();
+          }
+      void methodC() {
+          // ...
+          }
+      void anotherMethod() {
+          // ...
+          }
+      }
+  #+end_src
+  
+** Writing comments
+[2023-12-08 Fri 11:36]
+- writing comments can be just a way to patch poorly written code. If code is well written, comments can be unnecessary, which is good
+- avoid ::
+  + redundant comments :: that doesn't add any information (~String name; // customer name~), basically comment for code with well defined names
+  + misleading comments :: remember to update comment when method is, don't always believe outdated comments, fix them or even remove them
+  + useless and misplaced comments :: for example using comments as a history for all the changes done on a method, which is not interesting, there are other ways for that (fix/release notes, version control tools, etc.); or todos
+  + TODOs comments (~// TODO~ :: be more detailed and concise on what to do (what needs to be done, why, when, by whom; or if using issue tracking then use issue number and add those information in the ticket), ~// TODO: fix this~ are not acceptable either
+  + commented out comments :: actual part of code that is commented to cancel it, usually done for later fix that almost never happens
+- best practices ::
+  + use JavaDoc (with ~/** [new line] ... */~)
+  + use comments to compensate for factors outside of your control (third-parties softwares, unstable environments, etc.), eg (paraphrasing): ~// yes, this is weird, but otherwise it's impossible due to other software that does this thing as not expected~
+  + TODOs with explainer and/or issue tracker number
+** Improving tests
+[2023-12-08 Fri 12:49]
+- clean your tests as you would clean your application code
+*** DAMP tests
+- find right balance between DRY and DAMP (Descriptive and Meaningful Phrases): strive for max readability (even if it means some code duplication) :: tests may test the same function (for example, how it integrates with other methods, using different inputs, etc.), so better to keep it isolated in single test class => minimal duplication and obvious (very DRY tests are poorly tested, complex, and less readable)
+- focused tests ::
+  + SRP :: so that methods are easy to test and the method easy to debug (not test this *and* that), eg: basicMathTest shouldn't test division and multiplication and modulo; better to have one test for each
+  + no if else branching :: split into two different test logic
+  + should have a CYC of one, fewer points of failure (one assertion => one point of failure, one reason to fail), and stability :: fewer points of failures lead to tests with higher stability, and thus, less time investigating the test than trying to fix the bug => reliable tests, and better overall maintainability
+    - For example, tests with 5 assertions have 5 reasons to fail => more unstable tests, harder to debug
+- use tests templates :: tests usually follow some patterns, and some already are available
+  - AAA :: Arrange (Setup and initialize objects and environment) - Act (Exercise functionality to be tested) - Assert (can comment each group to easily locate what's needed)
+    #+begin_src java
+    @Test
+    public void testFunctionality() {
+
+        // Arrange
+        String result;
+
+        // Act
+        result = theObject.printHelloWorld();
+
+        // Assert
+        assertEquals(result, "Hello World");
+        }
+    #+end_src
+  - BDD (behavior driven design tests, or 'GWT') :: Given (some condition) - When (action is made) - Then (compare with expected result)
+    + AAA vs BDD ::
+      - GWT can be mapped directly to specs of a feature file in BDD frameworks
+      - GWT is easier for non-developers to understand by encouraging use of plain English, and short descriptions of what each part is doing
+      - GWT is useful to communicate in a business environment, where work needs to be mapped to business value (business value is mapped by features through requirements)
+      - Given When and Then are keywords in various BDD frameworks such as SpecFlow, and Cucumber
+      - AAA is simpler for unit tests, some higher user tests (browser interaction testing), and when testing own code or library (setup and just test)
+        #+begin_src java
+        [Given(@"a customer previously bought a black sweater from me")]
+        public void GivenACustomerPreviouslyBoughtABlackSweaterFromMe()
+        { /* Code goes here */   }
+        
+        [Given(@"I currently have three black sweaters left in stock")]
+        public void GivenICurrentlyHaveThreeBlackSweatersLeftInStock()
+        { /* Code goes here */   }
+        
+        [When(@"he returns the sweater for a refund")]
+        public void WhenHeReturnsTheSweaterForARefund()
+        { /* Code goes here */   }
+        
+        [Then(@"I should have four black sweaters in stock")]
+        public void ThenIShouldHaveFourBlackSweatersInStock()
+        { /* Code goes here */   }
+        #+end_src
 ** Maintaining clean code
 [2023-12-06 Wed 09:58]
+- tips ::
+  + process :: define rules -> write code (in line with defined rules) -> use static code checker -> submit for code review (with preferably tests) -> merge
+  + static code analysis :: some basics included in some IDEs, but can add third party ones: +FindBugs+ (outdated), SonarLint
+  + 'boyscot' rule :: "leave the campground cleaner than you found it": if task not too time consuming and time allows, then fix
+  + code review :: needs both technical and functional requirement understanding
+
 
 * SOLID principles
 [2023-12-04 Mon 09:30]
@@ -292,6 +410,27 @@
   + switch case statements :: each case represent a logic => can be split into different methods/classes
   + "Monster methods" and "God classes" :: usually have large number of lines of codes, and/or mix levels of abstraction within the implementation. The methods and/or classes are not focused and very specialized, examples:
     #+begin_src java
+    // eg 0
+    // bad
+    class Employee {
+        String getName();
+        double getSalary();
+        Role getRole();
+
+        void sendEmail(); // action not really done by employee, but rather by semail sender service (outlook, etc.)
+        void calculateYearBonus(); // same, instead done by HR/pay department, but better if its own service for OCP purpose for example
+        }
+    // better
+    class Employee {
+        // employee getters
+        }
+    class EmailService {
+        void sendEmail();
+        }
+    class PayrollCalculator {
+        void calculateYearBonus();
+        }
+    
     // eg 1
     Income getIncome(Employee e) {
         Income income = employeeRepository.getIncome(e.id);
