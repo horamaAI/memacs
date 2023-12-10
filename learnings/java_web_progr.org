@@ -439,18 +439,116 @@
 - can even use annotations within the program, by writing programs that interpret needed annotations
 - annotations are preceded by ==@== :: @Override (used by the java core platform), @Deprecated (to say that the marked element should no longer be used, and the compiler will generate warnings when used, but will still work), @SuppressWarnings (to indicate to the compiler to not generate certain kind of warnings, eg: to suppress deprecated compiler warnings: ~@SupressWarnings("deprecation")~)
 - annotations can be used anywhere, so it's always good to reduce their scope so that one doesn't miss anything, eg for the case of SuppressWarnings, better to place ~@SupressWarnings("deprecation")~ on the deprecated method, instead of its whole class
-** Design with JAVA
-
+  
 ** Definitions
-- Fields :: same as saying class members
-- Encapsulation :: hiding the implementation of the details about methods, members variables, etc. inside a class
-- overloading vs overriding :: former: changing the signature of a method with different types of arguments, the latter: use in inheritance context, sets which method will be called, the base or the derived
-- Classloader :: object that is responsible for loading classes
+- artifactId :: name of jar without version
 - Class vs Object :: object is an instance of a class, and a Class is its blueprint or template from which the object is created
+- Classloader :: object that is responsible for loading classes
+- Encapsulation :: hiding the implementation of the details about methods, members variables, etc. inside a class
+- Fields :: same as saying class members
+- overloading vs overriding :: former: changing the signature of a method with different types of arguments, the latter: use in inheritance context, sets which method will be called, the base or the derived
 
 
 * Spring
 [2023-12-04 Mon 22:52]
+** Fundamentals
+[2023-12-09 Sat 17:26]
+- spring framework :: Inversion of control (IOC, see dependency injection (DI) solid principle) container, conceived to replace or reduce earlier complex configurations of earlier Java Enterprise Edition "EJBs" (Enterprise JavaBeans, spring was made to handle how to work better with EJBs, or without them all together)
+  + DI :: allows to remove hard coded wiring in application and use framework to inject dependency resources where they're needed
+  + spring ::
+    - lightweight, easy to use framework built around reducing complexities around JEE and providing enterprise development without EJBs (can be used with or without EJBs, now it's mostly used without them: spring allows to do enterprise development without using application server).
+      + mostly, before spring, either people weren't fully using enterprise features or were using more complex and harder to use application server
+      + before spring, one would use design patterns from JEE blueprints for ex to help making better code and repeatable processes but which sometimes would make code brittle and untestable, eg: recompile code when moving to different environment. With spring we have WORA (write once run anywhere)
+    - POJO (Plain Old Java Object) based :: any code written in spring can be written without using spring: spring is just doing things POJO based and interface driven
+    - use of AOP (Aspect Oriented Programming) and proxies :: to apply things like transactions to the code to get cross cutting concern out of the application => code should be smaller and more lightweight from using spring
+    - built around best practices :: spring makes us use best practices without realizing (singletons, factories, abstract factories, templates methods, etc.)
+- what's spring trying to solve ::
+  + increases :: testability, maintainability, scalability, decoupling;
+  + reduces :: code complexity;
+  + is business focused :: spring does the part of configuration code and lookup code for us and allows us to focus on the business
+    - eg of business focused advantage :: with JDBC would do verbose instructions to manage database (Connection, PreparedStatements, etc.), and exceptions handling (try catch, etc.), but spring does everything for us and injects result into our code => A car is needed, then get us a car, don't spend to much time on the technical. Instead of implementing ourselves the fetching, configuration, etc. inside the method ~getById()~, with spring we can just directly use what spring injects:
+      #+begin_src java
+      public Car getById(String id) {
+          return getEntityManager().find(Car.class, id); // No need for manager, connection, try catch, etc., not even in the base interface
+          }
+      #+end_src
+  + interface-based driven development :: more focused, easy to tests
+  + helps doing annotations or xml-based development :: as well as the java configurations
+  + how it works ::
+    - everything POJO
+    - can be seen as a glorified hash map, an application context :: spring application context is the configured spring container will all the dependencies wired up within it (but not only though, spring is not just creating a hash map and putting all objects in it)
+    - can be used as a registry
+- download/install spring ::
+  + no direct download for compiled jars, maven needed to download spring tools
+  + maven repo has src, javadocs, binaries available for download:
+    - in pom.xml, add spring context dependencies:
+      #+begin_src xml
+      <dependencies>
+        <dependency>
+          <groupId>org.springframework</groupId> <!-- org.springframework.boot for springboot -->
+          <artifactId>spring-context</artifactId>
+          <version>5.2.0.RELEASE</version> <!-- check on maven/spring website needed version -->
+        </dependency>
+      </dependencies>
+      #+end_src
+  + springboot: all ready to use
+    
+** Configurations
+[2023-12-10 Sun 01:53]
+*** java configuration
+- no applicationcontext xml :: no xml file containing configurations. A context is still there, but just not configured in xml
+
+*** xml configuration
+
+*** configuration with annotations
+
+** Architecture and structure
+[2023-12-09 Sat 18:38]
+- 
+*** maven
+- pom.xml (Project Object Model) :: fundamental unit of work in Maven. It is an XML file that contains information about the project and configuration details used by Maven to build the project. Contains default values for most projects
+  + requires ::
+    - plugin to use and build version for the application :: below ==<version>==: ==<build/plugins/plugins/version>==
+      #+begin_src xml
+      <groupId>org.apache.maven.plugins</groupId>
+      <groupId>pluralsight</groupId>
+      <artifactId>refactoring-solid-java17</artifactId>
+      <version>1.0</version>
+      #+end_src
+  + Notes ::
+    - intellij will not tell you (other IDEs do) the source-target of java version to be used with maven, so sometimes you will need to configure the java version source and target (under ==<build/plugins/plugins/configuration>==), eg here for java 11:
+      #+begin_src xml
+      <configuration>
+        <source>11</source> <!-- compiling java version -->
+        <target>11</target> <!-- java running target version -->
+      </configuration>
+      #+end_src
+    - maven compiler != java compiler
+    -
+      
+** Annotation based
+[2023-12-09 Sat 18:38]
+- infamous annotations ::
+  + 
+** Spring boot
+[2023-12-09 Sat 23:12]
+
+** Tips when using IDE
+[2023-12-10 Sun 01:13]
+*** General
+[2023-12-10 Sun 01:15]
+- creating new project :: create new project -> select project sdk -> select maven/gradle (on the left) as dependencies handler
+- when creating a new class with missing package structure :: remember to fully qualify the package name, eg: To create first class 'Toto', enter its fully qualified name: ~com.newproject.model.Toto~; same when 'repository' package is missing: ~com.newproject.repository.TotoRepositoryImpl~
+- imported libraries and dependencies are to be found in folder :: ==External Libraries==
+
+*** IntelliJ
+- create a new interface/superclass/etc. from a class :: right click in class src -> refactor -> extract -> interface
+
+** Notes
+- jar :: Java ARchive, file format based on ZIP file format and used for aggregating many files into one, ready to use by jdk
+- SDK :: Software development kit
+- Tomcat :: is not an application server, but a web server, lightweight an easy to use
+  
 * project rest user-manager
 
 - Spring Initializr (https://start.spring.io/) to generate a new Spring Boot project. Make sure to include the following dependencies
