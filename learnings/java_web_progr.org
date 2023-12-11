@@ -444,6 +444,7 @@
 - artifactId :: name of jar without version
 - Class vs Object :: object is an instance of a class, and a Class is its blueprint or template from which the object is created
 - Classloader :: object that is responsible for loading classes
+- Classpath :: parameter in the Java Virtual Machine or the Java compiler that specifies the location of user-defined classes and packages
 - Encapsulation :: hiding the implementation of the details about methods, members variables, etc. inside a class
 - Fields :: same as saying class members
 - overloading vs overriding :: former: changing the signature of a method with different types of arguments, the latter: use in inheritance context, sets which method will be called, the base or the derived
@@ -496,7 +497,109 @@
 ** Configurations
 [2023-12-10 Sun 01:53]
 *** java configuration
-- no applicationcontext xml :: no xml file containing configurations. A context is still there, but just not configured in xml
+- java configuration has no xml application context :: no xml file containing configurations. A context is still there, but just not configured in xml
+- Application configuration file :: java class file that is the start of application context, the file where we start configuring the context of the application
+  + 'AppConfig.java' file name is widely used :: but doesn't need specific name
+- @Configuration :: to set start of configuration context
+  + file with configuration annotation replace xml files for the xml configuration for example
+  + @Configuration is a *class level* annotation at the top of the class:
+    #+begin_src java
+    @Configuration
+    public class AppConfig {
+
+        @Bean(name = "customerRepository") // 'name' is optional, it registers with the name "customerRepository" the bean created for the class CustomerRepository
+        public CustomerRepository getCustomerRepository() {
+            return new HibernateCustomerRepositoryImpl();
+            }
+        }
+    #+end_src
+- Setters injection :: injection with setter method calls inside of a bean
+  #+begin_src java
+  @Bean(name = "customerRepository")
+  public CustomerRepository getCustomerRepository() {
+      return new HibernateCustomerRepositoryImpl();
+      }
+  }
+  @Bean(name = "customerService")
+  public CustomerService getCustomerService() {
+      CustomerServiceImpl customerService = new CustomerServiceImpl();
+      customerService.setCustomerService(getCustomerRepository());
+      
+      return customerService;
+      }
+  }
+  #+end_src
+- constructor injection :: same as setter injection, but with constructor :)
+  #+begin_src java
+  @Bean(name = "customerRepository")
+  public CustomerRepository getCustomerRepository() {
+      return new HibernateCustomerRepositoryImpl();
+      }
+  }
+  @Bean(name = "customerService")
+  public CustomerService getCustomerService() {
+      CustomerServiceImpl customerService = new CustomerServiceImpl(getCustomerRepository());
+
+      return customerService;
+      }
+  }
+  #+end_src
+- process of using spring java configuration :: need to call application context to use spring
+  #+begin_src java
+  public class Application {
+      public static void main(String args[]) {
+
+          ApplicationContext appContext = new AnnotationConfigApplicationContext(AppConfig.class); // ApplicationContext from org.springframework.context, and set it to use annotations (java configuration, using class AnnotationConfigApplicationContext), and loads configs set in class AppConfig (remainder: can be any name, but AppConfig is the widely used)
+
+          }
+      }
+  #+end_src
+  + process in few words :: when AnnotationConfigApplicationContext is ran, spring will create a basic registry of configurations set in the config file (for example, with configurations such as ones given in section "Setters injection", it will create a registry with 2 beans in it: "customerService", and "customerRepository")
+  + fetching a bean :: with method "getBean". Preferably choose the one that does type casting ==getBean(Class<T> aClass)-> T==
+    - can call desired bean by name, with the name set on argument 'name' of @Bean
+    - pass as second argument the class instance for casting
+    #+begin_src java
+    public class Application {
+        public static void main(String args[]) {
+
+        ApplicationContext appContext = new AnnotationConfigApplicationContext(AppConfig.class);
+
+        CustomerService customerService = appContext.getBean("customerService", CustomerService.class); // thanks to setters injection, will also instantiate customerRepository bean
+        // no need to change anything when using constructor injection since everything is done in the service and repository classes, and some fix in the config class
+
+        }
+    }
+    #+end_src
+    
+**** Scope
+[2023-12-10 Sun 22:31]
+- scopes :: used to configure beans in application, *scope != patterns*, 5 scopes available in spring:
+  + valid in any configuration ::
+    - singleton (spring default bean scope) :: ~@Scope("singleton")~ (or ~BeanDefinition.SCOPE_SINGLETON~ if you want to avoid typos) single instance per spring container or application context; technically not per JVM since can have more than one spring container spun up in a JVM
+      + without maven, spring might require AOP jar, but with maven it's a transitive dependency and AOP will already be available in the project
+        #+begin_src java
+
+        @Bean(name = "customerRepository")
+        @Bean(value = BeanDefinition.SCOPE_SINGLETON) // prefer available BeanDefinitions over writing scope yourself, you might type in typos
+        public CustomerRepository getCustomerRepository() {
+            return new HibernateCustomerRepositoryImpl();
+            }
+        }
+        #+end_src
+    - prototype :: guarantees new bean per request (opposite of singleton), ~@Scope(value = BeanDefinition.SCOPE_PROTOTYPE)~
+  + valid in only web-aware spring projects with for example spring MVC (model-view-controller) ::
+    - Request :: returns a bean per http request
+    - Session :: returns a bean per http session (will live as long as session is alive)
+    - Global (or "GlobalSession") :: returns a bean per application (once accessed, stays alive for the duration of the application, not just the visit on that application: similar to singleton but with the entire life cycle of the application on the server (for example until server gets undeployed or rebooted))
+- Bean scope :: 
+
+**** Some annotations
+- @Configuration :: to define configuration *class*
+- @Bean (java configuration analog of the XML <bean/> element) :: to define spring beans at *method level*, returns instance of a bean, and the bean is registered inside of spring and available for use inside of the spring application
+  + by default beans are singletons
+  + arguments ::
+    - name :: bean name, optional, but useful when doing autowiring will autowire by name to variable names
+  
 
 *** xml configuration
 
@@ -543,6 +646,36 @@
 
 *** IntelliJ
 - create a new interface/superclass/etc. from a class :: right click in class src -> refactor -> extract -> interface
+- iml file (*.iml) :: module file created by IntelliJ that stores information about a development module, which may be a Java, Plugin, Android, or Maven component; saves the module paths, dependencies, and other settings. eg:
+  #+begin_src xml
+  <!-- eg file : 1-srp/checkpoints/checkpoint-1/before/srp-checkpoint-1.iml -->
+  <?xml version="1.0" encoding="UTF-8"?>
+  <module org.jetbrains.idea.maven.project.MavenProjectsManager.isMavenModule="true" type="JAVA_MODULE" version="4">
+    <component name="NewModuleRootManager" LANGUAGE_LEVEL="JDK_17">
+      <output url="file://$MODULE_DIR$/target/classes" />
+      <output-test url="file://$MODULE_DIR$/target/test-classes" />
+      <content url="file://$MODULE_DIR$">
+        <sourceFolder url="file://$MODULE_DIR$/src/main/java" isTestSource="false" />
+        <sourceFolder url="file://$MODULE_DIR$/src/main/resources" type="java-resource" />
+        <sourceFolder url="file://$MODULE_DIR$/src/test/java" isTestSource="true" />
+        <excludeFolder url="file://$MODULE_DIR$/target" />
+      </content>
+      <orderEntry type="inheritedJdk" />
+      <orderEntry type="sourceFolder" forTests="false" />
+      <orderEntry type="library" scope="TEST" name="Maven: org.junit.jupiter:junit-jupiter:5.8.2" level="project" />
+      <orderEntry type="library" scope="TEST" name="Maven: org.junit.jupiter:junit-jupiter-api:5.8.2" level="project" />
+      <orderEntry type="library" scope="TEST" name="Maven: org.opentest4j:opentest4j:1.2.0" level="project" />
+      <orderEntry type="library" scope="TEST" name="Maven: org.junit.platform:junit-platform-commons:1.8.2" level="project" />
+      <orderEntry type="library" scope="TEST" name="Maven: org.apiguardian:apiguardian-api:1.1.2" level="project" />
+      <orderEntry type="library" scope="TEST" name="Maven: org.junit.jupiter:junit-jupiter-params:5.8.2" level="project" />
+      <orderEntry type="library" scope="TEST" name="Maven: org.junit.jupiter:junit-jupiter-engine:5.8.2" level="project" />
+      <orderEntry type="library" scope="TEST" name="Maven: org.junit.platform:junit-platform-engine:1.8.2" level="project" />
+    </component>
+  </module>
+  #+end_src
+- to avoid conflicting maven artifacts (when installing and publishing), remember, when copying from another project and it has to be renamed, to update *.iml name file and pom.xml/artifactId
+- first run :: might ask for classpath module and JRE
+- generate getters/setters/toString/etc. :: right click -> generate -> needed method
 
 ** Notes
 - jar :: Java ARchive, file format based on ZIP file format and used for aggregating many files into one, ready to use by jdk
