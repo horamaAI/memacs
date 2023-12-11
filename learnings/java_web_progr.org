@@ -442,9 +442,11 @@
   
 ** Definitions
 - artifactId :: name of jar without version
+- Beans :: essentially just classes, POJOs used inside the application context, replaces keyword ==new==
 - Class vs Object :: object is an instance of a class, and a Class is its blueprint or template from which the object is created
 - Classloader :: object that is responsible for loading classes
 - Classpath :: parameter in the Java Virtual Machine or the Java compiler that specifies the location of user-defined classes and packages
+  + the JVM finds and loads classes lazily (it loads the bytecode of a class only when the class is first used). The classpath tells Java where to look in the filesystem for files defining these classes
 - Encapsulation :: hiding the implementation of the details about methods, members variables, etc. inside a class
 - Fields :: same as saying class members
 - overloading vs overriding :: former: changing the signature of a method with different types of arguments, the latter: use in inheritance context, sets which method will be called, the base or the derived
@@ -500,6 +502,7 @@
 - java configuration has no xml application context :: no xml file containing configurations. A context is still there, but just not configured in xml
 - Application configuration file :: java class file that is the start of application context, the file where we start configuring the context of the application
   + 'AppConfig.java' file name is widely used :: but doesn't need specific name
+    - can be placed one level up from specific folder such as model, service, repository, etc.: ==src/java/main/com/examples/AppConfig.java== (supposing service folder is in ==src/java/main/com/examples/service==)
 - @Configuration :: to set start of configuration context
   + file with configuration annotation replace xml files for the xml configuration for example
   + @Configuration is a *class level* annotation at the top of the class:
@@ -523,7 +526,7 @@
   @Bean(name = "customerService")
   public CustomerService getCustomerService() {
       CustomerServiceImpl customerService = new CustomerServiceImpl();
-      customerService.setCustomerService(getCustomerRepository());
+      customerService.setCustomerRepository(getCustomerRepository());
       
       return customerService;
       }
@@ -555,7 +558,7 @@
       }
   #+end_src
   + process in few words :: when AnnotationConfigApplicationContext is ran, spring will create a basic registry of configurations set in the config file (for example, with configurations such as ones given in section "Setters injection", it will create a registry with 2 beans in it: "customerService", and "customerRepository")
-  + fetching a bean :: with method "getBean". Preferably choose the one that does type casting ==getBean(Class<T> aClass)-> T==
+  + fetching a bean :: with method "getBean". Preferably choose the one that does type casting ==getBean(Class<T> aClass)-> T==, but give it the desired target class so it doesn't need a cast
     - can call desired bean by name, with the name set on argument 'name' of @Bean
     - pass as second argument the class instance for casting
     #+begin_src java
@@ -565,13 +568,13 @@
         ApplicationContext appContext = new AnnotationConfigApplicationContext(AppConfig.class);
 
         CustomerService customerService = appContext.getBean("customerService", CustomerService.class); // thanks to setters injection, will also instantiate customerRepository bean
+        // precise CustomerService.class so that getBean using casting doesn't really need to do a cast
         // no need to change anything when using constructor injection since everything is done in the service and repository classes, and some fix in the config class
 
         }
     }
     #+end_src
-    
-**** Scope
+**** Bean scope
 [2023-12-10 Sun 22:31]
 - scopes :: used to configure beans in application, *scope != patterns*, 5 scopes available in spring:
   + valid in any configuration ::
@@ -591,10 +594,115 @@
     - Request :: returns a bean per http request
     - Session :: returns a bean per http session (will live as long as session is alive)
     - Global (or "GlobalSession") :: returns a bean per application (once accessed, stays alive for the duration of the application, not just the visit on that application: similar to singleton but with the entire life cycle of the application on the server (for example until server gets undeployed or rebooted))
-- Bean scope :: 
+
+**** Autowiring
+[2023-12-11 Mon 08:51]
+- Autowiring :: used to reduce the wiring up and configuration of code. "convention over configuration"
+- needed ::
+  + add ~@ComponentScan({com.example})~ to configuration file: the arguments are an array of package structures that need to be scanned for beans to autowire, eg: ==com.example== indicates a place where should start looking for autowired annotations
+  + to use autowiring, just mark whatever bean you want with ~@Autowired~
+    - can choose by name, and it will look for @Bean name
+    - can choose by type, and it will use instance type
+- one advantage of java configuration over xml configuration for autowiring :: is that one can mix selections, eg: can set a bean defined as autowired with another bean into it, and spring will know how to use them
+- 'Stereotype annotations' ::
+  + @Component :: similar to @Bean
+  + @Repository :: used to denote a class being used as a repository object
+  + @Service :: where should put business logic handling (not related to web service or microservice)
+  + @Controller :: where to put web or microservices for the application
+- examples ::
+  #+begin_src java
+  // example 1: with partial autowiring (without @ComponentScan)
+  public class CustomerServiceImpl implements CustomerService {
+
+      private CustomerRepository customerRepository;
+
+      // default constructor
+      public CustomerServiceImpl() {
+          // ...
+      }
+
+      // other methods and constructors: ...
+
+      @Autowired // will automatically inject CustomerRepository bean into the setter
+      public void setRepository(CustomerRepository repo) {
+          this.customerRepository = repo;
+          }
+      }
+  //...
+  @Configuration
+  public class AppConfig {
+      @Bean(name = "customerRepository")
+      @Scope(value = BeanDefinition.SCOPE_PROTOTYPE)
+      public CustomerRepository getCustomerRepository() {
+          return new HibernateCustomerRepositoryImpl();
+      }
+
+      @Bean(name = "customerService")
+      public CustomerService getCustomerService() {
+          CustomerServiceImpl customerService = new CustomerServiceImpl(); // will use default constructor, and thanks to 'autowired', will also run the CustomerService repository setter
+          return customerService;
+      }
+  }
+
+
+  // example 2: with full autowiring
+  @Service("customerService") // set as a service with stereotype @Service
+  // can even change scope at class level: @Scope(value = BeanDefinition.SCOPE_PROTOTYPE)
+  public class CustomerServiceImpl implements CustomerService {
+
+      private CustomerRepository customerRepository;
+
+      // default constructor
+      public CustomerService() {
+          // ...
+      }
+
+      // constructor with argument:
+      // possible to change autowiring at constructor level, since in AppConfig is not hard-code with which type of dependency injection is to be used, just setting @Autowired will know what method to use for dependency injection
+      // @Autowired
+      public CustomerService(CustomerRepository customerRepository()) {
+          this.customerRepository = customerRepository;
+      }
+
+      // other methods and constructors: ...
+
+      @Autowired // stays autowired to automatically inject CustomerRepository bean into the setter
+      public void setRepository(CustomerRepository repo) {
+          this.customerRepository = repo;
+          }
+      }
+
+  @Repository("customerRepository")
+  public class HibernateCustomerRepositoryImpl implements CustomerRepository {
+      // constructors, methods, and others ...
+  }
+
+  //...
+  @Configuration
+  @ComponentScan({"com.example"})
+  public class AppConfig {
+      // no longer needed since CustomerService and CustomerRepository are now autowired
+      /*
+      @Bean(name = "customerService")
+      public CustomerService getCustomerService() {
+          CustomerServiceImpl customerService = new CustomerServiceImpl(); // will use default constructor, and thanks to 'autowired', will also run the CustomerService repository setter
+          return customerService;
+      }
+      @Bean(name = "customerRepository")
+      @Scope(value = BeanDefinition.SCOPE_PROTOTYPE)
+      public CustomerRepository getCustomerRepository() {
+          return new HibernateCustomerRepositoryImpl();
+      }
+      ,*/
+
+  }
+
+  #+end_src
 
 **** Some annotations
 - @Configuration :: to define configuration *class*
+- @Component :: similar to @Bean, but can also be applicable at class level
+- @ComponentScan({"com.example"}) :: to add to configuration file for autowiring. The arguments are an array of package structures that need to be scanned for beans to autowire
 - @Bean (java configuration analog of the XML <bean/> element) :: to define spring beans at *method level*, returns instance of a bean, and the bean is registered inside of spring and available for use inside of the spring application
   + by default beans are singletons
   + arguments ::
@@ -602,8 +710,403 @@
   
 
 *** xml configuration
+- Notes ::
+  + why still use xml :: first method available in spring, some things still easier with xml, better separation of concerns (for eg when configuration code is moved in a separate file)
+  + applicationContext.xml :: root of an application configured for spring using xml
+    - name doesn't matter :: configuration file doesn't have to be named applicationContext.xml, it's just how it's usually done
+      + by default though, without an extra configuration, spring will look for a file named applicationContext.xml
+    - should be placed in default "resources" folder :: ==src/main/resources/applicationContext.xml==
+    - same as java configuration ::
+      + spring context is a sort of HashMap of objects (spring defines the hash map inside applicationContext.xml, or AppConfig.java for java configuration. The hash map is a name-value pairing)
+      + application context can simply be a registry (can lookup beans out of defined context)
+    - exists defined namespaces :: dictionary for the properties to aid in creating configuration/validation for beans inside an application, eg: ~<beans>, <beans/property>, <beans/util>~, etc.
+- applicationContext.xml in details ::
+  + xml application context snippet ::
+    - basic ::
+      #+begin_src xml
+      <?xml version="1.0" encoding="UTF-8"?>
+      <beans xmlns="http://www.springframework.org/schema/beans"
+             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xmlns:context="http://www.springframework.org/schema/context"
+             xsi:schemaLocation="http://www.springframework.org/schema/beans
+                              http://www.springframework.org/schema/beans/spring-beans.xsd
+                              http://www.springframework.org/schema/context
+                              http://www.springframework.org/schema/context/spring-context.xsd">
 
-*** configuration with annotations
+      </beans>
+      #+end_src
+    - with more elements ::
+      #+begin_src xml
+      <?xml version="1.0" encoding="UTF-8"?>
+      <beans xmlns="http://www.springframework.org/schema/beans"
+             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xmlns:context="http://www.springframework.org/schema/context"
+             xmlns:p="http://www.springframework.org/schema/p"
+             xsi:schemaLocation="http://www.springframework.org/schema/beans
+                              http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
+                              http://www.springframework.org/schema/context
+                              http://www.springframework.org/schema/context/spring-context-3.1.xsd">
+
+          <context:property-placeholder properties-ref="deployProperties"/>
+
+          <!-- Activates various annotations to be detected in bean classes -->
+          <context:annotation-config/>
+
+          <!-- Imports logging configuration -->
+          <import resource="trace-context.xml"/>
+
+          <!-- Imports Spring Data & MongoDB configuration -->
+          <import resource="spring-data.xml" />
+
+          <!-- Imports SpringMVC configuration -->
+          <import resource="mvc-dispatcher-servlet.xml" />
+
+          <bean id="deployProperties" class="org.springframework.beans.factory.config.PropertiesFactoryBean"
+                p:location="/WEB-INF/spring.properties"/>
+
+      </beans>
+      #+end_src
+  + to optimize IoC when using beans, it's better to :: define class and use interface, eg:
+    - careful on how you name your setter methods, it has an impact on how it's referenced from the application context file
+    #+begin_src xml
+    <?xml version="1.0" encoding="UTF-8"?>
+    <beans xmlns="http://www.springframework.org/schema/beans"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://www.springframework.org/schema/beans
+                            http://www.springframework.org/schema/beans/spring-beans.xsd">
+      <bean
+          name="customerRepository"
+          class="com.example.repository.CustomerRepositoryImpl" /> <!-- attribute class to define class to use -->
+
+      <bean
+          name="customerService"
+          class="com.example.service.CustomerServiceImpl"> <!-- define class -->
+           <!-- 'name' for the name of the setter to use -->
+           <!-- 'ref' to refer to the customerRepository bean, but there is also other attributes such as 'value' to directly put a value in the bean -->
+          <property name="customerRepository" ref="customerRepository" /> <!-- will call setter setCustomerRepository in CustomerService -->
+          <!-- CAREFUL: if for any reason one wants to change the name of the setter to for example setRepository, 'name' needs to take the value name="repository" -->
+      </bean>
+    </beans>
+    #+end_src
+  + using xml application context :: similar to using java configuration, but with ==ClassPathXmlApplicationContext== in place of AnnotationConfigApplicationContext, with the name of the application file as argument (since app context file is in the 'resources' folder, no need to give the whole path)
+    #+begin_src java
+    public class Application {
+    public static void main(String args[]) {
+
+        ApplicationContext appContext = new ClassPathXmlApplicationContext("applicationContext.xml");
+
+        CustomerService customerService = appContext.getBean("customerService", CustomerService.class); // the xml setters injection will also instantiate the customerRepository bean
+        // no need to change anything when using constructor injection since everything is done in the service and repository classes, and some fix in the config class
+
+        }
+    }
+    #+end_src
+  + Autowiring :: for spring to autowire beans and reduce the configuration steps
+    - 4 types possible to autowire beans ::
+      + byType :: allows autowiring *if exactly one bean* of the property type exists in the container, eg: if have 2 two 'Car' objects exist in the container with different names, then fatal exception
+      + byName :: can choose by the name of the object that is to be wired
+      + constructor :: similar to byType, but applies to constructor arguments
+      + 'no' :: for no autowiring, is specified to no, then it won't be autowired at all
+    - eg :: byType, byName
+      #+begin_src xml
+      <?xml version="1.0" encoding="UTF-8"?>
+      <beans xmlns="http://www.springframework.org/schema/beans"
+             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xsi:schemaLocation="http://www.springframework.org/schema/beans
+                              http://www.springframework.org/schema/beans/spring-beans.xsd">
+        <bean
+            name="customerRepository"
+            class="com.example.repository.CustomerRepositoryImpl" />
+
+        <bean
+            name="customerService"
+            class="com.example.service.CustomerServiceImpl"
+            autowire="byName">
+            <!-- no call to constructor (with constructor-arg neither with autowire="constructor")  -->
+            <!-- byType will bean customerService, and inject customerRepository bean too -->
+            <!-- byName: since we're referring to customerService, and there exists a bean name customerRepository, the autowiring will use the setter injection setCustomerRepository in CustomerServiceImpl -->
+            <!-- works similarly to using verbose definition with property: <property name="customerRepository" ref="customerRepository" />:
+                 'name' for the name of the setter to use
+                 'ref' to refer to the customerRepository bean
+                 + if no setter 'setCustomerRepository' (since repository bean name is customerRepository) exists, then it will fail: runtime exception 'NullPointerException' because it can't autowire the bean correctly
+                 + but will succeed if byType because it won't lookup the name, but the class type, and will find it (CustomerRepositoryImpl)
+             -->
+        </bean>
+      </beans>
+
+      #+end_src
+
+  + use setter injection and constructor injection together :: (setter injection is better for existing code though)
+    - constructor injection is index based :: (whereas setter injection is name based) ~<constructor-arg index="0" >~ (0 based constructor for 1 arg constructor), eg:
+      + java class definition with constructors ::
+        #+begin_src java
+        public class CustomerServiceImpl implements CustomerService {
+
+            private CustomerRepository customerRepository;
+
+            // no args constructor
+            public CustomerServiceImpl() {
+                // ...
+            }
+
+            // one arg constructor
+            public CustomerServiceImpl(CustomerRepository repo) {
+                this.customerRepository = repo;
+            }
+            
+            // other methods and constructors: ...
+
+            public void setRepository(CustomerRepository repo) {
+                this.customerRepository = repo;
+                }
+            }
+        #+end_src
+      + application context file ::
+        #+begin_src xml
+        <?xml version="1.0" encoding="UTF-8"?>
+        <beans xmlns="http://www.springframework.org/schema/beans"
+               xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+               xsi:schemaLocation="http://www.springframework.org/schema/beans
+                                http://www.springframework.org/schema/beans/spring-beans.xsd">
+          <bean
+              name="customerRepository"
+              class="com.example.repository.CustomerRepositoryImpl" />
+
+          <bean
+              name="customerService"
+              class="com.example.service.CustomerServiceImpl">
+              <constructor-arg index="0" ref="customerRepository" /> <!-- call to one argument constructor -->
+              <!-- same can be achieved by autowiring, with autowire="constructor" and of course delete/comment constructor-arg above -->
+          </bean>
+        </beans>
+        #+end_src
+      
+  + when compiled :: applicationContext.xml is copied to the folder for build files (build java files goes to folder 'target/classes' or 'build/classes', the classpath), ie. target/classes/applicationContext.xml
+
+*** Advanced bean configuration
+**** Bean Processors ("init method")
+- steps :: instantiation -> Populate properties (read from property files, injected from other resources, etc.) -> BeanNameAware (framework sets the bean name and make it aware to other resources, and then can set that as a BeanFactoryAware context) -> BeanFactoryAware -> Pre-initialization using BeanPostProcessors (from there, one can intialize the bean utilizing properties that were just set and then can call an init method InitializeBean) -> InitializeBean -> initMethod -> Post-Initialization - BeanPostProcessors
+- adding init method :: post construct, pre destruct, etc.
+  + import dependency to pom :: annotation needed for post contruct API calls
+    #+begin_src xml
+      <dependencies>
+        <dependency>
+          <groupId>javax.annotation</groupId> <!-- org.springframework.boot for springboot -->
+          <artifactId>javax.annotation-api</artifactId>
+          <version>1.3.2</version> <!-- check on maven/spring website needed version -->
+        </dependency>
+      </dependencies>
+    #+end_src
+  + eg :: use of post construct, will always run after constructor, can be handy for logging or any further configurations instructions needed after constructing object
+    - don't put things that do not belong in post construct, eg: open/close database connection; let this be handled by spring, not by the dev
+    #+begin_src java
+    public class CustomerServiceImpl implements CustomerService {
+
+        private CustomerRepository customerRepository;
+
+        public CustomerServiceImpl() {
+            // ...
+            }
+
+        @PostConstruct // 
+        private void initialize() {
+            // ...
+            // This part will run after the constructor
+            }
+
+        }
+    #+end_src
+
+**** FactoryBean (to construct object by building over existing ones)
+[2023-12-11 Mon 18:26]
+- Notes ::
+  + needed to wrap some object construction into further directives for our bean creation
+  + factorybean configurations are similar to the init methods, it builds on the factory method design pattern, and its functionality is built to work the same way (code doesn't need to be written as a factory to be used in spring as a factory)
+  + great way to integrate legacy code in the application by enforcing a contract in how the code is configured without creating a specific constructor for it: with legacy code one doesn't have the ability to modify constructors due to existing commitments
+    - using the pattern enables to establish a contract without modifying the legacy code
+  + need to implement FactoryBean: ~implements FactoryBean<T>~, and methods to implement ~getObject, getObjectType~
+  + handy to work with static methods inside of a class
+- steps :: implement FactoryBean class and methods, add up methods to factory wrapped bean to adapt to new requirements (take static instance and add functionalities around it to be used in the rest of the application)
+- eg ::
+  #+begin_src java
+  package com.example.util;
+
+  public class CalendarFactory implements FactoryBean<Calendar> {
+
+      private Calendar instance = Calendar.getInstance();
+
+      @Override
+      public Calendar getObject() throws Exception {
+          return instance;
+          }
+
+      @Override
+      public Calendar<?> getObjectType() {
+          return Calendar.class;
+          }
+
+      // add some values to the factory wrapped bean static instance, examples:
+      public void addDays(int num) {
+          instance.add(Calendar.DAY_OF_YEAR, num);
+          }
+      }
+
+  // in AppConfig (with java configuration)
+  @Configuration
+  @ComponentScan({"com.example"})
+  public class AppConfig {
+
+      // define 2 beans: the FactoryBean implementation, and 
+      @Bean(name = "cal")
+      public CalendarFactory calFactory() {
+          CalendarFactory factory = new CalendarFactory();
+          factory.addDays(2);
+          return factory;
+      }
+      @Bean
+      public Calendar cal() throws Exception {
+          return calFactory().getObject(); // calls the factoryBean implementation method above
+      }
+  }
+
+  // and to autowire the bean somewhere:
+  @Repository("customerRepository")
+  public class HibernateCustomerRepositoryImpl implements CustomerRepository {
+
+      // autowire the new defined bean:
+      @Autowire
+      private Calendar cal;
+
+      // constructors, methods, and others ...
+
+      public List<Customer> findAll() {
+          List<Customer> customers = new ArrayList<~>();
+
+          // ...
+
+          System.out.println("cal: " + cal.getTime()); // the object cal will actually be called from the implementation of FactoryBean, not the Calendar per se. Before the FactoryBean addition, there was no way to reference a calendar object and pass it in this way
+          }
+  }
+
+  #+end_src
+
+**** SpEL (Spring Expression Language)
+[2023-12-11 Mon 18:26]
+- with SpEL ::
+  + can manipulate object graph :: means once the object is created, one can use the expression language to manipulate that object
+  + can evaluate values at runtime :: (and change behavior of code accordingly)
+  + can evaluate and manipulate configurations ::
+- eg ::
+  #+begin_src java
+  // model
+  public class Customer {
+      private String firstName;
+      private String lastName;
+      private double seedNum;
+
+      // constructors, getters, setters, other methods ...
+
+      public void getSeedNum() {
+          return seedNum;
+          }
+      public void setSeedNum(double seedNum) {
+          this.seedNum = seedNum;
+          }
+      }
+
+  // repository
+  @Repository("customerRepository")
+  public class HibernateCustomerRepositoryImpl implements CustomerRepository {
+
+      // autowire the new defined bean:
+      @Autowire
+      private Calendar cal;
+
+      // use spring expression language to grab value out of java.lang.Math library:
+      @Value("#{ T(java.lang.Math).random() * 100 }") // ==(java.lang.Math)==: grabs Math object, random returns 0 to 1
+      private double seedNum; // initialized with SpEL, and now available at runtime to pass it to the setter in Customer model for example
+
+      // constructors, methods, and others ...
+
+      public List<Customer> findAll() {
+          List<Customer> customers = new ArrayList<~>();
+
+          // ...
+          Customer customer = new Customer();
+
+          customer.setFirstName("Bryan");
+          customer.setLastName("Hansen");
+          customer.setSeedNum(seedNum);
+
+          customers.add(customer);
+
+          // ...
+
+          return customers;
+          }
+  #+end_src
+
+**** Proxies (AOP proxies)
+[2023-12-11 Mon 18:27]
+- Notes ::
+  + Proxies are a great way to inject behavior into code without modifying the underlying code
+  + useful when doing framework or library based work, or when dealing with databases and the annotation @Transactional
+- eg ::
+  + SimplePojo is the class that we want to proxy to
+  + Pojo is the interface that one will make calls on through the proxy and allows the calls to be intercepted
+  #+begin_src java
+  ProxyFactory factory = new Proxyfactory(new SimplePojo());
+
+  factory.addInterface(Pojo.class);
+  factory.addAdvice(new RetryAdvice());
+  factory.setExposeProxy(true);
+
+  Pojo pojo = (Pojo) factory.getProxy();
+
+  // method call on the proxy!:
+  pojo.foo();
+  #+end_src
+
+**** Bean Profiles (good to adapt environments)
+[2023-12-11 Mon 18:27]
+- Notes ::
+  + Bean Profiles good to ::
+    - adapt to environments :: allow to set up specific code that gets ran only in specific environment, so one can swap out configurations at runtime for example
+    - do runtime configuration :: do not overdo it though, use them with moderation and try to develop code that don't change with environment, unless really needed
+- eg ::
+  #+begin_src java
+  // define a profile using @Profile
+  @Repository("customerRepository")
+  @Profile("dev") // set a profile to use (not predefined)
+  public class HibernateCustomerRepositoryImpl implements CustomerRepository {
+
+      @Autowire
+      private Calendar cal;
+
+      @Value("#{ T(java.lang.Math).random() * 100 }") // check out SpEL section
+      private double seedNum;
+
+      // constructors, methods, and others ...
+
+      public List<Customer> findAll() {
+          List<Customer> customers = new ArrayList<~>();
+
+          // ...
+          return customers;
+          }
+      }
+
+  // same
+  @Repository("customerService")
+  @Profile("dev")
+  public class CustomerServiceImpl implements CustomerService {
+
+        // ...
+    }
+
+  // go into your IDE run application configuration (in intelliJ: 'Edit configurations'), and use profile option to use (VM options): ~-Dspring.profiles.active=dev~
+  #+end_src
+
 
 ** Architecture and structure
 [2023-12-09 Sat 18:38]
