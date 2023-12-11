@@ -102,28 +102,28 @@
 
 ** org-mode
 *** org-mode document structures
-    - headlines and items ::
-      + add headline :: =C-RET=
-      + add item :: =M-RET=
-      + move item/headline up/down :: =M-UP/DOWN=
-      + cycle through available bullets :: =C-c -=
-    - drawers :: 
-      + insert a drawer below current headline :: =C-c C-x d= // calls 'org-insert-drawer'
-      + insert property drawer below current headline :: // calls 'org-insert-property-drawer'
-      + LOGBOOK ::
-	- add time-stamped note to ‘LOGBOOK’ drawer :: =C-c C-z=
+- headlines and items ::
+  + add headline :: =C-RET=
+  + add item :: =M-RET=
+  + move item/headline up/down :: =M-UP/DOWN=
+  + cycle through available bullets :: =C-c -=
+- drawers :: 
+  + insert a drawer below current headline :: =C-c C-x d= // calls 'org-insert-drawer'
+  + insert property drawer below current headline :: // calls 'org-insert-property-drawer'
+  + LOGBOOK ::
+- add time-stamped note to ‘LOGBOOK’ drawer :: =C-c C-z=
 
 *** exporting org-mode files
-  - insert templates options for exporting :: ==C-c C-e # [category]== // where [category] can be html, latex, ascii, etc.
-    + to change option :: ==C-c C-c==
-  - insert customized templates (setup files) ::
-    + need of directory to store setup files :: e.g. ~/.emacs.d/org-templates/
-    + call setup file :: 
-      #+begin_src org :exports src
-      eg :: #+SETUPFILE: ~/.emacs.d/org-templates/level-N.org
-      #+end_src
-  - export :: =C-c C-e' + key of export type needed=
-    + eg, export to html file :: =C-c C-e h h= // bound to org-html-export-to-html
+- insert templates options for exporting :: ==C-c C-e # [category]== // where [category] can be html, latex, ascii, etc.
+  + to change option :: ==C-c C-c==
+- insert customized templates (setup files) ::
+  + need of directory to store setup files :: e.g. ~/.emacs.d/org-templates/
+  + call setup file :: 
+    #+begin_src org :exports src
+    eg :: #+SETUPFILE: ~/.emacs.d/org-templates/level-N.org
+    #+end_src
+- export :: =C-c C-e' + key of export type needed=
+  + eg, export to html file :: =C-c C-e h h= // bound to org-html-export-to-html
 
 *** org agenda and todo items
 **** org agenda
@@ -215,16 +215,33 @@
        5. use S-<UP> or S-<DOWN> to change the time
        !!! CAREFUL not to create overlaps when fixing clock entries, use :
        - v c :: in daily agenda, and it will identify gaps and overlaps
-
 *** speed commands
-  - defaults ::
-    + ==I== and ==O== :: for clocking in and out
-    + ==J== :: jump to current or last clocking task
-    + ==t== :: change todo state
-    + ==TAB== and ==S-TAB== :: for cycling
-  - from bh configs :: 
-    + ==c== and ==C== :: are disabled by bh so they do not accidentally self insert when not intended to
+- defaults ::
+  + ==I== and ==O== :: for clocking in and out
+  + ==J== :: jump to current or last clocking task
+  + ==t== :: change todo state
+  + ==TAB== and ==S-TAB== :: for cycling
+- from bh configs :: 
+  + ==c== and ==C== :: are disabled by bh so they do not accidentally self insert when not intended to
 
+*** Cursor motion
+[2023-12-11 Mon 12:09]
+- ==C-c C-n/p== :: (org-next-visible-heading), go to next/previous heading
+- ==C-c C-f/b== :: (org-forward-heading-same-level), go to next/previous heading same level
+- ==C-c C-u== :: (outline-up-heading), backward to higher level heading
+- ==C-c C-j== :: (org-goto), jump to a different place without changing the current outline visibility
+  + shows the document structure in a temporary buffer, where you can use the following keys to find your destination ::
+    - ==TAB== :: cycle visibility
+    - ==DOWN/UP==	:: next/previous visible headline
+    - ==RET== :: select this location
+    - ==/== :: do a Sparse-tree search
+    - following keys also work if ==org-goto-auto-isearch== is turned off ::
+      + ==n/p== :: next/previous visible headline
+      + ==f/b== :: next/previous headline same level
+      + ==u== :: one level up
+      + ==0...9== :: digit argument
+      + ==q== :: quit
+  
 * C++
   + activate c++ mode (done by default for .cpp, .cxx files, but not .h files that are opened as c files) :: M-x c++-mode
 
