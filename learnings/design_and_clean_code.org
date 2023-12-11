@@ -979,6 +979,7 @@
         .map(x => x.name)
     #+end_src
 - Refactoring :: systematic process of improving code without creating new functionality that can transform a mess into clean code and simple design (solid principles, design patterns, decouple components, tests, etc.)
+- Separation of concerns (SoC) :: design principle for separating a computer program into distinct sections. Each section addresses a separate concern, a set of information that affects the code of a computer program. A concern can be as general as "the details of the hardware for an application", or as specific as "the name of which class to instantiate". A program that embodies SoC well is called a modular program
 - Static Factory Methods ::
 - fluent interface patterns :: 
   
