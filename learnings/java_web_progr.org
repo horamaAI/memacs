@@ -465,6 +465,12 @@
     - POJO (Plain Old Java Object) based :: any code written in spring can be written without using spring: spring is just doing things POJO based and interface driven
     - use of AOP (Aspect Oriented Programming) and proxies :: to apply things like transactions to the code to get cross cutting concern out of the application => code should be smaller and more lightweight from using spring
     - built around best practices :: spring makes us use best practices without realizing (singletons, factories, abstract factories, templates methods, etc.)
+- spring boot ::
+  + easier for example to wire spring MVC (model-view-controller) to a persistence framework
+  + rapid development: quick like ruby on rails, django, and python
+  + takes opinionated view on how spring app should be constructed
+  + moved away from container dependence, and made applications to be standalone java apps :: which can be handy for example for cloud development: instead of deploying war files to tomcat containers for example, spring boot embeds tomcat inside of the app and produces a self contained jar files that can be run on their own using java command
+  + spring initializer :: https://start.spring.io/
 - what's spring trying to solve ::
   + increases :: testability, maintainability, scalability, decoupling;
   + reduces :: code complexity;

@@ -1,0 +1,16 @@
+# -*- mode: org -*-
+#+title: Java spring app project for a conference scheduling app
+#+SETUPFILE: ~/set-up-files/basic-setups.org
+#+TAGS: Java Projects Spring Web
+
+
+* Intro
+- develop a conference scheduling app using java spring boot ::
+  + app will hold different sessions
+  + allow speakers to be assigned as a presenter of a session
+  + speaker can present more than one session
+  + app will build conference topics and sessions for the organizers
+- tools ::
+  + build automation and dependencies handling :: maven 3.9.6
+  + web application :: spring web (tomcat, rest api infos, spring mvc)
+- import generated spring boot zip :: extract and import in IDE
