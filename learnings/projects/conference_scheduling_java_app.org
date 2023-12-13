@@ -10,7 +10,14 @@
   + allow speakers to be assigned as a presenter of a session
   + speaker can present more than one session
   + app will build conference topics and sessions for the organizers
-- tools ::
+- tools :: (basically a full stack spring API microservice app)
   + build automation and dependencies handling :: maven 3.9.6
-  + web application :: spring web (tomcat, rest api infos, spring mvc)
-- import generated spring boot zip :: extract and import in IDE
+  + web application :: spring boot starter (maven project, spring web (tomcat, rest api infos, spring mvc))
+  + databases :: spring data jpa, jpa, relational database Postgres
+    
+* Elements
+- schedule listing available sessions, "breakouts" (popular sessions) in own small panel
+- sessions are the main elements, and will build data structures and endpoints around sessions:
+  + speakers for a conference (can be more than one)
+  + title, summary, topic
+  + session tags, session schedules

@@ -34,7 +34,6 @@
   - methods :: same as variables
   - enums :: enum class naming convention same as usual classes (first char uppercase, camelCase), values: all in uppercase
 *** Variables, types, operators data type conversions, and operators arithmetics
-[2023-11-29 Wed 12:08]
 [2023-11-28 Tue 19:32]
 **** Operators and types
 [2023-11-28 Tue 19:37]
@@ -48,10 +47,11 @@
     - note ::
       + xor operator ==^== is true only when the two operands are differents (0^1 or 1^0)
       + conditional logical operators (&& and ||) evalueate the right side only when needed (in case of ||, only evaluate right hand side when left is false)
+  + byte[] for binary files :: eg, a photo can be referenced as type ~private byte[] aPhoto;~
 - ==var== "type" :: type then inferred with first assignment, no need then to explicitly define the type of the variable
   + constraints :: need to be assigned when declared, and variable is statically typed (cannot change the type of assigned value), therefore need for cast when assigning a non matching value
 - ==final== :: constant variable/attributes/classes/methods
-- ==static== :: set what's defined to only one instance of object/class/method/etc., and have persistent lifetime (object is associated to the class)
+- ==static== :: keyword set what's defined to only one instance of object/class/method/etc., and have persistent lifetime (object is associated to the class), 'static' indicates that a particular member is not an instance, but rather part of a type
   + static variables get loaded when class is loaded by ClassLoader, and removed when Classloader used is garbage collected
   + static methods *only* work with static variables
   + "static import statement" ::
@@ -441,16 +441,25 @@
 - annotations can be used anywhere, so it's always good to reduce their scope so that one doesn't miss anything, eg for the case of SuppressWarnings, better to place ~@SupressWarnings("deprecation")~ on the deprecated method, instead of its whole class
   
 ** Definitions
+[2023-12-13 Wed 11:58]
 - artifactId :: name of jar without version
 - Beans :: essentially just classes, POJOs used inside the application context, replaces keyword ==new==
 - Class vs Object :: object is an instance of a class, and a Class is its blueprint or template from which the object is created
 - Classloader :: object that is responsible for loading classes
 - Classpath :: parameter in the Java Virtual Machine or the Java compiler that specifies the location of user-defined classes and packages
   + the JVM finds and loads classes lazily (it loads the bytecode of a class only when the class is first used). The classpath tells Java where to look in the filesystem for files defining these classes
+- Controllers :: files that expose the REST endpoints for registering and retrieving models details
 - Encapsulation :: hiding the implementation of the details about methods, members variables, etc. inside a class
 - Fields :: same as saying class members
+- JPA :: Java Persistence API, application programming interface specification that describes the management of relational data in enterprise Java applications
+- MVC :: Model View Controller, requests are routed to a Controller that is responsible for working with the Model to perform actions and/or retrieve data
+  + user -(uses)-> *controllers*
+  + *controllers* -(manipulates)-> *model*
+  + *model* -(updates)-> *view*
+  + *view* -(is what seen by)-> user
 - overloading vs overriding :: former: changing the signature of a method with different types of arguments, the latter: use in inheritance context, sets which method will be called, the base or the derived
-
+- REST :: (Representational state transfer), software architectural style, defines a set of constraints for how the architecture of a distributed, Internet-scale hypermedia system, such as the Web, should behave
+  + REST structures data in *XML, YAML, or any other format that is machine-readable, but usually JSON is most widely* used
 
 * Spring
 [2023-12-04 Mon 22:52]
@@ -465,12 +474,6 @@
     - POJO (Plain Old Java Object) based :: any code written in spring can be written without using spring: spring is just doing things POJO based and interface driven
     - use of AOP (Aspect Oriented Programming) and proxies :: to apply things like transactions to the code to get cross cutting concern out of the application => code should be smaller and more lightweight from using spring
     - built around best practices :: spring makes us use best practices without realizing (singletons, factories, abstract factories, templates methods, etc.)
-- spring boot ::
-  + easier for example to wire spring MVC (model-view-controller) to a persistence framework
-  + rapid development: quick like ruby on rails, django, and python
-  + takes opinionated view on how spring app should be constructed
-  + moved away from container dependence, and made applications to be standalone java apps :: which can be handy for example for cloud development: instead of deploying war files to tomcat containers for example, spring boot embeds tomcat inside of the app and produces a self contained jar files that can be run on their own using java command
-  + spring initializer :: https://start.spring.io/
 - what's spring trying to solve ::
   + increases :: testability, maintainability, scalability, decoupling;
   + reduces :: code complexity;
@@ -505,6 +508,7 @@
 ** Configurations
 [2023-12-10 Sun 01:53]
 *** java configuration
+**** Notes
 - java configuration has no xml application context :: no xml file containing configurations. A context is still there, but just not configured in xml
 - Application configuration file :: java class file that is the start of application context, the file where we start configuring the context of the application
   + 'AppConfig.java' file name is widely used :: but doesn't need specific name
@@ -704,16 +708,125 @@
   }
 
   #+end_src
-
 **** Some annotations
-- @Configuration :: to define configuration *class*
-- @Component :: similar to @Bean, but can also be applicable at class level
-- @ComponentScan({"com.example"}) :: to add to configuration file for autowiring. The arguments are an array of package structures that need to be scanned for beans to autowire
 - @Bean (java configuration analog of the XML <bean/> element) :: to define spring beans at *method level*, returns instance of a bean, and the bean is registered inside of spring and available for use inside of the spring application
   + by default beans are singletons
   + arguments ::
     - name :: bean name, optional, but useful when doing autowiring will autowire by name to variable names
-  
+- @Component :: similar to @Bean, but can also be applicable at class level
+- @ComponentScan({"com.example"}) :: to add to configuration file for autowiring. The arguments are an array of package structures that need to be scanned for beans to autowire
+- @Column(name = "ADR_ID") :: map member field to the column in the database
+- @Configuration :: to define configuration *class*
+- @Document :: annotation used for the same purpose as @Entity annotation in JPA
+- @Entity(name = "sessions") ::
+  + Entities in JPA are nothing but POJOs representing data that can be persisted in the database
+  + @Entity, at class level, link to database table (entity sessions in this case)
+  + must ensure that the entity has a no-arg constructor and a primary key (helps in serialization/deserialization happening when plugging controllers to marshal data into/out of JSON)
+  + modeling database relations ::
+    - many to many bidirectional ::
+      + use of list, need to select owner of the database relationship (in java, since a many-to-many relationship doesn’t really have an owner side in the database,), to set join tables configurations, and the configuration on the receiving end)
+      + use spring annotations to refer to defined mapping Join table in the persistence (@JoinTable)
+         #+begin_src java
+        // class Session
+         @ManyToMany
+         @JoinTable(name = "session_speakers",
+                     joinColumns = @JoinColumn(name = "session_id"),
+                     inverseJoinColumns = @JoinColumn(name = "speaker_id")
+                     )
+         List<Speaker> speakers;
+         #+end_src
+      + to specify the other side of the many to many relation, on the target side, we only have to provide the name of the field, which maps the relationship (the list 'speakers' in the above session definition) => careful on the naming and not messing up the spring persistency registry
+        - 
+        #+begin_src java
+        // class Speaker
+        @ManyToMany(mappedBy = "speakers")
+        private List<Session> sessions;
+        #+end_src
+- @GeneratedValue(strategy = GenerationType.IDENTITY) :: to generate unique id (very often used in combination with ==@Id== annotation)
+- @Lob :: to define annotation for a large object type (binary file for eg)
+  + ~@Type(type = "org.hibernate.type.BinaryType")~ (or ~@JdbcType(VarbinaryJdbcType.class)~ for hibernate 6+) :: is also used in combination with lob to get spring JPA to stream the binary data into a field
+    - without it, might get an exception when JPA queries the data and tries to push it into the 
+    #+begin_src java
+    @Lob
+    @Type(type = "org.hibernate.type.BinaryType")// or @JdbcType(VarbinaryJdbcType.class) or @JdbcTypeCode(Types.VARBINARY) for hibernate 6+, 
+    private byte[] speaker_photo;
+    #+end_src
+  + need property in application properties file, for JDBC driver of local database to be able to create a lob properly on the java side :: ~spring.jpa.properties.hibernate.jdbc.lob.non_contextual_creation=true~
+- @RequestBody :: maps the HttpRequest body to a transfer or domain object, enabling automatic deserialization of the inbound HttpRequest body onto a Java object
+- @SpringBootTest :: creates an application context to be used in a test
+- Spring MVC :: 
+  + Controllers ::
+    - @Controller, @RestController :: both to annotate spring controllers, latter introduced to simplify the creation of RESTful web services and is a convenient annotation that combines @Controller and @ResponseBody (with '@RestController', no need to annotate every request handling method of the controller class with @ResponseBody, that usually tells a controller that the object returned is automatically serialized into JSON and passed back into the HttpResponse object)
+    - @GetMapping, @PostMapping :: annotation for mapping HTTP GET/POST requests onto specific handler methods
+    - @Pathvariable :: to handle template variables in the request URI mapping, and set them as method parameters (will extract the templated part of the URI, represented by the variable in braces, eg: {id})
+    - @RequestBody :: maps the HttpRequest body to a transfer or domain object, enabling automatic deserialization of the inbound HttpRequest body onto a Java object: takes all attributes in JSON payload and marshal them in an object
+    - @RequestMapping :: used to map web requests to Spring Controller methods
+      + options ::
+        - @RequestMapping(value = "{id}", method = RequestMethod.DELETE) :: request mapping to specify an id, and the http verb DELETE presented with this API endpoint, HTTP DELETE request method deletes the specified resource, but still need to do it in the persistence
+    - @ResponseStatus :: by default, return type of request is always 200s, even as response status for creation calls (which should return status 201) => need to override and send custom status with @ResponseStatus, eg: ~@ResponseStatus(HttpStatus.CREATED)~
+    - Notes ::
+      + when controllers return a list of objects, the list is passed over to jackson, which is a serialization library which turns object into JSON and return them back to the caller
+    - eg ::
+      #+begin_src java
+        package com.myapplications.conferencedemo.controllers;
+
+        import com.myapplications.conferencedemo.models.Session;
+        import com.myapplications.conferencedemo.repositories.SessionRepository;
+        import org.springframework.beans.factory.annotation.Autowired;
+        import org.springframework.http.HttpStatus;
+        import org.springframework.web.bind.annotation.*;
+
+        import java.util.List;
+
+        @RestController
+        @RequestMapping("/api/v1/sessions")
+        public class SessionsController {
+
+            @Autowired
+            private SessionRepository sessionRepository;
+
+            @GetMapping
+            public List<Session> list() {
+                return sessionRepository.findAll();
+            }
+
+            @GetMapping
+            @RequestMapping("{id}")
+            public Session get(@PathVariable Long id) {
+                return sessionRepository.getReferenceById(id);
+            }
+
+            @PostMapping
+            @ResponseStatus(HttpStatus.CREATED) // return status 201
+            public Session create(@RequestBody final Session session) {
+                return sessionRepository.saveAndFlush(session); // save alone doesn't commit until flushed
+            }
+
+
+            // could also do: ~@RequestMapping(value = "{id}", method = RequestMethod.DELETE)~, but better composed all in one solution:
+            @DeleteMapping("{id}")
+            public void delete(@PathVariable Long id) {
+                // also need to check for children records before deleting, cascading
+                sessionRepository.deleteById(id);
+                }
+
+            @RequestMapping(value = "{id}", method = RequestMethod.PUT)
+            public Session update(@PathVariable Long id, @RequestBody Session session) {
+                // it's a put, so expecting ALL attributes to be passed in, and ALL will be updated. Patch is the one that edits part of the elements
+                // TODO add validation that all attributes are passed in, otherwise return status 400 bad payload
+                Session existingSession = sessionRepository.getReferenceById(id);
+          BeanUtils.copyProperties(session, existingSession, "session_id"); // 3rd argument is to ignore property "session_id" when copying, otherwise id will be updated with null
+          return sessionRepository.saveAndFlush(existingSession);
+
+      }
+
+        }
+      #+end_src  
+
+**** Some interfaces and classes (with some methods)
+[2023-12-13 Wed 14:28]
+- JpaRepository<T,U> :: eg: ~public interface SessionRepository extends JpaRepository<Session, Long>~; findAll, getById, getReferenceById (returns a reference to the entity with the given identifier), etc.: T: template type, U: type of unique identifier (int, double, Long, etc.)
+-  :: 
 
 *** xml configuration
 - Notes ::
@@ -939,7 +1052,7 @@
 
   public class CalendarFactory implements FactoryBean<Calendar> {
 
-      private Calendar instance = Calendar.getInstance();
+      private Calendar instance = Calendar.getInstance(); // returns static instance Calendar.getInstance() (instead of 'new')
 
       @Override
       public Calendar getObject() throws Exception {
@@ -1114,11 +1227,11 @@
   #+end_src
 
 
-** Architecture and structure
+** Builds and dependencies
 [2023-12-09 Sat 18:38]
-- 
 *** maven
 - pom.xml (Project Object Model) :: fundamental unit of work in Maven. It is an XML file that contains information about the project and configuration details used by Maven to build the project. Contains default values for most projects
+  + location :: at same level as 'src' folder (as high as possible)
   + requires ::
     - plugin to use and build version for the application :: below ==<version>==: ==<build/plugins/plugins/version>==
       #+begin_src xml
@@ -1136,14 +1249,50 @@
       </configuration>
       #+end_src
     - maven compiler != java compiler
-    -
       
-** Annotation based
-[2023-12-09 Sat 18:38]
-- infamous annotations ::
-  + 
+*** gradle
+[2023-12-13 Wed 14:28]
+
 ** Spring boot
+*** Basics
 [2023-12-09 Sat 23:12]
+- spring boot ::
+  + easier for example to wire spring MVC (model-view-controller) to a persistence framework
+  + rapid development: quick like ruby on rails, django, and python
+  + takes *opinionated* view on how spring app should be constructed, which makes the app fast, but at the expense of control sometimes
+  + moved away from container dependence, and made applications to be standalone java apps :: which can be handy for example for cloud development: instead of deploying war files to tomcat containers for example, spring boot embeds tomcat inside of the app and produces a self contained jar files that can be run on their own using java command
+  + spring initializer :: https://start.spring.io/
+- @SprintBootApplication :: annotation to set entry point (main) as a spring boot application
+- spring boot and maven (pom.xml) ::
+  + versions used by spring bootfor dependencies in the pom.xml are based on spring-boot-starter-parent versions in pom.xml :: project/parent/version:
+    #+begin_src xml
+    <parent>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-parent</artifactId>
+      <version>3.2.0</version>
+      <relativePath/>
+    </parent>
+    #+end_src
+    - from intelliJ, to display versions integrated (BOM: bill of materials) with current version of spring-boot-starter-parent :: right click in pom.xml-> sub-section 'Maven' -> 'Show Effective POM'
+    - => with spring boot no longer have to worry about versions compatibilities
+- *.properties files :: (application.properties, and test.properties)
+  + for different properties configurations, such as db connections, url, etc.
+  + location :: in respective 'resources' folders ==src/main/resources== and ==src/test/resources==
+  + property files' definitions for when more details needed :: https://docs.spring.io/spring-boot/docs/current/reference/html/application-properties.html
+    - some examples ::
+      + spring.jpa.show-sql :: to enable logging of SQL statements
+      + spring.datasource.url :: JDBC URL of the database (for connections)
+      + spring.jpa.hibernate.ddl-auto :: DDL mode, actually a shortcut for the "hibernate.hbm2ddl.auto" property, defaults to "create-drop" when using an embedded database and no schema manager was detected, otherwise, defaults to "none"
+- Notes ::
+  + spring boot cli :: check out details: https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#cli
+  + spring boot starter :: really nice to integrate dependencies (and sub-dependencies) and versions on a project and get it all set in one go
+
+*** Persistence and spring boot
+[2023-12-12 Tue 17:39]
+- linking java and entities ::
+  + many to many ::
+** Architecture and structure
+[2023-12-13 Wed 14:25]
 
 ** Tips when using IDE
 [2023-12-10 Sun 01:13]
@@ -1183,6 +1332,8 @@
   </module>
   #+end_src
 - to avoid conflicting maven artifacts (when installing and publishing), remember, when copying from another project and it has to be renamed, to update *.iml name file and pom.xml/artifactId
+- import generated spring boot zip file :: extract it and import it ->
+  Files -> New -> 'Project from existing sources'
 - first run :: might ask for classpath module and JRE
 - generate getters/setters/toString/etc. :: right click -> generate -> needed method
 
@@ -1287,19 +1438,6 @@ Dependencies :
 	    - eg :: db.user.find( {} ) // show all content from collection user
       + ==@Document(collection = "<name_of_collection_to_use>")== annotation needed by spring to know which mongodb collection to query :: 
 
-*** annotations
-    - @RequestBody :: maps the HttpRequest body to a transfer or domain object, enabling automatic deserialization of the inbound HttpRequest body onto a Java object
-    - @PathVariable :: can be used to handle template variables in the request URI mapping, and set them as method parameters
-      #+begin_src org :exports src
-      @GetMapping("/api/employees/{id}")
-      @ResponseBody
-      public String getEmployeesById(@PathVariable String id) {
-        return "ID: " + id;
-      }
-      #+end_src
-      + will extract the templated part of the URI (represented by the variable {id})
-    - @Document :: annotation used for the same purpose as @Entity annotation in JPA
-    - @SpringBootTest :: creates an application context to be used in a test
 *** dependencies
     - ModelMapper :: provides a drop-in solution when our source and destination objects are similar to each other
 *** debugging
