@@ -461,7 +461,7 @@
 - REST :: (Representational state transfer), software architectural style, defines a set of constraints for how the architecture of a distributed, Internet-scale hypermedia system, such as the Web, should behave
   + REST structures data in *XML, YAML, or any other format that is machine-readable, but usually JSON is most widely* used
 
-* Spring
+* Spring framework, and spring boot
 [2023-12-04 Mon 22:52]
 ** Fundamentals
 [2023-12-09 Sat 17:26]
@@ -722,26 +722,29 @@
   + Entities in JPA are nothing but POJOs representing data that can be persisted in the database
   + @Entity, at class level, link to database table (entity sessions in this case)
   + must ensure that the entity has a no-arg constructor and a primary key (helps in serialization/deserialization happening when plugging controllers to marshal data into/out of JSON)
-  + modeling database relations ::
-    - many to many bidirectional ::
-      + use of list, need to select owner of the database relationship (in java, since a many-to-many relationship doesn’t really have an owner side in the database,), to set join tables configurations, and the configuration on the receiving end)
-      + use spring annotations to refer to defined mapping Join table in the persistence (@JoinTable)
-         #+begin_src java
-        // class Session
-         @ManyToMany
-         @JoinTable(name = "session_speakers",
-                     joinColumns = @JoinColumn(name = "session_id"),
-                     inverseJoinColumns = @JoinColumn(name = "speaker_id")
-                     )
-         List<Speaker> speakers;
-         #+end_src
-      + to specify the other side of the many to many relation, on the target side, we only have to provide the name of the field, which maps the relationship (the list 'speakers' in the above session definition) => careful on the naming and not messing up the spring persistency registry
-        - 
-        #+begin_src java
-        // class Speaker
-        @ManyToMany(mappedBy = "speakers")
-        private List<Session> sessions;
-        #+end_src
+  + if you have to serialize an entity with the @Entity annotation in JSON String format using Jackson library (directly or indirectly), the JPA entity will be serialized with all the fields, and ==hibernateLazyInitializer== and ==handler== as extra fields. So, if not ignored, these fields will be serialized in JSON format. To avoid this unnecessary serialization, you have to annotate with ~@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})~ on JPA/Hibernate entity, which will tell Jackson library that "Serialized JSON should not have these fields:
+    #+begin_src java
+    @Entity(name = "sessions")
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+    public class Session {
+
+        @Id
+        @GeneratedValue(strategy = GenerationType.IDENTITY)
+        private Long session_id;
+        private String session_name;
+        private String session_description;
+        private Integer session_length;
+
+        @ManyToMany
+                @JoinTable( name = "session_speakers",
+                        joinColumns = @JoinColumn(name = "session_id"),
+                        inverseJoinColumns = @JoinColumn(name = "speaker_id")
+                )
+        List<Speaker> speakers;
+
+        //...
+        }
+    #+end_src
 - @GeneratedValue(strategy = GenerationType.IDENTITY) :: to generate unique id (very often used in combination with ==@Id== annotation)
 - @Lob :: to define annotation for a large object type (binary file for eg)
   + ~@Type(type = "org.hibernate.type.BinaryType")~ (or ~@JdbcType(VarbinaryJdbcType.class)~ for hibernate 6+) :: is also used in combination with lob to get spring JPA to stream the binary data into a field
@@ -754,74 +757,91 @@
   + need property in application properties file, for JDBC driver of local database to be able to create a lob properly on the java side :: ~spring.jpa.properties.hibernate.jdbc.lob.non_contextual_creation=true~
 - @RequestBody :: maps the HttpRequest body to a transfer or domain object, enabling automatic deserialization of the inbound HttpRequest body onto a Java object
 - @SpringBootTest :: creates an application context to be used in a test
-- Spring MVC :: 
-  + Controllers ::
-    - @Controller, @RestController :: both to annotate spring controllers, latter introduced to simplify the creation of RESTful web services and is a convenient annotation that combines @Controller and @ResponseBody (with '@RestController', no need to annotate every request handling method of the controller class with @ResponseBody, that usually tells a controller that the object returned is automatically serialized into JSON and passed back into the HttpResponse object)
-    - @GetMapping, @PostMapping :: annotation for mapping HTTP GET/POST requests onto specific handler methods
-    - @Pathvariable :: to handle template variables in the request URI mapping, and set them as method parameters (will extract the templated part of the URI, represented by the variable in braces, eg: {id})
-    - @RequestBody :: maps the HttpRequest body to a transfer or domain object, enabling automatic deserialization of the inbound HttpRequest body onto a Java object: takes all attributes in JSON payload and marshal them in an object
-    - @RequestMapping :: used to map web requests to Spring Controller methods
-      + options ::
-        - @RequestMapping(value = "{id}", method = RequestMethod.DELETE) :: request mapping to specify an id, and the http verb DELETE presented with this API endpoint, HTTP DELETE request method deletes the specified resource, but still need to do it in the persistence
-    - @ResponseStatus :: by default, return type of request is always 200s, even as response status for creation calls (which should return status 201) => need to override and send custom status with @ResponseStatus, eg: ~@ResponseStatus(HttpStatus.CREATED)~
-    - Notes ::
-      + when controllers return a list of objects, the list is passed over to jackson, which is a serialization library which turns object into JSON and return them back to the caller
-    - eg ::
-      #+begin_src java
-        package com.myapplications.conferencedemo.controllers;
+**** Spring MVC
+[2023-12-14 Thu 11:56]
+- Controllers ::
+  + @Controller, @RestController :: both to annotate spring controllers, latter introduced to simplify the creation of RESTful web services and is a convenient annotation that combines @Controller and @ResponseBody (with '@RestController', no need to annotate every request handling method of the controller class with @ResponseBody, that usually tells a controller that the object returned is automatically serialized into JSON and passed back into the HttpResponse object)
+  + @GetMapping, @PostMapping :: annotation for mapping HTTP GET/POST requests onto specific handler methods
+  + @Pathvariable :: to handle template variables in the request URI mapping, and set them as method parameters (will extract the templated part of the URI, represented by the variable in braces, eg: {id})
+  + @RequestBody :: maps the HttpRequest body to a transfer or domain object, enabling automatic deserialization of the inbound HttpRequest body onto a Java object: takes all attributes in JSON payload and marshal them in an object
+  + @RequestMapping :: used to map web requests to Spring Controller methods
+    - options ::
+      + @RequestMapping(value = "{id}", method = RequestMethod.DELETE) :: request mapping to specify an id, and the http verb DELETE presented with this API endpoint, HTTP DELETE request method deletes the specified resource, but still need to do it in the persistence
+  + @ResponseStatus :: by default, return type of request is always 200s, even as response status for creation calls (which should return status 201) => need to override and send custom status with @ResponseStatus, eg: ~@ResponseStatus(HttpStatus.CREATED)~
+  + Notes ::
+    + when controllers return a list of objects, the list is passed over to jackson, which is a serialization library which turns object into JSON and return them back to the caller
+  + eg ::
+    #+begin_src java
+    package com.myapplications.conferencedemo.controllers;
 
-        import com.myapplications.conferencedemo.models.Session;
-        import com.myapplications.conferencedemo.repositories.SessionRepository;
-        import org.springframework.beans.factory.annotation.Autowired;
-        import org.springframework.http.HttpStatus;
-        import org.springframework.web.bind.annotation.*;
+    import com.myapplications.conferencedemo.models.Session;
+    import com.myapplications.conferencedemo.repositories.SessionRepository;
+    import org.springframework.beans.factory.annotation.Autowired;
+    import org.springframework.http.HttpStatus;
+    import org.springframework.web.bind.annotation.*;
 
-        import java.util.List;
+    import java.util.List;
 
-        @RestController
-        @RequestMapping("/api/v1/sessions")
-        public class SessionsController {
+    @RestController
+    @RequestMapping("/api/v1/sessions")
+    public class SessionsController {
 
-            @Autowired
-            private SessionRepository sessionRepository;
+        @Autowired
+        private SessionRepository sessionRepository;
 
-            @GetMapping
-            public List<Session> list() {
-                return sessionRepository.findAll();
-            }
-
-            @GetMapping
-            @RequestMapping("{id}")
-            public Session get(@PathVariable Long id) {
-                return sessionRepository.getReferenceById(id);
-            }
-
-            @PostMapping
-            @ResponseStatus(HttpStatus.CREATED) // return status 201
-            public Session create(@RequestBody final Session session) {
-                return sessionRepository.saveAndFlush(session); // save alone doesn't commit until flushed
-            }
-
-
-            // could also do: ~@RequestMapping(value = "{id}", method = RequestMethod.DELETE)~, but better composed all in one solution:
-            @DeleteMapping("{id}")
-            public void delete(@PathVariable Long id) {
-                // also need to check for children records before deleting, cascading
-                sessionRepository.deleteById(id);
-                }
-
-            @RequestMapping(value = "{id}", method = RequestMethod.PUT)
-            public Session update(@PathVariable Long id, @RequestBody Session session) {
-                // it's a put, so expecting ALL attributes to be passed in, and ALL will be updated. Patch is the one that edits part of the elements
-                // TODO add validation that all attributes are passed in, otherwise return status 400 bad payload
-                Session existingSession = sessionRepository.getReferenceById(id);
-          BeanUtils.copyProperties(session, existingSession, "session_id"); // 3rd argument is to ignore property "session_id" when copying, otherwise id will be updated with null
-          return sessionRepository.saveAndFlush(existingSession);
-
-      }
-
+        @GetMapping
+        public List<Session> list() {
+            return sessionRepository.findAll();
         }
-      #+end_src  
+
+        @GetMapping
+        @RequestMapping("{id}")
+        public Session get(@PathVariable Long id) {
+            return sessionRepository.getReferenceById(id);
+        }
+
+        @PostMapping
+        @ResponseStatus(HttpStatus.CREATED) // return status 201
+        public Session create(@RequestBody final Session session) {
+            return sessionRepository.saveAndFlush(session); // save alone doesn't commit until flushed
+        }
+
+        // could also do: ~@RequestMapping(value = "{id}", method = RequestMethod.DELETE)~, but better composed all in one solution:
+        @DeleteMapping("{id}")
+        public void delete(@PathVariable Long id) {
+            // also need to check for children records before deleting, cascading
+            sessionRepository.deleteById(id);
+            }
+
+        @RequestMapping(value = "{id}", method = RequestMethod.PUT)
+        public Session update(@PathVariable Long id, @RequestBody Session session) {
+            // it's a put, so expecting ALL attributes to be passed in, and ALL will be updated. Patch is the one that edits part of the elements
+            // TODO add validation that all attributes are passed in, otherwise return status 400 bad payload
+            Session existingSession = sessionRepository.getReferenceById(id);
+            BeanUtils.copyProperties(session, existingSession, "session_id"); // 3rd argument is to ignore property "session_id" when copying, otherwise id will be updated with null
+            return sessionRepository.saveAndFlush(existingSession);
+            }
+    }
+    #+end_src  
+- Dto :: for "Data Transfer Object", carries data between processes to facilitate communication between two systems (like an API and a server) without potentially exposing sensitive information
+  + source :: https://www.baeldung.com/java-dto-pattern
+  + context :: OOP environments rely on "calls.", each one a bit like a data lookup, thus requiring both time and processing speed. If programmer not careful, calls can also expose sensitive data, eg :: employee addresses, account numbers, social security numbers, etc.
+    - a Dto can help send only the required information, not everything in the database
+    - Dtos are objects that carry data between processes in order to reduce the number of methods calls
+    - purpose is to reduce roundtrips to the server by batching up multiple parameters in a single call => reduces the network overhead in such remote operations
+    - other benefit is the encapsulation of the serialization's logic
+      + serialization :: mechanism that translates the object structure and data to a specific format that can be stored and transferred
+    - DTO should just contain data, not business logic
+    - how to use Dtos ::
+      + DTOs normally are created as POJOs (Plain Old Java Objects)
+        - only contain storage, accessors and eventually methods related to serialization or parsing
+        - data is mapped from the domain models to the DTOs, normally through a mapper component in the presentation or facade layer
+          + front (html, json, etc.) exchange with presentation layer ::
+            - presentation layer ::
+              + Dto only point communicating with front
+              + to request data, Dto goes through *only* the mapper and gathers only the data required for the front
+              + Dto can gather content of different models, eg :: Dto (userName, roleName), combines data from two models: User, and Role
+- BindingResult :: general interface that represents binding results, extends the interface for error registration capabilities, allowing for a Validator to be applied, and adds binding-specific analysis and model building 
 
 **** Some interfaces and classes (with some methods)
 [2023-12-13 Wed 14:28]
@@ -1286,11 +1306,97 @@
 - Notes ::
   + spring boot cli :: check out details: https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#cli
   + spring boot starter :: really nice to integrate dependencies (and sub-dependencies) and versions on a project and get it all set in one go
-
 *** Persistence and spring boot
 [2023-12-12 Tue 17:39]
-- linking java and entities ::
-  + many to many ::
+**** modeling database relations with spring
+- many to many bidirectional ::
+  + use of list, need to select owner of the bidirectional database relationship (in java, since a many-to-many relationship doesn’t really have an owner side in the database,), to set join tables configurations, and the configuration on the receiving end)
+  + use spring annotations to refer to defined mapping Join table in the persistence (@JoinTable)
+     #+begin_src java
+    // class Session
+     @ManyToMany
+     @JoinTable(name = "session_speakers",
+                 joinColumns = @JoinColumn(name = "session_id"),
+                 inverseJoinColumns = @JoinColumn(name = "speaker_id")
+                 )
+     List<Speaker> speakers;
+     #+end_src
+  + to specify the other side of the many to many relation, on the target side, we only have to provide the name of the field, which maps the relationship (the list 'speakers' in the above session definition) => careful on the naming and not messing up the spring persistency registry
+    #+begin_src java
+    // class Speaker
+    @ManyToMany(mappedBy = "speakers")
+    private List<Session> sessions;
+    #+end_src
+  + avoid back serialization :: if not taken care of, when there are linked entities/tables in the database, spring could fetch all the database from one entry point, sometimes even on a cyclical manner. Then, there might be a rendering issue with too much data to display. In that case:
+    - either use Dtos,
+    - or use further annotations so that Jackson can filter out not needed data
+      + eg: in the previous example, Session is the owner entity of the bidirectional relationship, so speaker needs to prevent back serialization to the session entity with the ==@JsonIgnore== :
+        #+begin_src java
+        // class Speaker
+        @ManyToMany(mappedBy = "speakers")
+        @JsonIgnore
+        private List<Session> sessions;
+        #+end_src
+
+*** Customize and override springboot
+[2023-12-14 Thu 16:55]
+- Notes ::
+  + there is an order of precedence that spring and spring boot use to set values ::
+    1. using external sources :: cli parameters; JNDI (Java Naming and Directory Interface, a Java API for a directory service that allows Java software clients to discover and look up data and resources via a name); OS environment variables
+    2. using internal sources :: servlet (small Java program that runs within a Web server, that receive and respond to requests from Web clients, usually across HTTP) parameters; property files; java configuration. Keep in mind that internal tools can also point to external sources
+  + basic order of preference (excluding test configuration setup) ::
+    1. cli args
+    2. SPRING_APPLICATION_JSON args
+    3. Servlet parameters
+    4. JNDI
+    5. Java system properties
+    6. OS environment variables
+    7. Profile properties
+    8. Application properties
+    9. @PropertySource annotations
+    10. Default properties
+  + rule of thumb ::
+    - pick *one internal source* (like properties files) to setup the application defaults;
+    - and then pick one external source to provide overrides
+    - pros :: this restrains the configurations to one or two places, allows for sensible defaults, and gives the ability to use external sources for sensitive data like credentials and passwords, eg: OS environment variables as external source, and application property files as internal source
+      + note and reminder :: application property files are usually in ==src/main/resources==
+**** Updating application properties
+[2023-12-14 Thu 18:40]
+- properties in application.properties are actual overrides of spring boot default properties :: others properties can be found in https://docs.spring.io/spring-boot/docs/1.1.6.RELEASE/reference/html/common-application-properties.html (all sets to defaults values. If url changes, just search for "spring common application properties" and make sure you select the page with 'common')
+- updating application properties with internal configuration :: 
+  + eg :: ==spring.datasource.url== is set to null, and is coming from 'DataSourceProperties' and 'DataSourceAutoConfiguration' (grouped into DATASOURCE) that spring boot provides in the 'spring data jpa starter'
+    - to change for example the port Tomcat is running on (instead of default 8080) :: set ~server.port=8080~ in the application.properties file
+- updating application properties with external configuration ::
+  + use case eg :: database connection configs are hard coded in application.properties, which is in clear to anyone
+    - move secrets to external resources and setup environment variables ::
+      + add environment variables to intelliJ :: Run -> Edit configurations -> Application -> YourApplication -> Environment Variables : and add your custom environment variables. In the properties file, you just need to update the values with the content of the environment variables :
+      #+begin_example
+      // application.properties
+      spring.datasource.url=${DB_URL}
+      spring.datasource.username=${DB_USER}
+      spring.datasource.password=${DB_USER_PSWRD}
+      #+end_example
+**** Handling different environments
++ aim :: working on an app development locally, and be able to deploy on test server, staging, and production
++ environmental configurations :: create application-{profile}.properties for needed profile of target environment, eg: application-dev.properties, application-prod.properties
+  - to specify the profile, need to add it into options parameters at application startup, eg: ~-Dspring.profiles.active=dev~
+    + adding needed profile on intelliJ run profile: Run -> Edit configurations -> Application -> VM options; and add targethed option
+  - with suffix for targeted deployment environment, spring will use those properties on appropriate environment, instead of the default application.properties file
+  - eg of prod application profile ::
+    #+begin_example
+    # in prod environment, keep logging to errors and warnings, not infos or debug for eg
+    # some INFO will still show since the logging level is only set on 'org' package level: logging.level.[ORG*]
+    logging.level.org=WARN
+
+    // ...
+    #+end_example
+
+**** Settings properties with YAML
+[2023-12-15 Fri 09:00]
+- notes ::
+  + similar to usual properties files, need to live on class path, need to be named application.yml
+  + with spring boot it's possible to mix and match properties and YAML file types
+
 ** Architecture and structure
 [2023-12-13 Wed 14:25]
 
@@ -1396,25 +1502,6 @@ Dependencies :
 
 ** Notes
 *** Miscs
-    - Dto :: for "Data Transfer Object", carries data between processes to facilitate communication between two systems (like an API and a server) without potentially exposing sensitive information
-      + source :: https://www.baeldung.com/java-dto-pattern
-      + context :: OOP environments rely on "calls.", each one a bit like a data lookup, thus requiring both time and processing speed. If programmer not careful, calls can also expose sensitive data, eg :: employee addresses, account numbers, social security numbers, etc.
-	- a Dto can help send only the required information, not everything in the database
-	- Dtos are objects that carry data between processes in order to reduce the number of methods calls
-	- purpose is to reduce roundtrips to the server by batching up multiple parameters in a single call => reduces the network overhead in such remote operations
-	- other benefit is the encapsulation of the serialization's logic
-	  + serialization :: mechanism that translates the object structure and data to a specific format that can be stored and transferred
-	- DTO should just contain data, not business logic
-	- how to use Dtos ::
-	  + DTOs normally are created as POJOs (Plain Old Java Objects)
-	    - only contain storage, accessors and eventually methods related to serialization or parsing
-	    - data is mapped from the domain models to the DTOs, normally through a mapper component in the presentation or facade layer
-	      + front (html, json, etc.) exchange with presentation layer ::
-		- presentation layer ::
-		  + Dto only point communicating with front
-		  + to request data, Dto goes through *only* the mapper and gathers only the data required for the front
-		  + Dto can gather content of different models, eg :: Dto (userName, roleName), combines data from two models: User, and Role
-    - binding results :: general interface that represents binding results, extends the interface for error registration capabilities, allowing for a Validator to be applied, and adds binding-specific analysis and model building
     - AOP ::
       + source ::
 	- https://www.baeldung.com/spring-aop
@@ -1441,21 +1528,28 @@ Dependencies :
 *** dependencies
     - ModelMapper :: provides a drop-in solution when our source and destination objects are similar to each other
 *** debugging
-    + "no java projects found in the current workspace vscode" :: java project structure not correct
-    + "Class has been compiled by a more recent version of the Java Environment" :: spring framework not compatible with jre, eg: with jre 11 matches spring framework 2.x.x, not above
-    + "Illegalstate failed to load applicationcontext" :: occured on test class, added annotation '@SpringBootTest'
-      - could be object in unit test not properly instantiated
-      - could be issue with already build version => try to rebuild project
-	+ eg, with vscode :: 'file explorer' -> 'JAVA projects' -> right click on project -> 'rebuild project/all'
-    + "java.lang.IllegalArgumentException: warning no match for this type name: com.example.demo.service.UserService [Xlint:invalidAbsoluteTypeName]" ::
-    + "No qualifying bean of type 'org.springframework.test.web.servlet.MockMvc' available" :: could be object MockMvc not properly instantiated. Add  ==@AutoConfigureMockMvc== to enable and configure auto-configuration of MockMvc
-    + "Resolved [org.springframework.web.HttpMediaTypeNotSupportedException: Content type 'text/plain;charset=UTF-8' not supported]" :: raw Postman not supported.
-      - Solution :: in postman, set 'Headers' of http request to : key: 'Content-type', value: 'application/json'
-    + " expected:[201] but was:[404]" :: means request was not found. => try to check if url path is correct
-    + " expected:[201] but was:[400]" :: well, since http error 400 is bad request, means request is a bad request
-    + conversion of Localdate to json :: add json serialize/deserialize to output dto
-      - eg ::
-          #+begin_src org :exports src
-	    @JsonDeserialize(using = LocalDateDeserializer.class)
-            @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
-          #+end_src
+- "Failed to Configure a DataSource” Error ::
+  + could be a missing property in the applicationcontext file, check if everything is there for spring to connect properly on the corresponding database management system: connectors, driver, driver-class-name, etc.
+- java.lang.IllegalStateException: Cannot call sendError() after the response has been committed ::
+  + spring is fetching all the database from one entry point, then too much data can't be displayed properly: use Dtos, or use annotations so that Jackson can filter out not needed data
+- "no java projects found in the current workspace vscode" :: java project structure not correct
+- "Class has been compiled by a more recent version of the Java Environment" :: spring framework not compatible with jre, eg: with jre 11 matches spring framework 2.x.x, not above
+- "Illegalstate failed to load applicationcontext" :: occured on test class, added annotation '@SpringBootTest'
+  + could be object in unit test not properly instantiated
+  + could be issue with already build version => try to rebuild project
+    - eg, with vscode :: 'file explorer' -> 'JAVA projects' -> right click on project -> 'rebuild project/all'
+- "java.lang.IllegalArgumentException: warning no match for this type name: com.example.demo.service.UserService [Xlint:invalidAbsoluteTypeName]" ::
+- "No qualifying bean of type 'org.springframework.test.web.servlet.MockMvc' available" :: could be object MockMvc not properly instantiated. Add  ==@AutoConfigureMockMvc== to enable and configure auto-configuration of MockMvc
+- "Resolved [org.springframework.web.HttpMediaTypeNotSupportedException: Content type 'text/plain;charset=UTF-8' not supported]" :: raw Postman not supported.
+  + Solution :: in postman, set 'Headers' of http request to : key: 'Content-type', value: 'application/json'
+- error status ::
+  + "Internal Server Error" 500 ::
+    - "Type definition error: [simple type, class org.hibernate.proxy.pojo.bytebuddy.ByteBuddyInterceptor]" :: when using 'getOne' method, which is a lazy load operation, thus one gets only a reference (a proxy) to the entity, that means no DB access is actually made => 
+  + "Bad Request" 400 :: check if method exists, format is ok, there is no typo, etc.
+  + "Not Found" 404 :: try to check if url path is correct
+- conversion of Localdate to json :: add json serialize/deserialize to output dto
+  + eg ::
+    #+begin_src org :exports src
+    @JsonDeserialize(using = LocalDateDeserializer.class)
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
+    #+end_src
