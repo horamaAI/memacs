@@ -99,7 +99,6 @@
  - execute code block (place first cursor inside code block) :: =C-c C-c=
  - minimize window (back to toolbar) :: =C-x C-z=
  - move current visible window with respect to cursor :: =C-l= (multiple time (3*) until desired display)
-
 ** org-mode
 *** org-mode document structures
 - headlines and items ::
@@ -242,6 +241,10 @@
       + ==0...9== :: digit argument
       + ==q== :: quit
   
+** checking spelling, grammar and orthograph
+[2023-12-15 Fri 23:01]
+- C-M-i :: ==(ispell-complete-word)==, complete the word before point based on the spelling dictionary
+
 * C++
   + activate c++ mode (done by default for .cpp, .cxx files, but not .h files that are opened as c files) :: M-x c++-mode
 
