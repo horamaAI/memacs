@@ -442,6 +442,7 @@
   
 ** Definitions
 [2023-12-13 Wed 11:58]
+- artifact :: software artifact is an item that is produced during the development process. This can be a data model, a prototype, workflow diagram, a design document, or a setup script
 - artifactId :: name of jar without version
 - Beans :: essentially just classes, POJOs used inside the application context, replaces keyword ==new==
 - Class vs Object :: object is an instance of a class, and a Class is its blueprint or template from which the object is created
@@ -508,12 +509,16 @@
 ** Configurations
 [2023-12-10 Sun 01:53]
 *** java configuration
+:PROPERTIES:
+:CUSTOM_ID: JavaConfigs
+:END:
 **** Notes
 - java configuration has no xml application context :: no xml file containing configurations. A context is still there, but just not configured in xml
 - Application configuration file :: java class file that is the start of application context, the file where we start configuring the context of the application
   + 'AppConfig.java' file name is widely used :: but doesn't need specific name
     - can be placed one level up from specific folder such as model, service, repository, etc.: ==src/java/main/com/examples/AppConfig.java== (supposing service folder is in ==src/java/main/com/examples/service==)
 - @Configuration :: to set start of configuration context
+  + any methods defined in classes with @Configuration can return beans definitions that get stored in the spring context
   + file with configuration annotation replace xml files for the xml configuration for example
   + @Configuration is a *class level* annotation at the top of the class:
     #+begin_src java
@@ -1337,7 +1342,6 @@
         @JsonIgnore
         private List<Session> sessions;
         #+end_src
-
 *** Customize and override springboot
 [2023-12-14 Thu 16:55]
 - Notes ::
@@ -1365,7 +1369,7 @@
 - properties in application.properties are actual overrides of spring boot default properties :: others properties can be found in https://docs.spring.io/spring-boot/docs/1.1.6.RELEASE/reference/html/common-application-properties.html (all sets to defaults values. If url changes, just search for "spring common application properties" and make sure you select the page with 'common')
 - updating application properties with internal configuration :: 
   + eg :: ==spring.datasource.url== is set to null, and is coming from 'DataSourceProperties' and 'DataSourceAutoConfiguration' (grouped into DATASOURCE) that spring boot provides in the 'spring data jpa starter'
-    - to change for example the port Tomcat is running on (instead of default 8080) :: set ~server.port=8080~ in the application.properties file
+    - to change for example the port Tomcat is running on (instead of default 8080) :: set ~server.port=5000~ in the application.properties file
 - updating application properties with external configuration ::
   + use case eg :: database connection configs are hard coded in application.properties, which is in clear to anyone
     - move secrets to external resources and setup environment variables ::
@@ -1393,10 +1397,187 @@
 
 **** Settings properties with YAML
 [2023-12-15 Fri 09:00]
-- notes ::
-  + similar to usual properties files, need to live on class path, need to be named application.yml
-  + with spring boot it's possible to mix and match properties and YAML file types
+- similar to usual properties files, need to live on class path, need to be named application.yml
+- with spring boot it's possible to mix and match properties and YAML file types
+- but better to select one format for properties and stick to it
+- for environment configurations (same as application-{profile}.properties), it's possible to set yaml properties with respect to the target environment: application-dev.yml, application-prod.yml, etc.
+- eg: move some database settings from application.properties to application.yml file
+  #+begin_src yaml
+  # file src/main/resources/application.yml
+  # yaml format of ~server.port=5000~
+  server:
+    port: 5000
+  #+end_src
+*** Setting and using custom application property value inside the java application
+[2023-12-15 Fri 09:45]
+- inject custom property in application property file :: suppose property ==app.version== set in application.properties:
+  #+begin_src example
+  # this application version, nothing to do with spring or java
+  app.version = 1.0.0
+  #+end_src
+- controller fetching value from the application.properties ::
+  #+begin_src java
+  @RestController  
+  public class HomeController {
 
+      @Value("${app.version}")
+      private String appVersion;
+      @GetMapping
+      @RequestMapping("/")
+      public Map getStatus() {
+          return new HashMap<String, String>() {{ put("app-version", appVersion);}};
+      }
+  }
+  #+end_src
+- result ::
+  #+begin_src js
+  {
+      "app-version": "1.0.0"
+  }
+  #+end_src
+*** Overriding spring boot with java configurations
+[2023-12-15 Fri 11:13]
+- create new package ==config== :: (src/main/java/com.example.config), and put java configuration files in there
+- use @Configuration :: to tell spring that java class is a configuration class (see further java configurations in [[#JavaConfigs][Java configurations]])
+- eg: override with java configs the application property for data sources properties provided by spring data jpa starter ::
+  #+begin_src java
+  @Configuration
+  public class PersistenceConfiguration {
+      @Bean
+      public DataSource dataSource() {
+          DataSourceBuilder builder = DataSourceBuilder.create();
+          builder.url("jdbc:postgresql://localhost:5432/conference_scheduling_db");
+          return builder.build();// build the datasource before returning
+          // since defined with @Bean, spring will look for the bean in the spring context, and replace the previous data source definition (if exists) with the new that was just implemented
+      }
+  }
+  #+end_src
+- process ::
+  1. when object DataSource is returned by the method, spring tries to check if one doesn't already exist in the spring context
+  2. if it does, it will the replace it with the one defined in the java configuration
+- pros of using java configuration of application properties ::
+  + when further complex need to be done in addition to setting the property, eg: logging when db connection is made (add logging in configuration method), or do other custom instructions (for example, send an email when a transaction is committed, or setup a two-phase transactions, or set transactions between nosql and sql databases, etc.), can add as many layer of instructions as you want
+*** Auto-configuration classes
+[2023-12-15 Fri 12:42]
+- java configuration files can be helpful for creating and using libraties, helpers and utils classes that will be used by other applications ::
+  + How to create auto-configurations ::
+    1. create classes and annotate them with @Configuration, and add methods to define beans and functionality that needs to be provided to spring boot starter
+    2. add declaration to spring.factories (src/main/resources/META-INF/spring.factories), to indicate that you're registering an auto-configuration
+       + spring.factories files :: are usually kept in folder resources/META-INF
+         #+begin_src example
+         // ...
+         org.springframework.boot.autoconfigure.EnableAutoConfiguration=com.example.config.MyAutoConfiguration
+         // MyAutoConfiguration is a class file MyAutoConfiguration.java. Above is just its qualified name
+         // ...
+         #+end_src
+       + MyAutoConfiguration.java ::
+         #+begin_src java
+         @Configuration
+         public class MyAutoConfiguration {
+             @Bean
+             public SomeObject aMethod() {
+                 // ...
+             }
+         }
+         #+end_src
+       + process :: spring boot will inspect jar files on the classpath for the spring.factories file, and then bootstrap the auto-configuration files
+- other annotations that spring boot provides that allow setting specific conditions on the auto-configuration ::
+  + @ConditionalOnClass :: loads a specific bean under condition, loads only if the jar providing this class is included in the classpath
+    - eg: you're building an auto-configuration that is dependent on a postgres jdbc driver. You can specify that at the class level it's conditional on the driver being present. If it is, the auto-configuration will automatically wire up, otherwise it does nothing
+  + others :: @ConditionalOnMissingClass, @ConditionalOnBean, @ConditionalOnMissingBean, @ConditionalOnProperty, @ConditionalOnResource, etc.
+
+*** Deploying spring boot applications
+[2023-12-15 Fri 13:39]
+**** Configs
+- Notes ::
+  + things to take into consideration when deploying or preparing to deploy a java application ::
+    - deploy on cloud environment, on rack servers ?
+    - should the app be an executable .jar, or .war ?
+    - etc.
+- process ::
+  + old way of deploying java app :: create war files, and install them on: tomcat, glassfish, or websphere (good old times containers complying with JEE specs)
+  + now :: with spring boot, apps are standalone, no need to install them on containers, spring has embedded container inside of the framework => can run java app in standalone mode
+    - default container embedded in spring boot :: tomcat, but possible to switch to others such as jetty, or undertow
+- switch embedded spring boot container ::
+  1. in pom.xml :: find dependency ~spring-boot-starter-web~ which contains embedded tomcat container
+  2. switch out tomcat from starter web ::
+     #+begin_src xml
+     <dependencies>
+       <dependency>
+         <!-- ... -->
+         <dependency>
+           <groupId>org.springframework.boot</groupId>
+           <artifactId>spring-boot-starter-web</artifactId>
+           <exclusions>
+             <!-- exclude tomcat dependency from starter web -->
+             <exclusion>
+               <groupId>org.springframework.boot</groupId>
+               <artifactId>spring-boot-starter-tomcat</artifactId>
+             </exclusion>
+           </exclusions>
+         </dependency>
+         <dependency>
+           <!-- add jetty container dependency -->
+           <groupId>org.springframework.boot</groupId>
+           <artifactId>spring-boot-starter-jetty</artifactId>
+         </dependency>
+         <!-- ... -->
+     <dependencies>
+     #+end_src
+
+**** Creating executables jar
+[2023-12-15 Fri 16:11]
+***** Deploying for non cloud based environments
+[2023-12-15 Fri 22:47]
+- 2 ways to create jar files that can be used to run the app ::
+  1. use maven to create jar files that can be run with the java command:
+     - in intelliJ :: 'Maven' tool box -> 'Execute Maven Goal' ('m' logo, or play symbol in a box logo)
+       + maven goal needed :: 'mvn package'
+       + out .jar location :: src/target/[your_app_name]-[app_version]-SNAPSHOT.jar
+     - to run application in .jar format ::
+       1. check that app is not already running
+       2. in a terminal: run ==java -jar [your_app_jar].jar==
+          - on windows :: to set environment variables, it can differ with respect to which cli you're using (cmd vs powershell). For powershell could set the environment variables by doing:
+            #+begin_src powershell
+            $Env:DB_URL='jdbc:postgresql://localhost:5432/conference_scheduling_db
+            $Env:DB_USER=postgres
+            $Env:DB_USER_PSWRD='Admin123456'
+            #+end_src
+  2. create standalone executable .jar file:
+     + configuration ::
+       1. slightly tune maven ::
+          - in pom.xml ::
+            - find spring boot *plugin* (in build part area), and add ==executable== tag ::
+              #+begin_src xml
+              <build>
+                <plugins>
+                  <plugin>
+                    <groupId>org.springframework.boot</groupId>
+                    <artifactId>spring-boot-maven-plugin</artifactId>
+                    <configuration>
+                      <executable>true</executable>
+                    </configuration>
+                  </plugin>
+                </plugins>
+              </build>
+              #+end_src
+       2. reload maven configs
+       3. then again (in intellij): 'Maven' -> maven goal -> mvn package
+     + to run application ::
+       - no need anymore to run .jar executable with -jar option while running the app ::
+         + in linux based OS :: ~./[your_app_jar].jar~
+         + in windows :: only runs .exe, so, need to do it the old way: ~java -jar [your_app_jar].jar~
+
+***** Running on a cloud platform
+- common cloud supported platforms (that work with spring boot) :: Amazon Web Services, Microsoft Azure, Google Cloud, Heroku, Cloud Foundry
+  + HOWEVER :: each of these platforms require setting up different configuration files so that the platform knows how to deploy it on its own infrastructure
+    - even though the details might differ, the standalone .jar artifact doesn't
+  + for flexibility with deployments :: better to dockerize the application for clustering and portability (most cloud platform support docker)
+    - can spin up several instances quickly using tools like docker composed or kubernetes
+    - *but* :: with cloud offering platform, be aware of differences in:
+      + logging :: can be difficult to track down and use depending on the cloud service (could be better to use a centralized logging service)
+      + service integration :: for example, connecting to db or other cloud services, like Redis Queue, might require specific handling that can be different what java and spring configurations propose
+      + firewall and security :: can be a hurdle to get all services to talk to each other and also uphold security
 ** Architecture and structure
 [2023-12-13 Wed 14:25]
 
@@ -1444,7 +1625,8 @@
 - generate getters/setters/toString/etc. :: right click -> generate -> needed method
 
 ** Notes
-- jar :: Java ARchive, file format based on ZIP file format and used for aggregating many files into one, ready to use by jdk
+- jar :: Java ARchive, file format based on ZIP file format and used for aggregating many files into one, ready to use by jdk/other applications
+  + can use jars for libraries, utils, and helper classes
 - SDK :: Software development kit
 - Tomcat :: is not an application server, but a web server, lightweight an easy to use
   
