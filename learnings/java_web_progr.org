@@ -461,7 +461,6 @@
 - overloading vs overriding :: former: changing the signature of a method with different types of arguments, the latter: use in inheritance context, sets which method will be called, the base or the derived
 - REST :: (Representational state transfer), software architectural style, defines a set of constraints for how the architecture of a distributed, Internet-scale hypermedia system, such as the Web, should behave
   + REST structures data in *XML, YAML, or any other format that is machine-readable, but usually JSON is most widely* used
-
 * Spring framework, and spring boot
 [2023-12-04 Mon 22:52]
 ** Fundamentals
@@ -1704,6 +1703,9 @@
 - SDK :: Software development kit
 - Tomcat :: is not an application server, but a web server, lightweight an easy to use
   
+* Testing
+[2023-12-17 Sun 03:51]
+** JUnit 5
 * project rest user-manager
 
 - Spring Initializr (https://start.spring.io/) to generate a new Spring Boot project. Make sure to include the following dependencies
