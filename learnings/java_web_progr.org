@@ -1567,7 +1567,6 @@
        - no need anymore to run .jar executable with -jar option while running the app ::
          + in linux based OS :: ~./[your_app_jar].jar~
          + in windows :: only runs .exe, so, need to do it the old way: ~java -jar [your_app_jar].jar~
-
 ***** Running on a cloud platform
 - common cloud supported platforms (that work with spring boot) :: Amazon Web Services, Microsoft Azure, Google Cloud, Heroku, Cloud Foundry
   + HOWEVER :: each of these platforms require setting up different configuration files so that the platform knows how to deploy it on its own infrastructure
@@ -1578,6 +1577,81 @@
       + logging :: can be difficult to track down and use depending on the cloud service (could be better to use a centralized logging service)
       + service integration :: for example, connecting to db or other cloud services, like Redis Queue, might require specific handling that can be different what java and spring configurations propose
       + firewall and security :: can be a hurdle to get all services to talk to each other and also uphold security
+- eg, deploying spring boot on heroku ::
+  + steps ::
+    - 'create new app' -> select deployment method (github, container registry, etc.) -> select deployment method and git branch (manual, auto-deploy on, for example, commit or check-in) -> 'deploy branch', and then 'view' or 'open app' when finished building
+    - add further services when necessary :: eg, database
+      + dashboard -> resources -> select db serice (eg: postgre)
+        - to setup db configs :: dashboard -> settings -> 'reveal config vars' and set as did in app (DB_URL, DB_USER, etc.)
+          + hardcoding the url with "localhost" (using java configurations) is not the best choice, since localhost doesn't exist on cloud platforms. Thankfully, some cloud platforms have pre-filled fields available for you. Just make sure to use the same environment variable names
+            #+begin_src example
+            // on application properties for example:
+            spring.datasource.url=${DB_URL}
+            // on heroku settings 'config vars':
+            DB_URL = postgres://some_connection_adress...
+            ${DB_URL}
+            #+end_src
+        - don't forget to load the database on the cloud so that it is available from there
+    - to use api, link :: [name-of-app-on-heroku].herokuapp.com (eg: conferencedemo-heroku.herokuapp.com/api/v1/sessions)
+  + debugging on heroku :: dashboard -> 'more' -> view logs
+***** Deploying .war executables (will prevent deploying .jar files, so need to pick one, can't have both)
+[2023-12-17 Sun 02:29]
+- .war :: used to distribute a collection of JAR-files, JavaServer Pages, Java Servlets, Java classes, XML files, etc.
+- .war needed to be able to support deploying on a container
+- if application is maven-based :: so, need some modifications
+  + to pom.xml :: in order to package slightly differently, so that it can be deployed on a container (by default spring boot generates .jar fils with embedded container)
+    1. flag embedded container as 'provided' :: will tell maven to not package tomcat or other container embedded in final packaged artifact, maven won't package tomcat starter in the build
+       #+begin_src xml
+       <dependencies>
+         <dependency>
+           <!-- ... -->
+           <dependency>
+             <groupId>org.springframework.boot</groupId>
+             <artifactId>spring-boot-starter-web</artifactId>
+           </dependency>
+           <dependency>
+             <!-- add tomcat even though alreay embedded, so can specify as 'provided' -->
+             <groupId>org.springframework.boot</groupId>
+             <artifactId>spring-boot-starter-tomcat</artifactId>
+             <scope>provided</scope>
+           </dependency>
+           <!-- ... -->
+       <dependencies>
+
+       #+end_src
+    2. tell maven to package the app as a .wat, and not a .jar :: with <packaging> tag, still in pom.xml, at the top, after the app description:
+       #+begin_src xml
+       <parent> 
+         <groupId>org.springframework.boot</groupId>
+         <artifactId>spring-boot-starter-parent</artifactId>
+         <version>3.2.0</version>
+         <relativePath/> <!-- lookup parent from repository -->
+       </parent>
+       <groupId>com.myapplications</groupId>
+       <artifactId>conference-demo</artifactId>
+       <version>0.0.1-SNAPSHOT</version>
+       <name>conference-demo</name>
+       <description>Conference scheduling app</description>
+
+       <!-- HERE -->
+       <packagin>war</packaging>
+
+       <properties>
+               <java.version>17</java.version>
+       </properties>
+       <dependencies>
+         <!-- ... -->
+       </dependencies>
+       #+end_src
+    3. edit java main class :: and make it extend ~SpringBootServletInitializer~, that runs a SpringApplication from a traditional .war archive deployed on a web container
+       + when deploying .war file to an external container, it expects a context to be available, together with a web.xml file defining how the app will get deployed
+         - spring boot apps don't have web.xml files, the class SpringBootServletInitializer will provide those values and other informations to the external container
+    4. maven plugin -> mvn package
+    5. careful, .war file is missing environment variables values, DB_URL for example -> use external configuration source, or JNDI values so that urls and credentials are not hard coded in the application
+- deploy to tomcat container :: copy application .war file into apache tomcat local folder (==webapps== folder)
+  + need tomcat context to run .war :: the context for .war files are the name of the target folder where the app was deployed, eg: for toto.war name (apache automatically extract the .war into a folder with the same name without .war extension):
+    ~localhost:8080/toto/api/v1/sessions~ (8080 is the default port opened by tomcat)
+
 ** Architecture and structure
 [2023-12-13 Wed 14:25]
 
