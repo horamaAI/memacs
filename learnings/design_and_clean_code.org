@@ -367,7 +367,7 @@
 - tips ::
   + process :: define rules -> write code (in line with defined rules) -> use static code checker -> submit for code review (with preferably tests) -> merge
   + static code analysis :: some basics included in some IDEs, but can add third party ones: +FindBugs+ (outdated), SonarLint
-  + 'boyscot' rule :: "leave the campground cleaner than you found it": if task not too time consuming and time allows, then fix
+  + 'boyscout' rule :: "leave the campground cleaner than you found it": if task not too time consuming and time allows, then fix
   + code review :: needs both technical and functional requirement understanding
 
 
