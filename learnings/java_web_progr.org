@@ -14,6 +14,8 @@
   + The jre is cross platform, it takes standard 'bytecodes' (compiled classes that are OS agnostic), and through the JVM (Java Virtual Machine) and additional standar java libraries, adapt those bytecodes to the local environment.
 - JDK :: Java development kit: JRE + compiler, debugger, javadoc, keytool, etc.
 - flow :: *.java --[JDK]--> *.class --[JRE]--> execute
+- can check project's 'module settings' :: at any moment, with right click -> 'open module settings'
+  + to check the application structure, dependencies, paths, etc.
 - comments ::
   + usual comments :: line comment (==//...==), block comment (==/*...*/==)
   + javadoc comments :: ==/**...*/== : same as block comments, but can be generated as javadocumentation
@@ -491,7 +493,8 @@
     - can be seen as a glorified hash map, an application context :: spring application context is the configured spring container will all the dependencies wired up within it (but not only though, spring is not just creating a hash map and putting all objects in it)
     - can be used as a registry
 - download/install spring ::
-  + no direct download for compiled jars, maven needed to download spring tools
+  + no direct download for compiled jars, maven is still needed to download spring tools
+  + maven modules repository :: https://mvnrepository.com/
   + maven repo has src, javadocs, binaries available for download:
     - in pom.xml, add spring context dependencies:
       #+begin_src xml
@@ -1706,6 +1709,172 @@
 * Testing
 [2023-12-17 Sun 03:51]
 ** JUnit 5
+- User guide :: https://junit.org/junit5/docs/current/user-guide/ (for further documentation, such as each junit .jar use cases)
+- JUnit 5 API :: https://junit.org/junit5/docs/5.0.1/api/index.html?overview-summary.html
+- Notes ::
+  + reminder :: tests design principle (can comment each group to easily locate what’s the testing step being processed):
+    - Arrange :: setup and initialize objects and environment
+    - Act :: exercise functionality to be tested
+    - Assert :: 
+  + one of the benefits of unit/component tests are ::
+    - tests location tree :: ==src/test==
+    - they can be used to build automated regression tests, and system design
+    - writing documentation: can refer to unit tests to know the purpose of an application => need to write readable and easy to understand tests (hence better design also required)
+  + spring-boot-starter-test contains libraries ::
+    - JUnit :: standard for unit testing Java applications
+    - Spring Test & Spring Boot Test :: utilities and integration test support for Spring Boot applications
+    - AssertJ :: fluent assertion library
+    - Hamcrest :: library of matcher objects (also known as constraints or predicates)
+    - Mockito :: Java mocking framework
+    - JSONassert :: assertion library for JSON
+    - JsonPath :: XPath for JSON
+  + "Setting up and tearing down tests" :: to setup test objects/methods life cycle with annotations (@BeforeEach, @AfterAll, etc.)
+- setup ::
+  + manual :: add spring-boot-starter-test to maven config file pom.xml 
+  + shortcut for creating a test file in an IDE (intelliJ) :: right click on a class to test -> 'Go to' -> 'test' -> 'create new test'
+    - in case junit module is missing, there will be a message 'Junit library not found in the module' -> push button 'fix' to fix :)
+    - in eclipse: right click on any java class file -> new -> 'Junit test case'
+      
+** Some JUnit testing methods
+[2023-12-18 Mon 15:20]
+- assertEquals(expected, ActualValue) :: if used to compare collections, will compare the addresses and the order (same as ==assertIterableEquals==)
+- assertSame(obj1, obj2) :: assert that both references point to same address, or "same object in memory" in case comparing enumerations
+- assertTrue(aBoolean) ::
+- assertThrows(typeClassExpected, lambdaExpression) :: to test exceptions
+  + typeClassExpected :: eg:RuntimeException.class
+  + lambdaExpression :: lambda expression that calls the method that should throw the exception to test
+  + eg ::
+    #+begin_src java
+    // meh
+    @Test
+    void testThrowsException() {
+        assertThrows(RuntimeException.class,
+                     // DateTimeConverter is a custom defined class with method 'convertStringToDateTime' that catches RuntimeException, add a custom msg, and then rethrows it
+                     () -> DateTimeConverter.convertStringToDateTime("9/2/2018 100 pm", LocalDate.of(2018,9,1));
+                     );
+        }
+    // better
+    @Test
+    void testThrowsException() {
+        Throwable error = assertThrows(RuntimeException.class,
+                     // DateTimeConverter is a custom defined class with method 'convertStringToDateTime' that catches RuntimeException, add a custom msg, and then rethrows it
+                     () -> DateTimeConverter.convertStringToDateTime("9/2/2018 100 pm", LocalDate.of(2018,9,1));
+                     );
+        assertEquals("Custom error message", error.getMessage())
+        }
+    #+end_src
+** Run logical categories of tests together (group by specific functionality)
+[2023-12-18 Mon 18:59]
+- @Tag("aFunctionalTag") :: to mark tests to group, can be on class or method level
+  + to run by tag :: (intellij) Edit run configuration -> select 'JUnit' field (uppermost one of 'junit' section) -> '+' (to add a new junit running configuration) -> name it -> in field 'Test kind' select 'Tags' -> in field 'Tag expression', add your defined label value or tag ('aFunctionalTag' in our case) -> run from targeted test tag
+    - possible to make a complex tag expression :: by using 'not, or, and, etc.'
+
+** Control test method execution (which to (de)activate)
+[2023-12-18 Mon 18:20]
+- @Disabled :: on a method to disable
+- setting how assertions execute :: when first assertion fails, by default all the remaining fail too (later assertion don't report)
+  + assertAll :: prevent any short circuiting of assertions
+    #+begin_src java
+    // parameters need to be lambda expressions
+    assertAll(
+              () -> assertEquals("Jim", aVar.firstName()),
+              () -> assertEquals("Tallyho", aVar.lastName()),
+              () -> assertEquals(21, aVar.age()),
+              () -> assertSame(AnEnumClass.AVALUE, , aVar.enumValue())
+              );
+    #+end_src
+
+** Format reporting and output messages for a better rendering and easy to read
+[2023-12-18 Mon 17:14]
+- create custom message in assertion :: eg:
+  + if 3rd parameter is a lambda expression, it will only get evaluated if there is a failure, so that save some computation cost to use 3rd parameter as a lambda
+  #+begin_src java
+  @Test
+  void testConvertTodayDateProperly() {
+      LocalDate today = LocalDate.of(2018, 9, 1);
+      LocalDateTime result = DateTimeConverter.convertStringToDateTime("today 1:00 pm", today);
+      // custom msg as 3rd parameter to assertEquals
+      assertEquals(result, LocalDateTime.of(2018, 9, 2, 13, 0), () -> "Failed to convert 'today' string to expected date. 'today' passed was: " + today);
+      }
+  // better
+  #+end_src
+- create custom text to display in place of test class and method names :: (with @DisplayName for example), for shorter/clearer name to display and/or give further information about the class or method, eg:
+  #+begin_src java
+  @Displayname("DateTimeConverter should :") // better to not stray too far from the class name
+  class DateTimeConverterShould {
+      // ...
+      @DisplayName("throw exception if result...")
+      void testThrowsException() {
+          // ...
+          }
+      @DisplayName("convert expected input into...")
+      void convert() {
+          // ...
+          }
+      // ...
+      }
+  #+end_src
+- create nested tests inside test class :: with @Nested
+  #+begin_src java
+  @Displayname("DateTimeConverter should :") // better to not stray too far from the class name
+  class DateTimeConverterShould {
+
+      // first part of display message will be the same
+      @Nested
+      @DisplayName("convert string with 'today' keyword ")
+      class TodayTest {
+          @DisplayName("properly")
+          void testConvertTodayDateProperly() {
+              LocalDate today = LocalDate.of(2018, 9, 1);
+              LocalDateTime result = DateTimeConverter.convertStringToDateTime("today 1:00 pm", today);
+              assertEquals(result, LocalDateTime.of(2018, 9, 2, 13, 0), () -> "Failed to convert 'today' string to expected date. 'today' passed was: " + today);
+              }
+          @DisplayName("regardless of case")
+          void testConvertTodayDateProperlyCaseInsensitive() {
+              LocalDate today = LocalDate.of(2018, 9, 1);
+              // slight change: ToDay, instead of today (lowercase)
+              LocalDateTime result = DateTimeConverter.convertStringToDateTime("ToDay 1:00 pm", today);
+              assertEquals(result, LocalDateTime.of(2018, 9, 2, 13, 0), () -> "Failed to convert 'today' string to expected date. 'today' passed was: " + today);
+              }
+          }
+      // ...
+      @DisplayName("throw exception if result...")
+      void testThrowsException() {
+          // ...
+          }
+      @DisplayName("convert expected input into...")
+      void convert() {
+          // ...
+          }
+      }
+      // ...
+
+  // will output on test tool window:
+  // DateTimeConverter should :
+  //       throw exception if result...
+  //       convert expected input into...
+  //       convert string with 'today' keyword
+  //           properly
+  //           regardless of case
+  #+end_src
+  
+** Tips on how to make unit tests
+[2023-12-18 Mon 19:18]
+- careful with dependencies, design your code so that dependencies are easy to mock and inject in the target code (follow solid principles, mainly Dependency inversion principle (DIP) and Single responsibility principle (SRP))
+- extract business logic to test away from UI code
+
+** Test driven development (TDD)
+[2023-12-18 Mon 23:07]
+- 
+
+** Annotations
+[2023-12-18 Mon 11:13]
+- @AutoConfigureMockMvc ::
+- @BeforeAll :: run once before all methods in test class (@AfterAll will run after all tests have completed)
+  + @BeforeEach :: will run once before each of the test methods are run (reverse for @AfterEach)
+- @Nested :: to create nested test classes. The annotation must be added at a class level, for each inner class that contains tests
+- @Test :: to indicate that method is a junit test method
+
 * project rest user-manager
 
 - Spring Initializr (https://start.spring.io/) to generate a new Spring Boot project. Make sure to include the following dependencies
