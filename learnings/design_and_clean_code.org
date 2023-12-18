@@ -323,7 +323,7 @@
   + should have a CYC of one, fewer points of failure (one assertion => one point of failure, one reason to fail), and stability :: fewer points of failures lead to tests with higher stability, and thus, less time investigating the test than trying to fix the bug => reliable tests, and better overall maintainability
     - For example, tests with 5 assertions have 5 reasons to fail => more unstable tests, harder to debug
 - use tests templates :: tests usually follow some patterns, and some already are available
-  - AAA :: Arrange (Setup and initialize objects and environment) - Act (Exercise functionality to be tested) - Assert (can comment each group to easily locate what's needed)
+  - AAA :: Arrange (Setup and initialize objects and environment) - Act (Exercise functionality to be tested) - Assert. Can even comment each group to easily locate what’s the testing step being processed
     #+begin_src java
     @Test
     public void testFunctionality() {
@@ -383,7 +383,7 @@
 - Pyramid of clean code :: (from foundational to advanced): SOLID, design patterns, TDD, continuous refactoring
       
 ** Single-responsibility principle (SRP)
-- SRP :: every function/class/module, have one and only one reason to change (responsabilities examples: logging, a business logic, orchestration, persistence, end users, networking, IO, error handling, etc.)
+- SRP :: every function/class/module, have one and only one reason to change (responsabilities examples: UI, logging, a business logic, orchestration, persistence, end users, networking, IO, error handling, etc.)
 - pros :: makes code easy to read and understand, fix, maintain; less coupling, more resilient to change; more testable design, thus avoid side effects
 - symptoms :: hardly readable, low maintainability and evolution, hard to test, high coupling
 - trick on identifying multiple reasons to change ::
