@@ -1,0 +1,23 @@
+# -*- mode: org -*-
+#+title: Java spring app project for a bookstore manager app (sopr)
+#+SETUPFILE: ~/set-up-files/basic-setups.org
+#+TAGS: Java Projects Spring Web
+
+
+* Intro
+- develop a conference scheduling app using java spring boot ::
+  + app will hold different sessions
+  + allow speakers to be assigned as a presenter of a session
+  + speaker can present more than one session
+  + app will build conference topics and sessions for the organizers
+- tools :: (basically a full stack spring API microservice app)
+  + build automation and dependencies handling :: maven 3.9.6
+  + web application :: spring boot starter (maven project, spring web (tomcat, rest api infos, spring mvc))
+  + databases :: spring data jpa, jpa, relational database Postgres
+    
+* Elements
+- schedule listing available sessions, "breakouts" (popular sessions) in own small panel
+- sessions are the main elements, and will build data structures and endpoints around sessions:
+  + speakers for a conference (can be more than one)
+  + title, summary, topic
+  + session tags, session schedules

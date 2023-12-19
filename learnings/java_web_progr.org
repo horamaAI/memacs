@@ -1865,7 +1865,12 @@
 
 ** Test driven development (TDD)
 [2023-12-18 Mon 23:07]
-- 
+- TDD :: drive development from tests, instead of implementing features first and testing after
+  + result -> work by frequent switching from test to production code and back, adding functionality with each pass
+  + benefits :: strong focus on what needs to be done, very testable code and design produced, helps produce clear interfaces (unit test are clients of the code, using TDD helps designing the code from the client point of view), helps produce clean code (refactoring while implementing, rather than coding first and refactor after)
+  + basic process ::
+    1. write just enough code to fail, write just enough production code to pass that test (and no more)
+    2. "Read, Green, Refactor" rule :: write failing test (red, for non implemented yet method colored in red), implement enough code to make it work (gets green), refactor
 
 ** Annotations
 [2023-12-18 Mon 11:13]
