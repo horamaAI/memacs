@@ -1,0 +1,108 @@
+# -*- mode: org -*-
+#+title: learning Javascript web programming language and tools
+#+SETUPFILE: ~/set-up-files/basic-setups.org
+#+TAGS: Java
+
+
+* JavaScript (JS) and TypeScript (JS)
+[2023-12-19 Tue 14:42]
+- Notes ::
+  + the official JS language specification standard is called ES (ECMAScript): ES version defined previously by sequential number (eg: ES3, ES5, etc, supported by older browsers), but from ES6, that was renamed 2015 -and brought many new features such as classes and arrow functions-, new version is released each year
+    - => newer JS features have to be transpiled to older JS
+  + TS :: open source, superset to JS (every JS code supported by TS), transpiles to plain JS (TS code must be compiled and converted to comparable JS syntax before the browser executes it)
+    - dig further :: https://www.typescriptlang.org/
+* Angular
+** Notes
+- angular :: JS framework for building client-side applications
+- benefits :: more expressive html, powerful data-binding (to connect data directly to UI), promotes modularity ("modular by design": app built as a set of blocks, so that it is easier to create and reuse the contents), built-in support for back-end integration (easier communication with a back-end server)
+- installing manually ::
+  + nvm :: to select which version of node.js to install  (https://github.com/nvm-sh/nvm#installing-and-updating)
+  + npm :: install it with nvm when done: ==nvm install --lts==, to install latest Node.js LTS release
+    - check if everything is installed properly ::
+      #+begin_src bash
+      node -v
+      npm -v
+      #+end_src
+- installation ::
+  1. needed ::
+     + angular framework and libraries :: 
+     + angular cli :: 
+     + TS ::
+     + testing tools, linters ::
+     + and others :: 
+  2. for the remaining dependencies/packages, two options:
+     + either use npm commands to install all those manually;
+     + or as commonly done, define a ==package.json== file listing each needed packages, and use npm to install defined packages, their dependencies, with all the versions (~npm install~ in folder)
+- in package.json, :: the list of packages is divided into two parts:
+  + 'dependencies' :: packages required for development AND deployment, eg: primary angular packages, and supporting packages (~rxjs~) : ~@angular/(animations|common|compiler|etc.)~
+  + 'devDependencies' :: packages only required for development, eg: ~@angular/(compiler|compiler-cli)~
+  
+** Anatomy of an angular app
+[2023-12-19 Tue 14:04]
+- angular :: comprised of a set of components, or can also be seen as comprised of a set of services that provide functionality across components. eg of services: accessing data from a back end server, standard logging, exception handling, performing tax calculations, etc.
+- angular component :: each angular component has a: ==component = UI (template) + code (class (properties, methods)) + extra-data (metadata)==
+  + template (UI) :: html defining a view for the application, can be seen as the UI,
+  + class (code) :: contains the code associated with a view, the code behind the UI, contains:
+    - properties :: or property variables, or data elements, hold the data to display in the UI, available for binding to the view
+    - methods :: that perform actions for the view, eg: handle click on button
+  + metadata :: provides further infos about the component to angular
+    
+** components in Angular
+[2023-12-19 Tue 14:32]
+*** Nested components
+
+** Templates, interpolation and directives
+[2023-12-19 Tue 14:33]
+
+** Data binding and pipes
+[2023-12-19 Tue 14:33]
+
+** Services and dependency injection
+[2023-12-19 Tue 14:34]
+
+** Angular modules
+[2023-12-19 Tue 14:36]
+
+** Navigation and routing
+[2023-12-19 Tue 14:36]
+** Retrieving data using http
+[2023-12-19 Tue 14:35]
+
+** Angular cli
+[2023-12-19 Tue 14:40]
+- used to generate code, execute the application, deploy to production, etc., etc.
+
+* NVM, Node, NPM
+[2023-12-19 Tue 15:18]
+- what's npm ? :: many things: repository, command line tool, package manager, etc
+- what does npm can do ? ::
+  + install libraries, packages, dependencies, applications, etc.
+  + execute scripts to perform tasks, such as: run JS application
+- npm cli :: to interact with repository
+** Some commands
+*** npm
+[2023-12-19 Tue 15:43]
+- npm install abc :: request package abc from npm repository, install it in current folder, subfolder ==node_modules==. ==node_modules== contains the libraries and dependencies of installed packages
+- npm install :: (without explicit call to package) install dependencies defined in package.json
+- npm start :: to start the installed angular application
+
+*** nvm
+- nvm ls :: list installed versions
+- nvm install --lts :: install latest Node.js LTS release
+  + nvm ls-remote :: to list available versions
+  + nvm install 8.16.2 :: install specific version of node
+  + nvm install node :: install latest release
+  + nvm install carbon :: nstall an older LTS release by codename
+- nvm use 10.16.3 :: switch node version for the active shell
+  + nvm use node :: switch to the latest installed version
+  + nvm use --lts :: use the latest LTS version
+- nvm alias default 10.0.0 :: change lts alias version to 10.0.0
+
+* Definitions
+[2023-12-19 Tue 12:15]
+- node :: Node.js (a JavaScript runtime that allows you to build scalable and efficient web applications)
+- npm ::  package manager (node package manager) for the JavaScript programming language (provids access to a vast ecosystem of libraries and tools)
+  + online registry/repository of open source libraries and packages
+  + contains many JS packages (angular, TS, bootstrap, etc.)
+- nvm :: version manager for node.js (allows you to quickly install and use different versions of node via the command line.)
+- transpiling :: convert source code from a programming language into an equivalent source code of the same or a different programming language

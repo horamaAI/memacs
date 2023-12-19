@@ -423,13 +423,25 @@
     #+end_src
 **** Streams
 [2023-12-05 Tue 12:51]
-- filter, foreach :: eg:
+- filter, foreach, anyMatch, collect :: eg:
   #+begin_src java
+  // filter
   List<AircraftTarget> targets; // suppose it is initialized with latitudes and longitudes (integers)
   var aircraftInRange = targets.stream()
       .filter(a -> {
               var distance = (int) Math.sqrt((originLat - a.lat()) * (originLat - a.lat()) +(originLon - a.lon()) * (originLon - a.lon()));
               return distance <= range;}).foreach(System.out.println);
+
+  // find if exists with 'anyMatch'
+  public boolean hasAppointment(LocalDate date) {
+      return appointments.stream().anyMatch(appointment -> appointment.getAppointmentDateTime().toLocalDate().equals(date));
+      }
+
+  // filter and collect
+  public List<PatientAppointment> getUpcomingAppointments() {
+      return appointments.stream().filter(appointment -> appointment.getAppointmentDateTime().toLocalDate().isAfter(today)).collect(Collectors.toList);
+      }
+  
   #+end_src
   
 *** Annotations
@@ -1865,7 +1877,7 @@
 
 ** Test driven development (TDD)
 [2023-12-18 Mon 23:07]
-- TDD :: drive development from tests, instead of implementing features first and testing after
+- TDD :: drive your development from tests, instead of implementing features first and testing after. Regular iteration of cycles between writing tests (that fail), implement solution, write another test, make it work, etc.
   + result -> work by frequent switching from test to production code and back, adding functionality with each pass
   + benefits :: strong focus on what needs to be done, very testable code and design produced, helps produce clear interfaces (unit test are clients of the code, using TDD helps designing the code from the client point of view), helps produce clean code (refactoring while implementing, rather than coding first and refactor after)
   + basic process ::
