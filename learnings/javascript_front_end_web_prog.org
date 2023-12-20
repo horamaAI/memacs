@@ -149,6 +149,7 @@
     - decorators are functions with argument objects (as seen passed as curly braces)
     - decorator object have properties: eg:
       + selector :: to find (select) the html elements needed to style
+        - convention :: use prefixed value for the selector to reference it as part of the application being implemented (eg: 'pm-root' is the root of the element to be styled, and defined in application for project management ('pm'))
       + templateUrl :: define template (view) file (can directly enter the html code with decorator ==template==)
       + styleUrls :: for css,
       + etc.
@@ -160,10 +161,38 @@
       }
       #+end_src
 
-*** Imports
-[2023-12-20 Wed 10:47]
 *** Bootstrapping app component
 [2023-12-20 Wed 10:47]
+- notes ::
+  + in angular, the transpiled (to javascript) default page 'index.html' contains script tags referencing the javascript version of the angular application files
+    - these transpiled javascript files are then downloaded and processed by the browser (client side) ::
+      + angular *modules* help building/transpiling those javascript files ::
+        - angular modules :: mechanism to group components, directives, pipes and services that are related, in such a way that can be combined with other modules to create an application
+      + eg ::
+        - angular version ::
+           #+begin_src javascript
+           // app.component.ts
+           import { Component } from '@angular/core'; // imports
+
+           @Component({ // metadata & template components
+             selector: 'pm-root',
+             template: '<div><h1>{{myTitle}}</h1></div>'
+           })
+           export class AppComponent { // class component
+             title = 'Angular: Getting Started';
+           }
+
+           #+end_src
+        - transpiled index.html ::
+          #+begin_src html
+          <body>
+            <!-- angular modules define the html rendering  -->
+            <pm-root></pm-root>
+          </body>
+          #+end_src
+- hosting the application ::
+- defining the angular module
+
 *** Nested components
 
 *** Debugging
@@ -224,7 +253,7 @@
 ** Some commands
 *** angular cli (~ng~)
 [2023-12-20 Wed 10:29]
-- ng new anapp --prefix pm :: create new angular app with an existing prefix pm (for product manager)
+- ng new anapp --prefix pm :: create new angular app 'anapp' with prefix 'pm' (for 'product manager' in case it's a product management app)
 
 *** npm
 [2023-12-19 Tue 15:43]
@@ -247,6 +276,7 @@
 
 * Definitions
 [2023-12-19 Tue 12:15]
+- bootstrapping :: in tech, means self-starting process that loads and then run
 - node :: Node.js (a JavaScript runtime that allows you to build scalable and efficient web applications)
 - npm ::  package manager (node package manager) for the JavaScript programming language (provids access to a vast ecosystem of libraries and tools)
   + online registry/repository of open source libraries and packages
