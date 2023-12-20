@@ -46,6 +46,14 @@
     - properties :: or property variables, or data elements, hold the data to display in the UI, available for binding to the view
     - methods :: that perform actions for the view, eg: handle click on button
   + metadata :: provides further infos about the component to angular
+*** angular project's folder structure
+- uppermost files (at root of project, also called 'boilerplate files') :: configuration and setup files 
+- ==src== :: by convention, all source code in 'src'
+  + src subfolders ::
+    - app :: contains source file specific to the application per se
+      + app folder contains subfolders specific to each major feature of the application
+- ==node_modules== :: contains the libraries and dependencies of installed packages
+  + don't forget to escape it in the version controller, it is too heavy, and anyway we have the package.json to fetch all the required dependencies
     
 ** components in Angular
 [2023-12-19 Tue 14:32]
@@ -79,11 +87,35 @@
   + install libraries, packages, dependencies, applications, etc.
   + execute scripts to perform tasks, such as: run JS application
 - npm cli :: to interact with repository
+** npm scripts
+[2023-12-19 Tue 17:18]
+- eg from package.json ::
+  + if type:
+    - ~npm start~, will run ~ng serve -o~;
+    - ~npm build~, will run ~ng build~; etc.
+    - ~ng~ executes the angular cli on the command given by the string after ng
+      + for example ~serve -o~: builds the application, and starts a local web server that serves up the application without deploying it; ~-o~: option to open the url in the default browser
+  #+begin_src js
+  {
+      // ...
+      "scripts": {
+          "ng": "ng",
+          "start": "ng serve -o",
+          "build": "ng build",
+          "watch": "ng build --watch --configuration development",
+          "test": "ng test"
+          },
+      "private": true
+      // ...
+      }
+  #+end_src
+
 ** Some commands
 *** npm
 [2023-12-19 Tue 15:43]
-- npm install abc :: request package abc from npm repository, install it in current folder, subfolder ==node_modules==. ==node_modules== contains the libraries and dependencies of installed packages
 - npm install :: (without explicit call to package) install dependencies defined in package.json
+  + npm install abc :: request package abc from npm repository, install it in current folder, subfolder ==node_modules==. ==node_modules== contains the libraries and dependencies of installed packages
+  + be aware :: installation warning logs are not all pertinent, if suggests you for example to ~npm audit fix --force~, DON'T!!, the new updated versions might mess up your application
 - npm start :: to start the installed angular application
 
 *** nvm
