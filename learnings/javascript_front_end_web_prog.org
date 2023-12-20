@@ -14,7 +14,7 @@
 * Angular
 ** Notes
 - angular :: JS framework for building client-side applications
-- benefits :: more expressive html, powerful data-binding (to connect data directly to UI), promotes modularity ("modular by design": app built as a set of blocks, so that it is easier to create and reuse the contents), built-in support for back-end integration (easier communication with a back-end server)
+- benefits :: more expressive html, powerful data-binding (to connect data directly to UI), promotes modularity ("modular by design": app built as a set of blocks (set of components), so that it is easier to create and reuse the contents), built-in support for back-end integration (easier communication with a back-end server)
 - installing manually ::
   + nvm :: to select which version of node.js to install  (https://github.com/nvm-sh/nvm#installing-and-updating)
   + npm :: install it with nvm when done: ==nvm install --lts==, to install latest Node.js LTS release
@@ -30,7 +30,7 @@
      + TS ::
      + testing tools, linters ::
      + and others :: 
-  2. for the remaining dependencies/packages, two options:
+  2. for installing dependencies/packages, two options:
      + either use npm commands to install all those manually;
      + or as commonly done, define a ==package.json== file listing each needed packages, and use npm to install defined packages, their dependencies, with all the versions (~npm install~ in folder)
 - in package.json, :: the list of packages is divided into two parts:
@@ -39,7 +39,9 @@
   
 ** Anatomy of an angular app
 [2023-12-19 Tue 14:04]
-- angular :: comprised of a set of components, or can also be seen as comprised of a set of services that provide functionality across components. eg of services: accessing data from a back end server, standard logging, exception handling, performing tax calculations, etc.
+- angular ::
+  + comprised of a set of components, or can also be seen as comprised of a set of services that provide functionality across components. eg of services: accessing data from a back end server, standard logging, exception handling, performing tax calculations, etc.
+  + an angular application can be seen as a set of components, the developer arranges those components to form the application
 - angular component :: each angular component has a: ==component = UI (template) + code (class (properties, methods)) + extra-data (metadata)==
   + template (UI) :: html defining a view for the application, can be seen as the UI,
   + class (code) :: contains the code associated with a view, the code behind the UI, contains:
@@ -55,9 +57,116 @@
 - ==node_modules== :: contains the libraries and dependencies of installed packages
   + don't forget to escape it in the version controller, it is too heavy, and anyway we have the package.json to fetch all the required dependencies
     
+*** angular application architecture
+[2023-12-20 Wed 10:38]
++ index.html -> App Component ::
++ App Component -> Welcome Component, Product List Component ::
++ Product List Component -> Star Component, Product Detail Component ::
++ Product Detail Component -> Star Component ::
++ Product Data Service ::
+
 ** components in Angular
 [2023-12-19 Tue 14:32]
+*** Notes
+[2023-12-20 Wed 10:46]
+- component :: ==component = UI (template) + code (class (properties, methods)) + extra-data (metadata)==
+  + template :: view layout, created with html, defines what is rendered on the page, includes binding and directives
+  + class :: code supporting the view, created with TS, divided into properties (data), and methods (logic behind the view), eg: if wants to define a title in the view, then define a class property 'title' for the title; if wants to show/hide an image in the view, then add logic in class method
+    - property :: defines a data element associated with a class (variables for example), format: ~propertyName: dataType = assignement~
+  + metadata :: defines extra data for angular component (for eg, it's the metadata that defines a class to be a component class), metadata defined with decorators (function that adds metadata to a class, its members, or its method's arguments)
+  + so in the end :: an angular *component is a view defined in a template, its associated code defined with a class, and metadata defined with a decorator*
+  + eg :: imports, template, class, metadata
+    #+begin_src javascript    
+    import { Component } from '@angular/core'; // imports
+
+    @Component({ // metadata & template components
+      selector: 'pm-root',
+      templateUrl: './app.component.html', /* specific to view */
+      styleUrls: ['./app.component.css']
+    })
+    export class AppComponent { // class component
+      title = 'Angular: Getting Started';
+    }
+    #+end_src
+- data binded variables :: between double curly braces
+  + data binding ties template values to class property values
+    #+begin_src javascript
+    @Component({
+      selector: 'pm-root',
+      template: '<div><h1>{{myTitle}}</h1></div>' // myTitle is binded to its property value in class AppComponent
+    })
+    export class AppComponent {
+      myTitle: String = 'Toto is Getting Started';
+    }
+    #+end_src
+- imports ::
+  + needed in order to use external function/class
+  + 
+    
+*** Creating component classes
+[2023-12-20 Wed 10:46]
+- structure :: ~'export' 'class' ClassName {}~
+  + eg ::
+    #+begin_src js
+    export class ClassName {
+        propertyName: propertyType = assignment; // a property
+        
+    }
+    #+end_src
+  + naming convention ::
+    - class name :: feature name + suffix 'Component', eg: class BookManagerComponent, and root class component named: AppComponent
+    - camelCase ::
+    - methods name :: verbs, describing the action the method performs
+  + inside class :: properties + methods
+  + 'export' keyword :: to export class and make it available to be referenced outside
+- still need to define templates associated with the class to make the whole chunk a working component ::
+  + in TS, the metadata ==component== is attached to the class component as a decorator
+    
+*** Defining metadata with decorators
+[2023-12-20 Wed 10:47]
+- a class becomes an angular component when given metadata component :: metadata are needed to understand how to:
+  + instantiate the component
+  + construct the view
+  + interact with the component
+- we define metadatas for a class by decorating (annotating for people with java background) the class with @Component decorator :: ~@Component({...})~
+- decorators :: TS features/functions that add metadata to a class, its members, or its method arguments
+  + decorators are prefixed with ~@~
+  + scope of decorator :: limited to the feature that it decorates
+  + angular integrates several built-in decorators :: eg: ~@Directive, @NgModule, @Injectable~, but most importantly ~@Component~ decorator to identify the class as a component
+    #+begin_src javascript
+    @Component({ // ClassName class is decorated with @Component for metadata
+        ...
+        })
+    export class ClassName {
+        propertyName: propertyType = assignment; // a property
+    
+    }
+    #+end_src
+  + decorator functions format :: ~@Adecorator({...})~
+    - decorators are functions with argument objects (as seen passed as curly braces)
+    - decorator object have properties: eg:
+      + selector :: to find (select) the html elements needed to style
+      + templateUrl :: define template (view) file (can directly enter the html code with decorator ==template==)
+      + styleUrls :: for css,
+      + etc.
+      #+begin_src javascript
+      @Component({          
+        selector: 'pm-root',
+        templateUrl: './app.component.html',
+        styleUrls: ['./app.component.css']
+      }
+      #+end_src
+
+*** Imports
+[2023-12-20 Wed 10:47]
+*** Bootstrapping app component
+[2023-12-20 Wed 10:47]
 *** Nested components
+
+*** Debugging
+[2023-12-20 Wed 10:48]
+** Services and dependency injection
+[2023-12-19 Tue 14:34]
 
 ** Templates, interpolation and directives
 [2023-12-19 Tue 14:33]
@@ -65,14 +174,12 @@
 ** Data binding and pipes
 [2023-12-19 Tue 14:33]
 
-** Services and dependency injection
-[2023-12-19 Tue 14:34]
-
 ** Angular modules
 [2023-12-19 Tue 14:36]
 
 ** Navigation and routing
 [2023-12-19 Tue 14:36]
+
 ** Retrieving data using http
 [2023-12-19 Tue 14:35]
 
@@ -94,23 +201,28 @@
     - ~npm start~, will run ~ng serve -o~;
     - ~npm build~, will run ~ng build~; etc.
     - ~ng~ executes the angular cli on the command given by the string after ng
+      + two ways of installing angular 'ng' :: locally, globally. In the former case, running ~ng~ commands on a terminal won't do anything. Angular cli needs to be installed globally to use 'ng' commands in the terminal
       + for example ~serve -o~: builds the application, and starts a local web server that serves up the application without deploying it; ~-o~: option to open the url in the default browser
-  #+begin_src js
-  {
-      // ...
-      "scripts": {
-          "ng": "ng",
-          "start": "ng serve -o",
-          "build": "ng build",
-          "watch": "ng build --watch --configuration development",
-          "test": "ng test"
-          },
-      "private": true
-      // ...
-      }
-  #+end_src
+        #+begin_src js
+        {
+            // ...
+            "scripts": {
+                "ng": "ng",
+                "start": "ng serve -o",
+                "build": "ng build",
+                "watch": "ng build --watch --configuration development",
+                "test": "ng test"
+                },
+            "private": true
+            // ...
+            }
+        #+end_src
 
 ** Some commands
+*** angular cli (~ng~)
+[2023-12-20 Wed 10:29]
+- ng new anapp --prefix pm :: create new angular app with an existing prefix pm (for product manager)
+
 *** npm
 [2023-12-19 Tue 15:43]
 - npm install :: (without explicit call to package) install dependencies defined in package.json
