@@ -99,9 +99,12 @@
       myTitle: String = 'Toto is Getting Started';
     }
     #+end_src
-- imports ::
+- imports :: ~import { MemberNameToImport, MemberNameToImport2, MemberNameToImport3 } from 'LibraryOrComponentContainingTheImportedElement';
   + needed in order to use external function/class
-  + 
+  + allow using exported members from ::
+    - other files in the application
+    - angular framework, eg: @Component from angular core, so ~import { Component } from '@angular/core';~
+    - external javascript libraries
     
 *** Creating component classes
 [2023-12-20 Wed 10:46]
