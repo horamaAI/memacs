@@ -306,17 +306,65 @@
 ** Data binding, pipes, Templates, interpolation and directives
 [2023-12-19 Tue 14:33]
 *** Binding
-**** Notes
+**** data binding and binding types (interpolation, property binding, event binding, two-ways binding)
 - data binding :: passing data and coordinating communication between the component's class and its templates
-  + pass values from class to template and vice-versa, raise events to the class, etc.
+  + to pass values from class to template and vice-versa, raise events to the class, etc.
   + binding syntax always defined in the templates
+  + useful to change element values, style, based on user preferences, catch notifications or events from user actions or other events from the DOM
+  + 'template expression' :: just another way of calling data bindings expression in the template, getting binding values from the context (the target components)
+- interpolation :: (=={{}}==, double curly brackets) interpolation is replacing the binded variable in curly braces to display values gotten from the context properties (the components)
+  + interpolation is a one way binding :: from class to template
+  + can go way beyond :: , examples: ~{{'Title: '+ pageTitle}}~: concatenation; ~{{2*20+2}}~: math operation; ~<h1 innerText={{pageTitle}}></h1>~: as value for attributes
+- property binding :: (with ==[]==, square brackets)
+  + property binding :: eg: ~<img [src]='product.imageUrl'>~, 'img' is the element, '[src]' (in square brackets) is the property of element 'img' , and 'product.imageUrl' is the template expression
+  + property binding also one way :: from component to html element property
+- property binding vs interpolation ::
+  + property binding allows binding to type other than strings :: ~<input type='text' [disabled]='isDisabled'>~, where 'isDisabled' returns a string (whereas interpolation always assign to string)
+  + with interpolation :: no quotes, and curly braces for the template expression in place of square brackets : ~<img src={{product.imageUrl}}>~
+  + with property binding :: can add more attributes of different types
+    - template ::
+      #+begin_src javascript
+      <tr *ngFor='let product of products'>
+          <td><img class='center-block img-responsive' [style.width.px]='imageWidth' [style.margin.px]='imageMargin' [src]='product.imageUrl' [title]='product.productName'></td>
+      </tr>
+      #+end_src
+    - component ::
+      #+begin_src javascript
+      export interface IProduct {
+        pageTitle: string = 'Product List';
+        imageWidth: number = 50;
+        imageMargin: number = 2;
+        products: any[] = [                
+            {
+              "productId": 1,
+              "productName": "Leaf Rake",
+              "productCode": "GDN-0011",
+              "releaseDate": "March 19, 2021",
+              "description": "Leaf rake with 48-inch wooden handle.",
+              "price": 19.95,
+              "starRating": 3.2,
+              "imageUrl": "assets/images/leaf_rake.png"
+            },
+            {
+              "productId": 2,
+              "productName": "Garden Cart",
+              "productCode": "GDN-0023",
+              "releaseDate": "March 18, 2021",
+              "description": "15 gallon capacity rolling garden cart",
+              "price": 32.99,
+              "starRating": 4.2,
+              "imageUrl": "assets/images/garden_cart.png"
+            }
+       ];
+      }
+      #+end_src
+  + property bindings preferred over interpolation :: , but sometimes interpolation more appropriate, eg: ~<img src='https://myimages.org/{{product.imageUrl}}'>~
+- event bindings :: 
 
-**** Types of binding
-[2023-12-21 Thu 12:01]
-- 'interpolation' (=={{}}==, double curly brackets) :: one way binding: from class to template. Interpolation is replacing the binded variable to display values gotten from the context properties (given by the components)
-  + goes way beyond to just properties binding :: , examples: ~{{'Title: '+ pageTitle}}~: concatenation; ~{{2*20+2}}~: math operation; ~<h1 innerText={{pageTitle}}></h1>~: as value for attributes
-  + 'template expression' :: just another way of calling interpolation with curly braces expression, getting binding values from the context (the target components)
-
+**** Handling events with event binding
+[2023-12-21 Thu 17:13]
+**** Handling inputs with two-way binding
+[2023-12-21 Thu 17:13]
 *** Directives (custom and angular's)
 [2023-12-21 Thu 14:17]
 - Notes ::
@@ -369,6 +417,8 @@
       </table>
       #+end_src
       
+*** Pipes
+[2023-12-21 Thu 16:46]
 ** Services and dependency injection
 [2023-12-19 Tue 14:34]
 
