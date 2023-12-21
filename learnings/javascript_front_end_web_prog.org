@@ -11,6 +11,17 @@
     - => newer JS features have to be transpiled to older JS
   + TS :: open source, superset to JS (every JS code supported by TS), transpiles to plain JS (TS code must be compiled and converted to comparable JS syntax before the browser executes it)
     - dig further :: https://www.typescriptlang.org/
+- ::
+  + 'let' :: to define local variable
+  + 'for...of' vs 'for...in' ::
+    - for...of :: loops on iterable objects
+    - for...in :: loops on properties of an object:
+      #+begin_src javascript
+      let arr = ['a', 'b', 'c'];
+      for (let obj in arr) {
+          console.log(obj); // 0, 1, 2. The array indexes are enumerable properties with integer names
+          }
+      #+end_src
 * Angular
 ** Notes
 - angular :: JS framework for building client-side applications
@@ -36,6 +47,8 @@
 - in package.json, :: the list of packages is divided into two parts:
   + 'dependencies' :: packages required for development AND deployment, eg: primary angular packages, and supporting packages (~rxjs~) : ~@angular/(animations|common|compiler|etc.)~
   + 'devDependencies' :: packages only required for development, eg: ~@angular/(compiler|compiler-cli)~
+- some TS types ::
+  + any[]: array of any object (eg: ~products: any[];~)
   
 ** Anatomy of an angular app
 [2023-12-19 Tue 14:04]
@@ -57,15 +70,7 @@
 - ==node_modules== :: contains the libraries and dependencies of installed packages
   + don't forget to escape it in the version controller, it is too heavy, and anyway we have the package.json to fetch all the required dependencies
     
-*** angular application architecture
-[2023-12-20 Wed 10:38]
-+ index.html -> App Component ::
-+ App Component -> Welcome Component, Product List Component ::
-+ Product List Component -> Star Component, Product Detail Component ::
-+ Product Detail Component -> Star Component ::
-+ Product Data Service ::
-
-** components in Angular
+** Components and modules in Angular
 [2023-12-19 Tue 14:32]
 *** Notes
 [2023-12-20 Wed 10:46]
@@ -80,7 +85,7 @@
     import { Component } from '@angular/core'; // imports
 
     @Component({ // metadata & template components
-      selector: 'pm-root',
+      selector: 'pm-root', // root directive of the component, prefixed to reference it as a part of the application (convention)
       templateUrl: './app.component.html', /* specific to view */
       styleUrls: ['./app.component.css']
     })
@@ -101,10 +106,19 @@
     #+end_src
 - imports :: ~import { MemberNameToImport, MemberNameToImport2, MemberNameToImport3 } from 'LibraryOrComponentContainingTheImportedElement';
   + needed in order to use external function/class
-  + allow using exported members from ::
+  + allow using exported members from :: (need to 'export' the class so that it can be imported)
     - other files in the application
     - angular framework, eg: @Component from angular core, so ~import { Component } from '@angular/core';~
     - external javascript libraries
+  + even for installed external packages (locally/globally), still need to import them :: in the component, in the style sheet, etc. eg:
+    #+begin_src javascript
+    // global css file: src/styles.css
+    @import "~bootstrap/dist/css/bootstrap.min.css";
+    @import "~font-awesome/css/font-awesome";
+    //...
+    // to install bootstrap and font-awesome:
+    // $> npm install bootstrap font-awesome
+    #+end_src
     
 *** Creating component classes
 [2023-12-20 Wed 10:46]
@@ -147,10 +161,49 @@
     #+end_src
   + decorator functions format :: ~@Adecorator({...})~
     - decorators are functions with argument objects (as seen passed as curly braces)
-    - decorator object have properties: eg:
-      + selector :: to find (select) the html elements needed to style
+    - decorator object have properties too: eg:
+      + 'selector:' :: to find (select) the html elements needed to style; in angular, represents the "root" directive for the component
         - convention :: use prefixed value for the selector to reference it as part of the application being implemented (eg: 'pm-root' is the root of the element to be styled, and defined in application for project management ('pm'))
-      + templateUrl :: define template (view) file (can directly enter the html code with decorator ==template==)
+        - can cross reference directives from different components :: can insert templates from some components into others:
+          + don't forget to declare the source component in the AppModule declarations :: so that the component can be found in the app globally
+          #+begin_src javascript
+          // component1.ts
+          @Component({
+            selector: 'pm-root',
+            template: `<div><h1>{{myTitle}}</h1>
+                         <pm-products></pm-products> <!-- referencing ProductListComponent's template using its selector: will view as defined in the component -->
+                       </div>`
+          })
+          export class AppComponent {
+            title = 'Angular: Getting Started';
+          }
+
+          // component2.ts
+          @Component({
+            selector: 'pm-products',
+            templateUrl: './product-list.component.html'
+          })
+          export class ProductListComponent {
+            //...
+          }          
+
+          // AppModule.ts
+          @NgModule({
+            declarations: [
+              AppComponent,
+              ProductListComponent // <-- HERE
+            ],
+            imports: [
+              BrowserModule
+            ],
+            bootstrap: [AppComponent]
+          })
+          export class AppModule { }
+          #+end_src
+      + linked template 'templateUrl' :: define template (view) file (can directly enter the html code with decorator ==template==)
+        - inline template ::
+          + one line template with one line (surrounded with quotes, single quotes =='==, or backticks =='==`) :: ~template: '<div><h1>{{myTitle}}</h1></div>'~
+          + one line template multipe lines (surrounded with single quotes =='==, or backticks =='==`) ::
       + styleUrls :: for css,
       + etc.
       #+begin_src javascript
@@ -160,7 +213,6 @@
         styleUrls: ['./app.component.css']
       }
       #+end_src
-
 *** Bootstrapping app component
 [2023-12-20 Wed 10:47]
 - notes ::
@@ -187,27 +239,139 @@
           #+begin_src html
           <body>
             <!-- angular modules define the html rendering  -->
-            <pm-root></pm-root>
+            <!-- not static, so might not be exactly the same as this result  -->
+            <pm-root _nghost-yra-c12="" ng-version="14.3.0">
+            <div _ngcontent-yra-c12="" style="text-align: center;">
+              <h1 _ngcontent-yra-c12=""> Angular: Getting Started </h1>
+              Starter Files
+            </div>
+            </pm-root>
           </body>
           #+end_src
 - hosting the application ::
 - defining the angular module
 
-*** Nested components
+*** Angular Modules
+[2023-12-20 Wed 17:15]
+- modules ::
+  + handy for organization and boundaries from context (provided by the components) :: angular modules help organize applications into cohesive blocks of functionality and provide boundaries within the application
+    - for example, when a component contains a directive, angular looks to the component's module to determine which directives are visible to that component, 
+  + template resolution environment :: when angular compiler sees a directive and a template, it looks to the angular module for the definition => a component is declared in an angular module so that compiler can find it
+  + root application module 'AppModule' :: mandatory module for all angular application (as other modules, declares application's root components)
+  + a module is also used to bootstrap the startup component (AppComponent) ::
+  + a component must belong to one and only one module :: 
+  + module 'BrowserModule' :: is also added to the module imports so that the application works properly in a browser
+  + eg :: the root angular module of the application
+    - Angular is defined using a class :: ~export class AppModule { }~
+    - decorate the class as an angular module (@NgModule), and pass in the metadatas to define the details of the module :: ~@NgModule({/* metadatas ...*/})~
+      + metadata array 'declarations' :: defines which components belong to the module ~declarations: [AppComponent]~
+        - convention :: root component 'AppComponent' belongs to root module 'AppModule'
+      + metadata array 'imports' :: defines external modules needed to be available to all the components that belong to the module ~imports: [BrowserModule]~
+      + metadata array 'bootstrap' :: defines the startup component of the application ~bootstrap: [AppComponent]~
+        - startup component should contain the selector used in index.html
+          #+begin_src javascript
+          import { NgModule } from '@angular/core';
+          import { BrowserModule } from '@angular/platform-browser';
+          import { AppComponent } from './app.component';
 
+          @NgModule({
+            declarations: [
+              AppComponent
+            ],
+            imports: [
+              BrowserModule
+            ],
+            bootstrap: [AppComponent]
+          })
+          export class AppModule { }
+          #+end_src
+  + angular components must be declared in a module :: modules are like project's files that reference the components parts of the application
+
+*** Nested components
+*** convention for components
+[2023-12-20 Wed 21:52]
+- class ::
+  + component name ::
+    - suffix it with :: 'Component' 
+    - PascalCase ::
+  + 'export' the component class so that it can be imported :: 
+- properties ::
+  + appropriate data type and default value ::
+  + camelCase :: 
+- methods ::
+  + camelCase ::
 *** Debugging
 [2023-12-20 Wed 10:48]
+
+** Data binding, pipes, Templates, interpolation and directives
+[2023-12-19 Tue 14:33]
+*** Binding
+**** Notes
+- data binding :: passing data and coordinating communication between the component's class and its templates
+  + pass values from class to template and vice-versa, raise events to the class, etc.
+  + binding syntax always defined in the templates
+
+**** Types of binding
+[2023-12-21 Thu 12:01]
+- 'interpolation' (=={{}}==, double curly brackets) :: one way binding: from class to template. Interpolation is replacing the binded variable to display values gotten from the context properties (given by the components)
+  + goes way beyond to just properties binding :: , examples: ~{{'Title: '+ pageTitle}}~: concatenation; ~{{2*20+2}}~: math operation; ~<h1 innerText={{pageTitle}}></h1>~: as value for attributes
+  + 'template expression' :: just another way of calling interpolation with curly braces expression, getting binding values from the context (the target components)
+
+*** Directives (custom and angular's)
+[2023-12-21 Thu 14:17]
+- Notes ::
+  + angular directives :: adds logic to html, with loops and if statements for example
+  + angular components :: allow nested user interface fragments  
+- custom directives ::
+  + eg: using ~selector: 'pm-products'~
+- angular built-in directives :: eg: ~*ngIf~ for if logics (if assigned expression value is true, then the element is added to the DOM, removed from the DOM otherwise), ~*ngFor~ for for-loops
+  + structural directives :: that modify the structure or layout of a view by adding, removing, or manipulating elements and their children
+    - prefixed with ~*~
+    - ~*ngIf~ and ~*ngFor~ are both structural directives
+      #+begin_src xml
+      <div class='table' *ngIf='products.length'><!-- only display table if it has content.  -->
+      <!-- ... -->
+      </div>
+      #+end_src
+  + need to expose the angular directives (*ngIf, *ngFor, etc.) :: by importing BrowserModule, which is why it needs to be imported in the application module
+  + some angular directives ::
+    - *ngFor ::
+      #+begin_src xml
+      <table class='table' *ngIf='products.length'>        
+        <thead>
+          <tr> <!-- table row -->
+            <th> <!-- table header -->
+              <button class='btn btn-primary' (click)='toggleImage()'>{{showImage ? 'Hide' : 'Show'}} Image</button>
+            </th>
+            <th>Product</th>
+            <th>Code</th>
+            <th>Available</th>
+            <th>Price</th>
+            <th>5 Star Rating</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor='let product of filteredProducts()'>
+            <td> <!-- table data -->
+              <img *ngIf='showImage' [src]='product.imageUrl' [title]='product.productName' [style.width.px]='imageWidth' [style.margin.px]='imageMargin'>
+              </td>
+              <td>
+                <a [routerLink]="['/products', product.productId]">{{ product.productName }}</a>
+              </td>
+              <td>{{ product.productCode | lowercase | convertToSpaces:'-' }}</td>
+              <td>{{ product.releaseDate }}</td>
+              <td>{{ product.price | currency:'USD':'symbol':'1.2-2' }}</td> <!-- formatting for currency and add USD symbol -->
+              <td>
+                <pm-star [rating]='product.starRating' (ratingClicked)='onRatingClicked($event)'/>
+              </td>
+            </tr>
+        </tbody>
+      </table>
+      #+end_src
+      
 ** Services and dependency injection
 [2023-12-19 Tue 14:34]
 
-** Templates, interpolation and directives
-[2023-12-19 Tue 14:33]
-
-** Data binding and pipes
-[2023-12-19 Tue 14:33]
-
-** Angular modules
-[2023-12-19 Tue 14:36]
 
 ** Navigation and routing
 [2023-12-19 Tue 14:36]
@@ -218,6 +382,15 @@
 ** Angular cli
 [2023-12-19 Tue 14:40]
 - used to generate code, execute the application, deploy to production, etc., etc.
+
+* Styling with angular
+[2023-12-21 Thu 10:32]
+** Notes
+- div class='card'
+
+** Bootstrap
+[2023-12-21 Thu 10:41]
+- different styling classes (attribute class='') made available by bootstrap :: 'card', 'card-header', 'tables', etc.
 
 * NVM, Node, NPM
 [2023-12-19 Tue 15:18]
@@ -257,10 +430,16 @@
 
 *** npm
 [2023-12-19 Tue 15:43]
-- npm install :: (without explicit call to package) install dependencies defined in package.json
+- install dependencies ::
+  + npm install :: (without explicit call to package), install packages defined in package.json
   + npm install abc :: request package abc from npm repository, install it in current folder, subfolder ==node_modules==. ==node_modules== contains the libraries and dependencies of installed packages
   + be aware :: installation warning logs are not all pertinent, if suggests you for example to ~npm audit fix --force~, DON'T!!, the new updated versions might mess up your application
-- npm start :: to start the installed angular application
+- start angular application :: ~npm start~
+- generate ::
+  + generate new component :: ~ng generate component a-new-component-name~ (no need to suffix with 'Component')
+    - do not create new folder in the process (options: --flat) :: ~ng g component afolder/a-new-component-name --flat~, will add component 
+  + generate module :: 
+  + generate interface :: ~ng generate interface an-interface~
 
 *** nvm
 - nvm ls :: list installed versions
@@ -273,10 +452,19 @@
   + nvm use node :: switch to the latest installed version
   + nvm use --lts :: use the latest LTS version
 - nvm alias default 10.0.0 :: change lts alias version to 10.0.0
-
+* Developer tools
+[2023-12-20 Wed 21:37]
+- f12 is your friend when debugging
+- element tab :: to view html
+- source tab :: helpful for debugging
+  + angular cli uses 'webpack', so the TS files will be listed under the webpack node, and it's possible to debug directly from there and see the result live, but also set breakpoints
+- styling tools :: bootstrap, font-awesome
+  
 * Definitions
 [2023-12-19 Tue 12:15]
 - bootstrapping :: in tech, means self-starting process that loads and then run
+- directive :: custom html syntax for elements or attributes used to power up the html
+- DOM :: document object model representing an html as a node tree where each node is a part of the html
 - node :: Node.js (a JavaScript runtime that allows you to build scalable and efficient web applications)
 - npm ::  package manager (node package manager) for the JavaScript programming language (provids access to a vast ecosystem of libraries and tools)
   + online registry/repository of open source libraries and packages
