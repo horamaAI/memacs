@@ -96,7 +96,7 @@
     import { Component } from '@angular/core'; // imports
 
     @Component({ // metadata & template components
-      selector: 'pm-root', // root directive of the component, prefixed to reference it as a part of the application (convention)
+      selector: 'pm-root', // root directive when the component used as a directive, prefixed to reference it as a part of the application (convention)
       templateUrl: './app.component.html', /* specific to view */
       styleUrls: ['./app.component.css']
     })
@@ -173,9 +173,9 @@
   + decorator functions format :: ~@Adecorator({...})~
     - decorators are functions with argument objects (as seen passed as curly braces)
     - decorator object have properties too: eg:
-      + 'selector:' :: to find (select) the html elements needed to style; in angular, represents the "root" directive for the component
+      + 'selector:' :: to find (select) the html elements needed to style; in angular, represents the root directive for the component
         - convention :: use prefixed value for the selector to reference it as part of the application being implemented (eg: 'pm-root' is the root of the element to be styled, and defined in application for project management ('pm'))
-        - can cross reference directives from different components :: can insert templates from some components into others:
+        - can cross reference directives from different components :: and insert templates from some components into others:
           + don't forget to declare the source component in the AppModule declarations :: so that the component can be found in the app globally
           #+begin_src javascript
           // component1.ts
@@ -266,7 +266,7 @@
 [2023-12-20 Wed 17:15]
 - modules ::
   + handy for organization and boundaries from context (provided by the components) :: angular modules help organize applications into cohesive blocks of functionality and provide boundaries within the application
-    - for example, when a component contains a directive, angular looks to the component's module to determine which directives are visible to that component, 
+    - for example, when a component contains a directive, angular need to look into the component's module to determine which directives are visible to that component, 
   + template resolution environment :: when angular compiler sees a directive and a template, it looks to the angular module for the definition => a component is declared in an angular module so that compiler can find it
   + root application module 'AppModule' :: mandatory module for all angular application (as other modules, declares application's root components)
   + a module is also used to bootstrap the startup component (AppComponent) ::
@@ -308,7 +308,12 @@
 **** Nested components
 [2023-12-22 Fri 15:54]
 - Notes ::
-  + handy for implementing complex components, or re-use components
+  + handy for implementing complex components, or re-using components
+  + benefit of making a component nested :: when its templates manages a fragment of a larger view
+  + nested component have selectors :: => it can be used as a directive
+  + nested component can even communicate with its container
+- communication of nested components :: 
+- use 'shared' folder if nested components is to be re-used by other components :: 
 
 *** Component life cycle hooks
 [2023-12-22 Fri 09:35]
@@ -545,10 +550,10 @@
 *** Directives (custom and angular's)
 [2023-12-21 Thu 14:17]
 - Notes ::
-  + angular directives :: adds logic to html, with loops and if statements for example
+  + directives :: classes that can add new behavior to the elements in the template or modify existing behavior
+  + custom directives :: when using a component as a directive, one uses the component selector as a custom html tag (eg: ~selector: 'pm-products'~)
+  + angular directives :: adds logic to html (with loops and if statements for example)
   + angular components :: allow nested user interface fragments  
-- custom directives ::
-  + eg: using ~selector: 'pm-products'~
 - angular built-in directives :: eg: ~*ngIf~ for if logics (if assigned expression value is true, then the element is added to the DOM, removed from the DOM otherwise), ~*ngFor~ for for-loops
   + structural directives :: that modify the structure or layout of a view by adding, removing, or manipulating elements and their children
     - prefixed with ~*~
@@ -690,7 +695,6 @@
 * Definitions
 [2023-12-19 Tue 12:15]
 - bootstrapping :: in tech, means self-starting process that loads and then run
-- directive :: custom html syntax for elements or attributes used to power up the html
 - DOM :: document object model representing an html as a node tree where each node is a part of the html
 - node :: Node.js (a JavaScript runtime that allows you to build scalable and efficient web applications)
 - npm ::  package manager (node package manager) for the JavaScript programming language (provids access to a vast ecosystem of libraries and tools)
