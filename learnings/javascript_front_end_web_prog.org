@@ -11,7 +11,6 @@
     - => newer JS features have to be transpiled to older JS
   + TS :: open source, superset to JS (every JS code supported by TS), transpiles to plain JS (TS code must be compiled and converted to comparable JS syntax before the browser executes it)
     - dig further :: https://www.typescriptlang.org/
-- ::
   + 'let' :: to define local variable
   + 'for...of' vs 'for...in' ::
     - for...of :: loops on iterable objects
@@ -22,6 +21,18 @@
           console.log(obj); // 0, 1, 2. The array indexes are enumerable properties with integer names
           }
       #+end_src
+  + private variables prefixed with underscore :: ~private _something: sometype;~
+  + arrow function :: compact syntax to define a function, no 'return' keyword ~(param: paramType) => {param.doSomething(); param.doAnotherThing(); }~
+  + JS arrays ::
+    - filter method :: ~products.filter()~
+      + creates new array by filtering content from previous array :: => use two arrays: one for the base array property, and one for its filtered version. Otherwise you might loose the base array when filtering
+      + 'filter' method needs true/false logic to compare objects (arrow function)
+      #+begin_src javascript
+      performFilter(): IProduct {
+          return products.filter( ( product: IProduct ) => product.productName.includes( filteringParameter ) );
+          }
+      #+end_src
+    
 * Angular
 ** Notes
 - angular :: JS framework for building client-side applications
@@ -286,11 +297,32 @@
           export class AppModule { }
           #+end_src
   + angular components must be declared in a module :: modules are like project's files that reference the components parts of the application
-*** Interfaces components
+*** Interfaces components, methods, and Nested components
 [2023-12-22 Fri 00:59]
-*** Nested components
-- 
+**** Notes
+- methods :: parameters also have strong typing :: ~func(aVariable: aVariableType): aFuncReturnType {}~
+- interfaces :: ~export interface IAnInterface{}~ specifications identifying a related set of properties (data properties associated with a class) and methods (perform the logic required for the class)
+  + two primary ways to use interfaces ::
+    - to identify the properties for a specific type :: interface declares the properties' types, and then instead of using 'any', we use the interface, eg: ~products: IProduct[] = []~)
+    - as a feature set :: declare properties and methods required to implement a specific feature (declarations only, no implementation, and then a class can implement the interface: ~export class MyComponent implements IDeclaresSomeThings~)
+**** Nested components
+[2023-12-22 Fri 15:54]
+- Notes ::
+  + handy for implementing complex components, or re-use components
 
+*** Component life cycle hooks
+[2023-12-22 Fri 09:35]
+**** Notes
+[2023-12-22 Fri 09:43]
+- component life cycle :: created -> rendered -> create and render children -> process changes (continuous operations) -> destroy before removing its template from the DOM
+
+**** Life cycle hooks (OnInit, OnChanges, OnDestroy, etc.)
+- life cycle hooks :: interfaces (so need to implement the interfaces first: ~export class AComponent implements OnInit {}~) provided for implementation when a component life cycle occurs
+- some life cycle hooks :: (the signatures of methods needed to implement, not the interfaces)
+  + ngOnInit :: perform on component initialization
+  + ngOnChanges :: perform after change to ==input properties==
+  + ngOnDestroy :: perform cleanup
+  
 *** convention for components
 [2023-12-20 Wed 21:52]
 - class ::
@@ -303,6 +335,22 @@
   + camelCase :: 
 - methods ::
   + camelCase ::
+*** Getters and setters
+[2023-12-22 Fri 11:25]
+- use of private properties :: and access to members through getters and setters
+- eg ::
+  #+begin_src javascript
+  export class AClass {
+      private _amount: number = 0;
+      get amount(): number {
+          return this._amount;
+          }
+      set amount(value: number): void {
+          this._amount = value;
+          }
+      }
+  #+end_src
+
 *** Debugging
 [2023-12-20 Wed 10:48]
 
@@ -405,8 +453,7 @@
           errorMessage = '';
           sub!: Subscription;
 
-          // Use the new Angular signals feature to perform the filter
-          listFilter = signal('');
+          listFilter = signal(''); // Angular signals feature to perform the filter
           filteredProducts = computed(() => this.performFilter(this.listFilter()));
           products: IProduct[] = [];
 
@@ -415,6 +462,10 @@
               this.showImage = !this.showImage;
           }
 
+          performFilter(filterBy: string): IProduct[] {
+              filterBy = filterBy.toLocaleLowerCase();                    
+              return this.products.filter((product: IProduct) => product.productName.toLocaleLowerCase().includes(filterBy));
+          }
       }
       #+end_src
 - two-way bindings :: (==[()]==, eg: ~[(ngModel)]~): parentheses inside square brackets
@@ -451,8 +502,11 @@
 
 *** Pipes (to transform data before displaying for better rendering)
 [2023-12-21 Thu 16:46]
+**** Notes
 - specified with pipe symbol :: ==|==
 - pipe can have parameters :: separated by colons ==:==
+  
+**** Angular built-in pipes
 - built-in pipes :: for dates, number, decimal, percent, currency, json, lowercase, etc.
   + eg :: display product code in lowercase: ~{{product.productCode | lowercase}}~, or using property binding: ~<img [src]='product.imageUrl' [title]='product.productCode | uppercase'>~
   + or using pipe chaining :: ~{{ product.price | currency | lowercase }}~
@@ -463,7 +517,30 @@
     <td>{{ product.releaseDate }}</td>
     <td>{{ product.price | currency:'USD':'symbol':'1.2-2' }}</td> <!-- formatting for currency and add USD symbol with piping -->
     #+end_src
-- custom pipes also possible ::
+    
+**** Custom pipes
+- need @Pipe decorator (import 'Pipe') :: to the class
+- has to implement PipeTransform :: => need to implement method 'transform'
+- need to catch the property to apply the pipe to :: as first parameter to method transform
+- need to give name of custom pipe as argument to decorator :: @Pipe
+- if multiple modules are being used, need to declare the pipe in the module that needs the pipe :: (as for all components and pipes anyway)
+- location :: pipe are generally shared with multiple components and templates, so better to put them in the ==src/shared== folder
+- use :: ~{{ aStringWithDashSeparators | lowercase | convertToSpaces:'-' }}~
+- eg :: here generalized to replace any character (given as parameter to the pipe) to a space character (the property to apply the pipe to is caught as first parameter for function 'transform' 'value: string')
+  #+begin_src javascript
+  import { Pipe, PipeTransform } from "@angular/core";
+
+  @Pipe({
+      name: 'convertToSpaces',
+      standalone: true
+  })
+  export class ConvertToSpacesPipe implements PipeTransform {
+
+    transform(pi: string, character: string): string {
+      return value.replace(character, ' ');
+    }
+  }
+  #+end_src
 
 *** Directives (custom and angular's)
 [2023-12-21 Thu 14:17]
@@ -534,7 +611,9 @@
 * Styling with angular
 [2023-12-21 Thu 10:32]
 ** Notes
-- div class='card'
+- encapsulating styles with component decorator :: ~@Component({styleUrls: ['./product-detail.component.css']})~, or ~@Component({styles: ['thead {color: #337AB7}']})~ (array, so can add multiple styles separated with commas)
+  + when encapsulated in component's template, styles won't leak out to other parts of the application
+- div class='card' :: to use styles from bootstrap
 
 ** Bootstrap
 [2023-12-21 Thu 10:41]
