@@ -286,8 +286,11 @@
           export class AppModule { }
           #+end_src
   + angular components must be declared in a module :: modules are like project's files that reference the components parts of the application
-
+*** Interfaces components
+[2023-12-22 Fri 00:59]
 *** Nested components
+- 
+
 *** convention for components
 [2023-12-20 Wed 21:52]
 - class ::
@@ -359,12 +362,109 @@
       }
       #+end_src
   + property bindings preferred over interpolation :: , but sometimes interpolation more appropriate, eg: ~<img src='https://myimages.org/{{product.imageUrl}}'>~
-- event bindings :: 
+- event bindings :: (~(click)~, where click is an event)
+  + component listens for user's actions and executes component method when event occurs
+  + event bindings links an event to a method in a component :: ~<button (click)='toggleImage()'>~: binded method in parentheses and in single quotes, event in parentheses (~(click)~)
+    - available events :: https://developer.mozilla.org/en-US/docs/Web/Events
+  + by conventions methods are defined after properties definitions (at the bottom of properties)
+  + eg ::
+    - template ::
+      + also made use of conditional if to change button text to change as interpolation value is toggled :: ~{{showImage ? 'Hide' : 'Show'}}~
+      + ngIf in this example is bound to value of showImage, and thus to the event handler 'toggleImage' :: 
+      #+begin_src xml
+      <th>
+        <button class='btn btn-primary'
+                (click)='toggleImage()'>
+          {{showImage ? 'Hide' : 'Show'}} Image <!-- change text as 'showImage' value changes -->
+        </button>
+      </th>
+      <!-- ... -->
+      <td>
+        <img *ngIf='showImage'
+             [src]='product.imageUrl'
+             [title]='product.productName'
+             [style.width.px]='imageWidth'
+             [style.margin.px]='imageMargin'>
+      </td>
+      #+end_src
+    - component ::
+      #+begin_src javascript
+       @ Component({
+          templateUrl: './product-list.component.html',
+          styleUrls: ['./product-list.component.css'],
+          standalone: true,
+          imports: [FormsModule, NgIf, NgFor,
+              RouterLink, StarComponent, LowerCasePipe,
+              CurrencyPipe, ConvertToSpacesPipe]
+      })
+      export class ProductListComponent implements OnInit, OnDestroy {
+          pageTitle = 'Product List';
+          imageWidth = 50;
+          imageMargin = 2;
+          showImage = false;
+          errorMessage = '';
+          sub!: Subscription;
 
-**** Handling events with event binding
-[2023-12-21 Thu 17:13]
-**** Handling inputs with two-way binding
-[2023-12-21 Thu 17:13]
+          // Use the new Angular signals feature to perform the filter
+          listFilter = signal('');
+          filteredProducts = computed(() => this.performFilter(this.listFilter()));
+          products: IProduct[] = [];
+
+
+          toggleImage(): void {
+              this.showImage = !this.showImage;
+          }
+
+      }
+      #+end_src
+- two-way bindings :: (==[()]==, eg: ~[(ngModel)]~): parentheses inside square brackets
+  + interactive: listens to changes from the user, and reacts accordingly
+  + [()] :: square brackets ==[]== to indicate property binding (component to input element), and parentheses ==()== to indicate event binding (send notification of user input to component property)
+    - event handler has to be enclosed in single quotes
+  + always remember to make an angular directive visible by the component :: so, ngModel which is a directive from ==FormsModule==, has to be imported in the application module
+    - eg ::
+      + template ::
+        - set a default value for filter field
+        #+begin_src xml
+        <div class='col-md-4'>
+          <input type='text'
+                 [(ngModel)] = 'listFilter()' />
+        </div>
+        <!-- ... -->
+        <div class='row' *ngIf='listFilter'>
+          <div class='col-md-6'>
+            <h4>Filtered by: {{listFilter()}}</h4>
+          </div>
+        </div>
+        #+end_src
+      + component ::
+        - FormsModule imported
+        #+begin_src javascript
+        // AppModule
+        @NgModule({
+            declarations: [AppComponent, ProductListComponent],
+            imports: [BrowserModule, FormsModule, NgIf, NgFor /* FormsModule in 'import' and not in 'dec' since external package */]
+            bootstrap: [AppComponent]
+        })
+        export class AppModule {}
+        #+end_src
+
+*** Pipes (to transform data before displaying for better rendering)
+[2023-12-21 Thu 16:46]
+- specified with pipe symbol :: ==|==
+- pipe can have parameters :: separated by colons ==:==
+- built-in pipes :: for dates, number, decimal, percent, currency, json, lowercase, etc.
+  + eg :: display product code in lowercase: ~{{product.productCode | lowercase}}~, or using property binding: ~<img [src]='product.imageUrl' [title]='product.productCode | uppercase'>~
+  + or using pipe chaining :: ~{{ product.price | currency | lowercase }}~
+  + using piping with parameters :: (by defining parameters with a colon and the parameter value) ~{{ product.price | currency:'USD':'symbol':'1.2-2' }~ here the currency pipe has 3 parameters: 1. the desired currency code, 2. string defining how to show the currency symbol (dollar sign instead of currency abbreviation), 3. digits info: minimum number of integer digits (1), minimum number of fractional digits (2), and the maximum number of fractional digits (2) => (at least format X.XX)
+  + eg ::
+    #+begin_src xml
+    <td>{{ product.productCode | lowercase }}</td>
+    <td>{{ product.releaseDate }}</td>
+    <td>{{ product.price | currency:'USD':'symbol':'1.2-2' }}</td> <!-- formatting for currency and add USD symbol with piping -->
+    #+end_src
+- custom pipes also possible ::
+
 *** Directives (custom and angular's)
 [2023-12-21 Thu 14:17]
 - Notes ::
@@ -381,7 +481,7 @@
       <!-- ... -->
       </div>
       #+end_src
-  + need to expose the angular directives (*ngIf, *ngFor, etc.) :: by importing BrowserModule, which is why it needs to be imported in the application module
+  + need to expose the angular directives (*ngIf, *ngFor, *ngModel, etc.) :: by importing BrowserModule, which is why it needs to be imported in the application module
   + some angular directives ::
     - *ngFor ::
       #+begin_src xml
@@ -408,7 +508,7 @@
               </td>
               <td>{{ product.productCode | lowercase | convertToSpaces:'-' }}</td>
               <td>{{ product.releaseDate }}</td>
-              <td>{{ product.price | currency:'USD':'symbol':'1.2-2' }}</td> <!-- formatting for currency and add USD symbol -->
+              <td>{{ product.price | currency:'USD':'symbol':'1.2-2' }}</td> <!-- formatting for currency and add USD symbol with piping -->
               <td>
                 <pm-star [rating]='product.starRating' (ratingClicked)='onRatingClicked($event)'/>
               </td>
@@ -417,8 +517,6 @@
       </table>
       #+end_src
       
-*** Pipes
-[2023-12-21 Thu 16:46]
 ** Services and dependency injection
 [2023-12-19 Tue 14:34]
 
