@@ -23,6 +23,7 @@
       #+end_src
   + private variables prefixed with underscore :: ~private _something: sometype;~
   + arrow function :: compact syntax to define a function, no 'return' keyword ~(param: paramType) => {param.doSomething(); param.doAnotherThing(); }~
+  + javascript 'template litterals' :: allow use of a placeholder to insert an expression within a string (using backticks ==``==), eg: ~`The rating ${this.rating} was clicked!`~
   + JS arrays ::
     - filter method :: ~products.filter()~
       + creates new array by filtering content from previous array :: => use two arrays: one for the base array property, and one for its filtered version. Otherwise you might loose the base array when filtering
@@ -312,8 +313,141 @@
   + benefit of making a component nested :: when its templates manages a fragment of a larger view
   + nested component have selectors :: => it can be used as a directive
   + nested component can even communicate with its container
-- communication of nested components :: 
-- use 'shared' folder if nested components is to be re-used by other components :: 
+- use 'shared' folder if nested components is to be re-used by other components ::
+- communication between nested components and containers :: 
+  + from a container to its nested component :: with ==input properties==
+    - requires the property in the nested component that receives the data, to be decorate with :: ==@Input()== (function)
+    - the container then passes the data using property binding :: eg: in template (html): ~[rating]='product.starRating'~
+  + from a nested component to the container :: by emitting ==events binding==
+    - if nested wants to send an event to its container :: it must decorate a property using ==@Output()==
+    - outputted must be an event :: angular events are defined with an event emitter (~EventEmitter<T>~, package EventEmitter, where T is the type of data that is passed with the event)
+    - nested components usually need to communicate with its container, for example to get events or data sent from the container template
+- eg of propagating event to container :: nested component event for displaying 5 stars rating in the page title header
+  + process ::
+    - when user clicks on a star (StarComponent), only the starcomponent templates receives the event
+    - with EventEmitter in StarComponent, on click (on a star), the event 'ratingClicked' is emitted (sends a string in this example) to the container's template
+    - thanks to event binding (~(ratingClicked)~ in container's template), the method 'onRatingClicked($event)' (of container component, and event accessed via ==$event==) is called, and pageTitle is modified, due to interpolation, to display the rating in the page title header ("Product List: The rating XXX was clicked!")
+  + style sheet nested component ::
+    #+begin_src css
+    .crop {
+      overflow: hidden;
+    }
+    div {
+      cursor: pointer;
+    }    
+    #+end_src
+  + template of nested component ::
+    #+begin_src html
+    <!--  -->
+    <div class="crop"
+      [style.width.px]="cropWidth" <!-- set to 75 (pixels) to fit the 5 stars, but cropping also allows fractional values: 1.5, 2.5, 4.5, etc. -->
+      [title]="rating" <!-- gotten from container component -->
+      (click)='onClick()'> <!-- event bindings: on click, emits `The rating ${this.rating} was clicked!` -->
+      <div style="width: 75px">
+        <span class="fa fa-star"></span>
+        <span class="fa fa-star"></span>
+        <span class="fa fa-star"></span>
+        <span class="fa fa-star"></span>
+        <span class="fa fa-star"></span>
+      </div>
+    </div>  
+    #+end_src
+  + nested component ::
+    #+begin_src javascript
+    import { Component, EventEmitter, Input, OnChanges, Output } from "@angular/core";
+
+    @Component({
+        selector: 'pm-star',
+        templateUrl: './star.component.html',
+        styleUrls: ['./star.component.css'],
+        standalone: true
+    })
+    export class StarComponent implements OnChanges {
+      @Input() rating = 0; // input properties => expect data coming from container
+      cropWidth = 75;
+      @Output() ratingClicked: EventEmitter<string> = new EventEmitter<string>(); // output event
+
+      ngOnChanges(): void {
+        this.cropWidth = this.rating * 75 / 5; // to fit the 5 stars
+      }
+
+      onClick(): void {
+        this.ratingClicked.emit(`The rating ${this.rating} was clicked!`);
+      }
+    }
+    #+end_src
+  + nesting component (container) ::
+    #+begin_src javascript
+    import { StarComponent } from "../shared/star.component";
+
+    // ...
+    @Component({
+        templateUrl: './product-list.component.html',
+        styleUrls: ['./product-list.component.css'],
+        standalone: true,
+        imports: [FormsModule, NgIf, NgFor, 
+          RouterLink, StarComponent, LowerCasePipe, // <- starcomponent
+          CurrencyPipe, ConvertToSpacesPipe]
+    })
+    export class ProductListComponent implements OnInit, OnDestroy {
+        
+        pageTitle = 'Product List';
+        imageWidth = 50;
+        imageMargin = 2;
+        showImage = false;
+        errorMessage = '';
+        sub!: Subscription;
+        
+        // Use the new Angular signals feature to perform the filter
+        listFilter = signal('');
+        filteredProducts = computed(() => this.performFilter(this.listFilter()));
+        products: IProduct[] = [];
+        
+        constructor(private productService: ProductService) {}
+        
+        performFilter(filterBy: string): IProduct[] {
+          filterBy = filterBy.toLocaleLowerCase();
+          return this.products.filter((product: IProduct) =>
+            product.productName.toLocaleLowerCase().includes(filterBy));
+        }
+        
+        toggleImage(): void {
+          this.showImage = !this.showImage;
+        }
+        
+        ngOnInit(): void {
+          this.sub = this.productService.getProducts().subscribe({
+            next: products => {
+              this.products = products;
+            },
+            error: err => this.errorMessage = err
+          });
+        }
+        
+        ngOnDestroy(): void {
+          this.sub.unsubscribe();
+        }
+        
+        onFilterChange(value: string) {
+          this.listFilter.set(value);
+        }
+        
+        onRatingClicked(message: string): void {
+          this.pageTitle = 'Product List: ' + message;
+        }
+    }
+    #+end_src
+  + nesting template ::
+    #+begin_src html
+    <!-- ... -->
+    <td>
+      <!-- pm-star is the selector for directive component starcomponent -->
+      <pm-star [rating]='product.starRating' <!-- starRating is part of the IProduct definition, one of a product field -->
+               (ratingClicked)='onRatingClicked($event)'>
+      </pm-star>
+    </td>
+    <!-- ... -->
+    #+end_src
 
 *** Component life cycle hooks
 [2023-12-22 Fri 09:35]
@@ -477,7 +611,7 @@
   + interactive: listens to changes from the user, and reacts accordingly
   + [()] :: square brackets ==[]== to indicate property binding (component to input element), and parentheses ==()== to indicate event binding (send notification of user input to component property)
     - event handler has to be enclosed in single quotes
-  + always remember to make an angular directive visible by the component :: so, ngModel which is a directive from ==FormsModule==, has to be imported in the application module
+  + always remember to make an angular directive visible by the component :: so, ngModel which is a directive from ==FormsModule==, has to be imported in the application module. Same for components in your app so that they can be reached from the other components (in the example below the component ProductListComponent will be available from the other components since was declared within the 'declarations' section of the module)
     - eg ::
       + template ::
         - set a default value for filter field
@@ -599,9 +733,25 @@
       </table>
       #+end_src
       
-** Services and dependency injection
+** Services and dependency injection (sharing data across components)
 [2023-12-19 Tue 14:34]
+*** Services
+**** Notes
+[2023-12-23 Sat 00:05]
+- service :: class with a focused purpose. Services usually used for features that:
+  + are independent from any particular component
+  + provide shared data or logic across components
+  + encapsulate external interactions (eg: data access)
+- by shifting those responsabilities from components to services :: code is easier to use, debug, and reuse
+- process :: build service -> register service -> inject service
+  
+**** Build service
 
+**** Register service
+[2023-12-23 Sat 00:07]
+
+**** Inject service
+[2023-12-23 Sat 00:07]
 
 ** Navigation and routing
 [2023-12-19 Tue 14:36]
