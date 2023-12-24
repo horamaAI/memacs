@@ -15,5 +15,25 @@
 #+TODO: TODO(t) WAIT(w@/!) | DONE(d!) CANCELED(c@)
 
 * Warhammer 40k
+** primarchs by preferences (might change over time)
+1. ==Perturabo (T)==
+2. ==konrad (T)== 
+3. ==alpharius (T)==
+4. ~jaghatai (L)~
+5. ~vulkan (L)~
+6. ==angron (T)==
+7. ~roboute (L)~
+8. ==horus (T)==
+9. ==magnus (T)==
+10. ~corax (L)~
+11. ~sanguinius (L)~
+12. ~lion (L)~
+13. ~russ (L)~
+14. ~ferrus (L)~
+15. ==lorgar (T)==
+16. ~dorn (L)~
+17. ==mortarion (T)==
+18. ==fulgrim (T)==
+
 * SC2
 * Cooking
