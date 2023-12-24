@@ -743,7 +743,10 @@
   + provide shared data or logic across components
   + encapsulate external interactions (eg: data access)
 - by shifting those responsabilities from components to services :: code is easier to use, debug, and reuse
+- things to be careful about ::
+  + share the service to all the components that might need it
 - process :: build service -> register service -> inject service
+  + 
   
 **** Build service
 
