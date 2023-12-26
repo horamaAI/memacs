@@ -417,9 +417,7 @@
         
         ngOnInit(): void {
           this.sub = this.productService.getProducts().subscribe({
-            next: products => {
-              this.products = products;
-            },
+            next: products => this.products = products,
             error: err => this.errorMessage = err
           });
         }
@@ -744,14 +742,98 @@
   + encapsulate external interactions (eg: data access)
 - by shifting those responsabilities from components to services :: code is easier to use, debug, and reuse
 - things to be careful about ::
-  + share the service to all the components that might need it
+  + share the service to all the components that might need it, otherwise might be difficult to reuse, test with mocking, etc.
+    - => register the service with angular, angular then creates a single instance of the service class (singleton)
+      + recommended way -> angular injectors :: angular provides built-in injector, and the services are registered with the angular injector, which maintain a container of created service instances. The injector then manages the singleton of each registered service
+      + the injector is already managing instances of different services, eg: log, math, etc.
 - process :: build service -> register service -> inject service
-  + 
   
 **** Build service
+- if component needs a service, the component class defines the service as a dependency
+- process :: (same steps as building component, modules, and pipes)
+  + create service class
+  + define the metadata with a decorator (~@Injectable()~)
+  + import where needed, and what's needed
+- eg ::
+  + service component ::
+    #+begin_src javascript
+    import { Injectable } from "@angular/core"; // using angular core injectors
+
+    @Injectable() // needs to be imported
+    export clas ProductService {
+        // no properties here, service just used to encapsulate product data access
+        // single responsability => providing products list
+        getProducts(): IProduct[] {
+            // return products list
+            }
+        }
+    #+end_src
 
 **** Register service
 [2023-12-23 Sat 00:07]
+- angular has root injector, but also injectors for each component mirroring the component tree ::
+  + service registered with a root application injector :: is available to all the components (or other service) of the application (registering with root: use @Injectable() metadata ~providedIn~
+  + service registered with a specific application injector :: is only available to that component and its child or nested components
+- service do not need to be defined in the angular module. Use @Component() metadata ~providers: [NameOfSourceService]~ in the target component decorator @Component
+- old way of registering a service :: through the target module usually, use ~providers: [NameOfSourceService]~ in the component decorator
+  + recommended :: register in the component (local or global (appcomponent))
+- since when service is registered with the root injector this makes it available to the whole application, this is the recommended registration for most scenarios
+  + when a service registered in component injector, it provides multiple instances of the service for each instances of the component, eg (from base example with star nested component): when have multiple instances of object star (one for each product), exists a service that tracks each of the product rating (not a common scenario)
+- to specify a service as a dependency :: use a constructor and inject the service as an argument to the constructor
+- dependency injection in TS :: through the constructor:
+  + constructor functions defined with ~constructor(/* ... */)~ method (otherwise default used)
+  + for dependency injection an explicit constructor is required (note: heavy constructor can have an impact when several objects need to be initialized, so, use it with moderation)
+  + eg ::
+    #+begin_src javascript
+    @Component({/* ... */})
+    export clas ProductListComponent {
+        constructor(private productService: ProductService /* service is injected */) {
+            // specific feature of TS: can define and assign local member in one go with keyword 'private': ~private productService~ will be a *private* member of the component and will take the value of the argument passed to the constructor
+            // feature works with public or protected as well
+            }
+        }
+    #+end_src
+- registering a service depends on which injector is used ::
+  + registering a service with the root injector :: in the service
+    #+begin_src javascript
+    @Injectable(
+        providedIn: 'root' // root injector service => can then access service from any component or other service in the application
+        )
+    export clas ProductService {
+        getProducts(): IProduct[] {
+            return [                
+            {
+              "productId": 1,
+              "productName": "Leaf Rake",
+              "productCode": "GDN-0011",
+              "releaseDate": "March 19, 2021",
+              "description": "Leaf rake with 48-inch wooden handle.",
+              "price": 19.95,
+              "starRating": 3.2,
+              "imageUrl": "assets/images/leaf_rake.png"
+            },
+            {
+              "productId": 2,
+              "productName": "Garden Cart",
+              "productCode": "GDN-0023",
+              "releaseDate": "March 18, 2021",
+              "description": "15 gallon capacity rolling garden cart",
+              "price": 32.99,
+              "starRating": 4.2,
+              "imageUrl": "assets/images/garden_cart.png"
+            }
+            ];
+            }
+        }
+    #+end_src
+  + consuming the service ::
+    #+begin_src javascript
+      // component product-list
+    ngOnInit(): void {
+      this.products = this.productService.getProducts();
+      this.filteredProducts = this.products;
+    }
+    #+end_src
 
 **** Inject service
 [2023-12-23 Sat 00:07]
@@ -759,8 +841,174 @@
 ** Navigation and routing
 [2023-12-19 Tue 14:36]
 
-** Retrieving data using http
+** Retrieving data using http (and observables)
 [2023-12-19 Tue 14:35]
+*** Notes
+- use of RxJS :: Reactive extensions for javascript, is a library for composing data using observable sequences () and transforming that data using a set of operators
+  + angular uses RxJS for working with data, especially asynchronous data (such as http requests)
+- http requests are asynchronous :: requests and responses
+  + set to be notified when got a response from the request
+- observable sequence (or observable stream, or just observable) :: a collection of items over time (arriving over time, regard;ess of )
+
+*** Observables and reactive extensions
+[2023-12-26 Tue 09:35]
+**** Notes
+[2023-12-26 Tue 12:16]
+- observables ::
+  + do nothing until subscribe
+  + when subscribed, sends notifications. 3 types of notifications ""
+    1. ~next~ notification :: occurs when the next item is emitted and provides it. eg: each time a key is pressed, an observable can emit a next notification and provides the pressed character
+    2. ~error~ notification :: if error occurs, an observable emits an error notification and provides the occurred error information. The observable then completes and no more item is emitted
+    3. ~complete~ notification :: when there are no more items to emit, the observable then emits a complete notification
+  + process ::
+    1. application sends an http method (get for example)
+    2. http returns an observable which will emit notifications, so one will know when response arrives
+    3. one has then to subscribe to start the observable
+    4. request is send, and application continues without waiting for the response
+    5. when response is finally received, the observable emits a ~next~ notification and the application processes the response
+  + process in an nutshell :: start observable (subscribe and define what to do with received data) -> pipe emitted data if required -> process notification -> stop observable (unsubscribe)
+- observables pipelines ::
+  + allow to use set of operators to transform each emitted item, eg: pipe through a lowercase operator data that are uppercase
+  + observables have over 100 built-in operators to map, combine, filter, etc.
+- by convention :: use ==$== at the end to reference an observable, eg: ~source$~
+- eg of a simple observable (without http) ::
+  #+begin_src javascript
+  import { Observable, range, map, filter } from 'rxjs';
+
+  const source$: Observable<number> = range(0, 10); // create an observable with 'range()' that emits numbers from 0 to 10
+
+  source$.pipe( // use pipes to transform the data, 
+      map.(x => x * 3),
+      filter(x => x % 2 === 0)
+      ).subscribe(x => console.log(x));
+
+  #+end_src
+
+**** Http Observables
+- Http client Service :: is provided by angular, and serves as a buffer between to send/receive http services that allow communication with a back end server
+  + Notes ::
+    - context process ::
+      1. application sends a get request to the http client service that returns an observable
+      2. when subscribed to the observable, the http client service then sends a get request to the web server
+      3. response is send from web server to the http client service
+      4. which then emits a next notification
+    - subscription ::
+      + syntax for subscribe :: key-value pair, where key is the function name, and the value is an arrow function, eg: ~....subscribe({nex: products => this.products = products})~: when receiving an observable next notification, will assign the local products list with the one received from the observable
+      + subscribe function returns a subscription :: ~const sub = x.subscribe({nextFn, erroFn, completeFn});~
+      + convention for notifications handler names :: nextFn (for each value the observable emits), errorFn, completeFn
+      + usually, subscription is performed on init of the component that waits to the observable :: insert subscription in the ~@NgOnInit~ part
+      + possible to use the getter method to directly subscribe instead of assignment :: ~x.getX().subscribe({...})~
+      + use the subscription returned to unsubscribe :: (when needed)
+      + use ~NgOnDestroy~ part to unsubscribe
+    - recommended way of using http :: encapsulate observables into a service (like ProductService), and expose the observable for use by any component that needs the data: in the following eg, the service is ProductService, and the consumer is ProductListComponent (need to subscribe)
+  + tip ::
+    - when building an observable, dont forget to inject the angular http client :: ~constructor(private http: HttpClient) {};~
+    - always be careful when dealing with asynchronous data
+    - bang char ==!== :: tells the compiler that the variable assignment will be handle later (in TS default value is required)
+    - if you don't want http client service to use http requests, but instead use local data (json files for examples), one needs to define where to locate the files for angular cli to find them when serving up the application: in the application's root ==angular.json==, node ~projects/apm/architect/build/options/assets~. Can also define those for tests, eg: in node ~projects/apm/architect/test/options/assets~:
+      #+begin_src js
+      "test": {
+          "builder": "@angular-devkit/build-angular:karma",
+          "options": {
+            "polyfills": [
+              "zone.js",
+              "zone.js/testing"
+            ],
+            "tsConfig": "tsconfig.spec.json",
+            "assets": [
+              "src/favicon.ico",
+              "src/assets",
+              "src/api" // <--- HERE, folder containing the local data source files
+            ],
+            "styles": [
+              "src/styles.css"
+            ],
+            "scripts": []
+          }
+      }
+      #+end_src      
+  + eg:
+    - the subscribed to part ::
+      #+begin_src javascript
+      import { HttpClient } from '@angular/common/http';
+      import { Injectable } from '@angular/core';
+      import { Observable, catchError, tap } from 'rxjs'; // to use 'tap' and 'catchError' (see further details in the example)
+      import { IProduct } from './product';
+
+      @Injectable(
+          providedIn: 'root'
+          )
+      export clas ProductService {
+          private productUrl = 'www.mywebservice.com/api/v1/products'; // <--- HERE, make it point to appropriate web server
+
+          // don't forget to register Httpclient service provider through external module 'HttClientModule' import in the application module (~@NgModule({ imports: [...,HttClientModule,...] ...})~)
+          constructor(private http: HttpClient) {};
+
+          getProducts(): Observable<IProduct[]> { // returns an observable that will emit notifications when data received
+              return this.http.get<IProduct[]>(this.productUrl).pipe( // piped since retrieved data need to be used:
+                  tap(data => console.log('All: ', JSON.stringify(data))), // 'tap': taps into the observable stream and allows looking at the emitted values in the stream without transforming the data -> handy when debugging or logging
+                  catchError(this.handleError) // exceptions and error handling
+                  );
+              }
+
+          private handleError(err: HttpErrorResponse): Observable<never> {
+              // in a real world app, we may send the server to some remote logging infrastructure
+              // instead of just logging it to the console
+              let errorMessage = '';
+              if (err.error instanceof ErrorEvent) {
+                // A client-side or network error occurred. Handle it accordingly.
+                errorMessage = `An error occurred: ${err.error.message}`;
+              } else {
+                // The backend returned an unsuccessful response code.
+                // The response body may contain clues as to what went wrong,
+                errorMessage = `Server returned code: ${err.status}, error message is: ${err.message}`;
+              }
+              console.error(errorMessage);
+              return throwError(() => errorMessage);
+              }
+          }
+      #+end_src
+    - the app module ::
+      #+begin_src javascript
+      import { HttpClientModule } from '@angular/common/http';
+      // AppModule.ts
+      @NgModule({
+        declarations: [ /* ...: application internal components */
+        ],
+        imports: [
+          HttpClientModule /* and others needed external modules */
+        ],
+        bootstrap: [AppComponent]
+      })
+      export class AppModule { }
+      #+end_src
+    - the component subscribing to the observable ::
+      #+begin_src javascript
+      // ProductListComponent
+      // ...
+      sub!: Subscription; // bang char ==!==, tells the compiler that the variable assignment will be handle later (in TS default value is required)
+
+      ngOnInit(): void {
+        // 'subscribe' function returns the subscription
+        this.sub = this.productService.getProducts().subscribe({
+          next: products => {
+              this.products = products;
+              this.filteredProducts = this.products;
+              },
+          error: err => this.errorMessage = err
+        });
+        // careful!!!: with subscribed to data, they are asynchronous!!!
+        // if do the following in that line, this.products might be not set yet after subscription (not available yet)
+        // and if binding to other data that are not notified that the observable data are available, here 'this.filteredProducts' will not be set:
+        // this.filteredProducts = this.products;
+        // possible solution: move ~this.filteredProducts = this.products~ to 'next' part of the subscription: will not set filteredProducts until observable are emited
+      }
+
+      ngOnDestroy(): void {
+        this.sub.unsubscribe();
+      }
+
+      #+end_src
 
 ** Angular cli
 [2023-12-19 Tue 14:40]
