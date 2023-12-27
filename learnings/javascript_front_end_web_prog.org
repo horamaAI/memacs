@@ -74,11 +74,24 @@
     - methods :: that perform actions for the view, eg: handle click on button
   + metadata :: provides further infos about the component to angular
 *** angular project's folder structure
-- uppermost files (at root of project, also called 'boilerplate files') :: configuration and setup files 
-- ==src== :: by convention, all source code in 'src'
+- uppermost files and folders (at root of project, also called 'boilerplate files') :: configuration and setup files
+  + .browserslistrc :: list of browsers and their versions that the application will support, file used by the build system to build bundles for the supported browsers
+  + .editorconfig :: provides standards settings for the editor
+  + angular.json :: cli configuration file for local install
+  + karma.config.js :: sets up karma, a javascript test runner
+  + .angular :: used by the compiler for caching to improve compiler performance
+- 'src' :: by convention, all source code in 'src'
   + src subfolders ::
-    - app :: contains source file specific to the application per se
+    - 'app' :: contains source file specific to the application per se
       + app folder contains subfolders specific to each major feature of the application
+      + app subfolders ::
+    - 'assets' :: for any images or other assets that need to be included in the application
+    - 'environments' :: sets up the build environment: one for dev, one for prod
+      + cli picks the appropriate environment based on used flags
+    - :: 
+  + files ::
+    - main.ts :: file that bootstraps the application
+    - test.ts :: sets up for testing
 - ==node_modules== :: contains the libraries and dependencies of installed packages
   + don't forget to escape it in the version controller, it is too heavy, and anyway we have the package.json to fetch all the required dependencies
     
@@ -270,7 +283,7 @@
   + angular components must be declared in a module :: modules are like project's files that reference the components parts of the application
 - angular modules capabilities :: (within @NgModule decorator)
   + declares :: component, pipe, and directives that it manages
-    - every created component, pipe, and directive must belong to one and only one angular module
+    - every created component, pipe, and directive must belong to one and only one angular module (components 'owned' by the component, directives and pipes 'used' by the declared components)
     - all declared component, pipe, and directives are private by default, they are only accessible to other components, directives and pipes declared in the same module
     - ng modules provide the template resolution environment for its component templates (component, pipe, and directives templates are resolved within that template)
   + exports :: angular modules, third party modules, component, directive, pipes, to make them available to use
@@ -291,15 +304,102 @@
     - however, using provider arrays for the root application injector, is no longer recommended; use decorator @Injectable of the service itself instead of providers arrays, eg: ~@Injectable({providedIn: 'root'}) export class ProductService {}~
 
 **** Creating feature modules (splitting AppModule into separate but interdependent modules)
+- Notes ::
+  + eg: with SRP principle, split the modules into feature modules, eg: basic feature module such as welcome page, feature specific module such as ProductModule/CustomerManagementModule/InvoicingModule/etc., shared module for shared services or components, etc.)
+- example ::
+  #+begin_src javascript
+  import { NgModule } from '@angular/core';
+  import { ProductListComponent } from './product-list.component';
+  import { ProductDetailComponent } from './product-detail.component';
+  import { ConvertToSpacesPipe } from '../shared/convert-to-spaces.pipe';
+  import { RouterModule } from '@angular/router';
+  import { ProductDetailGuard } from './product-detail.guard';
+  import { SharedModule } from '../shared/shared.module';
 
-
+  @NgModule({
+    declarations: [
+      ProductListComponent, // <-- HERE, feature specific components, directives and pipes grouped in the module
+      ProductDetailComponent,
+      ConvertToSpacesPipe
+    ],
+    imports: [
+      RouterModule.forChild([ // <-- HERE, not 'forRoot' of RouterModule anymore, but instead 'forChild' to establishe the routes, since ProductModule is importing array of a feature module
+        { path: 'products', component: ProductListComponent },
+        {
+          path: 'products/:id',
+          canActivate: [ProductDetailGuard],
+          component: ProductDetailComponent
+        }
+      ]),
+      SharedModule // <-- HERE, use of shared module, defined in 'Defining shared modules' section
+    ]
+  })
+  export class ProductModule { }
+  #+end_src
+  
 **** Defining shared modules
 [2023-12-27 Wed 01:30]
-    
+- needed to organize commonly used pieces of the application and export them to be available for import
+- example ::
+  #+begin_src javascript
+  import { NgModule } from '@angular/core';
+  import { CommonModule } from '@angular/common';
+  import { StarComponent } from './star.component';
+  import { FormsModule } from '@angular/forms';
+
+  @NgModule({
+    declarations: [
+      StarComponent // <-- HERE, shared components, directives and pipes of the shared module
+    ],
+    imports: [
+      CommonModule
+    ],
+    exports: [
+      CommonModule,// <-- HERE, CommonModule and FormsModule are needed in different parts of the application, thus its inclusion into shared module
+      FormsModule,
+      StarComponent // <-- HERE, forwarind use of local component to be used
+    ]
+  })
+  export class SharedModule { }
+  #+end_src
+
+**** AppModule (Application Module: arrange and gather application modules)
+[2023-12-27 Wed 17:13]
+- example ::
+  #+begin_src javascript
+  import { NgModule } from '@angular/core';
+  import { BrowserModule } from '@angular/platform-browser';
+  import { HttpClientModule } from '@angular/common/http';
+
+  import { AppComponent } from './app.component';
+  import { WelcomeComponent } from './home/welcome.component';
+  import { RouterModule } from '@angular/router';
+  import { ProductModule } from './products/product.module';
+
+  @NgModule({
+    declarations: [
+      AppComponent, // <-- HERE, basic components declared in AppModule group
+      WelcomeComponent
+    ],
+    imports: [
+      BrowserModule,
+      HttpClientModule,
+      RouterModule.forRoot([
+        { path: 'welcome', component: WelcomeComponent },
+        { path: '', redirectTo: 'welcome', pathMatch: 'full' },
+        { path: '**', redirectTo: 'welcome', pathMatch: 'full' }
+      ]),
+      ProductModule // <-- HERE, imported feature module is given as example in previous section 'Creating feature modules'
+    ],
+    bootstrap: [AppComponent]
+  })
+  export class AppModule { }
+  #+end_src
+
 *** Bootstrapping app component
 [2023-12-20 Wed 10:47]
 - notes ::
-  + the root angular module bootstraps AppComponent to provide the directive used in the index.html (insert AppComponent selector/directive in the starting point of the application
+  + the root angular module bootstraps AppComponent to provide the directive used in the index.html (what index.html needs, by inserting AppComponent selector/directive in the starting point of the application for example)
   + the root application module bootstraps AppComponent, thus making AppComponent the component loaded when the application starts
   + in angular, the transpiled (to javascript) default page 'index.html' contains script tags referencing the javascript version of the angular application files
     - these transpiled javascript files are then downloaded and processed by the browser (client side) ::
@@ -1061,11 +1161,19 @@
 *** Configuring routes
 - routing is component based :: so need to identify the set of needed components as routing targets, and define a route for each one
 - angular provides 'RouterModule' ::
-  + that registers the router service provider,
-  + declares the router directives (eg: RouterLink, RouterOutlet),
   + by importing RouterModule, a component template can use router directives
-  + exposes configured routes
-    - before one can navigate to a route, one needs to know that route is available to the application :: to do that => pass route to the RouterModule: ~RouterModule.forRoot([])~, and pass the array of routes to the method forRoot. This establishes the routes for the root of the application
+  + to know how routes are available to the application, pass route to ~RouterModule.forRoot([])~ or ~RouterModule.forChild([])~, and pass the array of routes as arguments
+  + 'RouterModule.forRoot([])' :: establishes routes for the root of the application
+    - what it does ::
+      + registers the router service provider,
+      + declares the router directives (eg: RouterLink, RouterOutlet),
+      + exposes configured routes
+    - usually a service needs *not* to be registered more than once, but with forRoot the route service is. So, when needed, better using forChild instead
+  + ~RouterModule.forChild([])~ :: establishes routes for a feature module
+    - what it does ::
+      + declares the router directives (eg: RouterLink, RouterOutlet),
+      + exposes configured routes
+    - with forChild([]), service is not re-registered, just once
 - need a start base element tag (in template) :: set to ==/==
 - router configured with list of route definitions (each definition specifies a route object, which is a tuple with 'path' property that is mandatory). Some properties ::
   + 'path' :: defines url path segment for the route, can have parameters (separated with /), eg: ~{path: 'products/:id', component: ProductDetailComponent}~, to show the details of product of id 'id'
@@ -1221,10 +1329,51 @@
 
     #+end_src
 
-** Angular cli
+** Build, test, and deploy with Angular cli
 [2023-12-19 Tue 14:40]
-- used to generate code, execute the application, deploy to production, etc., etc.
+- Notes :: 
+  + Angular cli :: used to generate code, execute the application, deploy to production, etc.
+  + module overview ::
+    - generating new angular apps (ng new) ::
+      + when creating an angular project, angular cli installs a local angular cli with the created version of angular, in order to avoid future conflicts between the global and the local versions of the cli
+    - serving apps (ng serve) ::
+      + compiles app :: turn .ts and templates into javascript
+      + generates application bundles from the javascript files :: eg: vendor.js that contains imported angular third parties libraries, runtime.js which is the webpack loader (webpack: tool behind the compilation and bundling process), etc.
+        - at serving step, bundles files only available in memory, not yet in storage (they are after building)
+      + starts local web server :: (listen on port 4200 by default)
+      + serves the application from memory ::
+      + rebuilds when changes performed :: (stays in watch mode, looking for any changes)
+    - generating code (ng generate) ::
+      + automatically generates needed files using 'schematic'
+      + schematic :: template based code generator that supports complex logic (generating from a kind of blueprint based on the needed component)
+      + based on required type of files needed, can generate :: component, template, style sheet, and test files
+        - eg: for 'component' generates all 4, for 'service' generates only the component and test files
+    - testing apps (ng test) ::
+      + ~ng test~ builds the app, launches the browser, and execute the karma test runner
+    - building apps (ng build) :: to prepare for deployment
+      + bundles should be as small as possible :: => minify or 'uglify' the code by 'tree shaking' (remove any unused pieces)
+      + bundles after build have a hash as part of the final name :: eg: 'main.dcad2122...js'
+        - done for cache busting :: every code update needs to be redeployed to the server, but with web browser caching, file names need to be different to redownload the latest version (file names won't match ones in the browser's cache)
+        - bundles after build to be found in folder :: 'dist'
 
+*** some angular cli cmds (~ng <command> <args> --<options>~)
+[2023-12-20 Wed 10:29]
+- create new angular app :: ~ng new [anapp] --prefix [anapp_prefix]~ // eg: 'anapp' 'product manager' with prefix 'pm' (for 'product manager')
+- serve the application :: ~ng serve [options]~ // eg: ~ng serve -o~, with -o to open link directly after 
+- generate :: ~ng g [type_of_file_needed] [component_name] [options]~
+  + notes ::
+    - angular also automatically generates test files: [component-name].specs.ts
+  + new component :: ~ng generate component a-new-component-name~ (no need to suffix with 'Component')
+    - to not create new folder in the process (options: --flat) :: ~ng g c pathtoneededfolder/a-new-component-name --flat~, will add component without creating a new folder (angular's default)
+  + module :: ~ng g m [module_name] -m [target]~ // -m: to add to imports array, basically add new import module in the [target] module
+    - eg: ~ng g m shared/shared -m products/product.module~ // create in folder 'shared' new module SharedModule, and import it into ProductModule in folder products
+  + interface :: ~ng generate interface an-interface~
+  + route guards :: ~ng g g a-guard~
+  + directive :: ~ng g d~
+  + class :: ~ng g c~
+  + enum :: ~ng g c~
+- print help :: ~ng help~ to show all available ng commands, or ~ng <command> --help~ to have more details of a command
+    
 * Styling with angular
 [2023-12-21 Thu 10:32]
 ** Notes
@@ -1268,18 +1417,6 @@
         #+end_src
 
 ** Some commands
-*** angular cli (~ng~)
-[2023-12-20 Wed 10:29]
-- ng new anapp --prefix pm :: create new angular app 'anapp' with prefix 'pm' (for 'product manager' in case it's a product management app)
-- generate :: ~ng g [type_of_file_needed] [component_name] [options]~
-  + angular also automatically generates test files :: [component-name].specs.ts
-  + generate new component :: ~ng generate component a-new-component-name~ (no need to suffix with 'Component')
-    - to not create new folder in the process (options: --flat) :: ~ng g c pathtoneededfolder/a-new-component-name --flat~, will add component without creating a new folder (angular's default)
-  + generate module :: 
-  + generate router :: 
-  + generate interface :: ~ng generate interface an-interface~
-  + generate guard :: ~ng g g a-guard~
-
 *** npm
 [2023-12-19 Tue 15:43]
 - install dependencies ::
@@ -1299,13 +1436,16 @@
   + nvm use node :: switch to the latest installed version
   + nvm use --lts :: use the latest LTS version
 - nvm alias default 10.0.0 :: change lts alias version to 10.0.0
-* Developer tools
+* Developer tools and tips
 [2023-12-20 Wed 21:37]
 - f12 is your friend when debugging
 - element tab :: to view html
 - source tab :: helpful for debugging
   + angular cli uses 'webpack', so the TS files will be listed under the webpack node, and it's possible to debug directly from there and see the result live, but also set breakpoints
 - styling tools :: bootstrap, font-awesome
+- webpack :: use dev console of the web browser to display webpack contents (tab 'sources')
+  + webpack contains the associated typescript files, and helps for debugging by directly modifying its content
+- prefer implementing lazy loading for improved page load performance
   
 * Definitions
 [2023-12-19 Tue 12:15]
