@@ -225,9 +225,82 @@
         styleUrls: ['./app.component.css']
       }
       #+end_src
+*** Angular Modules
+[2023-12-20 Wed 17:15]
+- angular modules ::
+  + handy for organization and boundaries from context (provided by the components) :: angular modules help organize applications into cohesive blocks of functionality and provide boundaries within the application
+    - for example, when a component contains a directive, angular need to look into the component's module to determine which directives are visible to that component, 
+    - create uncluttered application: instead of one big module, use several with respect to Single Responsibility Principle
+    - easy to aggregate and export, and share module
+    - provide a template resolution environment
+    - allow to selectively aggregate classes from other modules and re-export them in a consolidated convenient module. An angular module can be seen as a hub orchestrating the components and features needed for the components they coordinate. It provides a template resolution environment for each component that belong to the module
+    - can be eager loaded when application starts, or lazy loaded asynchronously by the router
+  + template resolution environment :: when angular compiler sees a directive and a template, it looks to the angular module for the definition - => a component is declared in an angular module so that compiler can find it
+  + root application module 'AppModule' :: mandatory module for all angular application
+    - each angular application has at least one module, the root module
+    - root application module bootstraps AppComponent, which is the component loaded when the application starts
+    - as other modules, declares application's root components
+  + a module is also used to bootstrap the startup component (AppComponent) :: insert AppComponent selector in the starting point of the application
+  + a component must belong to one and only one module :: 
+  + module 'BrowserModule' :: is also added to the module imports so that the application works properly in a browser
+  + eg :: the root angular module of the application
+    - Angular is defined using a class :: ~export class AppModule { }~
+    - decorate the class as an angular module (@NgModule), and pass in the metadatas to define the details of the module :: ~@NgModule({/* metadatas ...*/})~
+      + metadata array 'declarations' :: defines which components belong to the module ~declarations: [AppComponent]~
+        - convention :: root component 'AppComponent' belongs to root module 'AppModule'
+      + metadata array 'imports' :: defines external modules needed to be available to all the components that belong to the module ~imports: [BrowserModule]~
+      + metadata array 'bootstrap' :: defines the startup component of the application ~bootstrap: [AppComponent]~
+        - startup component should contain the selector used in index.html
+          #+begin_src javascript
+          import { NgModule } from '@angular/core';
+          import { BrowserModule } from '@angular/platform-browser';
+          import { AppComponent } from './app.component';
+
+          @NgModule({
+            declarations: [
+              AppComponent
+            ],
+            imports: [
+              BrowserModule
+            ],
+            bootstrap: [AppComponent]
+          })
+          export class AppModule { }
+          #+end_src
+  + angular components must be declared in a module :: modules are like project's files that reference the components parts of the application
+- angular modules capabilities :: (within @NgModule decorator)
+  + declares :: component, pipe, and directives that it manages
+    - every created component, pipe, and directive must belong to one and only one angular module
+    - all declared component, pipe, and directives are private by default, they are only accessible to other components, directives and pipes declared in the same module
+    - ng modules provide the template resolution environment for its component templates (component, pipe, and directives templates are resolved within that template)
+  + exports :: angular modules, third party modules, component, directive, pipes, to make them available to use
+    - exports array of ng module allows to share an ng module's component, pipe, and directives, with other modules (but also export third party modules, and ng modules)
+    - export any other component, directive, and pipe if other components need it
+    - re-export modules to re-export their components, directives, and pipes (useful when consolidating features for multiple modules to build a convenience or shared module)
+    - can export something not in the imports array. The imports array only needs to import the modules required by the components declared in the module, eg: a SharedModule can export ng FormsModule, even though it doesn't need it per se
+  + imports (within @NgModule({}) decorator part) :: done to import functionalities from other angular modules, third party modules, and ng modules
+    - adding a module to the imports array makes available any component, directive, and pipes defined in that module's exports array
+    - imported functionalities can then be used by the components *declared* in the module
+    - only import what the components declared in the module need for their templates
+    - importing a module doesn't give access to its imported modules, imports are not inherited, eg: if a imports b, and b imports c, for a to use features of c, b needs to export c, otherwise a cannot
+    - use imports array to register services provided by angular or third party modules
+      + import modules (such as third party modules) into AppModule to ensure their services are registered one time (when application is initialized)
+  + bootstraps the root application component :: defining the component needed to display the first template, eg: ~@NgModule({bootstrap: [AppComponent]});~
+    - every application must bootstrap at least one component, the root application component, added to the bootstrap array of the root application module
+  + provides :: with provider arrays, angular modules can register services for the whole application with the root application injector
+    - however, using provider arrays for the root application injector, is no longer recommended; use decorator @Injectable of the service itself instead of providers arrays, eg: ~@Injectable({providedIn: 'root'}) export class ProductService {}~
+
+**** Creating feature modules (splitting AppModule into separate but interdependent modules)
+
+
+**** Defining shared modules
+[2023-12-27 Wed 01:30]
+    
 *** Bootstrapping app component
 [2023-12-20 Wed 10:47]
 - notes ::
+  + the root angular module bootstraps AppComponent to provide the directive used in the index.html (insert AppComponent selector/directive in the starting point of the application
+  + the root application module bootstraps AppComponent, thus making AppComponent the component loaded when the application starts
   + in angular, the transpiled (to javascript) default page 'index.html' contains script tags referencing the javascript version of the angular application files
     - these transpiled javascript files are then downloaded and processed by the browser (client side) ::
       + angular *modules* help building/transpiling those javascript files ::
@@ -260,44 +333,11 @@
             </pm-root>
           </body>
           #+end_src
+- bootstrap array (in angular module) ::
+  + every application must bootstrap at least one component, the root application component :: add it to the bootstrap array of the root application module
+  + bootstrap array should only be used in the root application module :: AppModule
 - hosting the application ::
-- defining the angular module
 
-*** Angular Modules
-[2023-12-20 Wed 17:15]
-- modules ::
-  + handy for organization and boundaries from context (provided by the components) :: angular modules help organize applications into cohesive blocks of functionality and provide boundaries within the application
-    - for example, when a component contains a directive, angular need to look into the component's module to determine which directives are visible to that component, 
-  + template resolution environment :: when angular compiler sees a directive and a template, it looks to the angular module for the definition => a component is declared in an angular module so that compiler can find it
-  + root application module 'AppModule' :: mandatory module for all angular application (as other modules, declares application's root components)
-  + a module is also used to bootstrap the startup component (AppComponent) ::
-  + a component must belong to one and only one module :: 
-  + module 'BrowserModule' :: is also added to the module imports so that the application works properly in a browser
-  + eg :: the root angular module of the application
-    - Angular is defined using a class :: ~export class AppModule { }~
-    - decorate the class as an angular module (@NgModule), and pass in the metadatas to define the details of the module :: ~@NgModule({/* metadatas ...*/})~
-      + metadata array 'declarations' :: defines which components belong to the module ~declarations: [AppComponent]~
-        - convention :: root component 'AppComponent' belongs to root module 'AppModule'
-      + metadata array 'imports' :: defines external modules needed to be available to all the components that belong to the module ~imports: [BrowserModule]~
-      + metadata array 'bootstrap' :: defines the startup component of the application ~bootstrap: [AppComponent]~
-        - startup component should contain the selector used in index.html
-          #+begin_src javascript
-          import { NgModule } from '@angular/core';
-          import { BrowserModule } from '@angular/platform-browser';
-          import { AppComponent } from './app.component';
-
-          @NgModule({
-            declarations: [
-              AppComponent
-            ],
-            imports: [
-              BrowserModule
-            ],
-            bootstrap: [AppComponent]
-          })
-          export class AppModule { }
-          #+end_src
-  + angular components must be declared in a module :: modules are like project's files that reference the components parts of the application
 *** Interfaces components, methods, and Nested components
 [2023-12-22 Fri 00:59]
 **** Notes
