@@ -838,9 +838,6 @@
 **** Inject service
 [2023-12-23 Sat 00:07]
 
-** Navigation and routing
-[2023-12-19 Tue 14:36]
-
 ** Retrieving data using http (and observables)
 [2023-12-19 Tue 14:35]
 *** Notes
@@ -1010,6 +1007,180 @@
 
       #+end_src
 
+** Navigation and routing
+[2023-12-19 Tue 14:36]
+*** Notes
+[2023-12-26 Tue 17:37]
+- routing :: one can define the paths in the application and the user actions required to access each path
+- building routing steps ::
+  1. configure route for each component
+  2. define options/actions
+  3. tie a route to each option/action
+  4. activate the route base on user action (the activation then displays the component's view)
+
+*** Configuring routes
+- routing is component based :: so need to identify the set of needed components as routing targets, and define a route for each one
+- angular provides 'RouterModule' ::
+  + that registers the router service provider,
+  + declares the router directives (eg: RouterLink, RouterOutlet),
+  + by importing RouterModule, a component template can use router directives
+  + exposes configured routes
+    - before one can navigate to a route, one needs to know that route is available to the application :: to do that => pass route to the RouterModule: ~RouterModule.forRoot([])~, and pass the array of routes to the method forRoot. This establishes the routes for the root of the application
+- need a start base element tag (in template) :: set to ==/==
+- router configured with list of route definitions (each definition specifies a route object, which is a tuple with 'path' property that is mandatory). Some properties ::
+  + 'path' :: defines url path segment for the route, can have parameters (separated with /), eg: ~{path: 'products/:id', component: ProductDetailComponent}~, to show the details of product of id 'id'
+  + 'component' :: defines component associated to the route (component's template displayed when route is activated)
+  + 'redirectTo' :: to redirect to when the path matches, requires pathMatch property to the tell the router how to match the url path segment to the path of a route, eg: ~{path: '', redirectTo: 'welcome', pathMatch: 'full'}~, redirect to routing 'welcome', when default page called (==''==, no routing path and matches empty path)
+  + wildcard ::  eg: ~{path: '**', component: PageNotFoundComponent}~: when requested url doesn't match any prior path defined in the configuration
+  + order matters in the routing arry :: first-match-wins strategy (use: specific to less specific)
+
+*** Tie routes to actions
+[2023-12-26 Tue 17:38]
+- in template :: use attribute directive ~[routerLink]~, eg: ~<a [routerLink]="['/welcome']">Home</a>~ for route path ~'welcome'~
+  
+*** Place the views
+[2023-12-26 Tue 17:38]
+- use ~<router-outlet></router-outlet>~ to place the views in the host component template
+- when a route is activated, its associated component template is displayed in the router-outlet placeholder
+  
+*** Passing parameters to a route
+[2023-12-27 Wed 00:00]
+- first element of routerLink is the path route :: and the remaining are the parameters, eg :: ~<a [routerLink]="['/products', product.productId]">{{product.productName}}</a>~
+- specified url with parameters must match route configuration path
+- to read parameter from the url :: need an ActivatedRoute service provided by the router, and defined as a dependency  eg: ~constructor(private route: ActivatedRoute){}~
+- reading parameters from a route ::
+  + snapshot :: read parameter one time only ~this.route.snapshot.paramMap.get('id');~
+    #+begin_src javascript
+    constructor(private route: ActivatedRoute) {
+    }
+
+    ngOnInit(): void {
+      const id = Number(this.route.snapshot.paramMap.get('id'));
+      if (id) {
+        this.getProduct(id);
+      }
+    }
+    #+end_src
+  + observable :: read parameter as they change (without snapshot method) eg:
+    #+begin_src javascript
+    this.route.paramMap.subscribe({
+              params => console.log(params.get('id'))
+            });
+    #+end_src
+- handling null and undefined ::
+  + handling bang assignments (==!==), or undefined values (~product: IProduct | undefined;~) might cause issues, especially with data that can be fetched with a delay such as http response
+  + two ways to prevent undefined property issues ::
+    1. safe navigation error :: (with ==?==, eg: ~product?.productName~, ~product?.supplier?.companyName~), returns null and doesn't attempt to access the property
+       + doesn't work with 2 way bindings
+    2. use *ngIf to enclose properties, and the properties won't appear in the DOM
+    3. can still use a combination of the two in the same template (some with safe navigation, others with ngIf)
+       
+*** Activating a route with code (in place of routerlink in the templates)
+[2023-12-27 Wed 00:40]
+- to route with code :: use router service, eg: ~this.router.navigate(['/products'])~
+- need to ::
+  + import 'Router' (not router module)
+  + inject it
+  + eg
+    - routing ::
+      #+begin_src javascript
+      constructor(private route: ActivatedRoute, private router: Router) {
+      }
+
+      ngOnInit(): void {
+        const id = Number(this.route.snapshot.paramMap.get('id'));
+        if (id) {
+          this.getProduct(id);
+        }
+      }
+
+      onBack(): void {
+          this.router.navigate(['/products']);
+          }
+      #+end_src
+    - template ::
+      #+begin_src html
+      <button class='btn btn-outline-secondary'
+              style='width:80px'
+              (click)='onBack()'>
+        <i class='fa fa-chevron-left'></i> Back
+      </button>
+      #+end_src
+      
+*** Protecting routes with guards (limiting access to routes)
+[2023-12-27 Wed 00:59]
+- use to :: limit access to a route, but also require confirmation before navigating away for example (save before leaving)
+- guards types ::
+  + CanActivate :: guard navigation to a route
+  + CanDeactivate :: guard navigation from a route
+  + Resolve :: pre-fetch data before activating a route
+  + CanLoad :: prevent asynchronous routing
+- eg :: prevent product navigation if url provided is not valid
+  + guarding component ::
+    #+begin_src javascript
+    import { Injectable } from '@angular/core';
+    import { ActivatedRouteSnapshot, Router, RouterStateSnapshot, UrlTree } from '@angular/router';
+    import { Observable } from 'rxjs';
+
+    @Injectable({
+      providedIn: 'root'
+    })
+    export class ProductDetailGuard  implements CanActivate {
+
+      constructor(private router: Router) {}
+
+      canActivate(
+        route: ActivatedRouteSnapshot, // ActivatedRouteSnapshot contains the infos about a route at any moment in time
+        state: RouterStateSnapshot) 
+        : Observable<boolean | UrlTree> | Promise<boolean | UrlTree> | boolean | UrlTree { // can return an observable, a promise, or a boolean
+        const id = Number(route.paramMap.get('id'));
+        if (isNaN(id) || id < 1) {
+          alert('Invalid product id');
+          this.router.navigate(['/products']);
+          return false; // to cancel activating product details route
+        }
+        return true;
+      }
+    }
+    #+end_src
+  + guarded component ::
+    #+begin_src javascript
+    import { Routes } from "@angular/router";
+    import { ProductListComponent } from "./product-list.component";
+    import { ProductDetailComponent } from "./product-detail.component";
+    import { ProductDetailGuard } from "./product-detail.guard";
+
+    export const PRODUCT_ROUTES: Routes = [
+      { path: '', component: ProductListComponent },
+      {
+          path: ':id',
+          canActivate: [ProductDetailGuard], // array for guards to be checked before path is activated
+          component: ProductDetailComponent
+      }
+    ];
+    #+end_src
+  + definitions ::
+    #+begin_src javascript
+    // app.routes.ts
+    import { Routes } from '@angular/router';
+    import { WelcomeComponent } from './home/welcome.component';
+
+    export const routes: Routes = [
+      { path: 'welcome', component: WelcomeComponent },
+      { path: '', redirectTo: 'welcome', pathMatch: 'full' },
+      {
+        path: 'products',
+        loadChildren: () => import('./products/product.routes').then(r => r.PRODUCT_ROUTES)
+      },
+      { 
+        path: 'about', 
+        loadComponent: () => import('./about/about.component').then(c => c.AboutComponent)
+      },
+      { path: '**', redirectTo: 'welcome', pathMatch: 'full' },
+    ];
+
+    #+end_src
+
 ** Angular cli
 [2023-12-19 Tue 14:40]
 - used to generate code, execute the application, deploy to production, etc., etc.
@@ -1060,6 +1231,14 @@
 *** angular cli (~ng~)
 [2023-12-20 Wed 10:29]
 - ng new anapp --prefix pm :: create new angular app 'anapp' with prefix 'pm' (for 'product manager' in case it's a product management app)
+- generate :: ~ng g [type_of_file_needed] [component_name] [options]~
+  + angular also automatically generates test files :: [component-name].specs.ts
+  + generate new component :: ~ng generate component a-new-component-name~ (no need to suffix with 'Component')
+    - to not create new folder in the process (options: --flat) :: ~ng g c pathtoneededfolder/a-new-component-name --flat~, will add component without creating a new folder (angular's default)
+  + generate module :: 
+  + generate router :: 
+  + generate interface :: ~ng generate interface an-interface~
+  + generate guard :: ~ng g g a-guard~
 
 *** npm
 [2023-12-19 Tue 15:43]
@@ -1068,11 +1247,6 @@
   + npm install abc :: request package abc from npm repository, install it in current folder, subfolder ==node_modules==. ==node_modules== contains the libraries and dependencies of installed packages
   + be aware :: installation warning logs are not all pertinent, if suggests you for example to ~npm audit fix --force~, DON'T!!, the new updated versions might mess up your application
 - start angular application :: ~npm start~
-- generate ::
-  + generate new component :: ~ng generate component a-new-component-name~ (no need to suffix with 'Component')
-    - do not create new folder in the process (options: --flat) :: ~ng g component afolder/a-new-component-name --flat~, will add component 
-  + generate module :: 
-  + generate interface :: ~ng generate interface an-interface~
 
 *** nvm
 - nvm ls :: list installed versions
