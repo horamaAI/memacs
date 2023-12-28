@@ -1446,6 +1446,8 @@
 - webpack :: use dev console of the web browser to display webpack contents (tab 'sources')
   + webpack contains the associated typescript files, and helps for debugging by directly modifying its content
 - prefer implementing lazy loading for improved page load performance
+- check out angular forms for building and validating user-entry forms
+- use angular schematic to modify or create schematics for generating code as needed
   
 * Definitions
 [2023-12-19 Tue 12:15]
