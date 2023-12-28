@@ -1988,7 +1988,9 @@ Dependencies :
   + Solution :: in postman, set 'Headers' of http request to : key: 'Content-type', value: 'application/json'
 - error status ::
   + "Internal Server Error" 500 ::
-    - "Type definition error: [simple type, class org.hibernate.proxy.pojo.bytebuddy.ByteBuddyInterceptor]" :: when using 'getOne' method, which is a lazy load operation, thus one gets only a reference (a proxy) to the entity, that means no DB access is actually made => 
+    - "Type definition error: [simple type, class org.hibernate.proxy.pojo.bytebuddy.ByteBuddyInterceptor]" ::
+      + when using 'getOne' method, which is a lazy load operation, thus one gets only a reference (a proxy) to the entity, that means no DB access is actually made
+      + if you have to serialize an entity with the @Entity annotation in JSON String format using Jackson library (directly or indirectly), the JPA entity will be serialized with all the fields => with ~hibernateLazyInitializer~ and ~handler~ as extra fields. So, if not ignored, these fields will be serialized in JSON format. To avoid this unnecessary serialization, you have to annotate with ~@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})~ on JPA/Hibernate entity, which will tell Jackson library that "Serialized JSON should not have these fields:
   + "Bad Request" 400 :: check if method exists, format is ok, there is no typo, etc.
   + "Not Found" 404 :: try to check if url path is correct
 - conversion of Localdate to json :: add json serialize/deserialize to output dto
