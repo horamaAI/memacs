@@ -466,6 +466,7 @@
 - Controllers :: files that expose the REST endpoints for registering and retrieving models details
 - Encapsulation :: hiding the implementation of the details about methods, members variables, etc. inside a class
 - Fields :: same as saying class members
+- Hibernate :: Java framework that facilitates the growth of Java applications to interact with the database, automatizes db interactions
 - JPA :: Java Persistence API, application programming interface specification that describes the management of relational data in enterprise Java applications
 - MVC :: Model View Controller, requests are routed to a Controller that is responsible for working with the Model to perform actions and/or retrieve data
   + user -(uses)-> *controllers*
@@ -475,6 +476,9 @@
 - overloading vs overriding :: former: changing the signature of a method with different types of arguments, the latter: use in inheritance context, sets which method will be called, the base or the derived
 - REST :: (Representational state transfer), software architectural style, defines a set of constraints for how the architecture of a distributed, Internet-scale hypermedia system, such as the Web, should behave
   + REST structures data in *XML, YAML, or any other format that is machine-readable, but usually JSON is most widely* used
+- Spring Data JPA :: component of the Spring Framework, to significantly lessen the amount of boilerplate code needed to execute data access layers for multiple persistence stores
+  + Hibernate is a JPA implementation, while Spring Data JPA is a JPA Data Access Abstraction
+  + with Spring Data, you probably utilize Hibernate, Eclipse Link, or any other JPA provider
 * Spring framework, and spring boot
 [2023-12-04 Mon 22:52]
 ** Fundamentals
