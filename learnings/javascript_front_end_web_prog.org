@@ -1372,6 +1372,7 @@
   + directive :: ~ng g d~
   + class :: ~ng g c~
   + enum :: ~ng g c~
+  + service :: ~ng g s~
 - print help :: ~ng help~ to show all available ng commands, or ~ng <command> --help~ to have more details of a command
     
 * Styling with angular
