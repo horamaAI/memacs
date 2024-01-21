@@ -5,7 +5,6 @@
 
 * Elisp
 [2023-12-06 Wed 10:57]
-
 * cron (crontab, cronjob, etc.)
 ** Notes
 + cron tool format explainer :: https://crontab.cronhub.io/
@@ -53,3 +52,47 @@ In addition to the fields specified in the cron expression, there’s also suppo
 + ==@daily== or ==@midnight== :: run once a day
 + ==@hourly== :: run hourly
 
+* Containerization, docker, and kubernetes
+[2024-01-21 Sun 20:06]
+** Introduction, glossary and notes
+- why use containers ::
+  + instead of one app per server -> many apps on one server
+  + VMWare and hypervisor models technology (that allows for many apps to run on one server) are not solving all the issues, and not cheap :
+    - hypervisor models :: several virtual machines (VMs) on same physical hardware (separate and completely independent from each other)
+      + slices of VMs are installed on a hypervisor
+      + need for own dedicated OS, need pre-configured use of physical hardware => can't be used by another app when not being used by the dedicated app
+  + containers ::
+    - slices of the OS on which the apps are run
+  + pros ::
+    - containers are more lightweight, thus more efficient space wise
+    - apps share dynamically the physical resources
+    - no dedicated OS required on the containers since they're using the physical OS
+    - can run on any machine, server, VM, etc.
+  + cons ::
+    - dependent on the host OS (docker on windows run windows apps, same for linux (still possible to run linux apps on docker windows))
+- docker images :: pre-packed application, has everything needed to run single application wrapped into a single bundle, eg: web server running static/dynamic content, database, etc.
+- workloads ::
+- orchestration ::
+- cloud-native microservices design :: instead of a monolith, split the application modules into several parts that can communicate
+  + monolith/legacy app ::  everything the app does (web, authentication, search, etc.) is provided within a single binary (computer program)
+    - cons :: an issue on a single feature requires taking down whole app, fix the module, recompile the whole app, deploy it, etc.
+  + pros of microservices :: redeploy just the required module (faster), adapted to cloud-native services
+  + cloud-native applications :: built as a set of microservices that run in /Open Container Initiative/ compliant containers
+- docker hub :: library of pre-existing docker images (need to download and run them in the docker host)
+** Docker
+[2024-01-21 Sun 20:51]
+*** Notes
+[2024-01-21 Sun 21:14]
+- main improvement of docker :: make running apps inside of containers easy
+- two docker version :: community edition and enterprise edition for more features and official support
+- process ::
+  1. transform code into docker image (build code into docker image)
+  2. push image into a registry (docker hub or any other private registry)
+  3. start image
+*** Some docker commands
+** Kubernetes
+[2024-01-21 Sun 20:52]
+*** Notes
+[2024-01-21 Sun 21:34]
+- more efficient than docker swarm
+*** Some kubernetes commands
