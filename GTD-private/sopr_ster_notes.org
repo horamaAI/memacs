@@ -1,0 +1,52 @@
+# -*- mode: org -*-
+#+title: sopr ster notes
+
+* Components
+** common
+- separate project, but defining common libs/modules to nfs other components
+** nfs-api
+[2024-01-15 Mon 20:49]
+- main entrypoint
+** ipcfm
+[2024-01-15 Mon 20:49]
+- repository, mainly used for storage
+** iptoolbox
+[2024-01-15 Mon 20:50]
+- mainly tools for administering nfs features
+** secured gateway
+[2024-01-15 Mon 20:51]
+** wand
+[2024-01-15 Mon 20:50]
+- workers' related
+- edge application that is installed on servers that has access to network equipment
+- developed in Java and supports SSH, PING and SNMP
+- if worker does not have a direct connection to a device, it can jump through a ssh bastion using SSH ProxyJump
+* Tools
+[2024-01-15 Mon 20:51]
+- debezium ::
+  + distributed platform for change data capture
+  + when pointed to databases, the apps can then start responding to all of the inserts, updates, and deletes that other apps commit to your databases
+- snac-api ::
+  + part of secured-gateway
+  + secured HTTP API that can run commands on network devices using SSH and retrieve the results
+  + separated in several microservices that handle different part of the service
+- openlens :: IDE for people to deal with Kubernetes clusters on a daily basis. It ensures the clusters are properly setup and configured. Enjoy increased visibility, real time statistics, log streams and hands-on troubleshooting capabilities
+* Glossary
+[2024-01-15 Mon 21:26]
+- CDC :: change data capture (check debezium)
+- checkYogi :: 
+- DAC :: Device Access Checker
+  + service checking that the given user is authorized to access a device
+  + uses exported data from TACACS servers. As it is a separate service, it will be simpler to change it when the TACACS and NUAR are gone, if we keep the same interface, this will be the only impacted service.
+- 'decouverte' :: determine the accurate source from which a device is accessible 
+- gini :: other orange project, 
+- niches (nests) ::
+  + services, backbone, ems, internet
+- OBS :: Orange Business Services
+- POC :: proof of concept
+- provisioning :: fetch data from GINI (daily)
+- snac API :: 
+- TACACS :: servers for user rights
+- V1, V2, V3 (v for vision) :: V1 (echange hebdomadaire d'infos about projects within team, agence, etc.), V2 (evaluation trimestrielle, sur tous les domaines du/des mois ecoule), V3 (for plan de croissance or strategy, budget, etc., within higher level of organisation)
+- WAND :: Worker for Accessing Network Devices
+  + service deployed at the edge of the architecture, receives http requests, and executes commands over ssh to requested devices

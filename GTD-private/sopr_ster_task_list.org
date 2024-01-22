@@ -1,0 +1,26 @@
+# -*- mode: org -*-
+#+title: sopr ster tasks list file
+
+
+* To learn
+- [ ] start learning docker and kubernetes, begin with ::
+  + [ ] check how to hide the database password from the application properties :: spring boot, application.properties, password hide
+  + [ ] awk (gawk ) ::
+  + [ ] yaml ::
+    - https://yaml.org/
+    - https://github.com/pantoniou/libfyaml
+  + [ ] Quarkus ::
+    - https://en.wikipedia.org/wiki/Quarkus
+  + [ ] apache Kafka ::
+    - 
+  + [ ] kubernetes ::
+    - https://www.youtube.com/watch?v=7bA0gTroJjw
+  + [ ] ansible ::
+    - https://www.youtube.com/watch?v=5hycyr-8EKs
+  + [ ] VMWare :: 
+  + [ ] docker ::
+    - 
+    - https://www.youtube.com/watch?v=eGz9DS-aIeY
+  + [ ] aws ::
+    - https://aws.amazon.com/fr/certification/certified-developer-associate/
+  + [ ] jenkins :: https://www.youtube.com/watch?v=LFDrDnKPOTg

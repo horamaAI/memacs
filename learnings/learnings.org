@@ -71,7 +71,7 @@ In addition to the fields specified in the cron expression, there’s also suppo
   + cons ::
     - dependent on the host OS (docker on windows run windows apps, same for linux (still possible to run linux apps on docker windows))
 - docker images :: pre-packed application, has everything needed to run single application wrapped into a single bundle, eg: web server running static/dynamic content, database, etc.
-- workloads ::
+- workloads :: application running on kubernetes for example
 - orchestration ::
 - cloud-native microservices design :: instead of a monolith, split the application modules into several parts that can communicate
   + monolith/legacy app ::  everything the app does (web, authentication, search, etc.) is provided within a single binary (computer program)
@@ -79,6 +79,12 @@ In addition to the fields specified in the cron expression, there’s also suppo
   + pros of microservices :: redeploy just the required module (faster), adapted to cloud-native services
   + cloud-native applications :: built as a set of microservices that run in /Open Container Initiative/ compliant containers
 - docker hub :: library of pre-existing docker images (need to download and run them in the docker host)
+- container runtime ::
+  + also called 'container engine': software component that can run containers on a host operating system
+  + sits at the heart of any container service such as Docker
+  + are daemon (background) processes responsible for managing container creation tasks such as pulling images from repositories, resource and storage allocation, network creation, etc.
+- containerd :: container runtime originally developed by Docker
+  + docker uses containerd as its runtime for creating containers from images. Essentially, it acts as an interface (API) that allows users to use containerd to perform low-level functionality. Simply put, when you run Docker commands in the terminal, Docker relays those commands to its low-level runtime (Containerd) that carries out all the necessary procedures.
 ** Docker
 [2024-01-21 Sun 20:51]
 *** Notes
@@ -94,5 +100,26 @@ In addition to the fields specified in the cron expression, there’s also suppo
 [2024-01-21 Sun 20:52]
 *** Notes
 [2024-01-21 Sun 21:34]
+- kubernetes can sometimes be shortened to 'k8s' (8 for 8 characters between the starting k and the ending s) 
 - more efficient than docker swarm
+- kubernetes is more higher level than docker
+  + whereas with docker things are more low level: build/download/start/stop/delete image, build
+  + with kubernetes things are more higher level: scheduling, scaling, healing, updating, etc. (eg: how many containers to run in, which nodes to run them on, know when to scale them up/down, how many instances required to meet demand, etc.)
+- takeaways ::
+  + kubernetes clusters host applications
+  + kubernetes runs workloads by placing containers into 'Pods' (groups of one or more containers) to run on nodes
+    - a 'node' may be a virtual or physical machine, depending on the cluster
+    - each node is managed by the control plane and contains the services necessary to run Pods
+    - a k8s 'Control Plane' is the container orchestration layer that exposes the API and interfaces to define, deploy, and manage the lifecycle of containers
+  + each node on a cluster is running some kubernetes softwares ('Agents') and a container runtime (docker, containerd, or others)
+    - there is a container runtime on every node so that every node can run containers
+  + thus, one of the things k8s does is decide which nodes to run stuff on
+    - one of the advantage of k8s is that it manage changes in loads, eg: it can override manual configs to balance loads on some other nodes when those set are overused ('increased load', can basically spin up more containers to balance workload even when the configurations are already set)
+    - same when a node fails ('failed load'), k8s can use another node to run the workload, which is called 'self-healing'
+  + k8s can run anywhere (On-premises or 'On-prem' (installed and runs on computers on the premises of the person/organization using the software, rather than at a remote facility), server farms, cloud, etc.) => easy to migrate 
 *** Some kubernetes commands
+** Tips and tricks
+[2024-01-22 Mon 20:45]
+*** Preparing containerization
+- tools ::
+  + docker desktop :: development docker and kubernetes environment (or their cloud counterparts: GKE (Google Kubernetes Engine) for google cloud, AKS (Elastic Kubernetes Service) for AWS, etc.)
