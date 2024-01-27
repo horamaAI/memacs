@@ -51,7 +51,6 @@ In addition to the fields specified in the cron expression, there’s also suppo
 + ==@weekly== :: run once a week
 + ==@daily== or ==@midnight== :: run once a day
 + ==@hourly== :: run hourly
-
 * Containerization, docker, and kubernetes
 [2024-01-21 Sun 20:06]
 ** Introduction, glossary and notes
@@ -123,3 +122,13 @@ In addition to the fields specified in the cron expression, there’s also suppo
 *** Preparing containerization
 - tools ::
   + docker desktop :: development docker and kubernetes environment (or their cloud counterparts: GKE (Google Kubernetes Engine) for google cloud, AKS (Elastic Kubernetes Service) for AWS, etc.)
+  + checkout for :: tools for monitoring, logging, etc.
+  + containers and cloud native :: can live alongside VMs within the same app, so don't hesitate to probe into the most appropriate direction for your business
+- suitable workloads ::
+- tips ::
+  + try to setup a 'research and development "SWAT" team' to try new technologies on the cloud, and let them be ambassadors on the whole company when technology has gain enough momentum; advice: get devs and ops talking, get management talking, and then get doing!!
+*** Entreprise oriented vs startup oriented (how appropriate is the design for the production readiness)
+[2024-01-27 Sat 23:45]
+* Computer engineering linguee
+[2024-01-27 Sat 23:08]
+- stateful vs stateless apps/service :: stateful: apps that persist data (has to remember stuff, eg: if a stateful app stops, then the data that was being persisted has to be stored so that when doing a retry on a different target, one case use the same input data (or keep states/logs before coming back up)); stateless: no storage needed, just retrieve as was when crushed for example
