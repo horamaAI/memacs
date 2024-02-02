@@ -3,8 +3,6 @@
 #+SETUPFILE: ~/set-up-files/basic-setups.org
 
 
-* Elisp
-[2023-12-06 Wed 10:57]
 * cron (crontab, cronjob, etc.)
 ** Notes
 + cron tool format explainer :: https://crontab.cronhub.io/
@@ -51,6 +49,8 @@ In addition to the fields specified in the cron expression, there’s also suppo
 + ==@weekly== :: run once a week
 + ==@daily== or ==@midnight== :: run once a day
 + ==@hourly== :: run hourly
+
+  
 * Containerization, docker, and kubernetes
 [2024-01-21 Sun 20:06]
 ** Introduction, glossary and notes
@@ -71,7 +71,6 @@ In addition to the fields specified in the cron expression, there’s also suppo
     - dependent on the host OS (docker on windows run windows apps, same for linux (still possible to run linux apps on docker windows))
 - docker images :: pre-packed application, has everything needed to run single application wrapped into a single bundle, eg: web server running static/dynamic content, database, etc.
 - workloads :: application running on kubernetes for example
-- orchestration ::
 - cloud-native microservices design :: instead of a monolith, split the application modules into several parts that can communicate
   + monolith/legacy app ::  everything the app does (web, authentication, search, etc.) is provided within a single binary (computer program)
     - cons :: an issue on a single feature requires taking down whole app, fix the module, recompile the whole app, deploy it, etc.
@@ -93,8 +92,59 @@ In addition to the fields specified in the cron expression, there’s also suppo
 - process ::
   1. transform code into docker image (build code into docker image)
   2. push image into a registry (docker hub or any other private registry)
-  3. start image
+  3. start image (run app as a container)
+- generated OCI image :: (Open Container Initiative), the generated docker image, which is just standard container content
+  + image spec
+  + runtime spec
+  + distribution spec (registries)
+- "images are build time constructs, and containers are runtime constructs" :: jargon to say that containers can be seen as extensions of an image, just as in running state (and the image is on stop state)
+- "containerization" :: buzzword to refer to an app running in a container
+*** Dockerfile
+[2024-02-01 Thu 17:15]
+- Dockerfile :: contains all the commands a user could call on the command line to assemble an image (set of build instructions for the app and its dependencies)
+- Docker swarm :: lightweight container orchestrator (compared to kubernetes which is more complete, but also more complex)
+- some instructions ::
+  + ~FROM~ :: initializes a new build stage, and sets the Base Image for subsequent instructions. eg: ~FROM node:current-alpine~: build ongoing image by first grabbing image 'node:current-alpine'
+  + ~LABEL~ :: for metadata
+  + ~RUN~ :: to execute a command, eg: ~RUN npm install~: will run npm to install the app dependencies
+  + ~ENTRYPOINT~ :: to specify default executable, eg: ~ENTRYPOINT ["node", "app.js"]~: will run the command 'node app.js' each time the container gets started
+  + ~COPY~ :: to copy :-), eg: ~COPY . /usr/src/app~: copy app code (.) to /usr/src/app *of the container image*
+  + ~WORKDIR~ :: to change working directory, eg: ~WORKDIR /usr/src/app~: set working directory context (when run together with ~COPY . /usr/src/app~ command, it just basically set the working directory to where the app was installed, on *the container image*)
 *** Some docker commands
+- general :: 
+  + get help with Docker (can also use –help on all subcommands) :: docker --help
+  + start the docker daemon :: docker -d (-d for detached from current terminal)
+  + display system-wide information :: docker info
+  + view resource usage stats :: docker container stats
+  + note :: by default without specifying the registry url in the complete registry, docker will default to docker hub. So, when using a different registry, use the complete url with the target registry, like: docker.io/<registry-username>/<name-of-repository>:<name-of-the-image>, here docker.io is still docker hub though, lol
+- listing ::
+  + list all docker containers (running and stopped) :: docker ps --all (or: docker ls -a)
+  + list currently running containers :: docker ps 
+  + list local images :: docker images
+- building image :: build an image (OCI file) from a Dockerfile and a context (the set of files and dependencies located in the specified PATH or URL)
+  + build :: docker build -t <image_name>
+  + build without the cache :: docker build -t <image_name> . –no-cache
+  + build from a docker registry :: ~docker image build -t <registry-username>/<name-of-repository>:<name-of-the-image> .~ // the dot at the end is to specify the files path from which to build the docker image, '-t' is for tag, same as '--tag'
+  + build with a different OS architecture (to be able to run it on a different OS architecture) (and push it to a registry) :: ~docker buildx build --platform linux/arm64/v8,linux/amd64 --push --tag <registry-username>/<name-of-repository>:<name-of-the-image> .~
+- publish (push) an image to Docker Hub :: docker push <username>/<image_name>
+- container state :: 
+  + start or stop an existing container :: docker start|stop <container_name> (or <container-id>)
+  + remove a stopped container :: docker rm <container_name>
+- running ::
+  + run a container in the background :: docker run -d <image_name> // the -d is to detach it from the terminal
+    - run in attached to terminal mode :: docker container run -it --name <app_alias> alpine sh (-it for interactive; 'alpine' to base the container on the minimal Docker image based on Alpine Linux with a complete package index and only 5 MB in size; and 'sh' to run commands in the sh terminal as the container main process)
+  + run a container and publish the container’s port(s) to the host :: docker run -p <host_port>:<container_port> <image_name> // 'host_port' is the local running port, and 'container_port' is the port the app is listening on in the container: any traffic hitting on 'host_port' will be mapped and sent to the 'container_port'
+- open a shell inside a running container :: docker exec -it <container_name> sh
+- removing images ::
+  + delete an Image :: docker rmi <image_name>
+  + remove all unused images :: docker image prune
+- options ::
+  + -d :: detached mode
+  + -it :: interactive mode
+  + --name :: to give the image an alias
+*** Docker Swarm
+[2024-02-02 Fri 09:11]
+
 ** Kubernetes
 [2024-01-21 Sun 20:52]
 *** Notes
@@ -115,7 +165,18 @@ In addition to the fields specified in the cron expression, there’s also suppo
   + thus, one of the things k8s does is decide which nodes to run stuff on
     - one of the advantage of k8s is that it manage changes in loads, eg: it can override manual configs to balance loads on some other nodes when those set are overused ('increased load', can basically spin up more containers to balance workload even when the configurations are already set)
     - same when a node fails ('failed load'), k8s can use another node to run the workload, which is called 'self-healing'
-  + k8s can run anywhere (On-premises or 'On-prem' (installed and runs on computers on the premises of the person/organization using the software, rather than at a remote facility), server farms, cloud, etc.) => easy to migrate 
+  + k8s can run anywhere: On-premises (or 'On-prem': installed and runs on computers on the premises of the person/organization using the software, rather than at a remote facility), on server farms, cloud, etc. => k8s is easy to migrate
+  + some cloud k8s options: AWS EKS, Azur AKS, Google GKE, etc.
+  + apps' services are generally each deployed on its container, and when one of these services needs scaling, then the orchestrator (k8s for example) throw more containers at it (not make it bigger, just more of the same containers are enlisted, and reverse if need scaling down: reduce the enlisted containers)
+*** Orchestration
+[2024-02-01 Thu 15:05]
+- notes ::
+  + as of today, main orchestrator is kubernetes
+  + orchestration :: define the apps, how all the parts interact, provision the infrastructure, and then deploy and manage the app
+  + key to automation of orchestration :: dependencies management, ordered startups, intelligent scheduling (scheduling services next to each other, or not next to each other (not starting on the same nodes as the others)), etc.
+  + "app manifest" ::
+    - it is the 'road map', the one that describes the map for the orchestration
+    - it is given to the orchestrator (k8s), and then the orchestrator deploys and manages the app
 *** Some kubernetes commands
 ** Tips and tricks
 [2024-01-22 Mon 20:45]
@@ -129,6 +190,53 @@ In addition to the fields specified in the cron expression, there’s also suppo
   + try to setup a 'research and development "SWAT" team' to try new technologies on the cloud, and let them be ambassadors on the whole company when technology has gain enough momentum; advice: get devs and ops talking, get management talking, and then get doing!!
 *** Entreprise oriented vs startup oriented (how appropriate is the design for the production readiness)
 [2024-01-27 Sat 23:45]
+* curl
+[2024-01-29 Mon 20:38]
+** Notes
+[2024-01-29 Mon 21:17]
+- in every HTTP request, there is a method, sometimes called a verb. The most commonly used ones are GET, POST, HEAD and PUT
+- normally however you do not specify the method in the command line, but instead the exact method used depends on the specific options you use ::
+  + GET is the default,
+  + using -d or -F makes it a POST,
+  + -I generates a HEAD,
+  + and -T sends a PUT.
+- some options ::
+  + -H :: eg: ~-H "Accept: application/json"~: specifies the HTTP request header, indicating an expected response in JSON format
+  + -o :: for output file
+** examples
+- Get a README file from an FTP server :: curl ftp://ftp.example.com/README
+- Get a webpage from a server using port 8000 :: curl http://www.example.com:8000/
+- Get all terms matching curl from a dictionary :: curl dict://dict.example.com/m:curl
+- Get a file from an SSH server using SFTP :: curl -u username sftp://example.com/etc/issue
+- Get a file from an SSH server using SCP using a private key (not password-protected) to authenticate :: curl -u username: --key ~/.ssh/id_rsa scp://example.com/~/file.txt
+** Http methods with curl
+[2024-01-29 Mon 20:59]
+*** Post
+- notes ::
+  + to send form data, a browser URL encodes it as a series of name=value pairs separated by ampersand (&) symbols. The resulting string is sent as the body of a POST request. To do the same with curl, use the -d (or --data) argument
+- simple post :: curl -d 'name=admin&shoesize=12' http://example.com/
+- when specifying multiple -d options on the command line, curl concatenates them and insert ampersands in between :: curl -d name=admin -d shoesize=12 http://example.com/
+- if the amount of data to send is too large for a mere string on the command line, can read it from a filename in standard curl style :: curl -d @filename http://example.com
+- content-type ::
+  + POSTing with curl's -d option makes it include a default header that looks like ~Content-Type: application/x-www-form-urlencoded~. That is what your typical browser uses for a plain POST.
+  + if that header is not good enough for you, you should, of course, replace that and instead provide the correct one. Such as if you POST JSON to a server and want to more accurately tell the server about what the content is: ~curl -d '{json}' -H 'Content-Type: application/json' https://example.com~
+- json :: 
+  + curl 7.82.0 introduced the --json option as a new way to send JSON formatted data to HTTP servers using POST. This option works as a shortcut and provides a single option that replaces these three ::
+    1. --data [arg]
+    2. --header "Content-Type: application/json"
+    3. --header "Accept: application/json"
+  + the option does not make curl actually understand or know about the JSON data it sends, but makes it easier to send it. curl does not touch or parse the data that it sends, so you need to make sure it is valid JSON yourself
+  + can use multiple --json options on the same command line. This makes curl concatenate the contents from the options and send all data in one go to the server. Note that the concatenation is plain text based and it does not merge the JSON objects as per JSON 
+  + receiving json ::
+    - curl itself does not know or understand the contents it sends or receives, including when the server returns JSON in its response. Using a separate tool for the purpose of parsing or pretty-printing JSON responses might make things easier for you, and one tool in particular that might help you accomplish this is 'jq'. example:
+      + send a basic JSON object to a server, and pretty-print the JSON response :: curl --json '{"tool": "curl"}' https://example.com/ | jq
+      + send the JSON with jo, print the response with jq :: jo -p name=jo n=17 | curl --json @- https://example.com/ | jq
+  + examples ::
+    - send a basic JSON object to a server :: curl --json '{"tool": "curl"}' https://example.com/
+    - send JSON from a local file :: curl --json @json.txt https://example.com/
+    - send JSON passed to curl on stdin :: echo '{"a":"b"}' | curl --json @- https://example.com/
+    - send JSON from a file and concatenate a string to the end :: curl --json @json.txt --json ', "end": "true"}' https://example.com/
 * Computer engineering linguee
 [2024-01-27 Sat 23:08]
+- LDAP authentication :: Lightweight directory access protocol (LDAP): a protocol that helps users find data about organizations, persons, and more. LDAP has two main goals: 1. store data in the LDAP directory, 2. authenticate users to access the directory. Allows for example to create users and groups that match one's organizational structure
 - stateful vs stateless apps/service :: stateful: apps that persist data (has to remember stuff, eg: if a stateful app stops, then the data that was being persisted has to be stored so that when doing a retry on a different target, one case use the same input data (or keep states/logs before coming back up)); stateless: no storage needed, just retrieve as was when crushed for example
