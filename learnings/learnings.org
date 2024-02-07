@@ -73,9 +73,17 @@ In addition to the fields specified in the cron expression, there’s also suppo
 - workloads :: application running on kubernetes for example
 - cloud-native microservices design :: instead of a monolith, split the application modules into several parts that can communicate
   + monolith/legacy app ::  everything the app does (web, authentication, search, etc.) is provided within a single binary (computer program)
-    - cons :: an issue on a single feature requires taking down whole app, fix the module, recompile the whole app, deploy it, etc.
+    - cons :: an issue on a single feature requires taking down whole app, fix the module, recompile the whole app, deploy it, etc.; scaling is harder and needs scaling (almost, but quite) the whole app; etc.
+  + microservices :: is a way of building, deploying, and managing each application feature as its own small app
+    - usually, each microservice is run in its own container
   + pros of microservices :: redeploy just the required module (faster), adapted to cloud-native services
   + cloud-native applications :: built as a set of microservices that run in /Open Container Initiative/ compliant containers
+    - cloud-native :: is like a set of capabilities, such as self-healing, auto-scaling, rolling updates, and more.
+    - cloud-native doesn't apply only in the cloud, can do cloud-native capabilities on laptop/pc with docker desktop
+- declarative approach ::
+  + describes an application in a configuration file, and use that file to deploy the application
+    - in other words, instead of deploying sets of apps and containers with loads of command line action, just list every step in a configuration file, give the file to the containerization platform, and let the platform do the hard work of deployment/management
+  + compose file :: generally the declarative approach is done using a yaml configuration file called a "compose file"
 - docker hub :: library of pre-existing docker images (need to download and run them in the docker host)
 - container runtime ::
   + also called 'container engine': software component that can run containers on a host operating system
@@ -110,12 +118,96 @@ In addition to the fields specified in the cron expression, there’s also suppo
   + ~ENTRYPOINT~ :: to specify default executable, eg: ~ENTRYPOINT ["node", "app.js"]~: will run the command 'node app.js' each time the container gets started
   + ~COPY~ :: to copy :-), eg: ~COPY . /usr/src/app~: copy app code (.) to /usr/src/app *of the container image*
   + ~WORKDIR~ :: to change working directory, eg: ~WORKDIR /usr/src/app~: set working directory context (when run together with ~COPY . /usr/src/app~ command, it just basically set the working directory to where the app was installed, on *the container image*)
+*** Declarative method with compose files
+[2024-02-02 Fri 09:40]
+**** General
+- notes ::
+  + some often used files in declarative method :: 
+    - requirements.txt :: lists dependencies to install (with for example ~RUN pip install -r requirements.txt~ in the dockerfile)
+    - Dockerfile :: says how to build the docker images
+    - compose.yaml :: some instructions example of a docker compose file
+      #+begin_src yaml
+      # declaring network called 'counter-net', and volume called 'counter-vol'
+      # saves time by declaratively doing the configurations, instead of using scripts with long docker network create commands
+      networks:
+        counter-net:
+
+      volumes:
+        counter-vol:
+
+      # under services, defines 2 microservices (thus, a multi-container app), ie. 2 containers: 'web-fe' (for the front-end) and 'redis' (for the back-end and persistence)
+      services:
+        web-fe:
+          # call command docker build, and build a container image using Dockerfile and the app files in the current directory
+          build: .
+          # set command that will run whenever the app (the docker image) is started
+          command: python app.py
+          ports:
+            # map port 8080 of container to port 5001 of docker host
+            - target: 8080
+              published: 5001
+          # attach container to network 'counter-net'
+          networks:
+            - counter-net
+          # mount volume 'counter-vol' into the container at '/app'
+          volumes:
+            - type: volume
+              source: counter-vol
+              target: /app
+        # pull redis:alpine image and attach it to network 'counter-net'
+        redis:
+          image: "redis:alpine"
+          networks:
+            counter-net:
+      #+end_src
+    - 'desired state' :: configurations in compose files are called the desired state. From example above, the desire state is:
+      + to create a network 'counter-net' and volume (a persistent data stores implemented by the container engine) 'counter-vol',
+      + a web container on port 5001 with a shared volume and on network counter-net
+      + a redis service on same network
+- some docker compose commands ::
+  + build all networks, volumes, services, etc., and bring the app up using docker compose command :: docker compose up --detach (~--detach~ to run in background and be able to keep using the current terminal)
+    - need to run docker compose build command within the directory containing the 'compose.yaml'
+  + to stop the "microservices app" (multi-container app), and cleanup volumes :: docker compose down --volumes (volumes usually stay up otherwise in case some data must not be destroyed)
+**** Docker swarm, and swarm mode
+[2024-02-07 Wed 00:30]
+- notes ::
+  + swarm mode :: lets one connect multiple docker hosts into a secure highly available cluster
+  + clusters :: 
+    - a cluster (or a 'swarm') :: is a set of one or more machines, or 'nodes'. A node can be any type of node:  physical, virtual machines, cloud instances, multipass virtual machines, etc.
+      + multipass virtual machines :: lightweight VMs that can easily run on windows, linux, mac, etc.
+        - multipass VMs are nice tools to create cloud style ubuntu VMs, and they have precanned docker templates (docker environment portainer and related tools)
+    - a cluster :: is a bunch of nodes with docker installed, and network connectivity
+    - in a cluster :: every node has to be either a worker or a manager
+      + managers :: host the control plane (cluster store, scheduler, etc.)
+        - managers :: usually between 3 or 5 managers in a cluster, but need to be an odd due to the clusters' majority control principle (if a set of cluster still can communicate in case of "split brain" (a network issue for example that causes a divide of managers in the cluster) has the majority, then the group stays up and running, otherwise, the group in minority switch to read-only mode, and changes on this minority group of managers is frozen)
+      + workers :: where business apps run
+        - can run as many worker nodes as apps requires
+    - manager and worker nodes can be anything one wants :: on-prem, in the cloud, VMs, physicals, etc. All that matters is that they have docker installed, and they can communicate over reliable networks
+      + better to spread nodes over availability zones so that for example when somebody trips over a wire, not all of them are taken out of actions at the same time
+- multipass VMs ::
+  + when using docker desktop, only one node is available really. If one wants to use different nodes then multipass VMs are a better alternative 
+  + some multipass commands ::
+    - ~multipass launch docker --name nodename~ :: create a multipass VM named 'nodename' that will be using a docker image
+    - ~multipass info nodename~ :: to list infos about a node name (among which its IP address)
+    - ~multipass shell nodename~ :: reach multipass node 'nodename' with a shell bash
+- setup the swarm ('initialize' the swarm) ::
+  1. create the swarm cluster :: ~docker swarm init --advertise-addr [ip-address]~ (advertise-addr is for configuring the swarm to set which of the multiple interfaces to use for cluster communications)
+     - what to look for is the IP address to use for communication with other nodes in the cluster: usually, it will be a private IP in the internal network
+  2. join in more *managers* to the cluster: within the node used for the docker swarm initialization, run ~docker swarm join-token manager~, and it will return the command and the token to use
+     - to authorize new nodes to join as managers, run 'join-token' command on all of them
+     - tip :: when listing nodes in the cluster (with ~docker node ls~), there is an asterisk at the end of the hash to depict the current node in the listed nodes
+  3. join in more *workers* (still using join-token command to find the authorization token): ~docker swarm join-token worker~
+     - tip :: worker nodes are found within the docker node list (~docker node ls~), with empty data in the "Manager status" column 
+  4. need to stop business apps being scheduled to the managers :: basically just keep managers clean, and force business apps to run on workers only: ~docker node update --availability drain <managernodename>~ (to do for all managers)
+     
+***** working with docker swarm
 *** Some docker commands
 - general :: 
   + get help with Docker (can also use –help on all subcommands) :: docker --help
   + start the docker daemon :: docker -d (-d for detached from current terminal)
   + display system-wide information :: docker info
   + view resource usage stats :: docker container stats
+  + view volumes services :: docker volume ls
   + note :: by default without specifying the registry url in the complete registry, docker will default to docker hub. So, when using a different registry, use the complete url with the target registry, like: docker.io/<registry-username>/<name-of-repository>:<name-of-the-image>, here docker.io is still docker hub though, lol
 - listing ::
   + list all docker containers (running and stopped) :: docker ps --all (or: docker ls -a)
@@ -155,7 +247,7 @@ In addition to the fields specified in the cron expression, there’s also suppo
   + whereas with docker things are more low level: build/download/start/stop/delete image, build
   + with kubernetes things are more higher level: scheduling, scaling, healing, updating, etc. (eg: how many containers to run in, which nodes to run them on, know when to scale them up/down, how many instances required to meet demand, etc.)
 - takeaways ::
-  + kubernetes clusters host applications
+  + kubernetes cluster hosts applications
   + kubernetes runs workloads by placing containers into 'Pods' (groups of one or more containers) to run on nodes
     - a 'node' may be a virtual or physical machine, depending on the cluster
     - each node is managed by the control plane and contains the services necessary to run Pods
