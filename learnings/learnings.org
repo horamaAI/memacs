@@ -125,7 +125,7 @@ In addition to the fields specified in the cron expression, there’s also suppo
   + some often used files in declarative method :: 
     - requirements.txt :: lists dependencies to install (with for example ~RUN pip install -r requirements.txt~ in the dockerfile)
     - Dockerfile :: says how to build the docker images
-    - compose.yaml :: some instructions example of a docker compose file
+    - compose.yml :: some instructions example of a docker compose file
       #+begin_src yaml
       # declaring network called 'counter-net', and volume called 'counter-vol'
       # saves time by declaratively doing the configurations, instead of using scripts with long docker network create commands
@@ -166,7 +166,7 @@ In addition to the fields specified in the cron expression, there’s also suppo
       + a redis service on same network
 - some docker compose commands ::
   + build all networks, volumes, services, etc., and bring the app up using docker compose command :: docker compose up --detach (~--detach~ to run in background and be able to keep using the current terminal)
-    - need to run docker compose build command within the directory containing the 'compose.yaml'
+    - need to run docker compose build command within the directory containing the 'compose.yml'
   + to stop the "microservices app" (multi-container app), and cleanup volumes :: docker compose down --volumes (volumes usually stay up otherwise in case some data must not be destroyed)
 **** Docker swarm, and swarm mode
 [2024-02-07 Wed 00:30]
@@ -189,6 +189,7 @@ In addition to the fields specified in the cron expression, there’s also suppo
   + some multipass commands ::
     - ~multipass launch docker --name nodename~ :: create a multipass VM named 'nodename' that will be using a docker image
     - ~multipass info nodename~ :: to list infos about a node name (among which its IP address)
+    - ~multipass list~ :: list infos of all nodes
     - ~multipass shell nodename~ :: reach multipass node 'nodename' with a shell bash
 - setup the swarm ('initialize' the swarm) ::
   1. create the swarm cluster :: ~docker swarm init --advertise-addr [ip-address]~ (advertise-addr is for configuring the swarm to set which of the multiple interfaces to use for cluster communications)
@@ -199,8 +200,76 @@ In addition to the fields specified in the cron expression, there’s also suppo
   3. join in more *workers* (still using join-token command to find the authorization token): ~docker swarm join-token worker~
      - tip :: worker nodes are found within the docker node list (~docker node ls~), with empty data in the "Manager status" column 
   4. need to stop business apps being scheduled to the managers :: basically just keep managers clean, and force business apps to run on workers only: ~docker node update --availability drain <managernodename>~ (to do for all managers)
-     
-***** working with docker swarm
+- swarm services ::
+  + swarm helps by providing features for microservices apps management, such as the service object, and the docker stack command
+  + swarm service objects :: designed to map directly to individual application microservices.
+    - Containers don't have a native way of doing things like scaling, rollouts, rollbacks, etc. For those, advanced tools like swarm service objects are needed: instead of mapping each microservice to individual container specs, they're instead mapped to service objects. And then, it's the service objects that provide more advanced features for microservices managements such as scaling, zero downtime, rolling updates, automatic rollbacks, etc.
+    - declarative approach ::
+      + notes ::
+        - using the imperative way, managing manually all docker commands can be cumbersome, so better to do the service management declaratively through config files
+        - in the declarative way, the deployment is done through config files (compose files and Dockerfile)
+        - in swarm mode, the multi-container app is sometimes called a 'stack', and the compose file called the 'file describing a stack'
+        - stacks on swarm do not support building images on the fly (eg with the compose file seen previously, where building was done using a local dockerfile: ~build: .~) => image need to be created first before the app is deployed (in compose file, use image instead of 'build': ~image: <registry-username>/<name-of-repository>:<name-of-the-image>~)
+        - since service management will be done declaratively,
+    - examples:
+      1. using the *imperative way*, all docker commands are performed manually through the CLI:
+         - ~docker service create --name web -p 8080:8080 --replicas 3 <registry-username>/<name-of-repository>:<name-of-the-image>~
+           + create a service with on host-container mapping both on 8080
+           + ~--replicas~: to set the number of containers the service is going to deploy and manage (3 here). Docker will spin up 3 identical containers from image '<name-of-the-image>'
+           + can list services and their infos with: ~docker service ls~
+           + notes ::
+             - the command ~docker container ls~ doesn't understand swarm clusters, it's really not asking the cluster for a list of containers, it's just asking the local nodes (result depends on type of node connected on: manager, or workers). So, a ~docker container ls~ on a manager node won't return any service (or any application containers on it), since they're all on the workers
+             - to proper way to list the application containers on any node is by using ~docker service ps <name-of-service>~, for example with 'web' service in the example above: ~docker service ps web~
+               + ~service ps~ will also display the nodes they're running on
+             - with docker swarm it's possible to reach the service from any node in the cluster, just using the service's exposed port. Example: service 'web' can be reached with using the IP of any node in the cluster and the port 8080 (eg: on browser: 192.168.64.20:8080 will access the web app, even though 192.168.64.20 is the IP of a manager node)
+             - a docker service defines a single container template, but it let's you deploy multiple containers from it :: in the example above service 'web' defines 3 replicas, which will deploy and manage 3 identical containers: all based on same image, all listening to 8080, and all attached to same network
+      2. using the *declarative way*:
+         - compose.yml ::
+           #+begin_src yaml
+           # Un-comment the 'version' field if you get an 'unsupported Compose file version: 1.0' ERROR
+           #version: '3.8'
+           networks:
+             counter-net:
+           
+           volumes:
+             counter-vol:
+           
+           services:
+             web-fe:
+               # with swarm no more building images on the fly (with dockerfile ~build: .~), which makes sense since shouldn't be building image at deploy time
+               # so, first task is to create web-fe image before the app is deployed
+               image: nigelpoulton/gsd:swarm2023
+               command: python app.py
+               # specifies the number of replicas of the containers defined by this service ('web-fe')
+               deploy:
+                 replicas: 10
+               ports:
+                 - target: 8080
+                   published: 5001
+               networks:
+                 - counter-net
+               # mount volume 'counter-vol' into the container at '/app'
+               volumes:
+                 - type: volume
+                   source: counter-vol
+                   target: /app
+             # pull redis:alpine image and attach it to network 'counter-net'
+             redis:
+               image: "redis:alpine"
+               networks:
+                 counter-net:
+           #+end_src
+
+    - swarm service commands ::
+      + ~docker service create --name <service-name> -p <target-port>:<host-port> --replicas <number-of-replicas> <registry-username>/<name-of-repository>:<name-of-the-image>~ :: create service and deploy
+      + ~docker service ls~ :: list all services and their infos
+      + ~docker service ps <service-name>~ :: list specific service's infos
+      + ~docker service scale <service-name>=<number-of-containers>~ :: rescale the number of containers for a given service (add/remove containers for the service)
+      + ~docker service rm <service-id-1>[ <service-id-n>]* -f~ :: removal containers (~[ <service-id-n>]*~ is just a regex notation to specify that can add as many container ids separated by a space)
+        - however, swarm constantly checks if desired state is fulfilled, so if deployed (or scaled) n containers, and removed some with ~docker service rm~, swarm will create new ones to match the desired state since the deleted ones will fail. This renewal process is called ==self-healing== (or reconciliation), which is constantly checking if observed state matches the desired state
+        - an alternative is to rescale the number of containers
+      + ~docker service rm <service-name>~ :: delete a service
+
 *** Some docker commands
 - general :: 
   + get help with Docker (can also use –help on all subcommands) :: docker --help
