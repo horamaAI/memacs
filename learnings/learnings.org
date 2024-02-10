@@ -191,6 +191,8 @@ In addition to the fields specified in the cron expression, there’s also suppo
     - ~multipass info nodename~ :: to list infos about a node name (among which its IP address)
     - ~multipass list~ :: list infos of all nodes
     - ~multipass shell nodename~ :: reach multipass node 'nodename' with a shell bash
+    - ~multipass delete nodename~ :: delete node 'nodename' (pretty handy to simulate a system failure on a node for example)
+      + and then ~multipass purge~ for a deeper clean
 - setup the swarm ('initialize' the swarm) ::
   1. create the swarm cluster :: ~docker swarm init --advertise-addr [ip-address]~ (advertise-addr is for configuring the swarm to set which of the multiple interfaces to use for cluster communications)
      - what to look for is the IP address to use for communication with other nodes in the cluster: usually, it will be a private IP in the internal network
@@ -210,7 +212,12 @@ In addition to the fields specified in the cron expression, there’s also suppo
         - in the declarative way, the deployment is done through config files (compose files and Dockerfile)
         - in swarm mode, the multi-container app is sometimes called a 'stack', and the compose file called the 'file describing a stack'
         - stacks on swarm do not support building images on the fly (eg with the compose file seen previously, where building was done using a local dockerfile: ~build: .~) => image need to be created first before the app is deployed (in compose file, use image instead of 'build': ~image: <registry-username>/<name-of-repository>:<name-of-the-image>~)
-        - since service management will be done declaratively,
+        - with swarm, building images on the fly is allowed (with dockerfile ~build: .~), which makes sense since shouldn't be building image at deploy time
+          + so, first, need to create the service's image before the app is deployed
+        - it is recommended to modify the config file (compose.yml file) when making changes to declarative apps  (instead of doing it imperatively through manual docker commands)
+          + eg, when needs for scaling down/up: instead of using command ~docker service scale~, better to edit compose.yaml, and resend it to the swarm (thus, guaranteeing to keep config files synched with production environments)
+            - resend the updated compose file with ~docker stack deploy -c compose.yaml <app-name>~ again, which will ping the latest compose file over to the swarm, and the reconciliation loop will spot the new desired state.
+            - in case of system failure on a node, self-healing will still deploy containers with respect to the desired state (keep the number of containers on the still available nodes)
     - examples:
       1. using the *imperative way*, all docker commands are performed manually through the CLI:
          - ~docker service create --name web -p 8080:8080 --replicas 3 <registry-username>/<name-of-repository>:<name-of-the-image>~
@@ -224,7 +231,7 @@ In addition to the fields specified in the cron expression, there’s also suppo
              - with docker swarm it's possible to reach the service from any node in the cluster, just using the service's exposed port. Example: service 'web' can be reached with using the IP of any node in the cluster and the port 8080 (eg: on browser: 192.168.64.20:8080 will access the web app, even though 192.168.64.20 is the IP of a manager node)
              - a docker service defines a single container template, but it let's you deploy multiple containers from it :: in the example above service 'web' defines 3 replicas, which will deploy and manage 3 identical containers: all based on same image, all listening to 8080, and all attached to same network
       2. using the *declarative way*:
-         - compose.yml ::
+         1. compose.yml ::
            #+begin_src yaml
            # Un-comment the 'version' field if you get an 'unsupported Compose file version: 1.0' ERROR
            #version: '3.8'
@@ -236,11 +243,12 @@ In addition to the fields specified in the cron expression, there’s also suppo
            
            services:
              web-fe:
-               # with swarm no more building images on the fly (with dockerfile ~build: .~), which makes sense since shouldn't be building image at deploy time
-               # so, first task is to create web-fe image before the app is deployed
-               image: nigelpoulton/gsd:swarm2023
+               # with swarm, building images on the fly is not allowed (with dockerfile ~build: .~), which makes sense since shouldn't be building image at deploy time
+               # so, first task is to create web-fe image before the app is deployed => run ~docker image build -t <registry-username>/gsd:swarm2023 .~ in a cluster's node before deploying ('.' to build the local directory as the build context)
+               # and push the image to a docker registry so that the workers can pull it => ~docker image push <registry-username>/gsd:swarm2023~ (may require logging in with ~docker login~)
+               image: <registry-username>/gsd:swarm2023
                command: python app.py
-               # specifies the number of replicas of the containers defined by this service ('web-fe')
+               # specifies the number of replicas of the containers defined by this service ('web-fe') => 10 identical containers based off of image: nigelpoulton/gsd:swarm2023
                deploy:
                  replicas: 10
                ports:
@@ -259,7 +267,10 @@ In addition to the fields specified in the cron expression, there’s also suppo
                networks:
                  counter-net:
            #+end_src
-
+         2. when image is built and pushed to a registry, now can deploy using the declarative approach (through docker compose config file): ~docker stack deploy -c compose.yaml <app-name>~ (need to be in folder containing compose.yaml so that compose file can be found)
+    - "ingress routing mesh" :: the routing mesh enables each node in the swarm to accept connections on published ports for any service running in the swarm, even if there's no task running on the node. In other word, it's possible to reach the service from any node in the cluster, using the service's exposed port: if service is deployed on port XXXX, then from any IP of a node in the cluster, it's possible to reach the service using the exposed port [IP]:XXXX
+      + swarm/ingress routing mesh is a *load balancing* requests across deployed services, meaning the requests will switch between the different deployed replicas (containers)
+      + when scaling down, balancing requests will not probe traffic to containers that are deleted, swarm is clever enough to do that
     - swarm service commands ::
       + ~docker service create --name <service-name> -p <target-port>:<host-port> --replicas <number-of-replicas> <registry-username>/<name-of-repository>:<name-of-the-image>~ :: create service and deploy
       + ~docker service ls~ :: list all services and their infos
@@ -269,7 +280,11 @@ In addition to the fields specified in the cron expression, there’s also suppo
         - however, swarm constantly checks if desired state is fulfilled, so if deployed (or scaled) n containers, and removed some with ~docker service rm~, swarm will create new ones to match the desired state since the deleted ones will fail. This renewal process is called ==self-healing== (or reconciliation), which is constantly checking if observed state matches the desired state
         - an alternative is to rescale the number of containers
       + ~docker service rm <service-name>~ :: delete a service
-
+      + ~docker stack deploy -c compose.yaml <app-name>~ :: deploy the 'stack' (the multi-container app), -c to tell where compose file is
+      + ~docker stack ls~ :: check stacks infos
+      + ~docker stack services <app-name>~ :: get more details about stack's services
+      + ~docker stack ps <app-name>~ :: get replicas' infos
+      + ~docker stack rm <app-name>~ :: to delete a stack. It will just delete the stack, but still keep the cluster, in case the nodes are still needed (to delete nodes/cluster: ~multipass delete <node-name1>[ <node-name-n>]*~, and ~multipass purge~ for a deeper clean)
 *** Some docker commands
 - general :: 
   + get help with Docker (can also use –help on all subcommands) :: docker --help
