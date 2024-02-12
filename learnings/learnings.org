@@ -80,6 +80,7 @@ In addition to the fields specified in the cron expression, there’s also suppo
   + cloud-native applications :: built as a set of microservices that run in /Open Container Initiative/ compliant containers
     - cloud-native :: is like a set of capabilities, such as self-healing, auto-scaling, rolling updates, and more.
     - cloud-native doesn't apply only in the cloud, can do cloud-native capabilities on laptop/pc with docker desktop
+    - advantages :: scalable, dynamic, loosely coupled via APIs for example, and more importantly, it can run anywhere with k8s
 - declarative approach ::
   + describes an application in a configuration file, and use that file to deploy the application
     - in other words, instead of deploying sets of apps and containers with loads of command line action, just list every step in a configuration file, give the file to the containerization platform, and let the platform do the hard work of deployment/management
@@ -107,6 +108,7 @@ In addition to the fields specified in the cron expression, there’s also suppo
   + distribution spec (registries)
 - "images are build time constructs, and containers are runtime constructs" :: jargon to say that containers can be seen as extensions of an image, just as in running state (and the image is on stop state)
 - "containerization" :: buzzword to refer to an app running in a container
+- container image :: a lightweight, standalone, executable package of software that includes everything needed to run an application: code, runtime, system tools, system libraries and settings
 *** Dockerfile
 [2024-02-01 Thu 17:15]
 - Dockerfile :: contains all the commands a user could call on the command line to assemble an image (set of build instructions for the app and its dependencies)
@@ -325,7 +327,13 @@ In addition to the fields specified in the cron expression, there’s also suppo
 [2024-01-21 Sun 20:52]
 *** Notes
 [2024-01-21 Sun 21:34]
-- kubernetes can sometimes be shortened to 'k8s' (8 for 8 characters between the starting k and the ending s) 
+- fun facts ::
+  + made by google, written in go
+  + kubernetes can sometimes be shortened to 'k8s' (8 for 8 characters between the starting k and the ending s) 
+- what, why k8s ::
+  + k8s is a platform for managing containerized applications at scale (cloud native microservices apps)
+  + k8s can be seen as an OS of the cloud, it just needs some infos about the app, the different services the app is made of, the configs, and it just run it, relieving the person making the request from tedious work: k8s does all the work deciding which node to run services on, how to pull and verify images, start the containers attached to networks, etc.
+  + just needs a standard package format (package app as containers), a declarative manifest file, and there it goes
 - more efficient than docker swarm
 - kubernetes is more higher level than docker
   + whereas with docker things are more low level: build/download/start/stop/delete image, build
@@ -347,12 +355,33 @@ In addition to the fields specified in the cron expression, there’s also suppo
 *** Orchestration
 [2024-02-01 Thu 15:05]
 - notes ::
-  + as of today, main orchestrator is kubernetes
+  + as of today, the most powerful containerization orchestrator is kubernetes
   + orchestration :: define the apps, how all the parts interact, provision the infrastructure, and then deploy and manage the app
   + key to automation of orchestration :: dependencies management, ordered startups, intelligent scheduling (scheduling services next to each other, or not next to each other (not starting on the same nodes as the others)), etc.
   + "app manifest" ::
     - it is the 'road map', the one that describes the map for the orchestration
     - it is given to the orchestrator (k8s), and then the orchestrator deploys and manages the app
+*** Kubernetes architecture
+[2024-02-11 Sun 23:57]
+**** Intro
+- process in a nutshell ::
+  1. start with a packaged app (containerized app: make it run as a container)
+  2. and the packaged app is given to k8s cluster
+     - k8s cluster can be made of :: 1+ control plane nodes (brains of cluster, the /managers/: do tasks scheduling, monitoring, responding to events, etc.), and a bunch of workers
+**** Control plane nodes
+[2024-02-12 Mon 23:36]
+**** Worker nodes
+[2024-02-12 Mon 23:36]
+**** Pods
+[2024-02-12 Mon 23:37]
+**** Services
+[2024-02-12 Mon 23:37]
+**** Deployment
+[2024-02-12 Mon 23:37]
+**** K8s API and API server
+[2024-02-12 Mon 23:38]
+*** Getting k8s
+[2024-02-12 Mon 23:41]
 *** Some kubernetes commands
 ** Tips and tricks
 [2024-01-22 Mon 20:45]
