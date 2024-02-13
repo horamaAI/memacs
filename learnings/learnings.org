@@ -181,7 +181,7 @@ In addition to the fields specified in the cron expression, there’s also suppo
     - a cluster :: is a bunch of nodes with docker installed, and network connectivity
     - in a cluster :: every node has to be either a worker or a manager
       + managers :: host the control plane (cluster store, scheduler, etc.)
-        - managers :: usually between 3 or 5 managers in a cluster, but need to be an odd due to the clusters' majority control principle (if a set of cluster still can communicate in case of "split brain" (a network issue for example that causes a divide of managers in the cluster) has the majority, then the group stays up and running, otherwise, the group in minority switch to read-only mode, and changes on this minority group of managers is frozen)
+        - managers :: usually between 3 or 5 managers in a cluster, but need to be an odd due to the clusters' majority control principle (if a set of cluster still can communicate in case of "split brain" or "deadlock" (a network issue for example that causes a divide of managers in the cluster) has the majority, then the group stays up and running, otherwise, the group in minority switch to read-only mode, and changes on this minority group of managers is frozen)
       + workers :: where business apps run
         - can run as many worker nodes as apps requires
     - manager and worker nodes can be anything one wants :: on-prem, in the cloud, VMs, physicals, etc. All that matters is that they have docker installed, and they can communicate over reliable networks
@@ -340,6 +340,9 @@ In addition to the fields specified in the cron expression, there’s also suppo
   + with kubernetes things are more higher level: scheduling, scaling, healing, updating, etc. (eg: how many containers to run in, which nodes to run them on, know when to scale them up/down, how many instances required to meet demand, etc.)
 - takeaways ::
   + kubernetes cluster hosts applications
+  + k8s cluster is mainly made of ::
+    - 1 or more control plane nodes (brains of cluster, the /managers/: do tasks scheduling, monitoring, responding to events, etc.),
+    - and a bunch of workers
   + kubernetes runs workloads by placing containers into 'Pods' (groups of one or more containers) to run on nodes
     - a 'node' may be a virtual or physical machine, depending on the cluster
     - each node is managed by the control plane and contains the services necessary to run Pods
@@ -365,13 +368,51 @@ In addition to the fields specified in the cron expression, there’s also suppo
 [2024-02-11 Sun 23:57]
 **** Intro
 - process in a nutshell ::
-  1. start with a packaged app (containerized app: make it run as a container)
-  2. and the packaged app is given to k8s cluster
-     - k8s cluster can be made of :: 1+ control plane nodes (brains of cluster, the /managers/: do tasks scheduling, monitoring, responding to events, etc.), and a bunch of workers
+  1. start with a packaged app ::
+     - app is containerized (make it run as a container), wrap it in a pod, and in order to have features like scaling and self-healing, the pod is wrapped in a /deployment/
+     - all the packaging process is defined in a k8s yaml file, to describe what the app should look like for k8s (which container to use, which port, what network, how many replicas, etc.)
+  2. then, the packaged app (the k8s yaml file) is given to k8s cluster, and sets the cluster as specified in the yaml
 **** Control plane nodes
 [2024-02-12 Mon 23:36]
+- notes ::
+  + control plane are essential, they need to stay available, and so, better to run multiple ones for higher availability ("HA", 3 or 5, odd number. More than 5 is possible, but would imply more time for control planes to reach consensus)
+  + best to keep them in separate failure domains connected by fast reliable networks (failure domains: regions or components of infrastructure that could fail. Each has its own risks and challenges to architect for. eg: putting control planes in same data center rack, and under same potential risk of failure could risk failures on all of them at once)
+  + leader vs followers control planes :: k8s operates an active passive model for the managers, where only one control plane node is making active changes to the cluster at any one time (leader control plane). The others are followers.
+    - the followers control planes proxy connections over to the leader so that the leader can make the actions
+    - if leader goes down, a new one is elected :: every control plane node runs a bunch of smaller services responsible for individual control plane features, but also, every control plane node runs the full set of features, so any one of them can act as a leader
+  + if one is building k8s himself, then he gets to choose the number and size of control planes nodes. But, on hosted k8s platform, the control plane is hidden and the cloud provider manages all of that
+    - hosted k8s :: where cloud provider runs k8s for the user as a service => the user gets API endpoints, but the internal mechanisms (builds, upgrades, performances, high availability (HA), etc.) are handled by the cloud behind the scene
+      + kind of a drawback since control plane nodes are hidden, and might be that workers are being run on managers, which is not recommended
+  + main services making up the control planes ::
+    - API server :: ==kube-apiserver==: gateway to the cluster, the front-end to the control plane. It is the only component the user gets to interact directly with
+      + main entry for commands and queries (for example with the command line tool: ==kubectl==)
+      + same goes for worker nodes and applications. If any needs to communicate with anything on the control plane, it does it through ==kube-apiserver==. Same for other control plane services, they talk to each other via the API server
+      + exposes a RESTful API over a security port, and consumes JSON and yaml
+        - in the case of users deploying and managing applications, a yaml file describing the need is sent (for example), the API server authenticates, authorizes, and validates the request. If all is good, it instructs other managers to deploy it and manage it
+    - cluster store ::
+      + only persistent component of entire control plane, persists cluster state and configs (including configs and states of all apps)
+      + based on etcd NoSQL database (so far), and automatically distributed throughout all control plane nodes
+        - possible to swap it with something else, or run etcd bit on dedicated nodes (advanced use though)
+      + critical to cluster operations, and on large busy clusters can be the main performance bottleneck (distribute database at scale can be hard on etcd)
+      + have recovery plans in place (best to regularly test them)
+    - controller manager :: ==kube-controller-manager==
+      + kind of a controller of controllers (node controller, deployment controller, endpoints controller, namespace controller, etc.)
+      + runs as a reconciliation loop ("watch loop") :: watches the bits of the cluster it is responsible for, and looks for changes. Checks if the observed states match the desired state
+    - scheduler :: ==kube-scheduler==
+      + watches API server for new task and assigns them to nodes (tree hiding the forest, it does more: (anti-)affinity, constraints, taints, resource management, etc.)
+  + ex: run kubectl to deploy a new application
+    1. kubectl query sent to API server, which does authentication, authorization, etc.
+    2. the desired state gets written to the cluster store
+    3. the scheduler farms the work out to worker nodes
+    4. various controllers sit in watch loops, observing the state of cluster, and making sure the desired is matched
 **** Worker nodes
 [2024-02-12 Mon 23:36]
+- notes ::
+  + 3 important worker components ::
+    - kubelet ::
+      + main k8s agent running on *every* cluster node (worker and control plane nodes)
+    - container runtime ::
+    - kube proxy :: 
 **** Pods
 [2024-02-12 Mon 23:37]
 **** Services
