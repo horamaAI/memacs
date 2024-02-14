@@ -343,7 +343,7 @@ In addition to the fields specified in the cron expression, there’s also suppo
   + k8s cluster is mainly made of ::
     - 1 or more control plane nodes (brains of cluster, the /managers/: do tasks scheduling, monitoring, responding to events, etc.),
     - and a bunch of workers
-  + kubernetes runs workloads by placing containers into 'Pods' (groups of one or more containers) to run on nodes
+  + kubernetes runs workloads by placing containers into 'Pods' (groups of one or more containers packaged together in as single deployable unit) to run on nodes
     - a 'node' may be a virtual or physical machine, depending on the cluster
     - each node is managed by the control plane and contains the services necessary to run Pods
     - a k8s 'Control Plane' is the container orchestration layer that exposes the API and interfaces to define, deploy, and manage the lifecycle of containers
@@ -369,7 +369,7 @@ In addition to the fields specified in the cron expression, there’s also suppo
 **** Intro
 - process in a nutshell ::
   1. start with a packaged app ::
-     - app is containerized (make it run as a container), wrap it in a pod, and in order to have features like scaling and self-healing, the pod is wrapped in a /deployment/
+     - app is containerized (make it run as a container), wrap it in a pod, and, in order to have features like scaling and self-healing, the pod is wrapped in a /deployment/ (a deployment provides declarative updates for Pods and replicas. One describes a desired state in a deployment, and the deployment controller changes the actual state to the desired state at a controlled rate)
      - all the packaging process is defined in a k8s yaml file, to describe what the app should look like for k8s (which container to use, which port, what network, how many replicas, etc.)
   2. then, the packaged app (the k8s yaml file) is given to k8s cluster, and sets the cluster as specified in the yaml
 **** Control plane nodes
@@ -411,16 +411,64 @@ In addition to the fields specified in the cron expression, there’s also suppo
   + 3 important worker components ::
     - kubelet ::
       + main k8s agent running on *every* cluster node (worker and control plane nodes)
-    - container runtime ::
-    - kube proxy :: 
+      + registering nodes with the cluster :: worker nodes can be anything (linux, windows, physical, VMs, cloud instances, etc.). All that's needed is to install the kubelet which will register the node with the cluster. That will makes it easier for the scheduler to assign work to the kubelet or the node. So, things like adding cpu, ram, and other resources to the overall cluster pool, will be easier for the scheduler to intelligently assign work to the kubelet or the node
+      + works on k8s comes in the form of pods (kind of groups of one or more containers packaged together in as single deployable unit)
+      + it's the job of the kubelet to constantly watch the API server for new pods that are assigned to it
+      + when it sees one, it pulls the specs and runs the pod (execute pods)
+      + kubelet also maintain a reporting channel back to the API server to keeps the control plane in the loop (reports back to the control plane)
+    - container runtime interface ::
+      + k8s runs pods, where pods are group of one or more containers. If simplified, the whole process can be seen as apps running on containers. But k8s and kubelet do not really know how to run containers (pull image layers, talk to the OS kernel to build and start the containers, etc.). For all that, it needs a /container runtime/
+      + the whole container runtime layer is 'pluggable' with the ==container runtime interface (CRI)==
+      + ==containerd== is the main runtime container on most modern k8s clusters, but since the CRI is pluggable, more others runtime containers can be added (for example: gVisor (container sandbox developed by Google that focuses on security), or katacontainers)
+      + does most of the low level heavy work: stop/start containers, talk to the OS, etc.
+    - kube proxy ::
+      + it is the node networking, it's like the network brain of the node
+      + makes sure every pod running gets an IP (one IP per pod) => in case of multi container pods => all the containers in a pod will share the pod single IP => need to use ports and such, if reaching individuals containers in the same pod is needed
+      + kube proxy also manages lightweight load balancing (basic load balancing) across all the pods behind a service ::
+        - a service is a way of hiding multiple pods behind a single reliable IP address (kind of like a load balancer): the web servers talk to back-ends (the pods) through a service (so, single IP address). The service then balances (load balancing) traffic from the web servers to the different back-ends (pods again)
+        - kube proxy plays a major role in this load balancing that goes on the pods
+    - (4th that's not always used, but nonetheless still important) nodeless kubernetes ::
+      + k8s with no nodes, such as those proposed on lots of cloud platform with hosted containers platform, in other words, a service where one can run containers workload without having to spin up VM instances or such for example. The advantage is being able to forget all about low level infrastructure things, and let the code provide a service (run the app, and only pay for what's being run). So, on some cloud platforms that propose nodeless k8s, just need to post app configurations in k8s yaml files to an API server endpoint ('record of intent'), and the clouds just runs them => no need to know low level mechanisms and details on how and what they're running on, 
 **** Pods
 [2024-02-12 Mon 23:37]
-**** Services
+- notes ::
+  + in the VMWare world the atomic unit of deployment is the virtual machine, in docker world it's the container, and in the k8s world it is the ==pod== => so when need scaling with k8s, one adds/removes pods (not scaling more/less containers into the same pod)
+    - yes, k8s runs and orchestrates containers, but these containers must always run inside pods, it's not possible to deploy a container directly onto k8s
+  + possible to run multiple containers in the same pod
+  + pod ::
+    - is a wrapper that k8s insists every container needs
+    - is a shared execution environment, basically a shared collection of things an app needs to run (IP address in a network port, files from a file system, shared memory, etc.). Every pod is an execution environment, and the containers running in it share that environment
+      + containers in same pod share the same IP for example. Thus, if there is a need to connect to them from the outside, then there will be a need to map each container to its unique port. And if the containers need to communicate with each other, then they will also use the appropriate unique port, but over the pod's ==localhost== interface
+      + it's recommended to join containers in the same pod if they need to share the same resources, eg: share the same volume, memory, etc.
+        - however, multi-containers within a same pod should be reserved for special cases and not use excessively
+        - the most common example of multi-containers pods is a service mesh for the purpose of providing enhanced services :: it consists in injecting additional containers (the mesh) into every pods on a cluster, then the injected service mesh sits between the pod container and the network, where it can encrypt and decrypt traffic coming in and out of the pod
+          + the service mesh can also expose nice features such as telemetry and other advanced network features
+      + conversely, if they absolutely *don't* need to be tightly coupled, then loosely couple them into separate pods and over a network
+    - pod deployment is an atomic operation => all-or-nothing job ::
+      + pod shows up, available, and running for service once all the containers inside are up and running
+      + all containers in a pod are always scheduled to the same cluster node
+    - for the most parts, pods are deployed via some high level controller such as deployment or a stateful set, since they're the ones that brings features like scaling, self-healing, startups, persistent network IDs, etc. Pods don't do lots of things by themselves (don't self-heal, don't scale, etc.), but they still add lots of added value such as annotations, labels, apply policies, resource constraints and resource requirements, co-scheduling, etc.
+    - pods can die. It's possible to bolster them with high-level controllers (as seen above) to replace them when they die, the new generated pods come with new IPs, which can be challenging from a network perspective. Same, if an app is scaled up, all the new pods arrive with new IPs, and if scaled down, then one is shutting down IPs a client might be using. And again, if one is doing rolling update (iterating through shutting down old pods and replacing them with new ones with new versions, then tons of IP churns are created) => it's hard to rely on pods IPs, and really upsetting when IPs change when pushing updates. => k8s service objects to the rescue
+**** K8s service objects
 [2024-02-12 Mon 23:37]
+- notes ::
+  + similar to swarm service objects
+  + k8s service object ::
+    - object in the k8s API (just like a pod or a deployment), so the service object needs to be defined a yaml manifest and provide the yaml to the API server
+    - can be used to provide stable IPs and DNS names, load balance requests to pods (hence, if a pod dies and is replaced, the service is still watching and updates its list of valid healthy pods. The stable IPs and DNS names are never changed)
 **** Deployment
 [2024-02-12 Mon 23:37]
 **** K8s API and API server
 [2024-02-12 Mon 23:38]
+*** Declarative model and desired state
+[2024-02-14 Wed 00:46]
+- notes ::
+  + k8s operates on a declarative model :: describe what you want (desired state) in a configuration file (or 'manifest')
+    - contrary to the 'imperative model' which is detailing everything about how things should be done, the declarative model is just describing the main requirements, and it's up to the executioner (k8s) to decide about the details (which worker nodes to run stuff on, pulling and verifying images, security, protecting secrets, etc.). k8s supports both models though, but prefer the declarative one (see following example to know why)
+  + reconciliation with declarative model :: eg: desired state: 3 instances of a web front-end pod => 3 workers with one pod each
+    - in case of a worker failure :: reconciliation does k8s run a 3rd pod into one of the remaining 2 remaining workers
+      + no imperative interactions with k8s needed, did all by itself
+      + in the background, the control plane is running controllers, among which reconciliation loops (watch loop) that are constantly checking that the current observed state matches the desired one
 *** Getting k8s
 [2024-02-12 Mon 23:41]
 *** Some kubernetes commands
