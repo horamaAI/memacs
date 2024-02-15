@@ -527,11 +527,189 @@ In addition to the fields specified in the cron expression, there’s also suppo
     - after signing up, go to kubernetes section to setup and get access to k8s
     - when workers are up and running, linode provides a Kubeconfig file that allows the local kubectl to talk to the generated cluster
       + it's possible to use the kubeconfig file to connect directly to the generated cluster, or integrate it into a larger kubeconfig file that can be used to flip between various clusters that the local user is managing. Then, if for example one is using a local docker desktop, this one will list all the configured kubernetes cluster contexts. Otherwise, if one only has only kubectl installed, then some command line will be needed to switch between contexts (check https://kubernetes.io/docs/concepts/configuration/organize-cluster-access-kubeconfig/ , and file ==~/.kube/config== to find all of the available clusters and contexts)
-*** Some others kubernetes commands
+*** Some kubernetes commands
 **** notes
 - k8s config examples files :: https://github.com/nigelpoulton/getting-started-k8sa
-**** Pods
+  + checkout folder 'App/V1' for example to start with
+- process of building and deploying an app to k8s (in a nutshell) ::
+  1. build app code into a docker container image (docker build, etc.)
+  2. store the container in a registry repo (docker push, etc.)
+  3. define the image in a yaml manifest file
+  4. post the manifest to the API server
+  5. k8s takes care of the rest
+- reminder :: Dockerfile states to docker how to build the container image, and the yaml manifest for k8s configurations
+**** Deploying Pods
 [2024-02-15 Thu 02:13]
+***** notes
+  - checkout folder https://github.com/nigelpoulton/getting-started-k8s/tree/master/Pods for pods examples
+- multicontainer pod manifest example :: (from: https://github.com/nigelpoulton/getting-started-k8s/blob/master/Pods/multi-pod.yml)
+  + 2 containers in the pod : main-ctr (listening on port 80), and helper-ctr (on 9113)
+  + helper-ctr is a helper taking nginx logs and expose them in a format required by 3rd party tool 'prometheus' => complementary relationship: nginx is taking care of logs while serving a web page, but prometheus can't read nginx logs, so, the helper container does the formatting
+  + source :: 
+    #+begin_src yaml
+    apiVersion: v1
+    kind: Pod
+    metadata:
+      name: nginx
+    spec:
+      containers:
+      - name: main-ctr
+        image: nigelpoulton/nginxadapter:1.0
+        ports:
+        - containerPort: 80
+      # this helper is taking nginx logs and expose them in a format required by 3rd party tool 'prometheus'
+      - name: helper-ctr
+        image: nginx/nginx-prometheus-exporter
+        args: ["-nginx.scrape-uri","http://localhost/nginx_status"]
+        ports:
+        - containerPort: 9113    
+    #+end_src
+***** commands
+- post yaml manifests :: kubectl apply -f <pod-manifest-file> // -f to tell kubectl to deploy declaratively from the manifest file pod.yaml
+  + on post, kubectl sends the manifest to the API server, the request will be authenticated and authorized, the config will get persisted to the cluster store, and the scheduler will assign the pod to a node
+- show state of all instances of an object in one's namespace :: kubectl get <object> 
+  + example, show state of all pods :: kubectl get pods --watch
+  + each line is a pod, the number of containers within are shown in column 'READY'
+  + with more infos ::  kubectl get pods -o wide // such as to display the node the pod is running on, and the pod's IP
+    - reminder: pods vs nodes: node: instance of a linux/windows resource; pod: what run an application
+      + pods run on nodes, nodes are like the infrastructure, and pods are the apps
+  + namespaces are a way to logically partition a cluster
+  + examples of pods' states :: ==ContainerCreating==: still in process of creating a container (pulling image, etc.), ==Running==: well, for running pod, lol
+- show detailed infos about a resource :: kubectl describe <object>
+  + example, show detailed infos about a pod :: kubectl describe pod <name-of-pod>
+- delete object that's no more needed :: kubectl delete
+  + delete pod :: ~kubectl delete pod <name-of-pod>~ ; or from file used to deploy object with: ~kubectl delete -f <manifest-name-used-for-deployment>~
+**** Service objects
+[2024-02-15 Thu 19:57]
+***** notes
+- reminder: services can be used to provide stable IPs
+- services in k8s are REST objects in the k8s API
+- k8s services can be seen as having a front-end and a back-end ::
+  + front-end :: name, IP, DNS name, port, etc.
+    - the IP on the front-end is automatically assigned by k8s and it is called a ==ClusterIP== (since only to be used inside the cluster)
+    - the name of the service is registered with cluster DNS
+      + every cluster has an internal DNS service based on a technology called core DNS. It runs as a control plane feature that operates in a watch loop, watching the API for any new services, anytime it sees one, it registers the name of the service in DNS against that cluster IP => every container in every pods gets the details of this internal DNS in its /etc/resolve.conf file => every service name gets automatically registered with DNS, and every container uses DNS to resolve service names => every container in every pod can resolve every service name
+  + back-end :: way of the service to know which pod to send traffic to, such as with load balancing. back-end part is hidden and abstracted by the service
+    - which pod to forward traffic to ? :: => labels
+      + just put the pod label in the selector in the service manifest, and the service is going traffic to that pod
+      + every time a service is created, k8s automatically creates an endpoint object that is a dynamic list of healthy pods that match the service's label selector
+- accessing services details ::
+  1. access form within a cluster ::
+     - a service always gets a clusterIP (to be used inside the cluster), and the name of the service gets registered with the internal DNS service. Then, every container can use this DNS service when it's resolving names to IPs (eg: service 'app1' with IP XX.XX.XX.XX;) gets its own line in the cluster DNS ~app1=XX.XX.XX.XX~
+     - traffic routing
+       + if an app or a pod needs to talk to other services for example, they have to know its name. Its the responsibility of the k8s user to make sure the app knows the name of the service or app it needs to forward traffic to. Assuming it does:
+         1. the app sends the service name to the cluster DNS (request: 'what's the IP of service XX ?')
+            - reminder: the app can be any instance of a pod replica
+         2. the cluster DNS sends back the requested clusterIP
+         3. the app then sends traffic to the returned clusterIP, and this clusterIP takes care of getting that traffic to the right individual pods (checkout https://nigelpoulton.com/demystifying-kubernetes-service-discovery/ for further details)
+  2. access from outside a cluster ::
+     - NodePort ::
+       + services get network ports, and those ports can be mapped on every cluster's node to point back to the clusterIP => when outside of cluster, it's possible to send a request to the service through any node of the cluster, as long as it's on that port. K8s will then make sure it gets to the clusterIP, and further to the pod behind it (see point 1.)
+       + those network ports are called NodePort service (every node gets the port mapped)
+     - load balancer :: (yaml manifest: ~kind: Service~, and ~spec/type: LoadBalancer~)
+       + type of service, which usually seamlessly integrates with any cloud provider's native load balancers, and provide access to an app through from the internet
+      
+***** commands
+[2024-02-15 Thu 19:57]
+****** Example introduction
+- consider following manifest ::
+  #+begin_src yaml
+  # Simple Kubernetes Pod to deploy the app contained in nigelpoulton/getting-started-k8s:1.0
+  apiVersion: v1
+  kind: Pod
+  metadata:
+    name: hello-pod
+    labels:
+      app: web
+  spec:
+    containers:
+      - name: web-ctr
+        image: nigelpoulton/getting-started-k8s:1.0
+        ports:
+          - containerPort: 8080  
+  #+end_src
+- the web server is packaged in image :: ~image: nigelpoulton/getting-started-k8s:1.0~ (web server pod)
+****** creating service imperatively
+- reminder :: imperative mode, all through the k8s CLI, and not from a manifest
+- to see the web server, one needs to front it with a service ::
+  + expose the pod with a service :: kubectl expose pod <pod-name> --name=<name-of-the-service> --target-port=<service-port> --type=<type-of-exposure>
+    - '--name' :: to set the name of the service that will get registered with DNS
+    - so, for the example given above: ~kubectl expose pod hello-pod --name=hello-svc --target-port=8080 --type=NodePort~ // port exposed as a NodePort
+    - reminder :: ==NodePort== is the option to create a port for the service on *every cluster node*
+    - --target-port=8080 is the target port, the published port has to be found by listing the details of the service (~kubectl get svc~, see following)
+    - by default NodePorts are automatically assigned by k8s with port number between 30000-32767
+  + check status of (all) services :: kubectl get svc
+    - same as ~kubectl get <object>~ seen with pods
+    - it's possible to have in the list some system services such as one of type 'ClusterIP' that is the service that exposes the API inside the cluster
+    - NodePort also create ClusterIPs that they build on top of, since traffic that hit a NodePort through ports eventually get passed on to ClusterIP
+    - the published port can be seen in the port mapping, column 'PORT(S)'
+  + reaching the web server application from outside ::
+    - needs ::
+      + the public IP of any cluster's node ::
+        - any cluster node since NodePort create port on all nodes
+        - depends on the k8s engine, but for linode can be found on: kubernetes tab -> the needed cluster -> Node pools -> copy public IP of any node (column 'IP address')
+      + with docker desktop, can only use localhost
+    - request link :: [public-ip-address]:[published-node-port]
+  + delete service :: still same as for pods with kubectl delete: ~kubectl delete svc <service-name>~
+****** creating service declaratively (recommended)
+[2024-02-15 Thu 22:52]
+- example of service manifest ::
+  #+begin_src yaml
+  apiVersion: v1
+  kind: Service
+  metadata:
+    # name of service
+    name: ps-nodeport
+  spec:
+    type: NodePort
+    ports:
+    # 'port' is the port value the service listens on *inside* the cluster. So if another app is connecting via the service name ('ps-nodeport', which is registered with DNS), then 'port' is the internal port it needs to reach
+    - port: 80
+      # 'targetPort' is the port the app container is listening on
+      targetPort: 8080
+      # 'nodePort' is the published external port that will be mapped on every cluster node
+      # manually setting it here, but still need to be between 30000-32767
+      nodePort: 31111
+      # default protocol, but can also use UDP if needed
+      protocol: TCP
+    # label selector: list of labels that has to match the labels on the requested deployed pods
+    selector:
+      app: web  
+  #+end_src
+- apply service manifest :: still the same ~kubectl apply -f <svc-manifest-file>~
+- reminder :: 3 main k8s service types:
+  + ClusterIP (default) ::
+    - It's the default type set if the type is not specifically specified
+    - is for internal cluster connectivity, and gives stable IP within a cluster
+    - clusterIP type only makes the service available inside the cluster
+  + NodePort ::
+    - for external access via any of a cluster's node
+    - wraps default ClusterIP to add cluster-wide port on top
+    - on the con side, one has to know the name or IP address of at least one healthy cluster node, which can be tedious. LoadBalancers solve this issue by taking care of everything
+  + LoadBalancer ::
+    - add an extra layer by building on top of ClusterIP and NodePort, to seamlessly integrate with a cloud provider's LoadBalancer
+  + so in a nutshell, building from a lower level to the top :: ClusterIP (to get to a set of pods from inside the cluster) -> NodePort (allow access from outside a cluster) -> LoadBalancer (exposes pods to the internet via a cloud provider's Load balancer)
+    - if going with a LoadBalancer, then k8s does the work to wire everything back to the pods through a NodePort and a ClusterIP, no further manual configs needed
+  + ports in the manifest ::
+    - 'port' :: is the port value the service listens on *inside* the cluster. So if another app is connecting via the service name ('ps-nodeport', which is registered with DNS), then 'port' is the internal port it needs to reach
+    - 'targetPort' :: is the port the app container is listening on
+    - 'nodePort' :: is the published external port that will be mapped on every cluster node
+  + so, when making a request from outside of a cluster ::
+    1. 'NodePort' is used to reach any of the cluster node from outside
+    2. 'Port' is the ClusterIP (internal) used to forward from the entry point node to the service
+    3. 'TargetPort' is the one used to forward from the exposed service to the pods and containers
+- labels ::
+  + 'selector' :: is the label selector, basically the list of labels that has to match the labels on the requested deployed pods
+  + show existing pods labels :: kubectl get pods --show-labels // check column 'LABELS'
+- when a service is created, k8s also creates an endpoint object that holds all the pod IPs that match the label selector and which gets updated on the fly whenever pods come and go
+  + list the endpoints :: ~kubectl get ep~
+  + each endpoint object gets a name identical to the service that it works with, so don't be surprised to see the name in the endpoint list
+- get or describe to show detailed infos about the service (kubectl describe <object>) :: ~kubectl describe svc <svc-name>~
+  + in the details result, 'Endpoints' lists healthy pod IPs that match the label selector (should relates the target port)
+****** Integrate a service with a cloud load balancer
+[2024-02-16 Fri 00:33]
+- notes ::
+  + what it does :: create a high performance, highly available, internet-facing LoadBalancer with a public IP and have it route all the way to the required app => no need to ping any intermediary node to reach the service, the cloud load balancer does it itself
 ** Tips and tricks
 [2024-01-22 Mon 20:45]
 *** Preparing containerization
