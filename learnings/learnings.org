@@ -330,6 +330,7 @@ In addition to the fields specified in the cron expression, there’s also suppo
 - fun facts ::
   + made by google, written in go
   + kubernetes can sometimes be shortened to 'k8s' (8 for 8 characters between the starting k and the ending s) 
+- k8s is basically a lot of moving parts that work together to deliver the infrastructure and features to deploy and manage modern cloud native apps
 - what, why k8s ::
   + k8s is a platform for managing containerized applications at scale (cloud native microservices apps)
   + k8s can be seen as an OS of the cloud, it just needs some infos about the app, the different services the app is made of, the configs, and it just run it, relieving the person making the request from tedious work: k8s does all the work deciding which node to run services on, how to pull and verify images, start the containers attached to networks, etc.
@@ -377,6 +378,7 @@ In addition to the fields specified in the cron expression, there’s also suppo
 - notes ::
   + control plane are essential, they need to stay available, and so, better to run multiple ones for higher availability ("HA", 3 or 5, odd number. More than 5 is possible, but would imply more time for control planes to reach consensus)
   + best to keep them in separate failure domains connected by fast reliable networks (failure domains: regions or components of infrastructure that could fail. Each has its own risks and challenges to architect for. eg: putting control planes in same data center rack, and under same potential risk of failure could risk failures on all of them at once)
+  + have to be linux (as opposed to workers that can be windows or linux)
   + leader vs followers control planes :: k8s operates an active passive model for the managers, where only one control plane node is making active changes to the cluster at any one time (leader control plane). The others are followers.
     - the followers control planes proxy connections over to the leader so that the leader can make the actions
     - if leader goes down, a new one is elected :: every control plane node runs a bunch of smaller services responsible for individual control plane features, but also, every control plane node runs the full set of features, so any one of them can act as a leader
@@ -390,7 +392,8 @@ In addition to the fields specified in the cron expression, there’s also suppo
       + exposes a RESTful API over a security port, and consumes JSON and yaml
         - in the case of users deploying and managing applications, a yaml file describing the need is sent (for example), the API server authenticates, authorizes, and validates the request. If all is good, it instructs other managers to deploy it and manage it
     - cluster store ::
-      + only persistent component of entire control plane, persists cluster state and configs (including configs and states of all apps)
+      + only persistent component of entire control plane, persists cluster states and configs (including configs and states of all apps)
+      + requires plans to protect it and recover it in case of failures
       + based on etcd NoSQL database (so far), and automatically distributed throughout all control plane nodes
         - possible to swap it with something else, or run etcd bit on dedicated nodes (advanced use though)
       + critical to cluster operations, and on large busy clusters can be the main performance bottleneck (distribute database at scale can be hard on etcd)
@@ -455,11 +458,54 @@ In addition to the fields specified in the cron expression, there’s also suppo
   + similar to swarm service objects
   + k8s service object ::
     - object in the k8s API (just like a pod or a deployment), so the service object needs to be defined a yaml manifest and provide the yaml to the API server
-    - can be used to provide stable IPs and DNS names, load balance requests to pods (hence, if a pod dies and is replaced, the service is still watching and updates its list of valid healthy pods. The stable IPs and DNS names are never changed)
+    - can be used to provide stable IPs and DNS names, load balance requests to pods. Hence, if a pod dies and is replaced, the service is still watching and updates its list of valid healthy pods. The stable IPs and DNS names are never changed: part of k8s contract with the service is that once it's deployed, the IPs and DNS names will never change:
+      + in case of pods scaling for example, all the new pods with new IPs get added to the services list of valid pods, the exposed IPs though will stay the same
+      + that's the job requires of a service: a service is a stable abstraction point for multiple pods that also provide basic load balancing
+    - the process of adding pods to the list of pods the service will forward traffic to, is by using ==labels==
+      + labels ::
+        - everything in k8s gets labeled
+        - multi labeling possible, eg for a back-end labels: ==be, Prod, 1.3 (the version)==
+        - if a pod is labeled the same as other managed pods, and this latter pods are serviced by a service object, then the service will also load balance traffic to that mislabeled pod as well. Same if the service is directing traffic based on partial, then pods that match this particular partial label will also be load balanced.  => careful on the labeling and service routing
+          + on the pro side, restricting traffic on specific labels is easy, just restrict the label on the service routing, eg: remove older versions of a component by specifying the routing in the service to newer versions. They will still exists, but they won't get any traffic 
+    - services only send traffic to healthy pods, not healthy pods are dropped from the services' list, and they won't get any traffic
+    - services can be used to configure session affinity, can be configured to send traffic to endpoints outside of the cluster, etc.
 **** Deployment
 [2024-02-12 Mon 23:37]
+- notes ::
+  + deployment provides declarative updates for Pods and replicas
+  + pods don't have some advanced features such as self-healing, scaling, etc. Some of those are done via high-level deployment controllers
+  + k8s supports several high-level controllers ::
+    - deployment :: for stateless apps, do rolling update, scaling, self-healing, etc.
+    - stateful sets (sts) :: similar to deployment, but for stateful apps; add things like guaranteed startup ordering, persistent network IDs
+    - daemon sets (ds) :: one per node
+    - cron jobs (cronjob) :: for time-based short-lived jobs
+  + on the control plane back-ends, those high-level controllers are all implemented via controllers ::
+    - for the deployment controller for example, there is a deployment controller running on the control plane, and that watches for deployment configurations that are posted to the cluster (the desired state). In other words, the deployment watches API server for new deployments. When it notices one, it implements it, and then constantly watches if the observed state matches the desired one (reconciliation loop). Same for stateful states and others controllers, they all operate as reconciliation loops on the control plane.
+  + process for deployment ::
+    1. define desired state in a yaml manifest and give it to the API server
+       - the deployment is defined in the yaml with the setting: ~kind: Deployment~
+    2. k8s implements the state
+    3. in case of mismatch between observed and desired, k8s does the reconciliation by itself, no need for human intervention
+  + behind the scene, the deployment works together with the replica set controller. The job of the replica set is to manage the number of replicas. The deployment then sits above the replica set and manages the job of the replica set
+    - embedded components :: => the app container sits within a pod (for labeling, annotations, co-scheduling, etc.), which is managed by the replica set (replica count, self-healing, old versions, etc), which in turn is managed by the deployment (for updates and rollbacks)
+  + just like pods and services, deployments are rest objects in the k8s API
+  + process ::
+    1. deployment yaml manifest is /deployed/ by giving the manifest to the API server through kubectl for example
+    2. the desired state gets logged in the cluster source as a record of intent
+    3. the scheduler issues work to the cluster node
+    4. in the background there is a control loop making sure observed and desired states match
 **** K8s API and API server
 [2024-02-12 Mon 23:38]
+- notes ::
+  + pods, services, deployments, replicas, nodes, etc. are all objects or resources in the k8s API
+  + API ::
+    - the k8s API is a catalog of features with a definition of how each of those work
+      + for example, for the deployment, fields like 'metadata, labels, replicas, progressDeadlineSeconds, etc.', are all properties of the k8s deployment resource as defined in the manifest. Example, with ~apiVersion: apps/v1~, version 1 of apps subgroup of k8s API catalog (path [/apps/v1]) will be used for configuring the remaining of the properties in the manifest. Older versions might not have supported those properties, and future versions might support more. The point is, the API contains the definition set of every object resource in k8s, and when a manifest is posted to the API server, it will recognize the version for the definition of a deployment object
+    - the k8s API is already massive and it keeps on evolving
+  + API server ::
+    - the API server is a service on the control plane that exposes the API over a secure restful (but also https) endpoint. It's just the way to use to communicate with the API
+      + eg: posting a deployment manifest to the API server through kubectl. Kubectl is already pre-configured to know where to find the API server and how to manage authentication. Same, when new deployments are needed, just kubectl to send new manifest with the new desired state to the API server. Also possible to query via kubectl the API server for an object's state
+    - the API is versioned and split into multiple subgroups ('core' for pods, service, vol, etc.; 'apps' for deployment, replica set, stateful sets, etc; 'storage.k8s.io' for PersistentVolumeClaim (pvc), sc, pv, etc.; 'networking.k8s.io' for ing, netpol, etc.)
 *** Declarative model and desired state
 [2024-02-14 Wed 00:46]
 - notes ::
@@ -471,7 +517,21 @@ In addition to the fields specified in the cron expression, there’s also suppo
       + in the background, the control plane is running controllers, among which reconciliation loops (watch loop) that are constantly checking that the current observed state matches the desired one
 *** Getting k8s
 [2024-02-12 Mon 23:41]
-*** Some kubernetes commands
+- notes ::
+  + docker desktop :: is a bit limited for k8s. For example it doesn't provide multiple nodes clusters, and doesn't integrate with cloud load balancers. But it's free.
+    - it is also not appropriate for production k8s, just for development
+    - need to enable k8s on its settings
+  + checkout ==Linode Kubernetes Engine== for a richer experience instead (https://www.linode.com/products/kubernetes/). Not free though.
+    - same for another cloud k8s, it's up to you, linode is just easier
+    - linode is still a hosted k8s. So, the cloud provider takes care of all the control plane work => can only access to worker nodes and API endpoint
+    - after signing up, go to kubernetes section to setup and get access to k8s
+    - when workers are up and running, linode provides a Kubeconfig file that allows the local kubectl to talk to the generated cluster
+      + it's possible to use the kubeconfig file to connect directly to the generated cluster, or integrate it into a larger kubeconfig file that can be used to flip between various clusters that the local user is managing. Then, if for example one is using a local docker desktop, this one will list all the configured kubernetes cluster contexts. Otherwise, if one only has only kubectl installed, then some command line will be needed to switch between contexts (check https://kubernetes.io/docs/concepts/configuration/organize-cluster-access-kubeconfig/ , and file ==~/.kube/config== to find all of the available clusters and contexts)
+*** Some others kubernetes commands
+**** notes
+- k8s config examples files :: https://github.com/nigelpoulton/getting-started-k8sa
+**** Pods
+[2024-02-15 Thu 02:13]
 ** Tips and tricks
 [2024-01-22 Mon 20:45]
 *** Preparing containerization
