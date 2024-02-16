@@ -392,7 +392,7 @@ In addition to the fields specified in the cron expression, there’s also suppo
       + exposes a RESTful API over a security port, and consumes JSON and yaml
         - in the case of users deploying and managing applications, a yaml file describing the need is sent (for example), the API server authenticates, authorizes, and validates the request. If all is good, it instructs other managers to deploy it and manage it
     - cluster store ::
-      + only persistent component of entire control plane, persists cluster states and configs (including configs and states of all apps)
+      + only persistent component of entire control plane, persists cluster status and configs (including configs and status of all apps)
       + requires plans to protect it and recover it in case of failures
       + based on etcd NoSQL database (so far), and automatically distributed throughout all control plane nodes
         - possible to swap it with something else, or run etcd bit on dedicated nodes (advanced use though)
@@ -400,7 +400,7 @@ In addition to the fields specified in the cron expression, there’s also suppo
       + have recovery plans in place (best to regularly test them)
     - controller manager :: ==kube-controller-manager==
       + kind of a controller of controllers (node controller, deployment controller, endpoints controller, namespace controller, etc.)
-      + runs as a reconciliation loop ("watch loop") :: watches the bits of the cluster it is responsible for, and looks for changes. Checks if the observed states match the desired state
+      + runs as a reconciliation loop ("watch loop") :: watches the bits of the cluster it is responsible for, and looks for changes. Checks if the observed status match the desired state
     - scheduler :: ==kube-scheduler==
       + watches API server for new task and assigns them to nodes (tree hiding the forest, it does more: (anti-)affinity, constraints, taints, resource management, etc.)
   + ex: run kubectl to deploy a new application
@@ -493,7 +493,7 @@ In addition to the fields specified in the cron expression, there’s also suppo
     1. deployment yaml manifest is /deployed/ by giving the manifest to the API server through kubectl for example
     2. the desired state gets logged in the cluster source as a record of intent
     3. the scheduler issues work to the cluster node
-    4. in the background there is a control loop making sure observed and desired states match
+    4. in the background there is a control loop making sure observed and desired status match
 **** K8s API and API server
 [2024-02-12 Mon 23:38]
 - notes ::
@@ -568,13 +568,13 @@ In addition to the fields specified in the cron expression, there’s also suppo
 - post yaml manifests :: kubectl apply -f <pod-manifest-file> // -f to tell kubectl to deploy declaratively from the manifest file pod.yaml
   + on post, kubectl sends the manifest to the API server, the request will be authenticated and authorized, the config will get persisted to the cluster store, and the scheduler will assign the pod to a node
 - show state of all instances of an object in one's namespace :: kubectl get <object> 
-  + example, show state of all pods :: kubectl get pods --watch
+  + example, show live status of all pods :: kubectl get pods --watch
   + each line is a pod, the number of containers within are shown in column 'READY'
   + with more infos ::  kubectl get pods -o wide // such as to display the node the pod is running on, and the pod's IP
     - reminder: pods vs nodes: node: instance of a linux/windows resource; pod: what run an application
       + pods run on nodes, nodes are like the infrastructure, and pods are the apps
   + namespaces are a way to logically partition a cluster
-  + examples of pods' states :: ==ContainerCreating==: still in process of creating a container (pulling image, etc.), ==Running==: well, for running pod, lol
+  + examples of pods' status :: ==ContainerCreating==: still in process of creating a container (pulling image, etc.), ==Running==: well, for running pod, lol
 - show detailed infos about a resource :: kubectl describe <object>
   + example, show detailed infos about a pod :: kubectl describe pod <name-of-pod>
 - delete object that's no more needed :: kubectl delete
@@ -810,7 +810,53 @@ In addition to the fields specified in the cron expression, there’s also suppo
 - scaling :: update the deployment manifest with the new number of required replicas, post it, et voila, k8s takes care of it
 ***** Rolling updates and version rollbacks
 [2024-02-16 Fri 02:13]
-- 
+- since replicaSet handle replicas and self-healing, and deployment are in charge of updates, in order to configure the rolling updates in the deployment manifest, one has to do it in the deployment part (at the bottom of the deployment, but before pods specs, which are defined in 'spec/template')
+- example ::
+  #+begin_src yaml
+  # ...
+  metadata:
+    name: web-deploy
+    labels:
+      app: web
+  spec:
+    replicas: 5
+    selector:
+      matchLabels:
+        app: web
+    # here, the rolling updates specs
+    minReadySeconds: 5
+    strategy:
+      # to state that any time one updates anything in the container's specs below, instead of deleting all existing pods and replacing them straight away, do it as a methodical rolling update
+      type: RollingUpdate
+      rollingUpdate:
+        # while performing updates, we can have, at the most, 0 (maxUnavailable) less than number of replicas defined in 'spec/replicas'. It's just basically saying we can never go less than the defined number of replicas
+        maxUnavailable: 0
+        # maxSurge, to say that during the update, 'maxSurge' number of bumps is allowed (can bump up 1 more than the desired state. only during updates)
+        maxSurge: 1
+    # pod's specs
+    template:
+      metadata:
+        labels:
+          app: web
+  # ...
+  #+end_src
+- the rolling update above is just basically saying that during updates, k8s can go up to 'replicas' + 1 (=6), and never below 'replicas'
+  + k8s will deploy one pod to the new version (thus 6 pods), and once everything is up and running for 'minReadySeconds' = 5secs, k8s will terminate one old pod, taking the number to the original 5, fire up a new pod again (=> 6 again), wait for 5secs, kill one more old pod (back to 5), and so forth, until it's all done
+  + this back and forth process is performed so that the app stays constantly available for service user
+  + reminder: for the update, there must be a change depicted in the container's specs of the manifest, for example: taking image: nigelpoulton/getting-started-k8s:1.0 to version 2.0
+- process ::
+  + post new rolling updates deployment manifest :: kubectl apply -f <rolling-updates-manifest>
+  + monitor status of rolling updates (can do both at same time on separate cli) ::
+    - check pods status :: kubectl get pods --watch
+    - check status of ongoing (if done right after posting the manifest) updates through kubectl rollout status :: kubectl rollout status deploy <deployment-name>
+- rollbacks ::
+  + reminder: on rolling updates the old replicaSet is still present on the cluster
+    - can check (describe) its state :: ~kubectl describe rs <replicaset-name>~
+      + will get a bunch of infos about it, especially that the old pods were deleted, and its previous condition before the update
+  + process
+    1. check the deployment rollout history for the needed revision :: ~kubectl rollout history deploy <deployment-name>~
+    2. rollback to the needed version :: ~kubectl rollout undo deploy <deployment-name> --to-revision <number-of-needed-rollback>~
+    3. monitor status of ongoing (if done right after posting the manifest) updates through kubectl rollout status :: kubectl rollout status deploy <deployment-name>
 ** Tips and tricks
 [2024-01-22 Mon 20:45]
 *** Preparing containerization
