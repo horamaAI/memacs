@@ -710,6 +710,107 @@ In addition to the fields specified in the cron expression, there’s also suppo
 [2024-02-16 Fri 00:33]
 - notes ::
   + what it does :: create a high performance, highly available, internet-facing LoadBalancer with a public IP and have it route all the way to the required app => no need to ping any intermediary node to reach the service, the cloud load balancer does it itself
+  + simpler process, but that requires a cloud k8s engine such as Linode (LKE) ::
+    1. push the loadBalancer manifest :: kubectl apply -f <pod-manifest-file>
+    2. with loadBalancer running on a public cloud, one can get the public IP with a 'get' on services: ~kubectl get svc~ (column 'EXTERNAL-IP')
+    3. can just use the public IP to request the app directly, with no port specified, the cloud's load balancer takes care of the mapping
+       - only works on clouds with supported load balancer
+       - to find LKE load balancer, checkout tab 'NodeBalancers'
+       - what happens ::
+         1. hit the public IP
+         2. traffic gets forwarded on to one of the nodes on the NodePort, and from there to the ClusterIP on the pod network, and onto the pod
+- example of manifest for LoadBalancer type ::
+  #+begin_src yaml
+  # LoadBalancer Service. Will only work on supported cloud platforms (AKS, EKS, GKE, DOK, IBM, LKE etc...)
+  # Listens externally on 80 and forwards to Pod/container on 8080
+  apiVersion: v1
+  kind: Service
+  metadata:
+    name: ps-lb
+  spec:
+    type: LoadBalancer
+    ports:
+    # listens on port 80, and then map traffic all the way back to the app, which is listening to port 8080
+    - port: 80
+      targetPort: 8080
+    selector:
+      app: web
+  #+end_src
+**** Kubernetes Deployments
+[2024-02-16 Fri 01:01]
+***** Introduction
+- deployments are part of k8s API, in the 'apps' subgroup
+- main use: self-healing, scaling, rollouts, rollbacks
+- reminder: app wrapped in a pod, wrap in a replicaSet, wrap in a deployment
+  + the user never deals with low level controller, for example, deployment configuration never deals with the replicaSet, he justs deals with deployment, and then deployment handles the replicaSet operations behind the scene
+- flow ::
+  1. create deployment manifest
+  2. post it as a request to the API server where it's authenticated and authorized
+  3. if all is good, the cluster store stores the record of intent ('desired state')
+  4. the pods are scheduled in nodes as stated in the desired state
+  5. in the background a replicaSet controller makes sure the observed matches the desired state
+  6. rolling updates :: rollouts and rollbacks
+     - rollouts ::
+       + on any update, such as an update of an image, a new manifest with the new version of the image is posted to the API server
+       + k8s doesn't remove the original replicaSet, but add a new one => then have at least 2 replicaSet
+       + k8s updates pods one at the time: winds the new pod up, and down the old one, one pod at the time => smoother /rolling update/
+       + the old replicaSet is still there, it's not managing any pod anymore, but it's still there => it's easier to reverse to previous versions
+     - rollbacks :: opposite: wind one of the old replica up, and wind the current one down
+     - many more configs possible :: such as: wait 10' after each new pod is up before marking it as healthy and moving on to the next one; liveness probes; readiness probes; etc.
+- some specs to know ::
+  + 'metadata/labels' has nothing to do with labels selector seen with pods
+  + the deployment labels selectors are defined in 'spec/selector/matchLabels', and are how the deployment know which pods to work on when they do things like rolling updates
+  + the selector 'spec/selector/matchLabels' has to match the labels in 'template/metadata/labels' ::
+    - the containers specs are the one defined in 'spec/template/spec/containers'
+    - the pods specs are the one defined in 'spec/template'
+    - and everything remaining are the deployment specs
+    - => the deployment selector specs 'spec/selector/matchLabels' have to match the labels in the pod spec 'template/metadata/labels' :: it so the deployment can manage the right pods
+      + in other words, 'spec/selector/matchLabels' is stating which pods on the cluster the deployment is going to manage
+- example of a deployment manifest ::
+  #+begin_src yaml
+  # Simple deployment used to deploy and manage the app in nigelpoulton/getting-started-k8s:1.0
+  apiVersion: apps/v1
+  kind: Deployment
+  metadata:
+    name: web-deploy
+    # has nothing to do with labels selector seen with pods
+    labels:
+      app: web
+  spec:
+    replicas: 5
+    # stating which pods on the cluster the deployment is going to manage
+    selector:
+      matchLabels:
+        app: web
+    template:
+      metadata:
+        labels:
+          app: web
+      spec: 
+        terminationGracePeriodSeconds: 1
+        containers:
+        - name: hello-pod
+          image: nigelpoulton/getting-started-k8s:1.0
+          # to require to always pull the image from a registry, never use a local copy of the image. Safer to always use a safe-proof image
+          imagePullPolicy: Always
+          ports:
+          - containerPort: 8080
+  #+end_src
+- some general commands ::
+  + apply deployment :: same as any other k8s object: ~kubectl apply -f <deployment-manifest-file>~
+  + inspect deployment resource (get or describe) :: ~kubectl get deploy~
+  + inspect replica resource (get or describe) :: ~kubectl get rs~
+    - name of replica is based on the deployment's name, and also has the cryptographic hash of the pod's spec
+  + check the pods' IPs that are served through the service you need, through its associated endpoint description :: ~kubectl describe ep <service-name>~
+    - as seen before, anytime one creates a service, an associated endpoint object is automatically created, which hosts a list of healthy pods that match the label selector
+***** Self-healing and Scaling
+[2024-02-16 Fri 02:13]
+- self-healing :: in case of a pod's failure, k8s winds up a new pod to replace it and match the observed-desired state. So, yes, cool
+  + same if a node fails, the pods running on it fail too, and the observed-desired match is broken => no fuss, k8s lights up new nodes
+- scaling :: update the deployment manifest with the new number of required replicas, post it, et voila, k8s takes care of it
+***** Rolling updates and version rollbacks
+[2024-02-16 Fri 02:13]
+- 
 ** Tips and tricks
 [2024-01-22 Mon 20:45]
 *** Preparing containerization
