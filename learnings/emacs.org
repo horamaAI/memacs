@@ -589,6 +589,21 @@ the daily agenda view.
 
 
 * emacs IDE
+* Reproducible research with emacs
+[2024-01-14 Sun 02:05]
+** Notes
+- sources ::
+  + MOOC "Recherche reproductible : principes méthodologiques pour une science transparente", on fun-mooc.fr
+- issues raised by poorly reproducible research :: 
+- requirements :: 
+** Reproducibility in research
+[2024-01-14 Sun 04:29]
+*** Categories of reproducibility
+- Notes ::
+  + differ depending on the scientific field
+
+** git and emacs
+[2024-01-14 Sun 04:16]
 
 
 * Hledger (emacs finance)
