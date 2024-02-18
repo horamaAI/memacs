@@ -4,6 +4,8 @@
 
 * ansible
 [2024-02-18 Sun 22:24]
+** Notes
+
 * computer engineering linguee
 [2024-01-27 Sat 23:08]
 - LDAP authentication :: Lightweight directory access protocol (LDAP): a protocol that helps users find data about organizations, persons, and more. LDAP has two main goals: 1. store data in the LDAP directory, 2. authenticate users to access the directory. Allows for example to create users and groups that match one's organizational structure
