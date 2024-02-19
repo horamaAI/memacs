@@ -1721,7 +1721,8 @@
   + can use jars for libraries, utils, and helper classes
 - SDK :: Software development kit
 - Tomcat :: is not an application server, but a web server, lightweight an easy to use
-  
+* Gradle
+[2024-02-19 Mon 17:11]
 * Testing
 [2023-12-17 Sun 03:51]
 ** JUnit 5

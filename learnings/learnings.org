@@ -921,6 +921,3 @@ In addition to the fields specified in the cron expression, there’s also suppo
     - send JSON from a local file :: curl --json @json.txt https://example.com/
     - send JSON passed to curl on stdin :: echo '{"a":"b"}' | curl --json @- https://example.com/
     - send JSON from a file and concatenate a string to the end :: curl --json @json.txt --json ', "end": "true"}' https://example.com/
-* gradle
-[2024-02-18 Sun 22:21]
-
