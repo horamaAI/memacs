@@ -1723,6 +1723,50 @@
 - Tomcat :: is not an application server, but a web server, lightweight an easy to use
 * Gradle
 [2024-02-19 Mon 17:11]
+** Spring and gradle
+*** Introduction
+- notes ::
+  + sources ::
+    - https://docs.spring.io/spring-boot/docs/3.2.2/gradle-plugin/reference/htmlsingle/
+  + Spring Boot Gradle Plugin provides Spring Boot support in Gradle. It allows packaging executable jar or war archives, run Spring Boot applications, and use the dependency management provided by ==spring-boot-dependencies==
+    - gradle's plugin for spring boot :: ~plugins {id("org.springframework.boot") version "3.2.2"}~
+  + getting started ::
+    - eg ::
+      #+begin_src kotlin
+      plugins {
+        java
+        war
+        // plugin to enable springboot on gradle
+        id("org.springframework.boot") version "3.2.2"
+        // plugin to manage dependencies in the Spring Boot application
+        id("io.spring.dependency-management") version "1.1.4"
+      }
+      #+end_src
+    - managing dependencies ::
+      + to manage dependencies in a Spring Boot application, one can either apply the ==io.spring.dependency-management== plugin or use Gradle’s native bom support. The primary benefit of the former is that it offers property-based customization of managed versions, while using the latter will likely result in faster builds
+        - when applying ==io.spring.dependency-management== plugin, Spring Boot’s plugin will automatically import the ==spring-boot-dependencies== bom from the version of Spring Boot used. This provides a similar dependency management experience to the one that’s enjoyed by Maven users. For example, it allows to omit version numbers when declaring dependencies that are managed in the bom => can declare dependencies in the usual way but omit the version number
+          #+begin_src kotlin
+          dependencies {
+            implementation("org.springframework.boot:spring-boot-starter-web")
+            implementation("org.springframework.boot:spring-boot-starter-data-jpa")
+          }
+          #+end_src
+      + customizing managed versions ::
+        - the ==spring-boot-dependencies== bom that is automatically imported when the dependency management plugin is applied, uses properties to control the versions of the dependencies that it manages. To customize a managed version, one just needs to se its corresponding property, eg: to customize the version of SLF4J which is controlled by the ==slf4j.version== property: ~extra["slf4j.version"] = "1.7.20"~.
+          + Browse the [[https://docs.spring.io/spring-boot/docs/3.2.2/reference/htmlsingle/#appendix.dependency-versions.properties][Dependency versions Appendix]] in the Spring Boot reference for a complete list of these properties.
+      + using spring boot’s dependency management in isolation ::
+        - Spring Boot’s dependency management can be used in a project without applying Spring Boot’s plugin to that project. The SpringBootPlugin class provides a BOM_COORDINATES constant that can be used to import the bom without having to know its group ID, artifact ID, or version:
+          1. configure the project to depend on the Spring Boot plugin but do not apply it
+             #+begin_src kotlin
+             plugins {
+               id("org.springframework.boot") version "3.2.2" apply false
+             }
+             #+end_src
+             - The Spring Boot plugin’s dependency on the dependency management plugin means that you can use the dependency management plugin without having to declare a dependency on it. This also means that you will automatically use the same version of the dependency management plugin as Spring Boot uses.
+          2. apply the dependency management plugin and then configure it to import Spring Boot’s bom:
+             #+begin_src kotlin
+             #+end_src
+
 * Testing
 [2023-12-17 Sun 03:51]
 ** JUnit 5
