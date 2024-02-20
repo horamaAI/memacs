@@ -13,7 +13,7 @@
    [default default default italic underline success warning error])
  '(ansi-color-names-vector
    ["#282a36" "#ff5555" "#50fa7b" "#f1fa8c" "#6272a4" "#bd93f9" "#8be9fd" "#f8f8f2"])
- '(custom-enabled-themes '(spacemacs-dark))
+ '(custom-enabled-themes '(timu-spacegrey))
  '(custom-safe-themes
    '("bffa9739ce0752a37d9b1eee78fc00ba159748f50dc328af4be661484848e476" "7f01d214ef35925074125b88da30eebd624836dcf09336d13bfe23827827e40b" "9b7f37885eec6ef0441bae9c5ea4a1dd2484eef4342aa3f88d1691722f769fba" "c7000071e9302bee62fbe0072d53063da398887115ac27470d664f9859cdd41d" "5f9b1b414d4e0b793f7907b1a48c7bc0591f06d8d9e8e144524b974d8bafa5ef" "79586dc4eb374231af28bbc36ba0880ed8e270249b07f814b0e6555bdcb71fab" "18bec4c258b4b4fb261671cf59197c1c3ba2a7a47cc776915c3e8db3334a0d25" default))
  '(ensime-sem-high-faces
