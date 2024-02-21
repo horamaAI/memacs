@@ -1728,6 +1728,8 @@
 *** Notes
 - gradle comes with a built-in task, called ==init==, that initializes a new Gradle project (~gradle init~). The ==init== task uses the (also built-in) wrapper task to create a Gradle wrapper script, ==gradlew==.
 - ~gradle init~ prompts various options to select: the type of project to generate (basic, application, library, etc.), the implementation language, the build script DSL (kotlin, or groovy), and the test framework.
+*** Packaging Executable Archives
+**** Packaging Executable Jars
 - the ==init== task generates the new project with the following structure: (for a java library project called ==demo==)
   - gradle :: generated folder for wrapper files
     - libs.versions.toml :: generated version catalog
@@ -1780,6 +1782,16 @@
         useJUnitPlatform() // use JUnit Platform for unit tests
     }
     #+end_src
+***** Assembling the library Jar
+[2024-02-22 Thu 00:06]
+- to build the project, one can just run the ==build== task. However, it's considered good form to use the regular gradle command when a project includes a wrapper script: ~./gradlew build~
+  + when building for the first time the wrapper script, there may be a delay while that version of gradle is downloaded and stored locally in the ==~/.gradle/wrapper/dists== folder. Plus, gradle will check if the required dependencies are in the cache (under ==~/.gradle directory==). If not, the libraries are downloaded and stored, and the next time the build is run, the cached versions will be used.
+  + the ==build== task compiles the classes, runs the tests, and generates a test report. The html test report is located at ==lib/build/reports/tests/test/index.html==.
+- the newly packaged JAR file can be located in directory ==lib/build/libs== with the name ==lib.jar==
+- can verify the validity of the archive by running the command ~jar tf lib/build/libs/lib.jar~
+***** Customising the library JAR 
+***** The Java Library Plugin
+[2024-02-21 Wed 23:39]
 ** Spring and gradle
 *** Introduction
 - notes ::
