@@ -1723,6 +1723,63 @@
 - Tomcat :: is not an application server, but a web server, lightweight an easy to use
 * Gradle
 [2024-02-19 Mon 17:11]
+** standalone gradle
+[2024-02-21 Wed 22:48]
+*** Notes
+- gradle comes with a built-in task, called ==init==, that initializes a new Gradle project (~gradle init~). The ==init== task uses the (also built-in) wrapper task to create a Gradle wrapper script, ==gradlew==.
+- ~gradle init~ prompts various options to select: the type of project to generate (basic, application, library, etc.), the implementation language, the build script DSL (kotlin, or groovy), and the test framework.
+- the ==init== task generates the new project with the following structure: (for a java library project called ==demo==)
+  - gradle :: generated folder for wrapper files
+    - libs.versions.toml :: generated version catalog
+    - wrapper
+      - gradle-wrapper.jar
+      - gradle-wrapper.properties
+  - gradlew :: gradle wrapper start scripts
+  - gradlew.bat :: gradle wrapper start scripts
+  - settings.gradle.kts :: settings file to define build name and subprojects
+  - lib
+    - build.gradle.kts :: build script of ==lib== project
+    - src
+      - main
+        - java :: default Java source folder
+          - demo
+            - Library.java
+      - test
+        - java :: default Java source folder
+          - demo
+            - LibraryTest.java
+- settings.gradle(.kts) ::
+  + ex:
+    #+begin_src kotlin
+    rootProject.name = "demo"
+    include("lib")
+    #+end_src
+  + rootProject.name :: assigns a name to the build, which overrides the default behavior of naming the build after the directory it’s in. It’s recommended to set a fixed name as the folder might change if the project is shared - e.g. as root of a Git repository
+  + include("lib") :: defines that the build consists of one subproject called lib that contains the actual code and build logic. More subprojects can be added by additional include(…​) statements.
+  + the build contains one subproject called ==lib== that represents the Java library to build. It is configured in ==lib/build.gradle(.kts)==:
+    #+begin_src kotlin
+    plugins {
+        `java-library` // apply the java-library plugin for API and implementation separation
+    }
+    
+    repositories {
+        mavenCentral() // use Maven Central for resolving dependencies
+    }
+    
+    dependencies {
+        testImplementation(libs.junit.jupiter) // use JUnit Jupiter for testing
+    
+        testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+    
+        api(libs.commons.math3) // the dependency is exported to consumers, that is to say found on their compile classpath
+    
+        implementation(libs.guava) // the dependency is used internally, and not exposed to consumers on their own compile classpath
+    }
+    
+    tasks.named<Test>("test") {
+        useJUnitPlatform() // use JUnit Platform for unit tests
+    }
+    #+end_src
 ** Spring and gradle
 *** Introduction
 - notes ::
