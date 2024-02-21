@@ -1742,31 +1742,97 @@
         id("io.spring.dependency-management") version "1.1.4"
       }
       #+end_src
-    - managing dependencies ::
-      + to manage dependencies in a Spring Boot application, one can either apply the ==io.spring.dependency-management== plugin or use Gradle’s native bom support. The primary benefit of the former is that it offers property-based customization of managed versions, while using the latter will likely result in faster builds
-        - when applying ==io.spring.dependency-management== plugin, Spring Boot’s plugin will automatically import the ==spring-boot-dependencies== bom from the version of Spring Boot used. This provides a similar dependency management experience to the one that’s enjoyed by Maven users. For example, it allows to omit version numbers when declaring dependencies that are managed in the bom => can declare dependencies in the usual way but omit the version number
-          #+begin_src kotlin
-          dependencies {
-            implementation("org.springframework.boot:spring-boot-starter-web")
-            implementation("org.springframework.boot:spring-boot-starter-data-jpa")
-          }
-          #+end_src
-      + customizing managed versions ::
-        - the ==spring-boot-dependencies== bom that is automatically imported when the dependency management plugin is applied, uses properties to control the versions of the dependencies that it manages. To customize a managed version, one just needs to se its corresponding property, eg: to customize the version of SLF4J which is controlled by the ==slf4j.version== property: ~extra["slf4j.version"] = "1.7.20"~.
-          + Browse the [[https://docs.spring.io/spring-boot/docs/3.2.2/reference/htmlsingle/#appendix.dependency-versions.properties][Dependency versions Appendix]] in the Spring Boot reference for a complete list of these properties.
-      + using spring boot’s dependency management in isolation ::
-        - Spring Boot’s dependency management can be used in a project without applying Spring Boot’s plugin to that project. The SpringBootPlugin class provides a BOM_COORDINATES constant that can be used to import the bom without having to know its group ID, artifact ID, or version:
-          1. configure the project to depend on the Spring Boot plugin but do not apply it
-             #+begin_src kotlin
-             plugins {
-               id("org.springframework.boot") version "3.2.2" apply false
-             }
-             #+end_src
-             - The Spring Boot plugin’s dependency on the dependency management plugin means that you can use the dependency management plugin without having to declare a dependency on it. This also means that you will automatically use the same version of the dependency management plugin as Spring Boot uses.
-          2. apply the dependency management plugin and then configure it to import Spring Boot’s bom:
-             #+begin_src kotlin
-             #+end_src
+*** Managing dependencies
+**** notes
+  + to manage dependencies in a Spring Boot application, one can either apply the ==io.spring.dependency-management== plugin or use Gradle’s native bom support. The primary benefit of the former is that it offers property-based customization of managed versions, while using the latter will likely result in faster builds
+**** Managing dependencies with the dependency management plugin
+- when applying ==io.spring.dependency-management== plugin, Spring Boot’s plugin will automatically import the ==spring-boot-dependencies== bom from the version of Spring Boot used. This provides a similar dependency management experience to the one that’s enjoyed by Maven users. For example, it allows to omit version numbers when declaring dependencies that are managed in the bom => can declare dependencies in the usual way but omit the version number
+  #+begin_src kotlin
+  dependencies {
+    implementation("org.springframework.boot:spring-boot-starter-web")
+    implementation("org.springframework.boot:spring-boot-starter-data-jpa")
+  }
+  #+end_src
+- customizing managed versions ::
+  + the ==spring-boot-dependencies== bom that is automatically imported when the dependency management plugin is applied, uses properties to control the versions of the dependencies that it manages. To customize a managed version, one just needs to se its corresponding property, eg: to customize the version of SLF4J which is controlled by the ==slf4j.version== property: ~extra["slf4j.version"] = "1.7.20"~.
+    - Browse the [[https://docs.spring.io/spring-boot/docs/3.2.2/reference/htmlsingle/#appendix.dependency-versions.properties][Dependency versions Appendix]] in the Spring Boot reference for a complete list of these properties.
+- using spring boot’s dependency management in isolation ::
+  + Spring Boot’s dependency management can be used in a project without applying Spring Boot’s plugin to that project. The SpringBootPlugin class provides a BOM_COORDINATES constant that can be used to import the bom without having to know its group ID, artifact ID, or version:
+    1. configure the project to depend on the Spring Boot plugin but do not apply it
+      #+begin_src kotlin
+      plugins {
+        id("org.springframework.boot") version "3.2.2" apply false
+      }
+      #+end_src
+       - The Spring Boot plugin’s dependency on the dependency management plugin means that you can use the dependency management plugin without having to declare a dependency on it. This also means that you will automatically use the same version of the dependency management plugin as Spring Boot uses.
+    2. apply the dependency management plugin and then configure it to import Spring Boot’s bom:
+      #+begin_src kotlin
+      apply(plugin = "io.spring.dependency-management")
 
+      the<DependencyManagementExtension>().apply {
+         imports {
+             	 mavenBom(org.springframework.boot.gradle.plugin.SpringBootPlugin.BOM_COORDINATES)
+         }
+      }
+      #+end_src
+       - The Kotlin code above is a bit awkward. That’s because we’re using the imperative way of applying the dependency management plugin. We can make the code less awkward by applying the plugin from the root parent project, or by using the plugins block as done for the Spring Boot plugin. A downside of this method is that it forces us to specify the version of the dependency management plugin:
+         #+begin_src kotlin
+         plugins {
+          java
+          id("org.springframework.boot") version "3.2.2" apply false
+          id("io.spring.dependency-management") version "1.1.4"
+         }
+               
+         dependencyManagement {
+          imports {
+               	  mavenBom(org.springframework.boot.gradle.plugin.SpringBootPlugin.BOM_COORDINATES)
+          }
+         }
+         #+end_src
+       - to learn more about the capabilities of the dependency management plugin, please refer to its [[https://docs.spring.io/dependency-management-plugin/docs/current/reference/html/][documentation]].
+**** Managing dependencies with gradle’s bom support ::
+- gradle allows a bom to be used to manage a project’s versions by declaring it as a ==platform== or ==enforcedPlatform== dependency.
+  + a ==platform== dependency treats the versions in the bom as recommendations and other versions and constraints in the dependency graph may cause a version of a dependency other than that declared in the bom to be used.
+  + an ==enforcedPlatform== dependency treats the versions in the bom as requirements and they will override any other version found in the dependency graph
+  + the ==SpringBootPlugin== class provides a ==BOM_COORDINATES== constant that can be used to declare a dependency upon Spring Boot’s bom without having to know its group ID, artifact ID, or version, as shown in the following example:
+    #+begin_src kotlin
+    dependencies {
+        implementation(platform(org.springframework.boot.gradle.plugin.SpringBootPlugin.BOM_COORDINATES))
+    }            
+    #+end_src
+- a platform or enforced platform will only constrain the versions of the configuration in which it has been declared or that extend from the configuration in which it has been declared. As a result, in may be necessary to declare the same dependency in more than one configuration.
+- customizing managed versions ::
+  + when using gradle’s bom support, you cannot use the properties from ==spring-boot-dependencies== to control the versions of the dependencies that it manages. Instead, you must use one of the mechanisms that Gradle provides. One such mechanism is a resolution strategy: SLF4J’s modules are all in the ==org.slf4j== group, so their version can be controlled by configuring every dependency in that group to use a particular version, as shown in the following example:
+    #+begin_src kotlin
+    configurations.all {
+        resolutionStrategy.eachDependency {
+            if (requested.group == "org.slf4j") {
+                useVersion("1.7.20")
+            }
+        }
+    }
+    #+end_src
+  + warning :: each Spring Boot release is designed and tested against a specific set of third-party dependencies. Overriding versions may cause compatibility issues and should be done with care.
+*** Packaging Executable Archives
+[2024-02-21 Wed 00:35]
+**** notes 
+[2024-02-21 Wed 00:36]
+- the plugin can create executable archives (jar files and war files) that contain all of an application’s dependencies and can then be run with ~java -jar~.
+**** Packaging executable Jars
+- executable jars can be built using the ==bootJar== task.
+  + the task is automatically created when the ==java== plugin is applied and is an instance of ==BootJar==.
+  + the ==assemble== task is automatically configured to depend upon the ==bootJar== task, so, running ==assemble== (or build) will also run the ==bootJar== task.
+**** Packaging executable Wars
+[2024-02-21 Wed 00:35]
+- executable wars can be built using the ==bootWar== task.
+  + the task is automatically created when the ==war== plugin is applied and is an instance of ==BootWar==.
+  + the ==assemble== task is automatically configured to depend upon the ==bootWar== task, so, running ==assemble== (or build) will also run the ==bootWar== task.
+**** Packaging executable and deployable Wars
+[2024-02-21 Wed 00:37]
+*** Dependency management plugin
+[2024-02-21 Wed 00:25]
+*** Gradle directories
+[2024-02-21 Wed 00:23]
 * Testing
 [2023-12-17 Sun 03:51]
 ** JUnit 5
