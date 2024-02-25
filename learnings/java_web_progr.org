@@ -1776,6 +1776,21 @@
         - build.gradle.kts :: each subproject has its own Gradle build script.
       - etc
 **** Multi-project build basics
+- notes ::
+  + whereas small projects and monolithic applications may contain a single build file and source tree, it is often more common for a project to be split into smaller, interdependent modules. "interdependent" is vital, as you typically want to link the many modules together through a single build.
+  + a multi-project build consists of one root project and one or more subprojects.
+  + multi-project builds are sometimes referred as multi-module projects. Gradle refers to modules as subprojects.
+  + the multi-project build directory structure should look as follows:
+    - .gradle ::
+      - some folders
+    - gradle ::
+      - libs.version.toml ::
+      - wrapper ::
+    - gradlew ::
+    - gradlew.bat ::
+    - settings.gradle.kts :: file should include all subprojects.
+    - sub-project-1 ::
+      - build.gradle.kts :: each subproject should have its own ==build.gradle.kts== file.
 *** Packaging Executable Archives
 **** Packaging Executable Jars
 - the ==init== task generates the new project with the following structure: (for a java library project called ==demo==)
