@@ -1826,7 +1826,57 @@
       + Class-Path :: a space separated list of relative paths to libraries or resources
     - so, for example, if an application entry point is in ==Application.class== and it uses libraries and resources, then it's possible to add the needed headers: ~Main-Class: com.baeldung.Application~ and ~Class-Path: core.jar lib/ properties/~
     - the classpath includes ==core.jar== and all the files in the ==lib== and ==properties== directories. These assets are loaded relative to where the JAR is executed and not from within the JAR itself. In other words, they must exist outside the JAR.
-***** Customising the library JAR 
+***** Customising the library JAR
+- notes ::
+  + examples ::
+    - include your library JAR version: ~version = "0.1.0"~, in file ==build.gradle.kts==
+      + other than the versions, the other informations usually required are the name and group.
+        - as a result, the JAR file will contain the version (path ==lib/build/libs/lib-0.1.0.jar==)
+        - the name is directly derived from the subproject name that represents the library (==lib== in the example above). In case a different name is needed, then just to change the subproject folder name and the corresponding ==include(...)== statement in file ==settings.gradle(.kts)==
+        - the /group/ is used to give the library full coordinates when published. One can then define it directly in the ==build== script by setting the ==group== property similar to how you set the version as shown above.
+  + customizing the manifest file :: add one or more attributes to the manifest.
+    - configure the ==jar== task in the build script ==build.gradle.kts== ::
+      + example, add version and library name to manifest ::
+        #+begin_src kotlin
+        tasks.jar {
+            manifest {
+                attributes(mapOf("Implementation-Title" to project.name,
+                                 "Implementation-Version" to project.version))
+            }
+        }
+        #+end_src
+      + when running gradle task: ~./gradlew jar~, and unpacking the manifest file from the jar: ~ar xf lib/build/libs/lib-0.1.0.jar META-INF/MANIFEST.MF~, the content of the ==META-INF/MANIFEST.MF== should be (depending on your settings as seen above):
+        #+begin_src example
+        Manifest-Version: 1.0
+        Implementation-Title: lib
+        Implementation-Version: 0.1.0
+        #+end_src
+***** Generating sources jar
+[2024-02-24 Sat 23:04]
+- can generate a sources JAR for your library with ==withSourcesJar()==, which automatically packages source code and creates a variant ==sourceElements== with an artifact ==-sources.jar==, which will be part of the publication.
+- in ==build.gradle.kts== ::
+  #+begin_src kotlin
+  java {
+      withSourcesJar()
+  }
+  #+end_src
+- the additional JAR will be produced as part of the ==assemble== or ==build== lifecycle tasks and will be part of the publication. The resulting file is found in ==lib/build/libs== for our case, with a name using the conventional classifier ==-sources==.
+***** Adding API documentation
+[2024-02-24 Sat 23:12]
+- the ==java-library== plugin has built-in support for Java’s API documentation tool via the ==javadoc== task.
+  + for ==javadoc== markups (/**...*/), when the ==javadoc== task is run (~./gradlew javadoc~), the generated javadoc can be found for example at ==lib/build/docs/javadoc/index.html==
+  + also possible to generate the javadoc through the gradle build script ==build.gradle.kts==:
+    #+begin_src kotlin
+    java {
+        withJavadocJar()
+    }
+    #+end_src
+- the additional JAR will be produced as part of the ==assemble== or ==build== lifecycle tasks and will be part of the publication. The resulting file is found in ==lib/build/libs==, with a name using the conventional classifier ==-javadoc==.
+***** Publish a build scan
+[2024-02-24 Sat 23:28]
+- notes ::
+  + publishing a build scan is a handy way to learn more about what the builds are doing behind the scenes. To do so, just run Gradle builds with the ==--scan== flag: ~./gradlew build --scan~.
+    - the commands generates a link that, when clicked on, gives which tasks where executed, which dependencies where downloaded and many more details.
 ***** The Java Plugin
 [2024-02-22 Thu 19:17]
 ***** The Java Library Plugin
