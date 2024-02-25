@@ -16,7 +16,7 @@
   + Projects API :: provides access to [[http://projects.worldbank.org/][World Bank operations data]], i.e., active, pipeline and closed projects implemented in countries and around the world. [[http://search.worldbank.org/api/v2/projects][Learn More]].
   + Finances API :: provides programmatic access to World Bank financial data (loans, credits, financial statements, etc) delivered on the [[https://finances.worldbank.org/][World Bank Finances]] platform. [[https://dev.socrata.com/][Learn More]].
   + Climate Data API :: provides access to historical and modelled climate data from the [[http://climateknowledgeportal.worldbank.org/][Climate Knowledge Portal]]. [[https://datahelpdesk.worldbank.org/knowledgebase/articles/902061][Learn More]].
-- third Party Apps :: many [[https://data.worldbank.org/products/third-party-apps][third party applications]] have already been developed, including integration modules for Drupal, R, Python and STATA. Example: 
+- third Party Apps :: many [[https://data.worldbank.org/products/third-party-apps][third party applications]] have already been developed, including integration modules for Drupal, R, Python and STATA. Example: Google’s [[http://www.google.com/publicdata/overview?ds=d5bncppjof8f9_][Public Data Explorer]] uses Google tools, including motion charts, to visualize and explore data from the World Bank and many other providers
 * Tickets
 [2024-02-25 Sun 23:21]
  - WBAPI001: basic structure
