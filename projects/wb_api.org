@@ -1,0 +1,22 @@
+# -*- mode: org -*-
+#+TITLE: project: application probing data from world bank api
+#+SETUPFILE: ~/set-up-files/basic-setups.org
+#+PROPERTY: header-args :tangle ./emacs_init_configs.el
+#+LANGUAGE: en
+#+OPTIONS: timestamp:t
+#+DESCRIPTION: Java back-end project for probing data from the world bank api (gradle, angular, spring)
+#+KEYWORDS: WBAPI org-mode Emacs organization GTD getting-things-done git
+
+* Notes
+- sources ::
+  + https://datahelpdesk.worldbank.org/knowledgebase/topics/125589-developer-information
+- World Bank APIs provide access to various types of data and databases :: ([[https://datahelpdesk.worldbank.org/knowledgebase/articles/889386-developer-information-overview][source]])
+  + Indicators API :: provides programmatic access to time series development data and metadata.
+  + Data Catalog API :: provides information about the thousands of development-relevant datasets available through the [[https://datacatalog.worldbank.org/home][World Bank Data Catalog]]. [[https://datahelpdesk.worldbank.org/knowledgebase/articles/902049-data-catalog-api][Learn More]].
+  + Projects API :: provides access to [[http://projects.worldbank.org/][World Bank operations data]], i.e., active, pipeline and closed projects implemented in countries and around the world. [[http://search.worldbank.org/api/v2/projects][Learn More]].
+  + Finances API :: provides programmatic access to World Bank financial data (loans, credits, financial statements, etc) delivered on the [[https://finances.worldbank.org/][World Bank Finances]] platform. [[https://dev.socrata.com/][Learn More]].
+  + Climate Data API :: provides access to historical and modelled climate data from the [[http://climateknowledgeportal.worldbank.org/][Climate Knowledge Portal]]. [[https://datahelpdesk.worldbank.org/knowledgebase/articles/902061][Learn More]].
+- third Party Apps :: many [[https://data.worldbank.org/products/third-party-apps][third party applications]] have already been developed, including integration modules for Drupal, R, Python and STATA. Example: 
+* Tickets
+[2024-02-25 Sun 23:21]
+ - WBAPI001: basic structure
