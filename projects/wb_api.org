@@ -17,6 +17,18 @@
   + Finances API :: provides programmatic access to World Bank financial data (loans, credits, financial statements, etc) delivered on the [[https://finances.worldbank.org/][World Bank Finances]] platform. [[https://dev.socrata.com/][Learn More]].
   + Climate Data API :: provides access to historical and modelled climate data from the [[http://climateknowledgeportal.worldbank.org/][Climate Knowledge Portal]]. [[https://datahelpdesk.worldbank.org/knowledgebase/articles/902061][Learn More]].
 - third Party Apps :: many [[https://data.worldbank.org/products/third-party-apps][third party applications]] have already been developed, including integration modules for Drupal, R, Python and STATA. Example: Google’s [[http://www.google.com/publicdata/overview?ds=d5bncppjof8f9_][Public Data Explorer]] uses Google tools, including motion charts, to visualize and explore data from the World Bank and many other providers
+** WB indicators API Documentation
+- notes ::
+  + provides access to nearly 16,000 time series indicators. Most of the indicators are available online through tools such as [[https://databank.worldbank.org/][Databank]] and the [[https://data.worldbank.org/][Open Data website]]. Many data series date back over 50 years, and can be used to create interesting applications.
+  + to this date, use of version 2 of the Indicators API, v1 release was discontinued in 2020
+  + the Indicators API provides access to over 45 databases, including:
+    - World Development Indicators :: http://datatopics.worldbank.org/world-development-indicators
+    - International Debt Statistics :: https://data.worldbank.org/products/ids
+    - Doing Business :: http://www.doingbusiness.org/
+    - Human Capital Index :: http://www.worldbank.org/en/publication/human-capital
+    - Subnational Poverty :: http://databank.worldbank.org/data/reports.aspx?source=subnational-poverty
+    - And many more :: https://api.worldbank.org/v2/sources
+
 * Tickets
 [2024-02-25 Sun 23:21]
  - WBAPI001: basic structure
