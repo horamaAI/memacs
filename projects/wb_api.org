@@ -28,7 +28,35 @@
     - Human Capital Index :: http://www.worldbank.org/en/publication/human-capital
     - Subnational Poverty :: http://databank.worldbank.org/data/reports.aspx?source=subnational-poverty
     - And many more :: https://api.worldbank.org/v2/sources
-
+  + WB API basic call structure :: https://datahelpdesk.worldbank.org/knowledgebase/articles/898581
+  + knowledgebase :: https://datahelpdesk.worldbank.org/knowledgebase
+** WB's V2 indicators API
+[2024-02-26 Mon 23:47]
+- notes ::
+  + need to place 'v2' in the call :: example: http://api.worldbank.org/v2/country/all/indicator/SP.POP.TOTL
+  + improvements and enhancements ::
+    - sources :: https://datahelpdesk.worldbank.org/knowledgebase/articles/1886674-new-features-and-enhancements-in-the-v2-api
+    - improved metadata in responses for countries and regions for example that can return :
+      + ISO 3 and ISO 2 codes for all countries along with country name, region, admin region, income level, lending type, capital city and geographical co-ordinates.
+      + Both World Bank codes and ISO 2 codes for Region, Admin Region, Income Level and Lending Type
+    - responses in JSON format are available by using ==format=json== in the API call, eg: http://api.worldbank.org/v2/country/all/indicator/SP.POP.TOTL?format=json
+    - multiple indicators data :: Data can be queried for multiple indicators from a particular data source by providing source ID and indicator codes separated by ==;== (semicolon)
+      + ex: http://api.worldbank.org/v2/country/chn;ago/indicator/AG.AGR.TRAC.NO;SP.POP.TOTL?source=2&format=json, returns different indicators for china and angola
+      + Note: A maximum of 60 indicators can be included with a maximum of 1,500 characters allowed between two /’s (back-slashes). A maximum of 4,000 characters are allowed in the entire URL.
+    - JSONstat :: simple, lightweight JSON dissemination format best suited for data visualization, mobile apps or open data initiatives that has been designed for all kinds of disseminators.
+      + use ==format=jsonstat== to returns a JSONstat response
+      + ex: http://api.worldbank.org/v2/country/all/indicator/SP.POP.TOTL?format=jsonstat, to return JSONstat data about population total (=="WDI/dimension/series/category/label/SP.POP.TOTL": "Population, total"==) of all countries
+    - downloads :: query responses can be downloaded in either zipped CSV or EXCEL format by using the ==downloadformat== query string, eg: http://api.worldbank.org/v2/country/ind/indicator/AG.AGR.TRAC.NO?source=2&downloadformat=excel to download xls file that contains data, country metadata, and indicator metadata worksheets.
+      + can download indicator data in either List or Table format. The query string ==dataformat== is used to download the indicator data as a list, with the years in either rows or columns.
+        - this query string can work together with ==downloadformat== query string, eg: http://api.worldbank.org/v2/country/usa/indicator/sp.pop.totl/?downloadformat=excel&dataformat=table.
+          + ==dataformat=table== returns data in table format (column-wise year), ==dataformat=list== returns data in list format (row-wise year).
+** API Calls structure
+[2024-02-27 Tue 01:27]
+-  :: 
+- some examples :: 
+  + retrieve the country name of Vietnam in Vietnamese language :: http://api.worldbank.org/v2/vi/country/vn
+** Metadata API queries
+[2024-02-27 Tue 01:17]
 * Tickets
 [2024-02-25 Sun 23:21]
  - WBAPI001: basic structure
