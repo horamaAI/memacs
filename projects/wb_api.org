@@ -52,7 +52,37 @@
           + ==dataformat=table== returns data in table format (column-wise year), ==dataformat=list== returns data in list format (row-wise year).
 ** API Calls structure
 [2024-02-27 Tue 01:27]
--  :: 
+- notes ::
+  + 2 type of queries for Indicators API :: URL based structure, and argument based structure
+    - argument based, eg: http://api.worldbank.org/V2/country?incomeLevel=LIC
+    - URL based, eg: http://api.worldbank.org/V2/incomeLevel/LIC/country
+    - both return list of countries with income level classified as low income
+  + query strings ::
+    - Date and Date-Range :: Date-range by year, month or quarter that scopes the result-set.
+      + date :: eg: http://api.worldbank.org/v2/country/all/indicator/SP.POP.TOTL?date=2000, http://api.worldbank.org/v2/country/chn;bra/indicator/DPANUSSPB?date=2012M01
+      + date-range :: range indicated with colon ==:== separator, eg: http://api.worldbank.org/v2/country/all/indicator/SP.POP.TOTL?date=2000:2001, http://api.worldbank.org/v2/country/chn;bra/indicator/DPANUSSPB?date=2012M01:2012M08, http://api.worldbank.org/v2/country/CHL/indicator/DP.DOD.DECD.CR.BC.CD?date=2013Q1:2013Q4
+      + year-to-date (YTD) :: useful for querying high frequency data and have a more fine-grained and detailed view of the data, eg: http://api.worldbank.org/v2/country/chn/indicator/DPANUSSPB?date=YTD:2022
+  + request response features ::
+    - delimiters ::
+      + range :: with colon (==:==), eg: ~5:10~ for value range from 5 to 10, eg: http://api.worldbank.org/v2/country/chn;ago/indicator/AG.AGR.TRAC.NO;SP.POP.TOTL?source=2&date=2000:2010
+      + logical AND :: with semicolon (==;==), eg: ~us;ge~ for United States AND Georgia, eg: http://api.worldbank.org/v2/country/us;ge/indicator/AG.AGR.TRAC.NO
+    - response format :: 
+      + XML :: ==format=xml==, eg: http://api.worldbank.org/v2/country/all/indicator/SP.POP.TOTL?format=xml
+      + JSON :: ==format=json==, eg: http://api.worldbank.org/v2/country/all/indicator/SP.POP.TOTL?format=json
+      + JSONP :: ==format=jsonP==, and ==prefix== parameter must be specified, eg: http://api.worldbank.org/v2/country/all/indicator/SP.POP.TOTL?format=jsonP&prefix=Getdata
+      + JSON-stat :: ==format=jsonstat==: http://api.worldbank.org/v2/country/all/indicator/SP.POP.TOTL?format=jsonstat, Refer to https://json-stat.org/ for details about jsonstat.
+    - download response :: with ==downloadformat== (~downloadformat=[excel|xml|csv]~), eg: http://api.worldbank.org/v2/country/ind/indicator/AG.AGR.TRAC.NO?source=2&downloadformat=xml
+    - pagination :: to request through large result-sets, with ==page==, eg: http://api.worldbank.org/v2/country/all/indicator/SP.POP.TOTL?page=2
+      + Per_page :: to fix number of results per page (default is 50 results per page), eg: http://api.worldbank.org/v2/country/all/indicator/SP.POP.TOTL?per_page=25
+    - others ::
+      + MRV (most recent values) :: ==mrv==, fetches most recent values based on the number specified, eg: http://api.worldbank.org/v2/country/chn;ago/indicator/AG.AGR.TRAC.NO?mrv=5&format=json (5 mrvs about "Agricultural machinery, tractors", for chine china and angola)
+      + MRNEV (MRV but non-empty) :: ==mrnev==, fetches most recent non-empty values based on the number specified, eg: http://api.worldbank.org/v2/country/chn;ago/indicator/AG.AGR.TRAC.NO?mrnev=5
+      + Gap-fill (Y/N) :: ~gapfill=[Y|N]~, works with ==MRV==, fills values if not available, by back tracking to the next available period (max number of periods back tracked will be limited by MRV number), http://api.worldbank.org/v2/en/country/ind;chn/indicator/DPANUSSPF?mrv=7&gapfill=Y
+      + frequency :: ~frequency=[Q|M|Y]~, for fetching quarterly (Q), monthly (M) or yearly (Y) values. Works along with MRV, useful for querying high frequency data, eg: http://api.worldbank.org/v2/en/country/ind;chn/indicator/DPANUSSPF?mrv=7&frequency=M
+      + Multiple Indicators :: data for multiple indicators can be queried from a single data source by providing the indicator codes separated by ==;== (semicolon), as well as the source ID ('source' are the different sources of data: "Africa Development Indicators", "International Debt Statistics", etc.) :: http://api.worldbank.org/v2/country/chn;ago/indicator/AG.AGR.TRAC.NO;SP.POP.TOTL?source=2
+        - note: max of 60 indicators, max of 1,500 characters between two back-slashes (==/==), max of 4,000 chars in the entire URL
+      + Footnote :: fetches footnote detail in data calls, ==footnote=y== gives the footnote value for country, indicator and year, eg: http://api.worldbank.org/v2/country/chn/indicator/SL.AGR.EMPL.ZS?footnote=y
+- indicators :: eg: "NY.GDP.MKTP.CD" for GDP, full list: http://api.worldbank.org/v2/indicator?format=json
 - some examples :: 
   + retrieve the country name of Vietnam in Vietnamese language :: http://api.worldbank.org/v2/vi/country/vn
 ** Metadata API queries
