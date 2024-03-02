@@ -3,7 +3,7 @@
 #+SETUPFILE: ~/set-up-files/basic-setups.org
 #+TAGS: Cpp C++
 
-* foreword, UML, and general notes
+* UML, and engineering design
   + UML notation ::
     - visibility :: + Public - Private # Protected ~ Package
     - relations ::
@@ -22,6 +22,13 @@
 	- in a composition association relationship, data usually flows in only one direction (that is, from the whole classifier to the part classifier).
 	- eg : composition association relationship connects a Student class with a Schedule class, which means that if you remove the student, the schedule is also removed.
 
+* Notes
+[2024-03-02 Sat 02:37]
+- vtables :: virtual method tables
+  + whenever a class defines a virtual function/method, most compilers add a hidden member variable to the class that points to an array of pointers to (virtual) functions called the ==virtual method table==. These pointers are used at runtime to invoke the appropriate function implementations, because at compile time it may not yet be known if the base function is to be called or a derived one implemented by a class that inherits from the base class. 
+  + vtables are the most common implementation of polymorphism in C++
+  + when vtables are used, every polymorphic class has a vtable somewhere in the program; you can think of it as a (hidden) *static* data member of the class. Every object of a polymorphic class is associated with the vtable for its most-derived class. By checking this association, the program can work its polymorphic magic.
+    - a vtable is an implementation detail, it is not mandated by the C++ standard, but most (all?) C++ compilers use vtables to implement polymorphic behaviour. Compilers are allowed to deviate from this however.
 * Topics
 - operator overloading (c++98) ::
 - call operator (c++98) ::
