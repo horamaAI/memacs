@@ -1,0 +1,827 @@
+# -*- mode: org -*-
+#+title: CI/CD tools
+#+SETUPFILE: ~/set-up-files/basic-setups.org
+
+
+* ansible
+[2024-02-18 Sun 22:24]
+** Notes
+* containerization, docker, and kubernetes
+[2024-01-21 Sun 20:06]
+** Introduction, glossary and notes
+- why use containers ::
+  + instead of one app per server -> many apps on one server
+  + VMWare and hypervisor models technology (that allows for many apps to run on one server) are not solving all the issues, and not cheap :
+    - hypervisor models :: several virtual machines (VMs) on same physical hardware (separate and completely independent from each other)
+      + slices of VMs are installed on a hypervisor
+      + need for own dedicated OS, need pre-configured use of physical hardware => can't be used by another app when not being used by the dedicated app
+  + containers ::
+    - slices of the OS on which the apps are run
+  + pros ::
+    - containers are more lightweight, thus more efficient space wise
+    - apps share dynamically the physical resources
+    - no dedicated OS required on the containers since they're using the physical OS
+    - can run on any machine, server, VM, etc.
+  + cons ::
+    - dependent on the host OS (docker on windows run windows apps, same for linux (still possible to run linux apps on docker windows))
+- docker images :: pre-packed application, has everything needed to run single application wrapped into a single bundle, eg: web server running static/dynamic content, database, etc.
+- workloads :: application running on kubernetes for example
+- cloud-native microservices design :: instead of a monolith, split the application modules into several parts that can communicate
+  + monolith/legacy app ::  everything the app does (web, authentication, search, etc.) is provided within a single binary (computer program)
+    - cons :: an issue on a single feature requires taking down whole app, fix the module, recompile the whole app, deploy it, etc.; scaling is harder and needs scaling (almost, but quite) the whole app; etc.
+  + microservices :: is a way of building, deploying, and managing each application feature as its own small app
+    - usually, each microservice is run in its own container
+  + pros of microservices :: redeploy just the required module (faster), adapted to cloud-native services
+  + cloud-native applications :: built as a set of microservices that run in /Open Container Initiative/ compliant containers
+    - cloud-native :: is like a set of capabilities, such as self-healing, auto-scaling, rolling updates, and more.
+    - cloud-native doesn't apply only in the cloud, can do cloud-native capabilities on laptop/pc with docker desktop
+    - advantages :: scalable, dynamic, loosely coupled via APIs for example, and more importantly, it can run anywhere with k8s
+- declarative approach ::
+  + describes an application in a configuration file, and use that file to deploy the application
+    - in other words, instead of deploying sets of apps and containers with loads of command line action, just list every step in a configuration file, give the file to the containerization platform, and let the platform do the hard work of deployment/management
+  + compose file :: generally the declarative approach is done using a yaml configuration file called a "compose file"
+- docker hub :: library of pre-existing docker images (need to download and run them in the docker host)
+- container runtime ::
+  + also called 'container engine': software component that can run containers on a host operating system
+  + sits at the heart of any container service such as Docker
+  + are daemon (background) processes responsible for managing container creation tasks such as pulling images from repositories, resource and storage allocation, network creation, etc.
+- containerd :: container runtime originally developed by Docker
+  + docker uses containerd as its runtime for creating containers from images. Essentially, it acts as an interface (API) that allows users to use containerd to perform low-level functionality. Simply put, when you run Docker commands in the terminal, Docker relays those commands to its low-level runtime (Containerd) that carries out all the necessary procedures.
+** Docker
+[2024-01-21 Sun 20:51]
+*** Notes
+[2024-01-21 Sun 21:14]
+- main improvement of docker :: make running apps inside of containers easy
+- two docker version :: community edition and enterprise edition for more features and official support
+- process ::
+  1. transform code into docker image (build code into docker image)
+  2. push image into a registry (docker hub or any other private registry)
+  3. start image (run app as a container)
+- generated OCI image :: (Open Container Initiative), the generated docker image, which is just standard container content
+  + image spec
+  + runtime spec
+  + distribution spec (registries)
+- "images are build time constructs, and containers are runtime constructs" :: jargon to say that containers can be seen as extensions of an image, just as in running state (and the image is on stop state)
+- "containerization" :: buzzword to refer to an app running in a container
+- container image :: a lightweight, standalone, executable package of software that includes everything needed to run an application: code, runtime, system tools, system libraries and settings
+- images, containers, volumes, or custom configuration files on the host are usually installed to ==/var/lib/docker== and ==/var/lib/containerd==
+*** Dockerfile
+[2024-02-01 Thu 17:15]
+- Dockerfile :: contains all the commands a user could call on the command line to assemble an image (set of build instructions for the app and its dependencies)
+- Docker swarm :: lightweight container orchestrator (compared to kubernetes which is more complete, but also more complex)
+- some instructions ::
+  + ~FROM~ :: initializes a new build stage, and sets the Base Image for subsequent instructions. eg: ~FROM node:current-alpine~: build ongoing image by first grabbing image 'node:current-alpine'
+  + ~LABEL~ :: for metadata
+  + ~RUN~ :: to execute a command, eg: ~RUN npm install~: will run npm to install the app dependencies
+  + ~ENTRYPOINT~ :: to specify default executable, eg: ~ENTRYPOINT ["node", "app.js"]~: will run the command 'node app.js' each time the container gets started
+  + ~COPY~ :: to copy :-), eg: ~COPY . /usr/src/app~: copy app code (.) to /usr/src/app *of the container image*
+  + ~WORKDIR~ :: to change working directory, eg: ~WORKDIR /usr/src/app~: set working directory context (when run together with ~COPY . /usr/src/app~ command, it just basically set the working directory to where the app was installed, on *the container image*)
+*** Declarative method with compose files
+[2024-02-02 Fri 09:40]
+**** General
+- notes ::
+  + some often used files in declarative method :: 
+    - requirements.txt :: lists dependencies to install (with for example ~RUN pip install -r requirements.txt~ in the dockerfile)
+    - Dockerfile :: says how to build the docker images
+    - compose.yml :: some instructions example of a docker compose file
+      #+begin_src yaml
+      # declaring network called 'counter-net', and volume called 'counter-vol'
+      # saves time by declaratively doing the configurations, instead of using scripts with long docker network create commands
+      networks:
+        counter-net:
+
+      volumes:
+        counter-vol:
+
+      # under services, defines 2 microservices (thus, a multi-container app), ie. 2 containers: 'web-fe' (for the front-end) and 'redis' (for the back-end and persistence)
+      services:
+        web-fe:
+          # call command docker build, and build a container image using Dockerfile and the app files in the current directory
+          build: .
+          # set command that will run whenever the app (the docker image) is started
+          command: python app.py
+          ports:
+            # map port 8080 of container to port 5001 of docker host
+            - target: 8080
+              published: 5001
+          # attach container to network 'counter-net'
+          networks:
+            - counter-net
+          # mount volume 'counter-vol' into the container at '/app'
+          volumes:
+            - type: volume
+              source: counter-vol
+              target: /app
+        # pull redis:alpine image and attach it to network 'counter-net'
+        redis:
+          image: "redis:alpine"
+          networks:
+            counter-net:
+      #+end_src
+    - 'desired state' :: configurations in compose files are called the desired state. From example above, the desire state is:
+      + to create a network 'counter-net' and volume (a persistent data stores implemented by the container engine) 'counter-vol',
+      + a web container on port 5001 with a shared volume and on network counter-net
+      + a redis service on same network
+- some docker compose commands ::
+  + build all networks, volumes, services, etc., and bring the app up using docker compose command :: docker compose up --detach (~--detach~ to run in background and be able to keep using the current terminal)
+    - need to run docker compose build command within the directory containing the 'compose.yml'
+  + to stop the "microservices app" (multi-container app), and cleanup volumes :: docker compose down --volumes (volumes usually stay up otherwise in case some data must not be destroyed)
+**** Docker swarm, and swarm mode
+[2024-02-07 Wed 00:30]
+- notes ::
+  + swarm mode :: lets one connect multiple docker hosts into a secure highly available cluster
+  + clusters :: 
+    - a cluster (or a 'swarm') :: is a set of one or more machines, or 'nodes'. A node can be any type of node:  physical, virtual machines, cloud instances, multipass virtual machines, etc.
+      + multipass virtual machines :: lightweight VMs that can easily run on windows, linux, mac, etc.
+        - multipass VMs are nice tools to create cloud style ubuntu VMs, and they have precanned docker templates (docker environment portainer and related tools)
+    - a cluster :: is a bunch of nodes with docker installed, and network connectivity
+    - in a cluster :: every node has to be either a worker or a manager
+      + managers :: host the control plane (cluster store, scheduler, etc.)
+        - managers :: usually between 3 or 5 managers in a cluster, but need to be an odd due to the clusters' majority control principle (if a set of cluster still can communicate in case of "split brain" or "deadlock" (a network issue for example that causes a divide of managers in the cluster) has the majority, then the group stays up and running, otherwise, the group in minority switch to read-only mode, and changes on this minority group of managers is frozen)
+      + workers :: where business apps run
+        - can run as many worker nodes as apps requires
+    - manager and worker nodes can be anything one wants :: on-prem, in the cloud, VMs, physicals, etc. All that matters is that they have docker installed, and they can communicate over reliable networks
+      + better to spread nodes over availability zones so that for example when somebody trips over a wire, not all of them are taken out of actions at the same time
+- multipass VMs ::
+  + when using docker desktop, only one node is available really. If one wants to use different nodes then multipass VMs are a better alternative 
+  + some multipass commands ::
+    - ~multipass launch docker --name nodename~ :: create a multipass VM named 'nodename' that will be using a docker image
+    - ~multipass info nodename~ :: to list infos about a node name (among which its IP address)
+    - ~multipass list~ :: list infos of all nodes
+    - ~multipass shell nodename~ :: reach multipass node 'nodename' with a shell bash
+    - ~multipass delete nodename~ :: delete node 'nodename' (pretty handy to simulate a system failure on a node for example)
+      + and then ~multipass purge~ for a deeper clean
+- setup the swarm ('initialize' the swarm) ::
+  1. create the swarm cluster :: ~docker swarm init --advertise-addr [ip-address]~ (advertise-addr is for configuring the swarm to set which of the multiple interfaces to use for cluster communications)
+     - what to look for is the IP address to use for communication with other nodes in the cluster: usually, it will be a private IP in the internal network
+  2. join in more *managers* to the cluster: within the node used for the docker swarm initialization, run ~docker swarm join-token manager~, and it will return the command and the token to use
+     - to authorize new nodes to join as managers, run 'join-token' command on all of them
+     - tip :: when listing nodes in the cluster (with ~docker node ls~), there is an asterisk at the end of the hash to depict the current node in the listed nodes
+  3. join in more *workers* (still using join-token command to find the authorization token): ~docker swarm join-token worker~
+     - tip :: worker nodes are found within the docker node list (~docker node ls~), with empty data in the "Manager status" column 
+  4. need to stop business apps being scheduled to the managers :: basically just keep managers clean, and force business apps to run on workers only: ~docker node update --availability drain <managernodename>~ (to do for all managers)
+- swarm services ::
+  + swarm helps by providing features for microservices apps management, such as the service object, and the docker stack command
+  + swarm service objects :: designed to map directly to individual application microservices.
+    - Containers don't have a native way of doing things like scaling, rollouts, rollbacks, etc. For those, advanced tools like swarm service objects are needed: instead of mapping each microservice to individual container specs, they're instead mapped to service objects. And then, it's the service objects that provide more advanced features for microservices managements such as scaling, zero downtime, rolling updates, automatic rollbacks, etc.
+    - declarative approach ::
+      + notes ::
+        - using the imperative way, managing manually all docker commands can be cumbersome, so better to do the service management declaratively through config files
+        - in the declarative way, the deployment is done through config files (compose files and Dockerfile)
+        - in swarm mode, the multi-container app is sometimes called a 'stack', and the compose file called the 'file describing a stack'
+        - stacks on swarm do not support building images on the fly (eg with the compose file seen previously, where building was done using a local dockerfile: ~build: .~) => image need to be created first before the app is deployed (in compose file, use image instead of 'build': ~image: <registry-username>/<name-of-repository>:<name-of-the-image>~)
+        - with swarm, building images on the fly is allowed (with dockerfile ~build: .~), which makes sense since shouldn't be building image at deploy time
+          + so, first, need to create the service's image before the app is deployed
+        - it is recommended to modify the config file (compose.yml file) when making changes to declarative apps  (instead of doing it imperatively through manual docker commands)
+          + eg, when needs for scaling down/up: instead of using command ~docker service scale~, better to edit compose.yaml, and resend it to the swarm (thus, guaranteeing to keep config files synched with production environments)
+            - resend the updated compose file with ~docker stack deploy -c compose.yaml <app-name>~ again, which will ping the latest compose file over to the swarm, and the reconciliation loop will spot the new desired state.
+            - in case of system failure on a node, self-healing will still deploy containers with respect to the desired state (keep the number of containers on the still available nodes)
+    - examples:
+      1. using the *imperative way*, all docker commands are performed manually through the CLI:
+         - ~docker service create --name web -p 8080:8080 --replicas 3 <registry-username>/<name-of-repository>:<name-of-the-image>~
+           + create a service with on host-container mapping both on 8080
+           + ~--replicas~: to set the number of containers the service is going to deploy and manage (3 here). Docker will spin up 3 identical containers from image '<name-of-the-image>'
+           + can list services and their infos with: ~docker service ls~
+           + notes ::
+             - the command ~docker container ls~ doesn't understand swarm clusters, it's really not asking the cluster for a list of containers, it's just asking the local nodes (result depends on type of node connected on: manager, or workers). So, a ~docker container ls~ on a manager node won't return any service (or any application containers on it), since they're all on the workers
+             - to proper way to list the application containers on any node is by using ~docker service ps <name-of-service>~, for example with 'web' service in the example above: ~docker service ps web~
+               + ~service ps~ will also display the nodes they're running on
+             - with docker swarm it's possible to reach the service from any node in the cluster, just using the service's exposed port. Example: service 'web' can be reached with using the IP of any node in the cluster and the port 8080 (eg: on browser: 192.168.64.20:8080 will access the web app, even though 192.168.64.20 is the IP of a manager node)
+             - a docker service defines a single container template, but it let's you deploy multiple containers from it :: in the example above service 'web' defines 3 replicas, which will deploy and manage 3 identical containers: all based on same image, all listening to 8080, and all attached to same network
+      2. using the *declarative way*:
+         1. compose.yml ::
+           #+begin_src yaml
+           # Un-comment the 'version' field if you get an 'unsupported Compose file version: 1.0' ERROR
+           #version: '3.8'
+           networks:
+             counter-net:
+           
+           volumes:
+             counter-vol:
+           
+           services:
+             web-fe:
+               # with swarm, building images on the fly is not allowed (with dockerfile ~build: .~), which makes sense since shouldn't be building image at deploy time
+               # so, first task is to create web-fe image before the app is deployed => run ~docker image build -t <registry-username>/gsd:swarm2023 .~ in a cluster's node before deploying ('.' to build the local directory as the build context)
+               # and push the image to a docker registry so that the workers can pull it => ~docker image push <registry-username>/gsd:swarm2023~ (may require logging in with ~docker login~)
+               image: <registry-username>/gsd:swarm2023
+               command: python app.py
+               # specifies the number of replicas of the containers defined by this service ('web-fe') => 10 identical containers based off of image: nigelpoulton/gsd:swarm2023
+               deploy:
+                 replicas: 10
+               ports:
+                 - target: 8080
+                   published: 5001
+               networks:
+                 - counter-net
+               # mount volume 'counter-vol' into the container at '/app'
+               volumes:
+                 - type: volume
+                   source: counter-vol
+                   target: /app
+             # pull redis:alpine image and attach it to network 'counter-net'
+             redis:
+               image: "redis:alpine"
+               networks:
+                 counter-net:
+           #+end_src
+         2. when image is built and pushed to a registry, now can deploy using the declarative approach (through docker compose config file): ~docker stack deploy -c compose.yaml <app-name>~ (need to be in folder containing compose.yaml so that compose file can be found)
+    - "ingress routing mesh" :: the routing mesh enables each node in the swarm to accept connections on published ports for any service running in the swarm, even if there's no task running on the node. In other word, it's possible to reach the service from any node in the cluster, using the service's exposed port: if service is deployed on port XXXX, then from any IP of a node in the cluster, it's possible to reach the service using the exposed port [IP]:XXXX
+      + swarm/ingress routing mesh is a *load balancing* requests across deployed services, meaning the requests will switch between the different deployed replicas (containers)
+      + when scaling down, balancing requests will not probe traffic to containers that are deleted, swarm is clever enough to do that
+    - swarm service commands ::
+      + ~docker service create --name <service-name> -p <target-port>:<host-port> --replicas <number-of-replicas> <registry-username>/<name-of-repository>:<name-of-the-image>~ :: create service and deploy
+      + ~docker service ls~ :: list all services and their infos
+      + ~docker service ps <service-name>~ :: list specific service's infos
+      + ~docker service scale <service-name>=<number-of-containers>~ :: rescale the number of containers for a given service (add/remove containers for the service)
+      + ~docker service rm <service-id-1>[ <service-id-n>]* -f~ :: removal containers (~[ <service-id-n>]*~ is just a regex notation to specify that can add as many container ids separated by a space)
+        - however, swarm constantly checks if desired state is fulfilled, so if deployed (or scaled) n containers, and removed some with ~docker service rm~, swarm will create new ones to match the desired state since the deleted ones will fail. This renewal process is called ==self-healing== (or reconciliation), which is constantly checking if observed state matches the desired state
+        - an alternative is to rescale the number of containers
+      + ~docker service rm <service-name>~ :: delete a service
+      + ~docker stack deploy -c compose.yaml <app-name>~ :: deploy the 'stack' (the multi-container app), -c to tell where compose file is
+      + ~docker stack ls~ :: check stacks infos
+      + ~docker stack services <app-name>~ :: get more details about stack's services
+      + ~docker stack ps <app-name>~ :: get replicas' infos
+      + ~docker stack rm <app-name>~ :: to delete a stack. It will just delete the stack, but still keep the cluster, in case the nodes are still needed (to delete nodes/cluster: ~multipass delete <node-name1>[ <node-name-n>]*~, and ~multipass purge~ for a deeper clean)
+*** Some docker commands
+- general :: 
+  + get help with Docker (can also use –help on all subcommands) :: docker --help
+  + start the docker daemon :: docker -d (-d for detached from current terminal)
+  + display system-wide information :: docker info
+  + view resource usage stats :: docker container stats
+  + view volumes services :: docker volume ls
+  + note :: by default without specifying the registry url in the complete registry, docker will default to docker hub. So, when using a different registry, use the complete url with the target registry, like: docker.io/<registry-username>/<name-of-repository>:<name-of-the-image>, here docker.io is still docker hub though, lol
+- listing ::
+  + list all docker containers (running and stopped) :: docker ps --all (or: docker ls -a)
+  + list currently running containers :: docker ps 
+  + list local images :: docker images
+- building image :: build an image (OCI file) from a Dockerfile and a context (the set of files and dependencies located in the specified PATH or URL)
+  + build :: docker build -t <image_name>
+  + build without the cache :: docker build -t <image_name> . –no-cache
+  + build from a docker registry :: ~docker image build -t <registry-username>/<name-of-repository>:<name-of-the-image> .~ // the dot at the end is to specify the files path from which to build the docker image, '-t' is for tag, same as '--tag'
+  + build with a different OS architecture (to be able to run it on a different OS architecture) (and push it to a registry) :: ~docker buildx build --platform linux/arm64/v8,linux/amd64 --push --tag <registry-username>/<name-of-repository>:<name-of-the-image> .~
+- publish (push) an image to Docker Hub :: docker push <username>/<image_name>
+- container state :: 
+  + start or stop an existing container :: docker start|stop <container_name> (or <container-id>)
+  + remove a stopped container :: docker rm <container_name>
+- running ::
+  + run a container in the background :: docker run -d <image_name> // the -d is to detach it from the terminal
+    - run in attached to terminal mode :: docker container run -it --name <app_alias> alpine sh (-it for interactive; 'alpine' to base the container on the minimal Docker image based on Alpine Linux with a complete package index and only 5 MB in size; and 'sh' to run commands in the sh terminal as the container main process)
+  + run a container and publish the container’s port(s) to the host :: docker run -p <host_port>:<container_port> <image_name> // 'host_port' is the local running port, and 'container_port' is the port the app is listening on in the container: any traffic hitting on 'host_port' will be mapped and sent to the 'container_port'
+- open a shell inside a running container :: docker exec -it <container_name> sh
+- removing images ::
+  + delete an Image :: docker rmi <image_name>
+  + remove all unused images :: docker image prune
+- options ::
+  + -d :: detached mode
+  + -it :: interactive mode
+  + --name :: to give the image an alias
+*** Docker Swarm
+[2024-02-02 Fri 09:11]
+
+** Kubernetes
+[2024-01-21 Sun 20:52]
+*** Notes
+[2024-01-21 Sun 21:34]
+- fun facts ::
+  + made by google, written in go
+  + kubernetes can sometimes be shortened to 'k8s' (8 for 8 characters between the starting k and the ending s) 
+- k8s is basically a lot of moving parts that work together to deliver the infrastructure and features to deploy and manage modern cloud native apps
+- what, why k8s ::
+  + k8s is a platform for managing containerized applications at scale (cloud native microservices apps)
+  + k8s can be seen as an OS of the cloud, it just needs some infos about the app, the different services the app is made of, the configs, and it just run it, relieving the person making the request from tedious work: k8s does all the work deciding which node to run services on, how to pull and verify images, start the containers attached to networks, etc.
+  + just needs a standard package format (package app as containers), a declarative manifest file, and there it goes
+- more efficient than docker swarm
+- kubernetes is more higher level than docker
+  + whereas with docker things are more low level: build/download/start/stop/delete image, build
+  + with kubernetes things are more higher level: scheduling, scaling, healing, updating, etc. (eg: how many containers to run in, which nodes to run them on, know when to scale them up/down, how many instances required to meet demand, etc.)
+- takeaways ::
+  + kubernetes cluster hosts applications
+  + k8s cluster is mainly made of ::
+    - 1 or more control plane nodes (brains of cluster, the /managers/: do tasks scheduling, monitoring, responding to events, etc.),
+    - and a bunch of workers
+  + kubernetes runs workloads by placing containers into 'Pods' (groups of one or more containers packaged together in as single deployable unit) to run on nodes
+    - a 'node' may be a virtual or physical machine, depending on the cluster
+    - each node is managed by the control plane and contains the services necessary to run Pods
+    - a k8s 'Control Plane' is the container orchestration layer that exposes the API and interfaces to define, deploy, and manage the lifecycle of containers
+  + each node on a cluster is running some kubernetes softwares ('Agents') and a container runtime (docker, containerd, or others)
+    - there is a container runtime on every node so that every node can run containers
+  + thus, one of the things k8s does is decide which nodes to run stuff on
+    - one of the advantage of k8s is that it manage changes in loads, eg: it can override manual configs to balance loads on some other nodes when those set are overused ('increased load', can basically spin up more containers to balance workload even when the configurations are already set)
+    - same when a node fails ('failed load'), k8s can use another node to run the workload, which is called 'self-healing'
+  + k8s can run anywhere: On-premises (or 'On-prem': installed and runs on computers on the premises of the person/organization using the software, rather than at a remote facility), on server farms, cloud, etc. => k8s is easy to migrate
+  + some cloud k8s options: AWS EKS, Azur AKS, Google GKE, etc.
+  + apps' services are generally each deployed on its container, and when one of these services needs scaling, then the orchestrator (k8s for example) throw more containers at it (not make it bigger, just more of the same containers are enlisted, and reverse if need scaling down: reduce the enlisted containers)
+*** Orchestration
+[2024-02-01 Thu 15:05]
+- notes ::
+  + as of today, the most powerful containerization orchestrator is kubernetes
+  + orchestration :: define the apps, how all the parts interact, provision the infrastructure, and then deploy and manage the app
+  + key to automation of orchestration :: dependencies management, ordered startups, intelligent scheduling (scheduling services next to each other, or not next to each other (not starting on the same nodes as the others)), etc.
+  + "app manifest" ::
+    - it is the 'road map', the one that describes the map for the orchestration
+    - it is given to the orchestrator (k8s), and then the orchestrator deploys and manages the app
+*** Kubernetes architecture
+[2024-02-11 Sun 23:57]
+**** Intro
+- process in a nutshell ::
+  1. start with a packaged app ::
+     - app is containerized (make it run as a container), wrap it in a pod, and, in order to have features like scaling and self-healing, the pod is wrapped in a /deployment/ (a deployment provides declarative updates for Pods and replicas. One describes a desired state in a deployment, and the deployment controller changes the actual state to the desired state at a controlled rate)
+     - all the packaging process is defined in a k8s yaml file, to describe what the app should look like for k8s (which container to use, which port, what network, how many replicas, etc.)
+  2. then, the packaged app (the k8s yaml file) is given to k8s cluster, and sets the cluster as specified in the yaml
+**** Control plane nodes
+[2024-02-12 Mon 23:36]
+- notes ::
+  + control plane are essential, they need to stay available, and so, better to run multiple ones for higher availability ("HA", 3 or 5, odd number. More than 5 is possible, but would imply more time for control planes to reach consensus)
+  + best to keep them in separate failure domains connected by fast reliable networks (failure domains: regions or components of infrastructure that could fail. Each has its own risks and challenges to architect for. eg: putting control planes in same data center rack, and under same potential risk of failure could risk failures on all of them at once)
+  + have to be linux (as opposed to workers that can be windows or linux)
+  + leader vs followers control planes :: k8s operates an active passive model for the managers, where only one control plane node is making active changes to the cluster at any one time (leader control plane). The others are followers.
+    - the followers control planes proxy connections over to the leader so that the leader can make the actions
+    - if leader goes down, a new one is elected :: every control plane node runs a bunch of smaller services responsible for individual control plane features, but also, every control plane node runs the full set of features, so any one of them can act as a leader
+  + if one is building k8s himself, then he gets to choose the number and size of control planes nodes. But, on hosted k8s platform, the control plane is hidden and the cloud provider manages all of that
+    - hosted k8s :: where cloud provider runs k8s for the user as a service => the user gets API endpoints, but the internal mechanisms (builds, upgrades, performances, high availability (HA), etc.) are handled by the cloud behind the scene
+      + kind of a drawback since control plane nodes are hidden, and might be that workers are being run on managers, which is not recommended
+  + main services making up the control planes ::
+    - API server :: ==kube-apiserver==: gateway to the cluster, the front-end to the control plane. It is the only component the user gets to interact directly with
+      + main entry for commands and queries (for example with the command line tool: ==kubectl==)
+      + same goes for worker nodes and applications. If any needs to communicate with anything on the control plane, it does it through ==kube-apiserver==. Same for other control plane services, they talk to each other via the API server
+      + exposes a RESTful API over a security port, and consumes JSON and yaml
+        - in the case of users deploying and managing applications, a yaml file describing the need is sent (for example), the API server authenticates, authorizes, and validates the request. If all is good, it instructs other managers to deploy it and manage it
+    - cluster store ::
+      + only persistent component of entire control plane, persists cluster status and configs (including configs and status of all apps)
+      + requires plans to protect it and recover it in case of failures
+      + based on etcd NoSQL database (so far), and automatically distributed throughout all control plane nodes
+        - possible to swap it with something else, or run etcd bit on dedicated nodes (advanced use though)
+      + critical to cluster operations, and on large busy clusters can be the main performance bottleneck (distribute database at scale can be hard on etcd)
+      + have recovery plans in place (best to regularly test them)
+    - controller manager :: ==kube-controller-manager==
+      + kind of a controller of controllers (node controller, deployment controller, endpoints controller, namespace controller, etc.)
+      + runs as a reconciliation loop ("watch loop") :: watches the bits of the cluster it is responsible for, and looks for changes. Checks if the observed status match the desired state
+    - scheduler :: ==kube-scheduler==
+      + watches API server for new task and assigns them to nodes (tree hiding the forest, it does more: (anti-)affinity, constraints, taints, resource management, etc.)
+  + ex: run kubectl to deploy a new application
+    1. kubectl query sent to API server, which does authentication, authorization, etc.
+    2. the desired state gets written to the cluster store
+    3. the scheduler farms the work out to worker nodes
+    4. various controllers sit in watch loops, observing the state of cluster, and making sure the desired is matched
+**** Worker nodes
+[2024-02-12 Mon 23:36]
+- notes ::
+  + 3 important worker components ::
+    - kubelet ::
+      + main k8s agent running on *every* cluster node (worker and control plane nodes)
+      + registering nodes with the cluster :: worker nodes can be anything (linux, windows, physical, VMs, cloud instances, etc.). All that's needed is to install the kubelet which will register the node with the cluster. That will makes it easier for the scheduler to assign work to the kubelet or the node. So, things like adding cpu, ram, and other resources to the overall cluster pool, will be easier for the scheduler to intelligently assign work to the kubelet or the node
+      + works on k8s comes in the form of pods (kind of groups of one or more containers packaged together in as single deployable unit)
+      + it's the job of the kubelet to constantly watch the API server for new pods that are assigned to it
+      + when it sees one, it pulls the specs and runs the pod (execute pods)
+      + kubelet also maintain a reporting channel back to the API server to keeps the control plane in the loop (reports back to the control plane)
+    - container runtime interface ::
+      + k8s runs pods, where pods are group of one or more containers. If simplified, the whole process can be seen as apps running on containers. But k8s and kubelet do not really know how to run containers (pull image layers, talk to the OS kernel to build and start the containers, etc.). For all that, it needs a /container runtime/
+      + the whole container runtime layer is 'pluggable' with the ==container runtime interface (CRI)==
+      + ==containerd== is the main runtime container on most modern k8s clusters, but since the CRI is pluggable, more others runtime containers can be added (for example: gVisor (container sandbox developed by Google that focuses on security), or katacontainers)
+      + does most of the low level heavy work: stop/start containers, talk to the OS, etc.
+    - kube proxy ::
+      + it is the node networking, it's like the network brain of the node
+      + makes sure every pod running gets an IP (one IP per pod) => in case of multi container pods => all the containers in a pod will share the pod single IP => need to use ports and such, if reaching individuals containers in the same pod is needed
+      + kube proxy also manages lightweight load balancing (basic load balancing) across all the pods behind a service ::
+        - a service is a way of hiding multiple pods behind a single reliable IP address (kind of like a load balancer): the web servers talk to back-ends (the pods) through a service (so, single IP address). The service then balances (load balancing) traffic from the web servers to the different back-ends (pods again)
+        - kube proxy plays a major role in this load balancing that goes on the pods
+    - (4th that's not always used, but nonetheless still important) nodeless kubernetes ::
+      + k8s with no nodes, such as those proposed on lots of cloud platform with hosted containers platform, in other words, a service where one can run containers workload without having to spin up VM instances or such for example. The advantage is being able to forget all about low level infrastructure things, and let the code provide a service (run the app, and only pay for what's being run). So, on some cloud platforms that propose nodeless k8s, just need to post app configurations in k8s yaml files to an API server endpoint ('record of intent'), and the clouds just runs them => no need to know low level mechanisms and details on how and what they're running on, 
+**** Pods
+[2024-02-12 Mon 23:37]
+- notes ::
+  + in the VMWare world the atomic unit of deployment is the virtual machine, in docker world it's the container, and in the k8s world it is the ==pod== => so when need scaling with k8s, one adds/removes pods (not scaling more/less containers into the same pod)
+    - yes, k8s runs and orchestrates containers, but these containers must always run inside pods, it's not possible to deploy a container directly onto k8s
+  + possible to run multiple containers in the same pod
+  + pod ::
+    - is a wrapper that k8s insists every container needs
+    - is a shared execution environment, basically a shared collection of things an app needs to run (IP address in a network port, files from a file system, shared memory, etc.). Every pod is an execution environment, and the containers running in it share that environment
+      + containers in same pod share the same IP for example. Thus, if there is a need to connect to them from the outside, then there will be a need to map each container to its unique port. And if the containers need to communicate with each other, then they will also use the appropriate unique port, but over the pod's ==localhost== interface
+      + it's recommended to join containers in the same pod if they need to share the same resources, eg: share the same volume, memory, etc.
+        - however, multi-containers within a same pod should be reserved for special cases and not use excessively
+        - the most common example of multi-containers pods is a service mesh for the purpose of providing enhanced services :: it consists in injecting additional containers (the mesh) into every pods on a cluster, then the injected service mesh sits between the pod container and the network, where it can encrypt and decrypt traffic coming in and out of the pod
+          + the service mesh can also expose nice features such as telemetry and other advanced network features
+      + conversely, if they absolutely *don't* need to be tightly coupled, then loosely couple them into separate pods and over a network
+    - pod deployment is an atomic operation => all-or-nothing job ::
+      + pod shows up, available, and running for service once all the containers inside are up and running
+      + all containers in a pod are always scheduled to the same cluster node
+    - for the most parts, pods are deployed via some high level controller such as deployment or a stateful set, since they're the ones that brings features like scaling, self-healing, startups, persistent network IDs, etc. Pods don't do lots of things by themselves (don't self-heal, don't scale, etc.), but they still add lots of added value such as annotations, labels, apply policies, resource constraints and resource requirements, co-scheduling, etc.
+    - pods can die. It's possible to bolster them with high-level controllers (as seen above) to replace them when they die, the new generated pods come with new IPs, which can be challenging from a network perspective. Same, if an app is scaled up, all the new pods arrive with new IPs, and if scaled down, then one is shutting down IPs a client might be using. And again, if one is doing rolling update (iterating through shutting down old pods and replacing them with new ones with new versions, then tons of IP churns are created) => it's hard to rely on pods IPs, and really upsetting when IPs change when pushing updates. => k8s service objects to the rescue
+**** K8s service objects
+[2024-02-12 Mon 23:37]
+- notes ::
+  + similar to swarm service objects
+  + k8s service object ::
+    - object in the k8s API (just like a pod or a deployment), so the service object needs to be defined a yaml manifest and provide the yaml to the API server
+    - can be used to provide stable IPs and DNS names, load balance requests to pods. Hence, if a pod dies and is replaced, the service is still watching and updates its list of valid healthy pods. The stable IPs and DNS names are never changed: part of k8s contract with the service is that once it's deployed, the IPs and DNS names will never change:
+      + in case of pods scaling for example, all the new pods with new IPs get added to the services list of valid pods, the exposed IPs though will stay the same
+      + that's the job requires of a service: a service is a stable abstraction point for multiple pods that also provide basic load balancing
+    - the process of adding pods to the list of pods the service will forward traffic to, is by using ==labels==
+      + labels ::
+        - everything in k8s gets labeled
+        - multi labeling possible, eg for a back-end labels: ==be, Prod, 1.3 (the version)==
+        - if a pod is labeled the same as other managed pods, and this latter pods are serviced by a service object, then the service will also load balance traffic to that mislabeled pod as well. Same if the service is directing traffic based on partial, then pods that match this particular partial label will also be load balanced.  => careful on the labeling and service routing
+          + on the pro side, restricting traffic on specific labels is easy, just restrict the label on the service routing, eg: remove older versions of a component by specifying the routing in the service to newer versions. They will still exists, but they won't get any traffic 
+    - services only send traffic to healthy pods, not healthy pods are dropped from the services' list, and they won't get any traffic
+    - services can be used to configure session affinity, can be configured to send traffic to endpoints outside of the cluster, etc.
+**** Deployment
+[2024-02-12 Mon 23:37]
+- notes ::
+  + deployment provides declarative updates for Pods and replicas
+  + pods don't have some advanced features such as self-healing, scaling, etc. Some of those are done via high-level deployment controllers
+  + k8s supports several high-level controllers ::
+    - deployment :: for stateless apps, do rolling update, scaling, self-healing, etc.
+    - stateful sets (sts) :: similar to deployment, but for stateful apps; add things like guaranteed startup ordering, persistent network IDs
+    - daemon sets (ds) :: one per node
+    - cron jobs (cronjob) :: for time-based short-lived jobs
+  + on the control plane back-ends, those high-level controllers are all implemented via controllers ::
+    - for the deployment controller for example, there is a deployment controller running on the control plane, and that watches for deployment configurations that are posted to the cluster (the desired state). In other words, the deployment watches API server for new deployments. When it notices one, it implements it, and then constantly watches if the observed state matches the desired one (reconciliation loop). Same for stateful states and others controllers, they all operate as reconciliation loops on the control plane.
+  + process for deployment ::
+    1. define desired state in a yaml manifest and give it to the API server
+       - the deployment is defined in the yaml with the setting: ~kind: Deployment~
+    2. k8s implements the state
+    3. in case of mismatch between observed and desired, k8s does the reconciliation by itself, no need for human intervention
+  + behind the scene, the deployment works together with the replica set controller. The job of the replica set is to manage the number of replicas. The deployment then sits above the replica set and manages the job of the replica set
+    - embedded components :: => the app container sits within a pod (for labeling, annotations, co-scheduling, etc.), which is managed by the replica set (replica count, self-healing, old versions, etc), which in turn is managed by the deployment (for updates and rollbacks)
+  + just like pods and services, deployments are rest objects in the k8s API
+  + process ::
+    1. deployment yaml manifest is /deployed/ by giving the manifest to the API server through kubectl for example
+    2. the desired state gets logged in the cluster source as a record of intent
+    3. the scheduler issues work to the cluster node
+    4. in the background there is a control loop making sure observed and desired status match
+**** K8s API and API server
+[2024-02-12 Mon 23:38]
+- notes ::
+  + pods, services, deployments, replicas, nodes, etc. are all objects or resources in the k8s API
+  + API ::
+    - the k8s API is a catalog of features with a definition of how each of those work
+      + for example, for the deployment, fields like 'metadata, labels, replicas, progressDeadlineSeconds, etc.', are all properties of the k8s deployment resource as defined in the manifest. Example, with ~apiVersion: apps/v1~, version 1 of apps subgroup of k8s API catalog (path [/apps/v1]) will be used for configuring the remaining of the properties in the manifest. Older versions might not have supported those properties, and future versions might support more. The point is, the API contains the definition set of every object resource in k8s, and when a manifest is posted to the API server, it will recognize the version for the definition of a deployment object
+    - the k8s API is already massive and it keeps on evolving
+  + API server ::
+    - the API server is a service on the control plane that exposes the API over a secure restful (but also https) endpoint. It's just the way to use to communicate with the API
+      + eg: posting a deployment manifest to the API server through kubectl. Kubectl is already pre-configured to know where to find the API server and how to manage authentication. Same, when new deployments are needed, just kubectl to send new manifest with the new desired state to the API server. Also possible to query via kubectl the API server for an object's state
+    - the API is versioned and split into multiple subgroups ('core' for pods, service, vol, etc.; 'apps' for deployment, replica set, stateful sets, etc; 'storage.k8s.io' for PersistentVolumeClaim (pvc), sc, pv, etc.; 'networking.k8s.io' for ing, netpol, etc.)
+*** Declarative model and desired state
+[2024-02-14 Wed 00:46]
+- notes ::
+  + k8s operates on a declarative model :: describe what you want (desired state) in a configuration file (or 'manifest')
+    - contrary to the 'imperative model' which is detailing everything about how things should be done, the declarative model is just describing the main requirements, and it's up to the executioner (k8s) to decide about the details (which worker nodes to run stuff on, pulling and verifying images, security, protecting secrets, etc.). k8s supports both models though, but prefer the declarative one (see following example to know why)
+  + reconciliation with declarative model :: eg: desired state: 3 instances of a web front-end pod => 3 workers with one pod each
+    - in case of a worker failure :: reconciliation does k8s run a 3rd pod into one of the remaining 2 remaining workers
+      + no imperative interactions with k8s needed, did all by itself
+      + in the background, the control plane is running controllers, among which reconciliation loops (watch loop) that are constantly checking that the current observed state matches the desired one
+*** Getting k8s
+[2024-02-12 Mon 23:41]
+- notes ::
+  + docker desktop :: is a bit limited for k8s. For example it doesn't provide multiple nodes clusters, and doesn't integrate with cloud load balancers. But it's free.
+    - it is also not appropriate for production k8s, just for development
+    - need to enable k8s on its settings
+  + checkout ==Linode Kubernetes Engine== for a richer experience instead (https://www.linode.com/products/kubernetes/). Not free though.
+    - same for another cloud k8s, it's up to you, linode is just easier
+    - linode is still a hosted k8s. So, the cloud provider takes care of all the control plane work => can only access to worker nodes and API endpoint
+    - after signing up, go to kubernetes section to setup and get access to k8s
+    - when workers are up and running, linode provides a Kubeconfig file that allows the local kubectl to talk to the generated cluster
+      + it's possible to use the kubeconfig file to connect directly to the generated cluster, or integrate it into a larger kubeconfig file that can be used to flip between various clusters that the local user is managing. Then, if for example one is using a local docker desktop, this one will list all the configured kubernetes cluster contexts. Otherwise, if one only has only kubectl installed, then some command line will be needed to switch between contexts (check https://kubernetes.io/docs/concepts/configuration/organize-cluster-access-kubeconfig/ , and file ==~/.kube/config== to find all of the available clusters and contexts)
+*** Some kubernetes commands
+**** notes
+- k8s config examples files :: https://github.com/nigelpoulton/getting-started-k8sa
+  + checkout folder 'App/V1' for example to start with
+- process of building and deploying an app to k8s (in a nutshell) ::
+  1. build app code into a docker container image (docker build, etc.)
+  2. store the container in a registry repo (docker push, etc.)
+  3. define the image in a yaml manifest file
+  4. post the manifest to the API server
+  5. k8s takes care of the rest
+- reminder :: Dockerfile states to docker how to build the container image, and the yaml manifest for k8s configurations
+**** Deploying Pods
+[2024-02-15 Thu 02:13]
+***** notes
+  - checkout folder https://github.com/nigelpoulton/getting-started-k8s/tree/master/Pods for pods examples
+- multicontainer pod manifest example :: (from: https://github.com/nigelpoulton/getting-started-k8s/blob/master/Pods/multi-pod.yml)
+  + 2 containers in the pod : main-ctr (listening on port 80), and helper-ctr (on 9113)
+  + helper-ctr is a helper taking nginx logs and expose them in a format required by 3rd party tool 'prometheus' => complementary relationship: nginx is taking care of logs while serving a web page, but prometheus can't read nginx logs, so, the helper container does the formatting
+  + source :: 
+    #+begin_src yaml
+    apiVersion: v1
+    kind: Pod
+    metadata:
+      name: nginx
+    spec:
+      containers:
+      - name: main-ctr
+        image: nigelpoulton/nginxadapter:1.0
+        ports:
+        - containerPort: 80
+      # this helper is taking nginx logs and expose them in a format required by 3rd party tool 'prometheus'
+      - name: helper-ctr
+        image: nginx/nginx-prometheus-exporter
+        args: ["-nginx.scrape-uri","http://localhost/nginx_status"]
+        ports:
+        - containerPort: 9113    
+    #+end_src
+***** commands
+- post yaml manifests :: kubectl apply -f <pod-manifest-file> // -f to tell kubectl to deploy declaratively from the manifest file pod.yaml
+  + on post, kubectl sends the manifest to the API server, the request will be authenticated and authorized, the config will get persisted to the cluster store, and the scheduler will assign the pod to a node
+- show state of all instances of an object in one's namespace :: kubectl get <object> 
+  + example, show live status of all pods :: kubectl get pods --watch
+  + each line is a pod, the number of containers within are shown in column 'READY'
+  + with more infos ::  kubectl get pods -o wide // such as to display the node the pod is running on, and the pod's IP
+    - reminder: pods vs nodes: node: instance of a linux/windows resource; pod: what run an application
+      + pods run on nodes, nodes are like the infrastructure, and pods are the apps
+  + namespaces are a way to logically partition a cluster
+  + examples of pods' status :: ==ContainerCreating==: still in process of creating a container (pulling image, etc.), ==Running==: well, for running pod, lol
+- show detailed infos about a resource :: kubectl describe <object>
+  + example, show detailed infos about a pod :: kubectl describe pod <name-of-pod>
+- delete object that's no more needed :: kubectl delete
+  + delete pod :: ~kubectl delete pod <name-of-pod>~ ; or from file used to deploy object with: ~kubectl delete -f <manifest-name-used-for-deployment>~
+**** Service objects
+[2024-02-15 Thu 19:57]
+***** notes
+- reminder: services can be used to provide stable IPs
+- services in k8s are REST objects in the k8s API
+- k8s services can be seen as having a front-end and a back-end ::
+  + front-end :: name, IP, DNS name, port, etc.
+    - the IP on the front-end is automatically assigned by k8s and it is called a ==ClusterIP== (since only to be used inside the cluster)
+    - the name of the service is registered with cluster DNS
+      + every cluster has an internal DNS service based on a technology called core DNS. It runs as a control plane feature that operates in a watch loop, watching the API for any new services, anytime it sees one, it registers the name of the service in DNS against that cluster IP => every container in every pods gets the details of this internal DNS in its /etc/resolve.conf file => every service name gets automatically registered with DNS, and every container uses DNS to resolve service names => every container in every pod can resolve every service name
+  + back-end :: way of the service to know which pod to send traffic to, such as with load balancing. back-end part is hidden and abstracted by the service
+    - which pod to forward traffic to ? :: => labels
+      + just put the pod label in the selector in the service manifest, and the service is going traffic to that pod
+      + every time a service is created, k8s automatically creates an endpoint object that is a dynamic list of healthy pods that match the service's label selector
+- accessing services details ::
+  1. access form within a cluster ::
+     - a service always gets a clusterIP (to be used inside the cluster), and the name of the service gets registered with the internal DNS service. Then, every container can use this DNS service when it's resolving names to IPs (eg: service 'app1' with IP XX.XX.XX.XX;) gets its own line in the cluster DNS ~app1=XX.XX.XX.XX~
+     - traffic routing
+       + if an app or a pod needs to talk to other services for example, they have to know its name. Its the responsibility of the k8s user to make sure the app knows the name of the service or app it needs to forward traffic to. Assuming it does:
+         1. the app sends the service name to the cluster DNS (request: 'what's the IP of service XX ?')
+            - reminder: the app can be any instance of a pod replica
+         2. the cluster DNS sends back the requested clusterIP
+         3. the app then sends traffic to the returned clusterIP, and this clusterIP takes care of getting that traffic to the right individual pods (checkout https://nigelpoulton.com/demystifying-kubernetes-service-discovery/ for further details)
+  2. access from outside a cluster ::
+     - NodePort ::
+       + services get network ports, and those ports can be mapped on every cluster's node to point back to the clusterIP => when outside of cluster, it's possible to send a request to the service through any node of the cluster, as long as it's on that port. K8s will then make sure it gets to the clusterIP, and further to the pod behind it (see point 1.)
+       + those network ports are called NodePort service (every node gets the port mapped)
+     - load balancer :: (yaml manifest: ~kind: Service~, and ~spec/type: LoadBalancer~)
+       + type of service, which usually seamlessly integrates with any cloud provider's native load balancers, and provide access to an app through from the internet
+      
+***** commands
+[2024-02-15 Thu 19:57]
+****** Example introduction
+- consider following manifest ::
+  #+begin_src yaml
+  # Simple Kubernetes Pod to deploy the app contained in nigelpoulton/getting-started-k8s:1.0
+  apiVersion: v1
+  kind: Pod
+  metadata:
+    name: hello-pod
+    labels:
+      app: web
+  spec:
+    containers:
+      - name: web-ctr
+        image: nigelpoulton/getting-started-k8s:1.0
+        ports:
+          - containerPort: 8080  
+  #+end_src
+- the web server is packaged in image :: ~image: nigelpoulton/getting-started-k8s:1.0~ (web server pod)
+****** creating service imperatively
+- reminder :: imperative mode, all through the k8s CLI, and not from a manifest
+- to see the web server, one needs to front it with a service ::
+  + expose the pod with a service :: kubectl expose pod <pod-name> --name=<name-of-the-service> --target-port=<service-port> --type=<type-of-exposure>
+    - '--name' :: to set the name of the service that will get registered with DNS
+    - so, for the example given above: ~kubectl expose pod hello-pod --name=hello-svc --target-port=8080 --type=NodePort~ // port exposed as a NodePort
+    - reminder :: ==NodePort== is the option to create a port for the service on *every cluster node*
+    - --target-port=8080 is the target port, the published port has to be found by listing the details of the service (~kubectl get svc~, see following)
+    - by default NodePorts are automatically assigned by k8s with port number between 30000-32767
+  + check status of (all) services :: kubectl get svc
+    - same as ~kubectl get <object>~ seen with pods
+    - it's possible to have in the list some system services such as one of type 'ClusterIP' that is the service that exposes the API inside the cluster
+    - NodePort also create ClusterIPs that they build on top of, since traffic that hit a NodePort through ports eventually get passed on to ClusterIP
+    - the published port can be seen in the port mapping, column 'PORT(S)'
+  + reaching the web server application from outside ::
+    - needs ::
+      + the public IP of any cluster's node ::
+        - any cluster node since NodePort create port on all nodes
+        - depends on the k8s engine, but for linode can be found on: kubernetes tab -> the needed cluster -> Node pools -> copy public IP of any node (column 'IP address')
+      + with docker desktop, can only use localhost
+    - request link :: [public-ip-address]:[published-node-port]
+  + delete service :: still same as for pods with kubectl delete: ~kubectl delete svc <service-name>~
+****** creating service declaratively (recommended)
+[2024-02-15 Thu 22:52]
+- example of service manifest ::
+  #+begin_src yaml
+  apiVersion: v1
+  kind: Service
+  metadata:
+    # name of service
+    name: ps-nodeport
+  spec:
+    type: NodePort
+    ports:
+    # 'port' is the port value the service listens on *inside* the cluster. So if another app is connecting via the service name ('ps-nodeport', which is registered with DNS), then 'port' is the internal port it needs to reach
+    - port: 80
+      # 'targetPort' is the port the app container is listening on
+      targetPort: 8080
+      # 'nodePort' is the published external port that will be mapped on every cluster node
+      # manually setting it here, but still need to be between 30000-32767
+      nodePort: 31111
+      # default protocol, but can also use UDP if needed
+      protocol: TCP
+    # label selector: list of labels that has to match the labels on the requested deployed pods
+    selector:
+      app: web  
+  #+end_src
+- apply service manifest :: still the same ~kubectl apply -f <svc-manifest-file>~
+- reminder :: 3 main k8s service types:
+  + ClusterIP (default) ::
+    - It's the default type set if the type is not specifically specified
+    - is for internal cluster connectivity, and gives stable IP within a cluster
+    - clusterIP type only makes the service available inside the cluster
+  + NodePort ::
+    - for external access via any of a cluster's node
+    - wraps default ClusterIP to add cluster-wide port on top
+    - on the con side, one has to know the name or IP address of at least one healthy cluster node, which can be tedious. LoadBalancers solve this issue by taking care of everything
+  + LoadBalancer ::
+    - add an extra layer by building on top of ClusterIP and NodePort, to seamlessly integrate with a cloud provider's LoadBalancer
+  + so in a nutshell, building from a lower level to the top :: ClusterIP (to get to a set of pods from inside the cluster) -> NodePort (allow access from outside a cluster) -> LoadBalancer (exposes pods to the internet via a cloud provider's Load balancer)
+    - if going with a LoadBalancer, then k8s does the work to wire everything back to the pods through a NodePort and a ClusterIP, no further manual configs needed
+  + ports in the manifest ::
+    - 'port' :: is the port value the service listens on *inside* the cluster. So if another app is connecting via the service name ('ps-nodeport', which is registered with DNS), then 'port' is the internal port it needs to reach
+    - 'targetPort' :: is the port the app container is listening on
+    - 'nodePort' :: is the published external port that will be mapped on every cluster node
+  + so, when making a request from outside of a cluster ::
+    1. 'NodePort' is used to reach any of the cluster node from outside
+    2. 'Port' is the ClusterIP (internal) used to forward from the entry point node to the service
+    3. 'TargetPort' is the one used to forward from the exposed service to the pods and containers
+- labels ::
+  + 'selector' :: is the label selector, basically the list of labels that has to match the labels on the requested deployed pods
+  + show existing pods labels :: kubectl get pods --show-labels // check column 'LABELS'
+- when a service is created, k8s also creates an endpoint object that holds all the pod IPs that match the label selector and which gets updated on the fly whenever pods come and go
+  + list the endpoints :: ~kubectl get ep~
+  + each endpoint object gets a name identical to the service that it works with, so don't be surprised to see the name in the endpoint list
+- get or describe to show detailed infos about the service (kubectl describe <object>) :: ~kubectl describe svc <svc-name>~
+  + in the details result, 'Endpoints' lists healthy pod IPs that match the label selector (should relates the target port)
+****** Integrate a service with a cloud load balancer
+[2024-02-16 Fri 00:33]
+- notes ::
+  + what it does :: create a high performance, highly available, internet-facing LoadBalancer with a public IP and have it route all the way to the required app => no need to ping any intermediary node to reach the service, the cloud load balancer does it itself
+  + simpler process, but that requires a cloud k8s engine such as Linode (LKE) ::
+    1. push the loadBalancer manifest :: kubectl apply -f <pod-manifest-file>
+    2. with loadBalancer running on a public cloud, one can get the public IP with a 'get' on services: ~kubectl get svc~ (column 'EXTERNAL-IP')
+    3. can just use the public IP to request the app directly, with no port specified, the cloud's load balancer takes care of the mapping
+       - only works on clouds with supported load balancer
+       - to find LKE load balancer, checkout tab 'NodeBalancers'
+       - what happens ::
+         1. hit the public IP
+         2. traffic gets forwarded on to one of the nodes on the NodePort, and from there to the ClusterIP on the pod network, and onto the pod
+- example of manifest for LoadBalancer type ::
+  #+begin_src yaml
+  # LoadBalancer Service. Will only work on supported cloud platforms (AKS, EKS, GKE, DOK, IBM, LKE etc...)
+  # Listens externally on 80 and forwards to Pod/container on 8080
+  apiVersion: v1
+  kind: Service
+  metadata:
+    name: ps-lb
+  spec:
+    type: LoadBalancer
+    ports:
+    # listens on port 80, and then map traffic all the way back to the app, which is listening to port 8080
+    - port: 80
+      targetPort: 8080
+    selector:
+      app: web
+  #+end_src
+**** Kubernetes Deployments
+[2024-02-16 Fri 01:01]
+***** Introduction
+- deployments are part of k8s API, in the 'apps' subgroup
+- main use: self-healing, scaling, rollouts, rollbacks
+- reminder: app wrapped in a pod, wrap in a replicaSet, wrap in a deployment
+  + the user never deals with low level controller, for example, deployment configuration never deals with the replicaSet, he justs deals with deployment, and then deployment handles the replicaSet operations behind the scene
+- flow ::
+  1. create deployment manifest
+  2. post it as a request to the API server where it's authenticated and authorized
+  3. if all is good, the cluster store stores the record of intent ('desired state')
+  4. the pods are scheduled in nodes as stated in the desired state
+  5. in the background a replicaSet controller makes sure the observed matches the desired state
+  6. rolling updates :: rollouts and rollbacks
+     - rollouts ::
+       + on any update, such as an update of an image, a new manifest with the new version of the image is posted to the API server
+       + k8s doesn't remove the original replicaSet, but add a new one => then have at least 2 replicaSet
+       + k8s updates pods one at the time: winds the new pod up, and down the old one, one pod at the time => smoother /rolling update/
+       + the old replicaSet is still there, it's not managing any pod anymore, but it's still there => it's easier to reverse to previous versions
+     - rollbacks :: opposite: wind one of the old replica up, and wind the current one down
+     - many more configs possible :: such as: wait 10' after each new pod is up before marking it as healthy and moving on to the next one; liveness probes; readiness probes; etc.
+- some specs to know ::
+  + 'metadata/labels' has nothing to do with labels selector seen with pods
+  + the deployment labels selectors are defined in 'spec/selector/matchLabels', and are how the deployment know which pods to work on when they do things like rolling updates
+  + the selector 'spec/selector/matchLabels' has to match the labels in 'template/metadata/labels' ::
+    - the containers specs are the one defined in 'spec/template/spec/containers'
+    - the pods specs are the one defined in 'spec/template'
+    - and everything remaining are the deployment specs
+    - => the deployment selector specs 'spec/selector/matchLabels' have to match the labels in the pod spec 'template/metadata/labels' :: it so the deployment can manage the right pods
+      + in other words, 'spec/selector/matchLabels' is stating which pods on the cluster the deployment is going to manage
+- example of a deployment manifest ::
+  #+begin_src yaml
+  # Simple deployment used to deploy and manage the app in nigelpoulton/getting-started-k8s:1.0
+  apiVersion: apps/v1
+  kind: Deployment
+  metadata:
+    name: web-deploy
+    # has nothing to do with labels selector seen with pods
+    labels:
+      app: web
+  spec:
+    replicas: 5
+    # stating which pods on the cluster the deployment is going to manage
+    selector:
+      matchLabels:
+        app: web
+    template:
+      metadata:
+        labels:
+          app: web
+      spec: 
+        terminationGracePeriodSeconds: 1
+        containers:
+        - name: hello-pod
+          image: nigelpoulton/getting-started-k8s:1.0
+          # to require to always pull the image from a registry, never use a local copy of the image. Safer to always use a safe-proof image
+          imagePullPolicy: Always
+          ports:
+          - containerPort: 8080
+  #+end_src
+- some general commands ::
+  + apply deployment :: same as any other k8s object: ~kubectl apply -f <deployment-manifest-file>~
+  + inspect deployment resource (get or describe) :: ~kubectl get deploy~
+  + inspect replica resource (get or describe) :: ~kubectl get rs~
+    - name of replica is based on the deployment's name, and also has the cryptographic hash of the pod's spec
+  + check the pods' IPs that are served through the service you need, through its associated endpoint description :: ~kubectl describe ep <service-name>~
+    - as seen before, anytime one creates a service, an associated endpoint object is automatically created, which hosts a list of healthy pods that match the label selector
+***** Self-healing and Scaling
+[2024-02-16 Fri 02:13]
+- self-healing :: in case of a pod's failure, k8s winds up a new pod to replace it and match the observed-desired state. So, yes, cool
+  + same if a node fails, the pods running on it fail too, and the observed-desired match is broken => no fuss, k8s lights up new nodes
+- scaling :: update the deployment manifest with the new number of required replicas, post it, et voila, k8s takes care of it
+***** Rolling updates and version rollbacks
+[2024-02-16 Fri 02:13]
+- since replicaSet handle replicas and self-healing, and deployment are in charge of updates, in order to configure the rolling updates in the deployment manifest, one has to do it in the deployment part (at the bottom of the deployment, but before pods specs, which are defined in 'spec/template')
+- example ::
+  #+begin_src yaml
+  # ...
+  metadata:
+    name: web-deploy
+    labels:
+      app: web
+  spec:
+    replicas: 5
+    selector:
+      matchLabels:
+        app: web
+    # here, the rolling updates specs
+    minReadySeconds: 5
+    strategy:
+      # to state that any time one updates anything in the container's specs below, instead of deleting all existing pods and replacing them straight away, do it as a methodical rolling update
+      type: RollingUpdate
+      rollingUpdate:
+        # while performing updates, we can have, at the most, 0 (maxUnavailable) less than number of replicas defined in 'spec/replicas'. It's just basically saying we can never go less than the defined number of replicas
+        maxUnavailable: 0
+        # maxSurge, to say that during the update, 'maxSurge' number of bumps is allowed (can bump up 1 more than the desired state. only during updates)
+        maxSurge: 1
+    # pod's specs
+    template:
+      metadata:
+        labels:
+          app: web
+  # ...
+  #+end_src
+- the rolling update above is just basically saying that during updates, k8s can go up to 'replicas' + 1 (=6), and never below 'replicas'
+  + k8s will deploy one pod to the new version (thus 6 pods), and once everything is up and running for 'minReadySeconds' = 5secs, k8s will terminate one old pod, taking the number to the original 5, fire up a new pod again (=> 6 again), wait for 5secs, kill one more old pod (back to 5), and so forth, until it's all done
+  + this back and forth process is performed so that the app stays constantly available for service user
+  + reminder: for the update, there must be a change depicted in the container's specs of the manifest, for example: taking image: nigelpoulton/getting-started-k8s:1.0 to version 2.0
+- process ::
+  + post new rolling updates deployment manifest :: kubectl apply -f <rolling-updates-manifest>
+  + monitor status of rolling updates (can do both at same time on separate cli) ::
+    - check pods status :: kubectl get pods --watch
+    - check status of ongoing (if done right after posting the manifest) updates through kubectl rollout status :: kubectl rollout status deploy <deployment-name>
+- rollbacks ::
+  + reminder: on rolling updates the old replicaSet is still present on the cluster
+    - can check (describe) its state :: ~kubectl describe rs <replicaset-name>~
+      + will get a bunch of infos about it, especially that the old pods were deleted, and its previous condition before the update
+  + process
+    1. check the deployment rollout history for the needed revision :: ~kubectl rollout history deploy <deployment-name>~
+    2. rollback to the needed version :: ~kubectl rollout undo deploy <deployment-name> --to-revision <number-of-needed-rollback>~
+    3. monitor status of ongoing (if done right after posting the manifest) updates through kubectl rollout status :: kubectl rollout status deploy <deployment-name>
+** Tips and tricks
+[2024-01-22 Mon 20:45]
+*** Preparing containerization
+- tools ::
+  + docker desktop :: development docker and kubernetes environment (or their cloud counterparts: GKE (Google Kubernetes Engine) for google cloud, AKS (Elastic Kubernetes Service) for AWS, etc.)
+  + checkout for :: tools for monitoring, logging, etc.
+  + containers and cloud native :: can live alongside VMs within the same app, so don't hesitate to probe into the most appropriate direction for your business
+- suitable workloads ::
+- tips ::
+  + try to setup a 'research and development "SWAT" team' to try new technologies on the cloud, and let them be ambassadors on the whole company when technology has gain enough momentum; advice: get devs and ops talking, get management talking, and then get doing!!
+*** Entreprise oriented vs startup oriented (how appropriate is the design for the production readiness)
+[2024-01-27 Sat 23:45]
