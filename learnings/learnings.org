@@ -1,5 +1,5 @@
 # -*- mode: org -*-
-#+title: "Other" general computer/software related learning
+#+title: Other general computer/software related learning
 #+SETUPFILE: ~/set-up-files/basic-setups.org
 
 * computer engineering linguee
