@@ -84,7 +84,11 @@
       + Footnote :: fetches footnote detail in data calls, ==footnote=y== gives the footnote value for country, indicator and year, eg: http://api.worldbank.org/v2/country/chn/indicator/SL.AGR.EMPL.ZS?footnote=y
 - indicators :: eg: "NY.GDP.MKTP.CD" for GDP, full list: http://api.worldbank.org/v2/indicator?format=json
 - some examples :: 
-  + retrieve the country name of Vietnam in Vietnamese language :: http://api.worldbank.org/v2/vi/country/vn
+  + requesting country data :: 
+    - list all countries :: http://api.worldbank.org/v2/country
+      + various info attached such as: Region, Income Level, Lending Type, Capital, Coordinates, etc.
+    - list data for brasil in json format :: http://api.worldbank.org/v2/country/br?format=json
+    - retrieve the country name of Vietnam in Vietnamese language :: http://api.worldbank.org/v2/vi/country/vn
 ** Metadata API queries
 [2024-02-27 Tue 01:17]
 * Tickets
