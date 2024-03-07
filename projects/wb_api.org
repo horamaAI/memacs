@@ -89,6 +89,7 @@
       + various info attached such as: Region, Income Level, Lending Type, Capital, Coordinates, etc.
     - list data for brasil in json format :: http://api.worldbank.org/v2/country/br?format=json
     - retrieve the country name of Vietnam in Vietnamese language :: http://api.worldbank.org/v2/vi/country/vn
+  + aggregation of API queries :: 
 ** Metadata API queries
 [2024-02-27 Tue 01:17]
 * Tickets
