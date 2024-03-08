@@ -94,7 +94,15 @@
     - list of all topics: http://api.worldbank.org/v2/topic
     - list selected topics, or aggregate selections: http://api.worldbank.org/v2/topic/5, http://api.worldbank.org/v2/topic/5;11
     - list indicators under a specific topic: eg: topic 'Energy & Mining' (id 5): http://api.worldbank.org/v2/topic/5/indicator, or http://api.worldbank.org/v2/indicator?topic=5
-
+- advanced API queries ::
+  + allow to retrieve data for any combination of multidimensional data sources and multidimensional concepts
+  + advanced Data Queries can be made through the Metadata API (see next section)
+  + elements:
+    - ==Source==: about the source database (~<wb:source id="2" name="World Development Indicators">~)
+    - ==Concept==: also known as ==Dimensions== or ==combinations of dimensions==, eg: Country, Series, Time, etc. (~<wb:variable name="Country">~)
+    - ==Concept Variables==: also known as ==Dimension Variables==, Concept Variables belong to Concepts, eg: High Income, East Asia & Pacific, United States of America, 2012, etc. (~<wb:variable name="Country" id="IND">India</wb:variable>~)
+    - ==Data==: data for any combination of Source and Concepts, eg: 12341491960, etc. (~<wb:value>1241491960</wb:value>~)
+- metadata advanced API queries :: 
 - some examples :: 
   + requesting country data :: 
     - list all countries :: http://api.worldbank.org/v2/country
