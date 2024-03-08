@@ -82,14 +82,26 @@
       + Multiple Indicators :: data for multiple indicators can be queried from a single data source by providing the indicator codes separated by ==;== (semicolon), as well as the source ID ('source' are the different sources of data: "Africa Development Indicators", "International Debt Statistics", etc.) :: http://api.worldbank.org/v2/country/chn;ago/indicator/AG.AGR.TRAC.NO;SP.POP.TOTL?source=2
         - note: max of 60 indicators, max of 1,500 characters between two back-slashes (==/==), max of 4,000 chars in the entire URL
       + Footnote :: fetches footnote detail in data calls, ==footnote=y== gives the footnote value for country, indicator and year, eg: http://api.worldbank.org/v2/country/chn/indicator/SL.AGR.EMPL.ZS?footnote=y
-- indicators :: eg: "NY.GDP.MKTP.CD" for GDP, full list: http://api.worldbank.org/v2/indicator?format=json
+- indicator API queries ::
+  + /indicators/ represent data like total population, gross national income, energy use, etc.
+  + eg: "NY.GDP.MKTP.CD" for GDP, full list: http://api.worldbank.org/v2/indicator?format=json
 - some examples :: 
   + requesting country data :: 
     - list all countries :: http://api.worldbank.org/v2/country
       + various info attached such as: Region, Income Level, Lending Type, Capital, Coordinates, etc.
     - list data for brasil in json format :: http://api.worldbank.org/v2/country/br?format=json
     - retrieve the country name of Vietnam in Vietnamese language :: http://api.worldbank.org/v2/vi/country/vn
-  + aggregation of API queries :: 
+  + aggregation of API queries ::
+    - possible to aggregates by region, income level, lending group, etc. Just need to use appropriate code in place of full country name, eg: can request GDP for specific country, Brazil for example (http://api.worldbank.org/v2/country/BRA/indicator/NY.GDP.MKTP.CD?format=json), or retrieve GDP for Latin America and Caribbean region (LCN): http://api.worldbank.org/v2/country/LCN/indicator/NY.GDP.MKTP.CD?format=json
+    - fetch some code definitions ::
+      + definition list for all region codes: http://api.worldbank.org/v2/region?format=json
+      + list of all Income Level code definitions: http://api.worldbank.org/v2/incomelevel
+        - eg: 'UMC' for Upper middle income
+      + list of all Lending Type code definitions: http://api.worldbank.org/v2/lendingtypes
+      + can also retrieve list of definitions for specific regions, income levels or lending types: eg: http://api.worldbank.org/v2/incomelevel/UMC
+      + querying a country shows which aggregate groups it belongs to: http://api.worldbank.org/v2/country/BRA?format=json (id region: LCN)
+      + can also aggregate by separating codes with semicolons (==;==): http://api.worldbank.org/v2/lendingtype/IBD;IDB?format=json
+      + can filter countries to see countries in a specified aggregate: http://api.worldbank.org/v2/country?region=LCN, http://api.worldbank.org/v2/country?incomelevel=UMC, http://api.worldbank.org/v2/country?lendingtype=IBD
 ** Metadata API queries
 [2024-02-27 Tue 01:17]
 * Tickets
