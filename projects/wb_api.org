@@ -84,7 +84,17 @@
       + Footnote :: fetches footnote detail in data calls, ==footnote=y== gives the footnote value for country, indicator and year, eg: http://api.worldbank.org/v2/country/chn/indicator/SL.AGR.EMPL.ZS?footnote=y
 - indicator API queries ::
   + /indicators/ represent data like total population, gross national income, energy use, etc.
-  + eg: "NY.GDP.MKTP.CD" for GDP, full list: http://api.worldbank.org/v2/indicator?format=json
+  + eg: "NY.GDP.MKTP.CD" for GDP. For the full list of indicators: http://api.worldbank.org/v2/indicator?format=json
+  + indicator queries return valuable information such as: indicator code, its name, unit used when required, Source ID (eg: World Development Indicators), Source Note, Source Organization, Topic ID (list of topics and their names)
+  + to filter out indicators' sources and pick a specific one, its source id has to be provided: eg for source '11' which is 'Africa Development Indicators': http://api.worldbank.org/v2/indicator/NY.GDP.MKTP.CD?source=11, or http://api.worldbank.org/v2/source/11/indicator/NY.GDP.MKTP.CD
+  + full list of sources: http://api.worldbank.org/v2/source?format=json
+- topic API queries ::
+  + topics are high level categories to which all indicators are mapped: Agriculture & Rural Development, Education, Trade, etc.
+  + topics lists ::
+    - list of all topics: http://api.worldbank.org/v2/topic
+    - list selected topics, or aggregate selections: http://api.worldbank.org/v2/topic/5, http://api.worldbank.org/v2/topic/5;11
+    - list indicators under a specific topic: eg: topic 'Energy & Mining' (id 5): http://api.worldbank.org/v2/topic/5/indicator, or http://api.worldbank.org/v2/indicator?topic=5
+
 - some examples :: 
   + requesting country data :: 
     - list all countries :: http://api.worldbank.org/v2/country
