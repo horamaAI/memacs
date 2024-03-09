@@ -97,11 +97,51 @@
 - advanced API queries ::
   + allow to retrieve data for any combination of multidimensional data sources and multidimensional concepts
   + advanced Data Queries can be made through the Metadata API (see next section)
-  + elements:
+  + example of response to advanced API query:
+    #+begin_src xml
+    <wb:data xmlns:wb="http://www.worldbank.org" page="1" pages="1" per_page="50" total="1" lastupdated="2011-12-15">
+      <wb:source id="2" name="World Development Indicators">
+        <wb:data>
+          <wb:variable name="Country" id="IND">India</wb:variable>
+          <wb:variable name="Series" id="SP.POP.TOTL">Population, total</wb:variable>
+          <wb:variable name="Time" id="YR2011">2011</wb:variable>
+          <wb:value>1241491960</wb:value>
+        </wb:data>
+      </wb:source>
+    </wb:data>
+    #+end_src
+  + elements breakdown:
     - ==Source==: about the source database (~<wb:source id="2" name="World Development Indicators">~)
+      + Source queries ::
+        - following data source information will appear, when available, in response of source queries:
+          + Date last updated
+          + Source ID and Name
+          + WB Source Code
+          + Source description and URL
+          + Data availability: “Y” means indicator data is available for that source; “N” means it is not available
+          + Meta data availability: “Y” means Meta data is available for that source; “N” means it is not available
+          + Number of concepts
+        - full list of sources: http://api.worldbank.org/v2/source?format=json
+          + for a specific source: http://api.worldbank.org/v2/source/2
     - ==Concept==: also known as ==Dimensions== or ==combinations of dimensions==, eg: Country, Series, Time, etc. (~<wb:variable name="Country">~)
+      + Concept queries ::
+        - fetches following data, when available, about concepts of a specific source:
+          + Source ID
+          + Concept ID
+          + Concept Name
+        - to list of all available concepts from a given source: http://api.worldbank.org/v2/sources/2/concepts/data (Country, Series, and Time for 'World Development Indicators' of source id '2')
+          + for source 57 'WDI Database Archives' for example, the concept is only Country (http://api.worldbank.org/v2/sources/57/concepts/Country/data)
     - ==Concept Variables==: also known as ==Dimension Variables==, Concept Variables belong to Concepts, eg: High Income, East Asia & Pacific, United States of America, 2012, etc. (~<wb:variable name="Country" id="IND">India</wb:variable>~)
+      + Concept variable queries ::
+        - returns the following information, when available, about concept variables of a specific source:
+          + Source ID
+          + Concept ID and Name
+          + Variable ID and Name
+        - to request a list of all available variables in a concept: http://api.worldbank.org/v2/sources/2/country/data
+        - eg: to retrieve a specific concept variable detail for a source (in this example concept ID is “Country”, Country variable id is “ALB”, and Source is 'World Development Indicators' or source 2): http://api.worldbank.org/v2/sources/57/country/ALB/data
     - ==Data==: data for any combination of Source and Concepts, eg: 12341491960, etc. (~<wb:value>1241491960</wb:value>~)
+  + advanced API queries ::
+    - data can be retrieved for any combination of Sources and Concepts.
 - metadata advanced API queries :: 
 - some examples :: 
   + requesting country data :: 
