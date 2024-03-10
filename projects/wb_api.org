@@ -141,8 +141,21 @@
         - eg: to retrieve a specific concept variable detail for a source (in this example concept ID is “Country”, Country variable id is “ALB”, and Source is 'World Development Indicators' or source 2): http://api.worldbank.org/v2/sources/57/country/ALB/data
     - ==Data==: data for any combination of Source and Concepts, eg: 12341491960, etc. (~<wb:value>1241491960</wb:value>~)
   + advanced API queries ::
-    - data can be retrieved for any combination of Sources and Concepts.
-- metadata advanced API queries :: 
+    - data can be retrieved for any combination of Sources and Concepts
+      + eg: request to provide data for Country ALB (Albania), Series AG.AGR.TRAC.NO ( Agricultural machinery, tractors), Time 1975, Version 1997 Apr.: http://api.worldbank.org/v2/sources/57/country/ALB/series/AG.AGR.TRAC.NO/time/yr1975/version/199704
+      + list series from a given source: http://api.worldbank.org/v2/sources/57/series
+        - in given example, concepts: 'sources', 'country', 'series', 'time', and 'version' are all keywords
+      + can set 'all' value to concepts, eg in the following where time is 'all': http://api.worldbank.org/v2/sources/57/country/ALB/series/AG.AGR.TRAC.NO/time/all/version/199704/data
+      + can get responses in Json-stat format: http://api.worldbank.org/v2/sources/57/country/ALB/series/AG.AGR.TRAC.NO/time/all/version/199704/data?format=jsonstat
+      + process to built advanced query:
+        - for a given source, checkout the series provided by the source: http://api.worldbank.org/v2/sources/1/series, eg: select for example 'IC.CRED.ACC.CRD.RK' (Rank: Getting credit)
+        - checkout the available Concepts for the needed country (http://api.worldbank.org/v2/sources/1/country/RWA/series/IC.CRED.ACC.CRD.RK), eg: select for example concept time '2019' (yr2019), and no concept 'version'
+        - and you get request to provide data for country RWA, series IC.CRED.ACC.CRD.RK, time 2019 (No concept version for source), which is value '4': http://api.worldbank.org/v2/sources/1/country/RWA/series/IC.CRED.ACC.CRD.RK/time/yr2019
+- metadata advanced API queries ::
+  + Metadata :: data about data
+  + provides users with more information about the data such as where the data comes from, the way in which the data is measured, and the frequency with which the data is collected, just to name a few
+  + for example, for the indicator Population (total), SP.POP.TOTL, the metadata includes the indicator’s long definition, its sources, its periodicity, its methodology, etc.
+  + metadata queries :: 
 - some examples :: 
   + requesting country data :: 
     - list all countries :: http://api.worldbank.org/v2/country
