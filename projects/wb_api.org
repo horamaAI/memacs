@@ -126,7 +126,7 @@
     - ==Concept==: also known as ==Dimensions== or ==combinations of dimensions==, eg: Country, Series, Time, etc. (~<wb:variable name="Country">~)
       + Concept queries ::
         - fetches following data, when available, about concepts of a specific source:
-          + Source ID
+          + Source ID and name
           + Concept ID
           + Concept Name
         - to list of all available concepts from a given source: http://api.worldbank.org/v2/sources/2/concepts/data (Country, Series, and Time for 'World Development Indicators' of source id '2')
@@ -155,8 +155,40 @@
   + Metadata :: data about data
   + provides users with more information about the data such as where the data comes from, the way in which the data is measured, and the frequency with which the data is collected, just to name a few
   + for example, for the indicator Population (total), SP.POP.TOTL, the metadata includes the indicator’s long definition, its sources, its periodicity, its methodology, etc.
-  + metadata queries :: 
-- some examples :: 
+  + metadata queries definitions ::
+    - eg of metadata query response: http://api.worldbank.org/v2/sources/2/country/jpn/metadata
+      #+begin_src xml
+      <wb:metadata xmlns:wb="http://www.worldbank.org" page="1" pages="1" per_page="5000" total="24">
+      <wb:source id="2" name="World Development Indicators">
+      <wb:concept id="Country">
+      <wb:variable id="JPN">
+      <wb:metatype id="2-alphacode">JP</wb:metatype>
+      <wb:metatype id="BalanceofPaymentsManualinuse">IMF Balance of Payments Manual, 6th edition.</wb:metatype>
+      <wb:metatype id="CurrencyUnit">Japanese yen</wb:metatype>
+      <wb:metatype id="GovernmentAccountingconcept">Consolidated central government</wb:metatype>
+      <!-- ... -->
+      </wb:variable>
+      </wb:concept>
+      </wb:metadata>
+      #+end_src
+    - Source, Concept :: (as already seen previously)
+      + eg: http://api.worldbank.org/v2/sources/2/concepts/metadata
+      + or requesting specific concept detail (concept ID: ==country==, source: 2): http://api.worldbank.org/v2/sources/2/concepts/country/metadata
+    - Metatype :: (eg: ~<wb:metatype id="2-alphacode">JP</wb:metatype>~ of concept 'country' Japan)
+      + retrieves the types of Metadata available
+      + Metatypes *belong to Concepts*
+      + each concept may have one or more Metatypes
+      + Metatype calls will return (when available):
+        - Source ID
+        - Concept ID
+        - Metatype ID and Details (name and description)
+
+
+      + examples: Region, Income Group, Periodicity, Source, etc.
+    - Metadata :: retrieves Metadata for any combination of Source, Concept and Metatype, eg: High Income, East Asia & Pacific, United States of America, 2012, etc.
+    - Search :: retrieves Metadata by using keywords in the query string, eg: http://api.worldbank.org/v2/sources/2/search/solid%20fuel, http://api.worldbank.org/v2/sources/2/search/burundi
+    - can still download metadata with ==downloadformat==: http://api.worldbank.org/v2/sources/2/country/usa;jpn/series/SP.POP.TOTL/metadata?downloadformat=excel
+- some more examples :: 
   + requesting country data :: 
     - list all countries :: http://api.worldbank.org/v2/country
       + various info attached such as: Region, Income Level, Lending Type, Capital, Coordinates, etc.
