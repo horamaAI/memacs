@@ -156,7 +156,7 @@
   + provides users with more information about the data such as where the data comes from, the way in which the data is measured, and the frequency with which the data is collected, just to name a few
   + for example, for the indicator Population (total), SP.POP.TOTL, the metadata includes the indicator’s long definition, its sources, its periodicity, its methodology, etc.
   + metadata queries definitions ::
-    - eg of metadata query response: http://api.worldbank.org/v2/sources/2/country/jpn/metadata
+    - eg of metadata query response: http://api.worldbank.org/v2/sources/2/country/jpn/metadata (lists metadata available for concept 'Country' and for the country concept of value JPN)
       #+begin_src xml
       <wb:metadata xmlns:wb="http://www.worldbank.org" page="1" pages="1" per_page="5000" total="24">
       <wb:source id="2" name="World Development Indicators">
@@ -171,23 +171,45 @@
       </wb:concept>
       </wb:metadata>
       #+end_src
-    - Source, Concept :: (as already seen previously)
+    - Source, Concept :: (as already seen previously in section 'advanced API queries')
       + eg: http://api.worldbank.org/v2/sources/2/concepts/metadata
       + or requesting specific concept detail (concept ID: ==country==, source: 2): http://api.worldbank.org/v2/sources/2/concepts/country/metadata
     - Metatype :: (eg: ~<wb:metatype id="2-alphacode">JP</wb:metatype>~ of concept 'country' Japan)
       + retrieves the types of Metadata available
-      + Metatypes *belong to Concepts*
-      + each concept may have one or more Metatypes
+      + Metatypes *belong to Concepts*, and each concept may have one or more Metatypes
+      + Metatype calls retrieve lists of data types available for the given source
       + Metatype calls will return (when available):
         - Source ID
         - Concept ID
         - Metatype ID and Details (name and description)
-
-
-      + examples: Region, Income Group, Periodicity, Source, etc.
-    - Metadata :: retrieves Metadata for any combination of Source, Concept and Metatype, eg: High Income, East Asia & Pacific, United States of America, 2012, etc.
-    - Search :: retrieves Metadata by using keywords in the query string, eg: http://api.worldbank.org/v2/sources/2/search/solid%20fuel, http://api.worldbank.org/v2/sources/2/search/burundi
-    - can still download metadata with ==downloadformat==: http://api.worldbank.org/v2/sources/2/country/usa;jpn/series/SP.POP.TOTL/metadata?downloadformat=excel
+      + examples of metatypes: Region, Income Group, Periodicity, Source, etc.
+      + Metatypes queries examples:
+        - list metatypes available for source 2: http://api.worldbank.org/v2/sources/2/metatypes (grouped by concepts: Country, Footnote, Series, etc.)
+        - list metatypes available for source 2, and concepts 'Country' and 'Series': http://api.worldbank.org/v2/sources/2/concepts/country;series/metatypes
+    - Metadata ::
+      + retrieves Metadata for any combination of Source, Concept and Metatype
+      + eg of metadata: High Income, East Asia & Pacific, United States of America, 2012, etc.
+      + Metadata queries ::
+        - eg1: list metadata for Income Group in the United States and Japan: http://api.worldbank.org/v2/sources/2/country/usa;jpn/metatypes/incomegroup/metadata
+          + ==sources==, ==country==, ==metatypes==, and ==metadata== are keywords
+          + ==usa;jpn== belongs to the concept ==country== and ==incomegroup== belongs to ==metatypes==
+        - eg2: list all metadata for concept 'country' of value jpn: http://api.worldbank.org/v2/sources/2/country/jpn/metadata
+        - eg3: retrieve metadata for combination of concepts (in this case, concepts 'country' and 'series', of values 'United States' and 'Japan' for concept country, and series SP.POP.TOTL: http://api.worldbank.org/v2/sources/2/country/usa;jpn/series/SP.POP.TOTL/metadata
+    - Search queries ::
+      + to retrieve Metadata by using keywords in the query string, eg: http://api.worldbank.org/v2/sources/2/search/solid%20fuel, http://api.worldbank.org/v2/sources/2/search/burundi
+      + search calls will return (when available):
+        - Source ID
+        - Concept ID
+        - Variable ID
+        - Metatype ID and detail
+      + will return found metadata, their variables, and the concepts they belong to. The result depends also on the source (eg: results for source 57 http://api.worldbank.org/v2/sources/57/search/burundi, might be different than those for source 2 http://api.worldbank.org/v2/sources/2/search/burundi)
+      + note: use ==%20== to add spaces, eg: http://api.worldbank.org/v2/sources/2/search/solid%20fuel
+      + more search queries ::
+        - do a search within a specific *concept*: search within concept 'country' for metadata values that contain 'united': http://api.worldbank.org/v2/sources/2/concepts/country/search/united
+        - search within a specific *metatype*: search within Metatype 'region' for values that contain 'south': http://api.worldbank.org/v2/sources/2/metatypes/region/search/south
+    - can still download metadata, metatypes, and metadata descriptions with ==downloadformat==, examples:
+      + download excel of metadata for countries usa and jpn, and of series 'Population, total': http://api.worldbank.org/v2/sources/2/country/usa;jpn/series/SP.POP.TOTL/metadata?downloadformat=excel, 
+      + download csv of results of search within concept 'Country-Series' of value 'AFG~1.1_YOUTH.LITERACY.RATE': http://api.worldbank.org/v2/Sources/34/Country-Series/AFG~1.1_YOUTH.LITERACY.RATE/metadata?downloadformat=csv
 - some more examples :: 
   + requesting country data :: 
     - list all countries :: http://api.worldbank.org/v2/country
@@ -205,8 +227,10 @@
       + querying a country shows which aggregate groups it belongs to: http://api.worldbank.org/v2/country/BRA?format=json (id region: LCN)
       + can also aggregate by separating codes with semicolons (==;==): http://api.worldbank.org/v2/lendingtype/IBD;IDB?format=json
       + can filter countries to see countries in a specified aggregate: http://api.worldbank.org/v2/country?region=LCN, http://api.worldbank.org/v2/country?incomelevel=UMC, http://api.worldbank.org/v2/country?lendingtype=IBD
-** Metadata API queries
-[2024-02-27 Tue 01:17]
+** SDMX API queries
+- notes ::
+  + SDMX API :: preferred standard for statistical data exchange in the UN and in many other statistical organizations (such as ==Worldbank==). The standard defines, amongst other things, a common data model and standardized data access interfaces (APIs).
+  + In the SDMX API, users can give various dimensions as a parameter in the URL like series code, country code, or frequency and time range etc., and the resulting data can be downloaded as XML or JSON.
 * Tickets
 [2024-02-25 Sun 23:21]
  - WBAPI001: basic structure
