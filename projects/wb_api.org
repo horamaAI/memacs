@@ -229,7 +229,7 @@
       + can filter countries to see countries in a specified aggregate: http://api.worldbank.org/v2/country?region=LCN, http://api.worldbank.org/v2/country?incomelevel=UMC, http://api.worldbank.org/v2/country?lendingtype=IBD
 ** SDMX API queries
 - notes ::
-  + SDMX API :: preferred standard for statistical data exchange in the UN and in many other statistical organizations (such as ==Worldbank==). The standard defines, amongst other things, a common data model and standardized data access interfaces (APIs).
+  + SDMX API :: preferred standard for statistical data exchange in the UN and in many other statistical organizations (such as ==Worldbank==, or ==databank==). The standard defines, amongst other things, a common data model and standardized data access interfaces (APIs).
   + In the SDMX API, users can give various dimensions as a parameter in the URL like series code, country code, or frequency and time range etc., and the resulting data can be downloaded as XML or JSON.
 * Tickets
 [2024-02-25 Sun 23:21]
