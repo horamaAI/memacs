@@ -10,6 +10,17 @@
 * Notes
 - sources ::
   + https://datahelpdesk.worldbank.org/knowledgebase/topics/125589-developer-information
+  + Data Catalog API :: provides information about the numerous development-relevant datasets available through the world Bank Data Catalog (https://datacatalog.worldbank.org/)
+    - example ::
+      + Statistical Performance Indicators :: https://datacatalog.worldbank.org/search/dataset/0037996/Statistical-Performance-Indicators
+      + energydata.info :: https://energydata.info/
+      + Library Network :: catalog of open, free, and fee-based online databases for world bank group and international monetary fund staff, https://library.worldbankimflib.org/
+    - can checkout some of their already implemented apps too :: https://energydata.info/apps
+      + eg: https://www.urbanperformance.in/up-improvement, https://rezoning.energydata.info/, etc.
+      + some source codes are also available: https://github.com/kartoza/rezoning-2-project, https://github.com/energy-data/nzt-electrification/tree/master, https://github.com/UPTechMX?tab=repositories
+      + Open Finances :: 
+    - provides also "databank access" to directly visualize the data, eg: statistical performance indicators databank access: https://databank.worldbank.org/source/statistical-performance-indicators-(spi)
+    - all those data are already (should) available through the world bank API
 - World Bank APIs provide access to various types of data and databases :: ([[https://datahelpdesk.worldbank.org/knowledgebase/articles/889386-developer-information-overview][source]])
   + Indicators API :: provides programmatic access to time series development data and metadata.
   + Data Catalog API :: provides information about the thousands of development-relevant datasets available through the [[https://datacatalog.worldbank.org/home][World Bank Data Catalog]]. [[https://datahelpdesk.worldbank.org/knowledgebase/articles/902049-data-catalog-api][Learn More]].
@@ -284,7 +295,7 @@
       + request all series, one country and one year :: http://api.worldbank.org/v2/sdmx/rest/data/WDI/A..AFG/?startperiod=2011&endPeriod=2011
       + request one country, one series and a range of years :: http://api.worldbank.org/v2/sdmx/rest/data/WDI/A.SP_POP_TOTL.AFG/?startperiod=2010&endPeriod=2015, http://api.worldbank.org/v2/sdmx/rest/data/WDI/A.SP_POP_TOTL.RWA/?startperiod=2010&endPeriod=2020
         - query works for json with header ~Accept: application/vnd.sdmx.data+json;version=1.0.0-wd~
-  + For error codes refer to :: https://datahelpdesk.worldbank.org/knowledgebase/articles/898620-api-error-codes
+  + For error code numbers refer to :: https://datahelpdesk.worldbank.org/knowledgebase/articles/898620-api-error-codes
           
 * Tickets
 [2024-02-25 Sun 23:21]
