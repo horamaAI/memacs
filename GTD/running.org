@@ -18,8 +18,8 @@
 * Important elements
 [2024-03-12 Tue 21:47]
 - cadence
-- stride length/angle
-- posture :: should run in a bending forward lean push, instead of just bending forward at the waist: focus on holding hips high, up, and forward
+- stride length/angle :: goal: land foot beneath a *flexing* knee, but don't overstride. As cadence increases, so should the stride angle. Stride angle: as one leg backward (maximum extension of leg backward) how high is the knee drive on the forward leg (angle between backward and forward leg when backward leg is extended the most)
+- posture :: should run in a bending forward lean push, instead of just bending forward at the waist: focus on holding hips high, up, and forward: maintain an aligned posture from top to toe
 - arm movements :: swing arms in relaxed and rhythmic coordination with stride, and motion should originate from shoulders
 
 * Training
