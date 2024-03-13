@@ -16,6 +16,7 @@
   + Projects API :: provides access to [[http://projects.worldbank.org/][World Bank operations data]], i.e., active, pipeline and closed projects implemented in countries and around the world. [[http://search.worldbank.org/api/v2/projects][Learn More]].
   + Finances API :: provides programmatic access to World Bank financial data (loans, credits, financial statements, etc) delivered on the [[https://finances.worldbank.org/][World Bank Finances]] platform. [[https://dev.socrata.com/][Learn More]].
   + Climate Data API :: provides access to historical and modelled climate data from the [[http://climateknowledgeportal.worldbank.org/][Climate Knowledge Portal]]. [[https://datahelpdesk.worldbank.org/knowledgebase/articles/902061][Learn More]].
+- limitations on data requests :: to avoid server overload, requests for the entire database are not possible in one query. Data calls are restricted to 15,000 data points per call including null values.
 - third Party Apps :: many [[https://data.worldbank.org/products/third-party-apps][third party applications]] have already been developed, including integration modules for Drupal, R, Python and STATA. Example: Google’s [[http://www.google.com/publicdata/overview?ds=d5bncppjof8f9_][Public Data Explorer]] uses Google tools, including motion charts, to visualize and explore data from the World Bank and many other providers
 ** WB indicators API Documentation
 - notes ::
@@ -23,6 +24,7 @@
   + to this date, use of version 2 of the Indicators API, v1 release was discontinued in 2020
   + the Indicators API provides access to over 45 databases, including:
     - World Development Indicators :: http://datatopics.worldbank.org/world-development-indicators
+      + primary World Bank collection of development indicators, compiled from officially recognized international sources. Presents the most current and accurate global development data available, includes national, regional and global estimates
     - International Debt Statistics :: https://data.worldbank.org/products/ids
     - Doing Business :: http://www.doingbusiness.org/
     - Human Capital Index :: http://www.worldbank.org/en/publication/human-capital
@@ -230,7 +232,60 @@
 ** SDMX API queries
 - notes ::
   + SDMX API :: preferred standard for statistical data exchange in the UN and in many other statistical organizations (such as ==Worldbank==, or ==databank==). The standard defines, amongst other things, a common data model and standardized data access interfaces (APIs).
+    - ISO standard designed to describe statistical data and metadata, normalise their exchange, and improve their efficient sharing across statistical and similar organisations.
   + In the SDMX API, users can give various dimensions as a parameter in the URL like series code, country code, or frequency and time range etc., and the resulting data can be downloaded as XML or JSON.
+- basic call structure ::
+  + two types of requests :: to retrieve the metadata, and to retrieve data
+  + response formats ::
+    - SDMX-ML :: of two types
+      + generic schema :: default format, with size a bit greater when compared to other formats
+      + structure specific schema :: more suited for processing of large data
+        - need to modify HTTP request header field ~Accept: application/vnd.sdmx.structurespecificdata+xml~ on the SDMX data query request (seems not to always work, but ~application/xml; charset=utf-8~ mostly does)
+    - Json :: need to modify the HTTP request header field ~Accept: application/vnd.sdmx.data+json;version=1.0.0-wd~ on the SDMX data query request. (seems not to always work, maybe because of the size, same for ~application/json; charset=utf-8~)
+  + metadata requests :: (to get DataFlow, Code List and DSD (data structure definition))
+    - data flow :: end-point to retrieve the unique dataset code for World Bank datasets
+      + URL  :: http://api.worldbank.org/v2/sdmx/rest/dataflow
+      + method :: ~GET~
+      + response format :: xml
+      + Success Response :: ==HTTP Response Status Code: 200, Content: The response has the data flow code to access the World Bank datasets.==
+    - code list :: endpoint retrieves the code list for the WDI dataset.
+      + URL  :: http://api.worldbank.org/v2/sdmx/rest/codelist/wb
+      + method :: ~GET~
+      + response format :: xml
+      + Success Response :: ==HTTP Response Status Code: 200, Content: The response has the code list available for various dimension in WDI dataset.==
+    - Data Structure Definition (DSD) :: API retrieves the Data Structure Definition (DSD) for the WDI dataset
+      + URL  :: http://api.worldbank.org/v2/sdmx/rest/datastructure/wb
+      + method :: ~GET~
+      + response format :: xml
+      + Success Response :: ==HTTP Response Status Code: 200, Content: The response has the Data Structure Definition (DSD) for WDI dataset==
+  + Data requests ::
+    - notes ::
+      + used to download data in Generic, Compact and JSON format
+      + users can request data for a country and series over a period, however data points in a single query cannot exceed more than 15,000 data points
+      + in data calls, the dimensions are separated by ==.== (dot)
+    - url :: ~http://api.worldbank.org/v2/sdmx/rest/data/<dataset%20id>/../?startperiod=&endPeriod=~ (checkout parameters in following section 'Url parameter')
+    - method :: ~GET~
+    - URL Parameter :: (for most of the parameters, checkout http://api.worldbank.org/v2/sdmx/rest/codelist/wb for the needed codes)
+      + Dataset id :: for example, 'WDI'
+      + Freq :: possible value for frequency is 'A'. If no value is specified, it is considered as all frequencies
+      + Series :: Series code (Refer to WDI DSD for list of series names and codes)
+      + Country :: ISO Country code
+      + StartPeriod :: year parameter and can have values from 1960 onwards. If ignored, data for all available years will be returned.
+      + EndPeriod :: year parameter and can have values from 1960 onwards. If ignored, all data available from the start period to the latest available years will be returned.
+    - Success response :: ==HTTP Response Status Code: 200  Content: The response has the following information. - Series  - Country  - Time==
+    - Error response :: response contains the result value of the Country, Series, Time and Frequency combination. If any of the dimensions are not specified in the request URL, all the data related to that dimension will be retrieved in relation to the other dimensions.
+      + Error Response :: ==Could not find dataflow and/or DSD related with this data request==
+    - Response format :: XML- SDMX-ML 2.1 generic schema, XML- SDMX-ML 2.1 structure specific schema or JSON (really ?)
+    - examples ::
+      + EG_ELC_ACCS_RU_ZS
+      + request one country, one series and one year :: http://api.worldbank.org/v2/sdmx/rest/data/WDI/A.SP_POP_TOTL.AFG/?startperiod=2011&endPeriod=2011
+        - one country 'AFG' for Afghanistan
+      + request all countries, one series and one year :: http://api.worldbank.org/v2/sdmx/rest/data/WDI/A.SP_POP_TOTL./?startperiod=2011&endPeriod=2011
+      + request all series, one country and one year :: http://api.worldbank.org/v2/sdmx/rest/data/WDI/A..AFG/?startperiod=2011&endPeriod=2011
+      + request one country, one series and a range of years :: http://api.worldbank.org/v2/sdmx/rest/data/WDI/A.SP_POP_TOTL.AFG/?startperiod=2010&endPeriod=2015, http://api.worldbank.org/v2/sdmx/rest/data/WDI/A.SP_POP_TOTL.RWA/?startperiod=2010&endPeriod=2020
+        - query works for json with header ~Accept: application/vnd.sdmx.data+json;version=1.0.0-wd~
+  + For error codes refer to :: https://datahelpdesk.worldbank.org/knowledgebase/articles/898620-api-error-codes
+          
 * Tickets
 [2024-02-25 Sun 23:21]
  - WBAPI001: basic structure
