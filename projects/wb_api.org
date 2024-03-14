@@ -297,6 +297,25 @@
         - query works for json with header ~Accept: application/vnd.sdmx.data+json;version=1.0.0-wd~
   + For error code numbers refer to :: https://datahelpdesk.worldbank.org/knowledgebase/articles/898620-api-error-codes
           
+** Best practices and suggested guidelines
+[2024-03-14 Thu 00:19]
+- notes :: best practices and tips that can help in making a World Bank API application/library. Not exhaustive.
+- caching ::
+  + nice to implement a caching layer in your library/application that caches results of calls made to the WB API.
+    - For performance: caching API call results makes the application/library to not constantly make calls to the WB API for the same results, it's faster to use requests that are able to be served by a local cache
+    - For resource usage: caching API calls generates less traffic, and save bandwidth for both the client and the WB API server
+    - For performance: not all requests to the WB API are fast, caching results makes slow calls only for those where the local cache is not yet populated
+    - Safety: since the WB API is not guaranteed to always be up, locally cachedhaving results prevent being impacted by disruptions
+    - For performance: results do not change very often (data are not added regularly, unlike daily news API or other very timely service), caching provides lots of gain
+    - look at the WBAPI Drupal module (https://www.drupal.org/project/wbapi, https://git.drupalcode.org/project/wbapi) as an example of API result caching. Its settings page says that it can cache API results for one day, two days, one week, two weeks, or even permanently.
+      + drupal :: free and open-source web content management system written in PHP and distributed under the GNU General Public License
+- uptime ::  World Bank API is not 100% uptime guaranteed. Service disruptions can happen, so it's important that your application/library be defensive and handle API downtime gracefully, either with good caching, or aim for graceful failure if the API is not available.
+- testing :: one of the best tools to help with testing is a web browser: can view API results directly in the browser.
+  + XML results are usually easy to read, but JSON can be difficult as it usually renders as plain text with no formatting, so, use tool to aid with the legibility of JSON results in the web browser itself, such as the Firefox plugin ==JSONView==, which adds line indentation, syntax highlighting, etc.
+- other tips ::
+  + JSON is usually smaller in size than XML, so prefer using JSON
+  + not every call is fast, if you notice a certain slow call, search for alternatives, eg: if need to query an indicator value for the last five years, check whether doing a year range query will be faster than making five separate queries, one for each year.
+
 * Tickets
 [2024-02-25 Sun 23:21]
  - WBAPI001: basic structure
