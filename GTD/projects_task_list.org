@@ -1,0 +1,26 @@
+# -*- mode: org -*-
+#+TITLE: Org Mode - My projects task list
+#+LANGUAGE:  en
+#+AUTHOR: me
+#+OPTIONS:   H:3 num:t   toc:3 \n:nil @:t ::t |:t ^:nil -:t f:t *:t <:nil
+#+OPTIONS:   TeX:t LaTeX:nil skip:nil d:nil todo:t pri:nil tags:not-in-toc
+#+OPTIONS:   author:t creator:t timestamp:t email:t
+#+DESCRIPTION: A description of projects (ongoing and others).
+#+KEYWORDS:  org-mode Emacs organization GTD getting-things-done project
+#+INFOJS_OPT: view:nil toc:t ltoc:t mouse:underline buttons:0 path:http://orgmode.org/org-info.js
+#+CATEGORY: Projects
+#+TAGS: Projects
+#+EXPORT_SELECT_TAGS: export
+#+EXPORT_EXCLUDE_TAGS: noexport
+
+* TODO WB API prober
+** NEXT WB API parser
+- characteristics ::
+  + Java library; inversion of control framework: quarkus; dependency manager: gradle
+- tasks to complete [1/3] ::
+  + [X] collect information on world bank API official page (https://datahelpdesk.worldbank.org/knowledgebase/topics/125589-developer-information)
+  + [ ] learn Quarkus
+  + [ ] learn java frameworks for big data: kafka, spark, hadoop, cassandra
+
+** TODO WB API prober
+[2024-03-14 Thu 02:50]
