@@ -13,7 +13,21 @@
 #+EXPORT_SELECT_TAGS: export
 #+EXPORT_EXCLUDE_TAGS: noexport
 
-* TODO WB API prober
+* Placeholder for misc project tickets
+[2024-03-15 Fri 21:20]
+** Design
+[2024-03-15 Fri 21:21]
+- DES001:
+** Maintenance
+- MAINT001:  
+** Refactoring
+[2024-03-15 Fri 21:23]
+- REFACT001:  
+** Generic ticket number for small tasks that do not need tracing
+- DES000: design update
+- MAINT000: maintenance update
+- REFACT000: refactoring update
+* TODO WB API prober application
 ** NEXT WB API parser
 - characteristics ::
   + Java library; inversion of control framework: quarkus; dependency manager: gradle
