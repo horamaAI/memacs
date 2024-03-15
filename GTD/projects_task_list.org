@@ -17,16 +17,21 @@
 [2024-03-15 Fri 21:20]
 ** Design
 [2024-03-15 Fri 21:21]
+- DES000: design update; // Generic ticket number for small design tasks that do not need tracing
 - DES001:
 ** Maintenance
+- MAINT000: maintenance update; // Generic ticket number for small maintenance tasks that do not need tracing
 - MAINT001:  
 ** Refactoring
 [2024-03-15 Fri 21:23]
+- REFACT000: refactoring update; // Generic ticket number for small refactoring tasks that do not need tracing
 - REFACT001:  
-** Generic ticket number for small tasks that do not need tracing
-- DES000: design update
-- MAINT000: maintenance update
-- REFACT000: refactoring update
+** Learnings
+[2024-03-15 Fri 21:39]
+- LEARN000: learning updates; // Generic ticket number for small learning tasks that do not need specific tracing
+- LEARN001: learning for emacs
+- LEARN002: learning for C++
+- LEARN003: learning for Java
 * TODO WB API prober application
 ** NEXT WB API parser
 - characteristics ::
