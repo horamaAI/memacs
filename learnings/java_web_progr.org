@@ -479,9 +479,11 @@
 - Spring Data JPA :: component of the Spring Framework, to significantly lessen the amount of boilerplate code needed to execute data access layers for multiple persistence stores
   + Hibernate is a JPA implementation, while Spring Data JPA is a JPA Data Access Abstraction
   + with Spring Data, you probably utilize Hibernate, Eclipse Link, or any other JPA provider
-* Spring framework, and spring boot
+* Inversion of Control (frameworks)
+[2024-03-15 Fri 21:05]
+** Spring framework, and spring boot
 [2023-12-04 Mon 22:52]
-** Fundamentals
+*** Fundamentals
 [2023-12-09 Sat 17:26]
 - spring framework :: Inversion of control (IOC, see dependency injection (DI) solid principle) container, conceived to replace or reduce earlier complex configurations of earlier Java Enterprise Edition "EJBs" (Enterprise JavaBeans, spring was made to handle how to work better with EJBs, or without them all together)
   + DI :: allows to remove hard coded wiring in application and use framework to inject dependency resources where they're needed
@@ -524,13 +526,13 @@
       #+end_src
   + springboot: all ready to use
     
-** Configurations
+*** Configurations
 [2023-12-10 Sun 01:53]
-*** java configuration
+**** java configuration
 :PROPERTIES:
 :CUSTOM_ID: JavaConfigs
 :END:
-**** Notes
+***** Notes
 - java configuration has no xml application context :: no xml file containing configurations. A context is still there, but just not configured in xml
 - Application configuration file :: java class file that is the start of application context, the file where we start configuring the context of the application
   + 'AppConfig.java' file name is widely used :: but doesn't need specific name
@@ -607,7 +609,7 @@
         }
     }
     #+end_src
-**** Bean scope
+***** Bean scope
 [2023-12-10 Sun 22:31]
 - scopes :: used to configure beans in application, *scope != patterns*, 5 scopes available in spring:
   + valid in any configuration ::
@@ -628,7 +630,7 @@
     - Session :: returns a bean per http session (will live as long as session is alive)
     - Global (or "GlobalSession") :: returns a bean per application (once accessed, stays alive for the duration of the application, not just the visit on that application: similar to singleton but with the entire life cycle of the application on the server (for example until server gets undeployed or rebooted))
 
-**** Autowiring
+***** Autowiring
 [2023-12-11 Mon 08:51]
 - Autowiring :: used to reduce the wiring up and configuration of code. "convention over configuration"
 - needed ::
@@ -731,7 +733,7 @@
   }
 
   #+end_src
-**** Some annotations
+***** Some annotations
 - @Bean (java configuration analog of the XML <bean/> element) :: to define spring beans at *method level*, returns instance of a bean, and the bean is registered inside of spring and available for use inside of the spring application
   + by default beans are singletons
   + arguments ::
@@ -780,7 +782,7 @@
   + need property in application properties file, for JDBC driver of local database to be able to create a lob properly on the java side :: ~spring.jpa.properties.hibernate.jdbc.lob.non_contextual_creation=true~
 - @RequestBody :: maps the HttpRequest body to a transfer or domain object, enabling automatic deserialization of the inbound HttpRequest body onto a Java object
 - @SpringBootTest :: creates an application context to be used in a test
-**** Spring MVC
+***** Spring MVC
 [2023-12-14 Thu 11:56]
 - Controllers ::
   + @Controller, @RestController :: both to annotate spring controllers, latter introduced to simplify the creation of RESTful web services and is a convenient annotation that combines @Controller and @ResponseBody (with '@RestController', no need to annotate every request handling method of the controller class with @ResponseBody, that usually tells a controller that the object returned is automatically serialized into JSON and passed back into the HttpResponse object)
@@ -866,12 +868,12 @@
               + Dto can gather content of different models, eg :: Dto (userName, roleName), combines data from two models: User, and Role
 - BindingResult :: general interface that represents binding results, extends the interface for error registration capabilities, allowing for a Validator to be applied, and adds binding-specific analysis and model building 
 
-**** Some interfaces and classes (with some methods)
+***** Some interfaces and classes (with some methods)
 [2023-12-13 Wed 14:28]
 - JpaRepository<T,U> :: eg: ~public interface SessionRepository extends JpaRepository<Session, Long>~; findAll, getById, getReferenceById (returns a reference to the entity with the given identifier), etc.: T: template type, U: type of unique identifier (int, double, Long, etc.)
 -  :: 
 
-*** xml configuration
+**** xml configuration
 - Notes ::
   + why still use xml :: first method available in spring, some things still easier with xml, better separation of concerns (for eg when configuration code is moved in a separate file)
   + applicationContext.xml :: root of an application configured for spring using xml
@@ -1045,8 +1047,8 @@
       
   + when compiled :: applicationContext.xml is copied to the folder for build files (build java files goes to folder 'target/classes' or 'build/classes', the classpath), ie. target/classes/applicationContext.xml
 
-*** Advanced bean configuration
-**** Bean Processors ("init method")
+**** Advanced bean configuration
+***** Bean Processors ("init method")
 - steps :: instantiation -> Populate properties (read from property files, injected from other resources, etc.) -> BeanNameAware (framework sets the bean name and make it aware to other resources, and then can set that as a BeanFactoryAware context) -> BeanFactoryAware -> Pre-initialization using BeanPostProcessors (from there, one can intialize the bean utilizing properties that were just set and then can call an init method InitializeBean) -> InitializeBean -> initMethod -> Post-Initialization - BeanPostProcessors
 - adding init method :: post construct, pre destruct, etc.
   + import dependency to pom :: annotation needed for post contruct API calls
@@ -1079,7 +1081,7 @@
         }
     #+end_src
 
-**** FactoryBean (to construct object by building over existing ones)
+***** FactoryBean (to construct object by building over existing ones)
 [2023-12-11 Mon 18:26]
 - Notes ::
   + needed to wrap some object construction into further directives for our bean creation
@@ -1152,7 +1154,7 @@
 
   #+end_src
 
-**** SpEL (Spring Expression Language)
+***** SpEL (Spring Expression Language)
 [2023-12-11 Mon 18:26]
 - with SpEL ::
   + can manipulate object graph :: means once the object is created, one can use the expression language to manipulate that object
@@ -1208,7 +1210,7 @@
           }
   #+end_src
 
-**** Proxies (AOP proxies)
+***** Proxies (AOP proxies)
 [2023-12-11 Mon 18:27]
 - Notes ::
   + Proxies are a great way to inject behavior into code without modifying the underlying code
@@ -1229,7 +1231,7 @@
   pojo.foo();
   #+end_src
 
-**** Bean Profiles (good to adapt environments)
+***** Bean Profiles (good to adapt environments)
 [2023-12-11 Mon 18:27]
 - Notes ::
   + Bean Profiles good to ::
@@ -1270,9 +1272,9 @@
   #+end_src
 
 
-** Builds and dependencies
+*** Builds and dependencies
 [2023-12-09 Sat 18:38]
-*** maven
+**** maven
 - pom.xml (Project Object Model) :: fundamental unit of work in Maven. It is an XML file that contains information about the project and configuration details used by Maven to build the project. Contains default values for most projects
   + location :: at same level as 'src' folder (as high as possible)
   + requires ::
@@ -1293,11 +1295,11 @@
       #+end_src
     - maven compiler != java compiler
       
-*** gradle
+**** gradle
 [2023-12-13 Wed 14:28]
 
-** Spring boot
-*** Basics
+*** Spring boot
+**** Basics
 [2023-12-09 Sat 23:12]
 - spring boot ::
   + easier for example to wire spring MVC (model-view-controller) to a persistence framework
@@ -1329,9 +1331,9 @@
 - Notes ::
   + spring boot cli :: check out details: https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#cli
   + spring boot starter :: really nice to integrate dependencies (and sub-dependencies) and versions on a project and get it all set in one go
-*** Persistence and spring boot
+**** Persistence and spring boot
 [2023-12-12 Tue 17:39]
-**** modeling database relations with spring
+***** modeling database relations with spring
 - many to many bidirectional ::
   + use of list, need to select owner of the bidirectional database relationship (in java, since a many-to-many relationship doesn’t really have an owner side in the database,), to set join tables configurations, and the configuration on the receiving end)
   + use spring annotations to refer to defined mapping Join table in the persistence (@JoinTable)
@@ -1360,7 +1362,7 @@
         @JsonIgnore
         private List<Session> sessions;
         #+end_src
-*** Customize and override springboot
+**** Customize and override springboot
 [2023-12-14 Thu 16:55]
 - Notes ::
   + there is an order of precedence that spring and spring boot use to set values ::
@@ -1382,7 +1384,7 @@
     - and then pick one external source to provide overrides
     - pros :: this restrains the configurations to one or two places, allows for sensible defaults, and gives the ability to use external sources for sensitive data like credentials and passwords, eg: OS environment variables as external source, and application property files as internal source
       + note and reminder :: application property files are usually in ==src/main/resources==
-**** Updating application properties
+***** Updating application properties
 [2023-12-14 Thu 18:40]
 - properties in application.properties are actual overrides of spring boot default properties :: others properties can be found in https://docs.spring.io/spring-boot/docs/1.1.6.RELEASE/reference/html/common-application-properties.html (all sets to defaults values. If url changes, just search for "spring common application properties" and make sure you select the page with 'common')
 - updating application properties with internal configuration :: 
@@ -1398,7 +1400,7 @@
       spring.datasource.username=${DB_USER}
       spring.datasource.password=${DB_USER_PSWRD}
       #+end_example
-**** Handling different environments
+***** Handling different environments
 + aim :: working on an app development locally, and be able to deploy on test server, staging, and production
 + environmental configurations :: create application-{profile}.properties for needed profile of target environment, eg: application-dev.properties, application-prod.properties
   - to specify the profile, need to add it into options parameters at application startup, eg: ~-Dspring.profiles.active=dev~
@@ -1413,7 +1415,7 @@
     // ...
     #+end_example
 
-**** Settings properties with YAML
+***** Settings properties with YAML
 [2023-12-15 Fri 09:00]
 - similar to usual properties files, need to live on class path, need to be named application.yml
 - with spring boot it's possible to mix and match properties and YAML file types
@@ -1426,7 +1428,7 @@
   server:
     port: 5000
   #+end_src
-*** Setting and using custom application property value inside the java application
+**** Setting and using custom application property value inside the java application
 [2023-12-15 Fri 09:45]
 - inject custom property in application property file :: suppose property ==app.version== set in application.properties:
   #+begin_src example
@@ -1453,7 +1455,7 @@
       "app-version": "1.0.0"
   }
   #+end_src
-*** Overriding spring boot with java configurations
+**** Overriding spring boot with java configurations
 [2023-12-15 Fri 11:13]
 - create new package ==config== :: (src/main/java/com.example.config), and put java configuration files in there
 - use @Configuration :: to tell spring that java class is a configuration class (see further java configurations in [[#JavaConfigs][Java configurations]])
@@ -1475,7 +1477,7 @@
   2. if it does, it will the replace it with the one defined in the java configuration
 - pros of using java configuration of application properties ::
   + when further complex need to be done in addition to setting the property, eg: logging when db connection is made (add logging in configuration method), or do other custom instructions (for example, send an email when a transaction is committed, or setup a two-phase transactions, or set transactions between nosql and sql databases, etc.), can add as many layer of instructions as you want
-*** Auto-configuration classes
+**** Auto-configuration classes
 [2023-12-15 Fri 12:42]
 - java configuration files can be helpful for creating and using libraties, helpers and utils classes that will be used by other applications ::
   + How to create auto-configurations ::
@@ -1504,9 +1506,9 @@
     - eg: you're building an auto-configuration that is dependent on a postgres jdbc driver. You can specify that at the class level it's conditional on the driver being present. If it is, the auto-configuration will automatically wire up, otherwise it does nothing
   + others :: @ConditionalOnMissingClass, @ConditionalOnBean, @ConditionalOnMissingBean, @ConditionalOnProperty, @ConditionalOnResource, etc.
 
-*** Deploying spring boot applications
+**** Deploying spring boot applications
 [2023-12-15 Fri 13:39]
-**** Configs
+***** Configs
 - Notes ::
   + things to take into consideration when deploying or preparing to deploy a java application ::
     - deploy on cloud environment, on rack servers ?
@@ -1543,9 +1545,9 @@
      <dependencies>
      #+end_src
 
-**** Creating executables jar
+***** Creating executables jar
 [2023-12-15 Fri 16:11]
-***** Deploying for non cloud based environments
+****** Deploying for non cloud based environments
 [2023-12-15 Fri 22:47]
 - 2 ways to create jar files that can be used to run the app ::
   1. use maven to create jar files that can be run with the java command:
@@ -1585,7 +1587,7 @@
        - no need anymore to run .jar executable with -jar option while running the app ::
          + in linux based OS :: ~./[your_app_jar].jar~
          + in windows :: only runs .exe, so, need to do it the old way: ~java -jar [your_app_jar].jar~
-***** Running on a cloud platform
+****** Running on a cloud platform
 - common cloud supported platforms (that work with spring boot) :: Amazon Web Services, Microsoft Azure, Google Cloud, Heroku, Cloud Foundry
   + HOWEVER :: each of these platforms require setting up different configuration files so that the platform knows how to deploy it on its own infrastructure
     - even though the details might differ, the standalone .jar artifact doesn't
@@ -1612,7 +1614,7 @@
         - don't forget to load the database on the cloud so that it is available from there
     - to use api, link :: [name-of-app-on-heroku].herokuapp.com (eg: conferencedemo-heroku.herokuapp.com/api/v1/sessions)
   + debugging on heroku :: dashboard -> 'more' -> view logs
-***** Deploying .war executables (will prevent deploying .jar files, so need to pick one, can't have both)
+****** Deploying .war executables (will prevent deploying .jar files, so need to pick one, can't have both)
 [2023-12-17 Sun 02:29]
 - .war :: used to distribute a collection of JAR-files, JavaServer Pages, Java Servlets, Java classes, XML files, etc.
 - .war needed to be able to support deploying on a container
@@ -1670,18 +1672,18 @@
   + need tomcat context to run .war :: the context for .war files are the name of the target folder where the app was deployed, eg: for toto.war name (apache automatically extract the .war into a folder with the same name without .war extension):
     ~localhost:8080/toto/api/v1/sessions~ (8080 is the default port opened by tomcat)
 
-** Architecture and structure
+*** Architecture and structure
 [2023-12-13 Wed 14:25]
 
-** Tips when using IDE
+*** Tips when using IDE
 [2023-12-10 Sun 01:13]
-*** General
+**** General
 [2023-12-10 Sun 01:15]
 - creating new project :: create new project -> select project sdk -> select maven/gradle (on the left) as dependencies handler
 - when creating a new class with missing package structure :: remember to fully qualify the package name, eg: To create first class 'Toto', enter its fully qualified name: ~com.newproject.model.Toto~; same when 'repository' package is missing: ~com.newproject.repository.TotoRepositoryImpl~
 - imported libraries and dependencies are to be found in folder :: ==External Libraries==
 
-*** IntelliJ
+**** IntelliJ
 - create a new interface/superclass/etc. from a class :: right click in class src -> refactor -> extract -> interface
 - iml file (*.iml) :: module file created by IntelliJ that stores information about a development module, which may be a Java, Plugin, Android, or Maven component; saves the module paths, dependencies, and other settings. eg:
   #+begin_src xml
@@ -1716,19 +1718,23 @@
 - first run :: might ask for classpath module and JRE
 - generate getters/setters/toString/etc. :: right click -> generate -> needed method
 
-** Notes
+*** Notes
 - jar :: Java ARchive, file format based on ZIP file format and used for aggregating many files into one, ready to use by jdk/other applications
   + can use jars for libraries, utils, and helper classes
 - SDK :: Software development kit
 - Tomcat :: is not an application server, but a web server, lightweight an easy to use
-* Gradle
+** Quarkus
+[2024-03-15 Fri 21:04]
+* Dependency managers
+[2024-03-15 Fri 21:05]
+** Gradle
 [2024-02-19 Mon 17:11]
-** standalone gradle
+*** standalone gradle
 [2024-02-21 Wed 22:48]
-*** Notes
+**** Notes
 - gradle comes with a built-in task, called ==init==, that initializes a new Gradle project (~gradle init~). The ==init== task uses the (also built-in) wrapper task to create a Gradle wrapper script, ==gradlew==.
 - ~gradle init~ prompts various options to select: the type of project to generate (basic, application, library, etc.), the implementation language, the build script DSL (kotlin, or groovy), and the test framework.
-*** Basics
+**** Basics
 [2024-02-25 Sun 01:52]
 - gradle uses two main directories to perform and manage its work: the /Gradle User Home directory/ and the /Project Root directory/.
   + gradle user home directory ::
@@ -1775,7 +1781,7 @@
       - subproject-two :: usually, a project is organized into one or multiple subprojects.
         - build.gradle.kts :: each subproject has its own Gradle build script.
       - etc
-**** Multi-project build basics
+***** Multi-project build basics
 - notes ::
   + whereas small projects and monolithic applications may contain a single build file and source tree, it is often more common for a project to be split into smaller, interdependent modules. "interdependent" is vital, as you typically want to link the many modules together through a single build.
   + a multi-project build consists of one root project and one or more subprojects.
@@ -1794,8 +1800,8 @@
   + multi-project standards :: gradle community has two standards for multi-project build structures: Multi-Project Builds using ==buildSrc==, and Composite Builds
     - Multi-Project Builds using ==buildSrc== :: where ==buildSrc== is a subproject-like directory at the Gradle project root containing all the build logic.
     - Composite Builds :: a build that includes other builds where ==build-logic== is a build directory at the Gradle project root containing reusable build logic.
-*** Packaging Executable Archives
-**** Packaging Executable Jars
+**** Packaging Executable Archives
+***** Packaging Executable Jars
 - the ==init== task generates the new project with the following structure: (for a java library project called ==demo==)
   - gradle :: generated folder for wrapper files
     - libs.versions.toml :: generated version catalog
@@ -1848,7 +1854,7 @@
         useJUnitPlatform() // use JUnit Platform for unit tests
     }
     #+end_src
-***** Assembling the library Jar
+****** Assembling the library Jar
 [2024-02-22 Thu 00:06]
 - to build the project, one can just run the ==build== task. However, it's considered good form to use the regular gradle command when a project includes a wrapper script: ~./gradlew build~
   + when building for the first time the wrapper script, there may be a delay while that version of gradle is downloaded and stored locally in the ==~/.gradle/wrapper/dists== folder. Plus, gradle will check if the required dependencies are in the cache (under ==~/.gradle directory==). If not, the libraries are downloaded and stored, and the next time the build is run, the cached versions will be used.
@@ -1892,7 +1898,7 @@
       + Class-Path :: a space separated list of relative paths to libraries or resources
     - so, for example, if an application entry point is in ==Application.class== and it uses libraries and resources, then it's possible to add the needed headers: ~Main-Class: com.baeldung.Application~ and ~Class-Path: core.jar lib/ properties/~
     - the classpath includes ==core.jar== and all the files in the ==lib== and ==properties== directories. These assets are loaded relative to where the JAR is executed and not from within the JAR itself. In other words, they must exist outside the JAR.
-***** Customising the library JAR
+****** Customising the library JAR
 - notes ::
   + examples ::
     - include your library JAR version: ~version = "0.1.0"~, in file ==build.gradle.kts==
@@ -1917,7 +1923,7 @@
         Implementation-Title: lib
         Implementation-Version: 0.1.0
         #+end_src
-***** Generating sources jar
+****** Generating sources jar
 [2024-02-24 Sat 23:04]
 - can generate a sources JAR for your library with ==withSourcesJar()==, which automatically packages source code and creates a variant ==sourceElements== with an artifact ==-sources.jar==, which will be part of the publication.
 - in ==build.gradle.kts== ::
@@ -1927,7 +1933,7 @@
   }
   #+end_src
 - the additional JAR will be produced as part of the ==assemble== or ==build== lifecycle tasks and will be part of the publication. The resulting file is found in ==lib/build/libs== for our case, with a name using the conventional classifier ==-sources==.
-***** Adding API documentation
+****** Adding API documentation
 [2024-02-24 Sat 23:12]
 - the ==java-library== plugin has built-in support for Java’s API documentation tool via the ==javadoc== task.
   + for ==javadoc== markups (/**...*/), when the ==javadoc== task is run (~./gradlew javadoc~), the generated javadoc can be found for example at ==lib/build/docs/javadoc/index.html==
@@ -1938,17 +1944,17 @@
     }
     #+end_src
 - the additional JAR will be produced as part of the ==assemble== or ==build== lifecycle tasks and will be part of the publication. The resulting file is found in ==lib/build/libs==, with a name using the conventional classifier ==-javadoc==.
-***** Publish a build scan
+****** Publish a build scan
 [2024-02-24 Sat 23:28]
 - notes ::
   + publishing a build scan is a handy way to learn more about what the builds are doing behind the scenes. To do so, just run Gradle builds with the ==--scan== flag: ~./gradlew build --scan~.
     - the commands generates a link that, when clicked on, gives which tasks where executed, which dependencies where downloaded and many more details.
-***** The Java Plugin
+****** The Java Plugin
 [2024-02-22 Thu 19:17]
-***** The Java Library Plugin
+****** The Java Library Plugin
 [2024-02-21 Wed 23:39]
-** Spring and gradle
-*** Introduction
+*** Spring and gradle
+**** Introduction
 - notes ::
   + sources ::
     - https://docs.spring.io/spring-boot/docs/3.2.2/gradle-plugin/reference/htmlsingle/
@@ -1966,10 +1972,10 @@
         id("io.spring.dependency-management") version "1.1.4"
       }
       #+end_src
-*** Managing dependencies
-**** notes
+**** Managing dependencies
+***** notes
   + to manage dependencies in a Spring Boot application, one can either apply the ==io.spring.dependency-management== plugin or use Gradle’s native bom support. The primary benefit of the former is that it offers property-based customization of managed versions, while using the latter will likely result in faster builds
-**** Managing dependencies with the dependency management plugin
+***** Managing dependencies with the dependency management plugin
 - when applying ==io.spring.dependency-management== plugin, Spring Boot’s plugin will automatically import the ==spring-boot-dependencies== bom from the version of Spring Boot used. This provides a similar dependency management experience to the one that’s enjoyed by Maven users. For example, it allows to omit version numbers when declaring dependencies that are managed in the bom => can declare dependencies in the usual way but omit the version number
   #+begin_src kotlin
   dependencies {
@@ -2014,7 +2020,7 @@
          }
          #+end_src
        - to learn more about the capabilities of the dependency management plugin, please refer to its [[https://docs.spring.io/dependency-management-plugin/docs/current/reference/html/][documentation]].
-**** Managing dependencies with gradle’s bom support ::
+***** Managing dependencies with gradle’s bom support ::
 - gradle allows a bom to be used to manage a project’s versions by declaring it as a ==platform== or ==enforcedPlatform== dependency.
   + a ==platform== dependency treats the versions in the bom as recommendations and other versions and constraints in the dependency graph may cause a version of a dependency other than that declared in the bom to be used.
   + an ==enforcedPlatform== dependency treats the versions in the bom as requirements and they will override any other version found in the dependency graph
@@ -2037,25 +2043,25 @@
     }
     #+end_src
   + warning :: each Spring Boot release is designed and tested against a specific set of third-party dependencies. Overriding versions may cause compatibility issues and should be done with care.
-*** Packaging Executable Archives
+**** Packaging Executable Archives
 [2024-02-21 Wed 00:35]
-**** notes 
+***** notes 
 [2024-02-21 Wed 00:36]
 - the plugin can create executable archives (jar files and war files) that contain all of an application’s dependencies and can then be run with ~java -jar~.
-**** Packaging executable Jars
+***** Packaging executable Jars
 - executable jars can be built using the ==bootJar== task.
   + the task is automatically created when the ==java== plugin is applied and is an instance of ==BootJar==.
   + the ==assemble== task is automatically configured to depend upon the ==bootJar== task, so, running ==assemble== (or build) will also run the ==bootJar== task.
-**** Packaging executable Wars
+***** Packaging executable Wars
 [2024-02-21 Wed 00:35]
 - executable wars can be built using the ==bootWar== task.
   + the task is automatically created when the ==war== plugin is applied and is an instance of ==BootWar==.
   + the ==assemble== task is automatically configured to depend upon the ==bootWar== task, so, running ==assemble== (or build) will also run the ==bootWar== task.
-**** Packaging executable and deployable Wars
+***** Packaging executable and deployable Wars
 [2024-02-21 Wed 00:37]
-*** Dependency management plugin
+**** Dependency management plugin
 [2024-02-21 Wed 00:25]
-*** Gradle directories
+**** Gradle directories
 [2024-02-21 Wed 00:23]
 * Testing
 [2023-12-17 Sun 03:51]
