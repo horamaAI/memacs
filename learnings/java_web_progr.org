@@ -1725,6 +1725,26 @@
 - Tomcat :: is not an application server, but a web server, lightweight an easy to use
 ** Quarkus
 [2024-03-15 Fri 21:04]
+*** Introduction
+- notes ::
+  + quarkus vs spring/spring boot ::
+    - spring boot :: connects all Spring projects and helps accelerate developer productivity by offering many production-ready integrations, and thus reduces the amount of configuration and boilerplate. And thanks to its convention over configuration approach, which automatically registers default configurations based on the dependencies available at the classpath in the runtime, Spring Boot considerably reduces the time-to-market for many Java applications.
+    - quarkus :: similar approach as Spring Boot, but with an additional promise of delivering smaller artifacts with fast boot time, better resource utilization, and efficiency. It’s optimized for cloud, serverless, and containerized environments. But despite this slightly different focus, Quarkus also integrates well with the most popular Java frameworks.
+    - comparisons :: both frameworks integrate well with other projects and frameworks, but their internal implementations and architectures are different, for example:
+      + Spring Boot offers web capabilities in two flavors: blocking (synchronous call with ==Servlets==, where threads are blocked as long as responses are received) and non-blocking (asynchronous calls with ==WebFlux==).
+      + Quarkus also offers both approaches, but unlike Spring Boot, it allows us to *use both* blocking and non-blocking strategies simultaneously. Moreover, Quarkus has the reactive approach embedded in its architecture.
+      + both projects has the ability to create native images (binary and platform-specific executables)
+    - others (source: reddit) ::
+      + mainly quarkus > spring boot ::
+        - low memory footprint
+        - Hot reloading (in dev mode) is awesome
+        - Fast
+        - Shallow stack traces (Compared to Spring boot) and comparatively lesser magic than Spring
+        - Plenty of modules/extensions (https://code.quarkus.io)
+        - Compile-time wiring (unlike Spring's runtime wiring)
+        - Fast startup (Kubectl deploy restart comes out in less than a sec)
+        - Qute template engine is really nice (https://quarkus.io/guides/qute, For certain projects, we use template engines to render UI)
+        - 'Sponsored by Redhat', makes it easy to convince senior management
 * Dependency managers
 [2024-03-15 Fri 21:05]
 ** Gradle
