@@ -32,6 +32,13 @@
 - LEARN001: learning for emacs
 - LEARN002: learning for C++
 - LEARN003: learning for Java
+** Mini projects
+[2024-03-22 Fri 22:16]
+- placeholder for miscellaneous small projects that don't really need project management, but just some basic tracking
+- MINPROJ000: small project
+- MINPROJ001: small emacs project 
+- MINPROJ002: small C++ project 
+- MINPROJ003: small Java project 
 * TODO WB API prober application
 ** NEXT WB API parser
 - characteristics ::
