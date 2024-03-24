@@ -4,5 +4,6 @@
 
 * computer engineering linguee
 [2024-01-27 Sat 23:08]
+- DDL :: for "data description language", which, in a SQL context, is a syntax for creating and modifying database objects such as tables, indices, and users. DDL statements are similar to a computer programming language for defining data structures, especially database schemas. Common examples of DDL statements include ==CREATE==, ==ALTER==, and ==DROP==.
 - LDAP authentication :: Lightweight directory access protocol (LDAP): a protocol that helps users find data about organizations, persons, and more. LDAP has two main goals: 1. store data in the LDAP directory, 2. authenticate users to access the directory. Allows for example to create users and groups that match one's organizational structure
 - stateful vs stateless apps/service :: stateful: apps that persist data (has to remember stuff, eg: if a stateful app stops, then the data that was being persisted has to be stored so that when doing a retry on a different target, one case use the same input data (or keep states/logs before coming back up)); stateless: no storage needed, just retrieve as was when crushed for example

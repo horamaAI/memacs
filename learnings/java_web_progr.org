@@ -1297,7 +1297,6 @@
       
 **** gradle
 [2023-12-13 Wed 14:28]
-
 *** Spring boot
 **** Basics
 [2023-12-09 Sat 23:12]
@@ -1672,6 +1671,83 @@
   + need tomcat context to run .war :: the context for .war files are the name of the target folder where the app was deployed, eg: for toto.war name (apache automatically extract the .war into a folder with the same name without .war extension):
     ~localhost:8080/toto/api/v1/sessions~ (8080 is the default port opened by tomcat)
 
+*** Spring data JPA
+[2024-03-24 Sun 01:33]
+**** Notes
+- eases work of creating a persistence layer, given that it's required to match SQL database schemas with the object models that are created in the code. It can be tiresome when done manually. With JPA, it's possible to generate and export the database schemas based on the entity models from the Java code.
+**** JPA schema generation
+- notes ::
+  + since JPA 2.1, a standard for database schema generation was introduced, and one is then able to control how to generate and export database schemas through a set of predefined configuration properties
+    - script ==action== :: to control which DDL commands to generate, with script ==action== configuration option: ~javax.persistence.schema-generation.scripts.action~. Possible to choose from 4 different options: ==none==: doesn’t generate any DDL commands; ==create==: generates only database create commands; ==drop==: generates only database drop commands; ==drop-and-create==: generates database drop commands followed by create commands
+    - script ==target== :: 
+      + in essence, the script ==target== defines the location of the file that contains the schema create or drop commands. So, for instance, if we choose ==drop-and-create== as the script ==action==, we’ll need to specify both targets.
+      + for each specified script action, need to define the corresponding target configuration:
+        #+begin_src example
+        javax.persistence.schema-generation.scripts.create-target
+        javax.persistence.schema-generation.scripts.drop-target
+        #+end_src
+    - schema ==source== :: to generate the schema DDL commands from the entity models, we should include the schema ==source== configurations with the ==metadata== option selected:
+      #+begin_example
+      javax.persistence.schema-generation.create-source=metadata
+      javax.persistence.schema-generation.drop-source=metadata
+      #+end_example
+**** Schema generation with Spring data JPA
+- notes ::
+  + example ::
+    - consider entity models defined in java with spring JPA enabled
+- Spring Data JPA Configuration ::
+  + to generate the database schema, one needs to pass the schema generation properties to the persistence provider in use. To do this, set the native JPA properties in the configuration file under the ~spring.jpa.properties~ prefix:
+    #+begin_example
+    spring.jpa.properties.javax.persistence.schema-generation.scripts.action=create
+    spring.jpa.properties.javax.persistence.schema-generation.scripts.create-target=create.sql
+    spring.jpa.properties.javax.persistence.schema-generation.scripts.create-source=metadata
+    #+end_example
+  + Spring Data JPA then passes these properties to the persistence provider when it creates the ~EntityManagerFactory~ bean.
+- file ~create.sql~ :: as a result, on the application startup, the above configuration generates the database creation commands based on the entity mapping metadata. Furthermore, the DDL commands are exported into the ~create.sql~ file, which is created in our main project folder, eg:
+  #+begin_src sql
+  create table account_settings (
+      id bigint not null,
+      name varchar(255) not null,
+      value varchar(255) not null,
+      account_id bigint not null,
+      primary key (id)
+  )
+
+  create table accounts (
+      id bigint not null,
+      email_address varchar(255),
+      name varchar(100) not null,
+      primary key (id)
+  )
+
+  alter table account_settings
+     add constraint FK54uo82jnot7ye32pyc8dcj2eh
+     foreign key (account_id)
+     references accounts (id)  
+  #+end_src
+**** Schema Generation With the Hibernate API
+[2024-03-24 Sun 02:31]
+- notes ::
+  + if using hibernate, one can use its native API, ==SchemaExport==, to generate the schema DDL commands. Likewise, the Hibernate API uses the application's entity models to generate and export the database schema.
+  + with Hibernate’s ==SchemaExport==, it's possible to use the ~drop~, ~createOnly~, and ~create~ methods explicitly:
+    #+begin_src java
+    MetadataSources metadataSources = new MetadataSources(serviceRegistry);
+    metadataSources.addAnnotatedClass(Account.class);
+    metadataSources.addAnnotatedClass(AccountSettings.class);
+    Metadata metadata = metadataSources.buildMetadata();
+
+    SchemaExport schemaExport = new SchemaExport();
+    schemaExport.setFormat(true);
+    schemaExport.setOutputFile("create.sql");
+    schemaExport.createOnly(EnumSet.of(TargetType.SCRIPT), metadata);
+    #+end_src
+  + when the code above is run, the database creation commands are exported into the ~create.sql~ file in the main project folder.
+  + ==SchemaExport== is part of the [[https://www.baeldung.com/hibernate-5-bootstrapping-api][Hibernate Bootstrapping API.]]
+**** Schema Generation Options
+[2024-03-24 Sun 02:46]
+- notes ::
+  + although schema generation can save time during development, one should only use it for basic scenarios. For instance, one could use it to quickly spin up development or testing databases.
+  + in contrast, *for more complex scenarios* like database migration, one should use more refined tooling, like [[https://www.baeldung.com/liquibase-refactor-schema-of-java-app][Liquibase]] or [[https://www.baeldung.com/database-migrations-with-flyway][Flyway]].
 *** Architecture and structure
 [2023-12-13 Wed 14:25]
 
