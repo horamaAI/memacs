@@ -8,3 +8,9 @@
 - LDAP authentication :: Lightweight directory access protocol (LDAP): a protocol that helps users find data about organizations, persons, and more. LDAP has two main goals: 1. store data in the LDAP directory, 2. authenticate users to access the directory. Allows for example to create users and groups that match one's organizational structure
 - stateful vs stateless apps/service :: stateful: apps that persist data (has to remember stuff, eg: if a stateful app stops, then the data that was being persisted has to be stored so that when doing a retry on a different target, one case use the same input data (or keep states/logs before coming back up)); stateless: no storage needed, just retrieve as was when crushed for example
 - TTL :: Time to live, in domain name system (DNS) resolution context, refers to the amount of time or 'hops' that a packet is set to exist inside a network before being discarded by a router
+- TTY :: (for teletypewriter), devices that enable typing (type, typewriter) from a distance (tele).
+  + PTY :: for pseudo-TTY, behaves like a TTY but for any two endpoint. One of the main functions PTYs have is enabling the existence of terminal emulators such as xterm, GNOME Terminal, and Konsole. In essence, a terminal emulator requests as many PTYs as it needs from the OS, often presenting them as tabs or windows in the GUI. One of PTY Applications is naturally to use PTYs to create more terminals inside of existing terminals. Why do that? One reason is to avoid overloading TTYs. Another is pure convenience. Another example is remote connections: communication protocols like ==ssh== and ==telnet== depend on terminal emulation to interact with the OS.
+  + both TTY and PTY are bi-directional channels, but a TTY is a main OS terminal, while PTYs can be allocated on request.
+  + PTY is very similar to a TTY but allows for more flexibility, enabling the development of convenient userland applications and protocols
+
+
