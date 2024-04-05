@@ -143,12 +143,46 @@
     - -S :: stop after the stage of compilation proper; do not assemble
     - -c :: compile or assemble, but do not link
     - -o <file> :: place output in <file>. Applies regardless to whatever sort of output being produced: executable file, object file, assembler file or preprocessed C code. If -o is not specified, the default is to put an executable file in a.out
+- x64 assembly code uses sixteen 64-bit registers. Additionally, the lower bytes of some of these registers may be accessed independently as 32-, 16- or 8-bit registers
 ** keywords
 [2024-04-02 Tue 16:17]
 - "byte" refers to a one-byte integer
 - "word" refers to a two-byte integer
 - "doubleword" refers to a four-byte integer
 - "quadword" refers to an eight-byte value
+** x64 assembly registers
+[2024-04-05 Fri 22:02]
+- assembly registers :: sixteen 64-bit registers in x86-64:
+  +---------------+---------+---------+------+
+  |8-byte register|Bytes 0-3|Bytes 0-1|Byte 0|
+  +---------------+---------+---------+------+
+  |%rax           |%eax     |%ax      |%al   |
+  |%rcx           |%ecx     |%cx      |%cl   |
+  |%rdx           |%edx     |%dx      |%dl   |
+  |%rbx           |%ebx     |%bx      |%bl   |
+  |%rsi           |%esi     |%si      |%sil  |
+  |%rdi           |%edi     |%di      |%dil  |
+  |%rsp           |%esp     |%sp      |%spl  |
+  |%rbp           |%ebp     |%bp      |%bpl  |
+  |%r8            |%r8d     |%r8w     |%r8b  |
+  |%r9            |%r9d     |%r9w     |%r9b  |
+  |%r10           |%r10d    |%r10w    |%r10b |
+  |%r11           |%r11d    |%r11w    |%r11b |
+  |%r12           |%r12d    |%r12w    |%r12b |
+  |%r13           |%r13d    |%r13w    |%r13b |
+  |%r14           |%r14d    |%r14w    |%r14b |
+  |%r15           |%r15d    |%r15w    |%r15b |
+  +---------------+---------+---------+------+
+- register usage :: sixteen 64-bit registers in x86-64: %rax, %rbx, %rcx, %rdx, %rdi, %rsi, %rbp, %rsp, and %r8-r15
+  +  %rax, %rcx, %rdx, %rdi, %rsi, %rsp, and %r8-r11 :: ==caller-save== registers, meaning that they are not necessarily saved across function calls
+    - %rax :: by convention, is used to store a function’s return value, if it exists and is no more than 64 bits long (Larger return types like structs are returned using the stack.)
+
+** Some assembly instructions
+[2024-04-05 Fri 22:01]
+- 
+** Some examples
+[2024-04-05 Fri 22:03]
+- 
 * Best practices
 * Glossary
   - programming :: writing program that creates, transforms, filters, aggregates and otherwise manipulates data.
