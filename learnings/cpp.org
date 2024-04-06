@@ -144,12 +144,14 @@
     - -c :: compile or assemble, but do not link
     - -o <file> :: place output in <file>. Applies regardless to whatever sort of output being produced: executable file, object file, assembler file or preprocessed C code. If -o is not specified, the default is to put an executable file in a.out
 - x64 assembly code uses sixteen 64-bit registers. Additionally, the lower bytes of some of these registers may be accessed independently as 32-, 16- or 8-bit registers
-** keywords
-[2024-04-02 Tue 16:17]
-- "byte" refers to a one-byte integer
-- "word" refers to a two-byte integer
-- "doubleword" refers to a four-byte integer
-- "quadword" refers to an eight-byte value
+** vocabulary
+:PROPERTIES:
+:CUSTOM_ID: vocab
+:END:
+- "byte" :: a one-byte integer (suffix b)
+- "word" :: a two-byte integer (suffix w)
+- "doubleword" :: a four-byte integer (suffix l)
+- "quadword" :: eight-byte value (suffix q)
 ** x64 assembly registers
 [2024-04-05 Fri 22:02]
 - assembly registers :: sixteen 64-bit registers in x86-64:
@@ -174,15 +176,180 @@
   |%r15           |%r15d    |%r15w    |%r15b |
   +---------------+---------+---------+------+
 - register usage :: sixteen 64-bit registers in x86-64: %rax, %rbx, %rcx, %rdx, %rdi, %rsi, %rbp, %rsp, and %r8-r15
-  +  %rax, %rcx, %rdx, %rdi, %rsi, %rsp, and %r8-r11 :: ==caller-save== registers, meaning that they are not necessarily saved across function calls
+  + %rsp :: used as the stack pointer, a pointer to the topmost element in the stack
+  + %rax, %rcx, %rdx, %rdi, %rsi, %rsp, and %r8-r11 :: are ==caller-save== registers, meaning that they are not necessarily saved across function calls
     - %rax :: by convention, is used to store a function’s return value, if it exists and is no more than 64 bits long (Larger return types like structs are returned using the stack.)
-
+  + %rbx, %rbp, and %r12-r15 :: are ==callee-save== registers, meaning that they are saved across function calls
+  + %rbp :: in 32-bit x86, the base pointer (formerly %ebp, now %rbp) was used to keep track of the base of the current stack frame, and a called function would save the base pointer of its caller prior to updating the base pointer to its own stack frame.
+    - with the advent of the 64-bit architecture, this has been mostly eliminated, save for a few special cases when the compiler cannot determine ahead of time how much stack space needs to be allocated for a particular function (see Dynamic stack allocation)
+  + %rdi, %rsi, %rdx, %rcx, %r8, and %r9 :: are used to pass the first six integer or pointer parameters to called functions. Additional parameters (or large parameters such as structs passed by value) are passed on the stack
 ** Some assembly instructions
 [2024-04-05 Fri 22:01]
-- 
-** Some examples
+- introduction ::
+  + some basic types of operand specifiers ::
+    +---------+------------------+----------------------------+--------------+
+    |Type     |From              |Operand Value               |Name          |
+    +---------+------------------+----------------------------+--------------+
+    |Immediate|$Imm              |Imm                         |Immediate     |
+    |Register |E_{a}             |R[E_{a}]                    |Register      |
+    |Memory   |Imm               |M[Imm]                      |Absolute      |
+    |Memory   |(E_{a})           |M[R[E_{a}]]                 |Absolute      |
+    |Memory   |Imm(E_{b},E_{i},s)|M[Imm+R[E_{b}]+(R[E_{i}]xs)]|Scaled indexed|
+    +---------+------------------+----------------------------+--------------+
+  + legend ::
+    - Imm :: constant value, e.g. 0x8048d8e or 48,
+    - E_{x} :: a register, e.g. %rax,
+    - R[E_{x}] :: value stored in register E_{x},
+    - M[x] :: value stored at memory address x
+- notes ::
+  + most instructions, like ==mov==, use a suffix to show how large the operands are going to be (checkout [[#vocab][vocabulary]])
+    - eg: ~movq %rax, %rbx~: move quadword from %rax to %rbx
+  + others, such as ==movs== and ==movz== will use two suffixes, as they convert operands of the type of the first suffix to that of the second
+    - eg: to convert the byte in %al to a doubleword in %ebx with zero-extension would be ~movzbl %al, %ebx~
+*** Data movement
+- instructions with one suffix ::
+  + mov S, D :: move source to destination
+  + push S :: push source onto stack
+  + pop D :: pop top of stack into destination
+- instructions with two suffixes ::
+  + mov S, D :: move byte to word (sign extended)
+  + push S :: move byte to word (zero extended)
+- instructions with no suffixes ::
+  + cwtl :: convert word in %ax to doubleword in %eax (sign-extended)
+  + cltq :: convert doubleword in %eax to quadword in %rax (sign-extended)
+  + cqto :: convert quadword in %rax to octoword in %rdx:%rax
+*** Arithmetic operations
+[2024-04-06 Sat 02:10]
+- unless otherwise specified, all arithmetic operation instructions have one suffix
+- unary operations :: ~inc D~ (increment by 1) ~dec D; neg D~ (arithmetic negation); ~not D~ (bitwise complement)
+- binary operations :: ~leaq S, D~ (load effective address of source into destination); ~add S, D; sub S, D; imul S, D~ (multiply destination by source); ~xor S, D~ (bitwise XOR destination by source); ~or S, D; and S, D~
+- shift operations :: ~sal / shl k, D~ (left shift destination by k bits); ~sar k, D~ (arithmetic right shift destination by k bits); ~shr k, D~ (logical right shift destination by k bits)
+- special arithmetic operations ::
+  + imulq S :: signed full multiply of %rax by S; result stored in %rdx:%rax
+  + mulq S :: unsigned full multiply of %rax by S;
+  + idivq S :: signed divide %rdx:%rax by S; quotient stored in %rax; remainder stored in %rdx
+  + divq S :: unsigned divide %rdx:%rax by S
+*** Comparison and Test Instructions
+[2024-04-06 Sat 02:24]
+- comparison instructions also have one suffix
+- cmp S2, S1 :: set condition codes according to S1 - S2
+- test S2, S1 :: set condition codes according to S1 & S2
+*** Accessing Condition Codes
+[2024-04-06 Sat 02:27]
+- not any suffix
+- conditional set instructions ::
+  + sete/setz D :: set if equal/zero; ==ZF== (condition code, or "assembly status flag registry" for zero flag)
+    - setne/setnz D :: set if not equal/nonzero; ==~ZF==
+  + sets D :: set if negative; ==SF== (SF flag for "sign flag")
+    - setns D :: set if nonnegative; ==~SF==
+  + setg/setnle D :: set if greater (signed); ==~(SF^0F)&~ZF== (0F for overflow flag, when overflow occurred; ^ for xor operator)
+  + setge/setnl D :: set if greater or equal (signed); ==~(SF^0F)==
+  + setl/setnge D :: set if less (signed); ==SF^0F==; jumps if SF != OF
+  + setle/setng D :: set if less or equal; ==(SF^OF)|ZF==
+  + seta/setnbe D :: set if above (unsigned); ==~CF&~ZF== (CF for carry flag occurring when arithmetic carry or borrow has been generated out of the most significant arithmetic logic unit (ALU) bit position)
+  + setae/setnb D :: set if above or equal (unsigned); ==~CF==
+  + setb/setnae D :: set if below (unsigned); ==CF==
+  + setbe/setna D :: set if below or equal (unsigned); ==CF|ZF==
+- jump instructions ::
+  + jmp Label :: jump to label
+  + jmp *Operand :: jump to specified location
+  + je/jz Label :: jump if equal/zero ==ZF==
+  + jne/jnz Label :: jump if not equal/nonzero ==~ZF==
+  + js Label :: jump if negative ==SF==
+  + jns Label :: jump if nonnegative ==~SF==
+  + jg/jnle Label :: jump if greater (signed) ==~(SF^0F)&~ZF==
+  + jge/jnl Label :: jump if greater or equal (signed) ==~(SF^0F)==
+  + jl/jnge Label :: jump if less (signed) ==SF^0F==
+  + jle/jng Label :: jump if less or equal ==(SF^OF)|ZF==
+  + ja/jnbe Label :: jump if above (unsigned) ==~CF&~ZF==
+  + jae/jnb Label :: jump if above or equal (unsigned) ==~CF==
+  + jb/jnae Label :: jump if below (unsigned) ==CF==
+  + jbe/jna Label :: jump if below or equal (unsigned) ==CF|ZF==
+- conditional move instructions ::
+  + conditional move instructions do not have any suffixes, but their source and destination operands *must have* the same size
+  + cmove/cmovz S, D :: move if equal/zero ==ZF==
+  + cmovne/cmovnz S, D :: move if not equal/nonzero ==~ZF==
+  + cmovs S, D :: move if negative ==SF==
+  + cmovns S, D :: move if nonnegative ==~SF==
+  + cmovg/cmovnle S, D :: move if greater (signed) ==~(SF^0F)&~ZF==
+  + cmovge/cmovnl S, D :: move if greater or equal (signed) ==~(SF^0F)==
+  + cmovl/cmovnge S, D :: move if less (signed) ==SF^0F==
+  + cmovle/cmovng S, D :: move if less or equal ==(SF^OF)|ZF==
+  + cmova/cmovnbe S, D :: move if above (unsigned) ==~CF&~ZF==
+  + cmovae/cmovnb S, D :: move if above or equal (unsigned) ==~CF==
+  + cmovb/cmovnae S, D :: move if below (unsigned) ==CF==
+  + cmovbe/cmovna S, D :: move if below or equal (unsigned) ==CF|ZF==
+*** Procedure Call Instruction
+[2024-04-06 Sat 03:51]
+- procedure call instructions do not have any suffixes
+- call Label :: push return address and jump to label
+- call *Operand :: push return address and jump to specified location
+- leave :: set %rsp to %rbp, then pop top of stack into %rbp
+- ret :: pop return address from stack and jump there
+** Arrays
 [2024-04-05 Fri 22:03]
-- 
+- arrays are stored in memory as contiguous blocks of data, with pointer to first element
+- eg: arr[i] = 3, can be expressed in x86-64 as (assuming the address of arr is stored in %rax and the index i is stored in %rcx): ~movq $3, (%rax, %rcx, 8)~
+** Stack Organization and Function Calls
+[2024-04-06 Sat 04:03]
+*** Calling a Function
+- to call a function, the program should place the first six integer or pointer parameters in the registers %rdi, %rsi, %rdx, %rcx, %r8, and %r9
+- subsequent parameters (or parameters larger than 64 bits) should be pushed onto the stack, with the first argument topmost
+- the program should then execute the call instruction, which will push the return address onto the stack and jump to the start of the specified function
+- if the function has a return value, it will be stored in %rax after the function call
+- eg:
+  #+begin_src asm
+  # Call foo(1, 15)
+  movq $1, %rdi # Move 1 into %rdi
+  movq $15, %rsi # Move 15 into %rsi
+  call foo # Push return address and jump to label foo
+  #+end_src
+*** Writing a function
+- uses the stack to support function calls
+- the top of the stack grows towards lower memory addresses
+- for each function call, new space is created on the stack to store local variables and other data (this is known as a "stack frame")
+- set up :: "function prologue"
+  + when a call instruction is executed, the address of the following *instruction* is pushed onto the stack as the return address and control passes to the specified function
+  + if the function is going to use any of the callee-save registers (%rbx, %rbp, or %r12-r15), the current value of each should be pushed onto the stack to be restored at the end, eg:
+    #+begin_src asm
+    pushq %rbx
+    pushq %r12
+    pushq %r13
+    #+end_src
+  + additional space may be allocated on the stack for local variables. Though it's possible to make space on the stack as needed in a function body, it is generally more efficient to allocate this space all at once at the beginning of the function.
+    - This can be accomplished using the call ~subq $N, %rsp~ where N is the size of the callee’s stack frame. eg: ~subq $0x18, %rsp # to allocate 24 bytes of space on the stack~
+- using the stack frame :: once the stack frame is set up, it's possible to use it to store and access local variables:
+  + arguments which cannot fit in registers (e.g. structs) will be pushed onto the stack before the call instruction, and can be accessed relative to %rsp. Keep in mind that it's required to take the size of the stack frame into account when referencing arguments in this manner
+  + if the function has more than six integer or pointer arguments, these will be pushed onto the stack as well
+  + for any stack arguments, the lower-numbered arguments will be closer to the stack pointer. That is, arguments are pushed on in right-to-left order when applicable
+  + local variables will be stored in the space allocated in the function prologue, when some amount is subtracted from %rsp. The organization of these is up to the programmer
+- clean up ::
+  + after the body of the function is finished and the return value (if any) is placed in %rax, the function must return control to the caller, putting the stack back in the state in which it was called with:
+    - first :: the callee frees the stack space it allocated by adding the same amount to the stack pointer, eg: ~addq $0x18, %rsp # give back the 24 bytes of stack space used in previous example with 'subq $0x18, %rsp'~
+    - then :: it pops off the registers it saved earlier
+      #+begin_src asm
+      popq %r13 # stack is FILO, and in previous 'set up' example, did last: 'pushq %r13'
+      popq %r12
+      popq %rbx
+      #+end_src
+    - finally :: the program should return to the call site, using the ~ret~ instruction
+- summary ::all previous put together, the code for a function should look like this:
+  #+begin_src asm
+  foo:
+         # set up
+         pushq %rbx # Save registers, if needed
+         pushq %r12
+         pushq %r13
+         subq $0x18, %rsp # Allocate stack space
+         # Function body ...
+         # Clean up
+         addq $0x18, %rsp # Deallocate stack space
+         popq %r13 # Restore registers
+         popq %r12
+         popq %rbx ret # Pop return address and return control to caller
+  #+end_src
+*** Dynamic stack allocation
+[2024-04-06 Sat 04:59]
 * Best practices
 * Glossary
   - programming :: writing program that creates, transforms, filters, aggregates and otherwise manipulates data.
