@@ -209,6 +209,8 @@
 *** Data movement
 - instructions with one suffix ::
   + mov S, D :: move source to destination
+    - depends on assembler's syntax, eg with x64 intel syntax: ~mov m, rax~: move contents of rax to 64-bit address)
+    - most UNIX assemblers including the GNU assembler uses AT&T syntax (~mov src, dest~), and others x86 assemblers use intel syntax
   + push S :: push source onto stack
   + pop D :: pop top of stack into destination
 - instructions with two suffixes ::
@@ -350,6 +352,31 @@
   #+end_src
 *** Dynamic stack allocation
 [2024-04-06 Sat 04:59]
+- notes ::
+  + static stack space is usually not enough, in this case, use a trick from 32-bit x86, and save the base of the stack frame into the base pointer register
+  + since %rbp is a callee-save register, it needs to be saved before it is changed, and the function prologue is then prefixed with: ~pushq %rbp; movq %rsp, %rbp~
+  + consequently, the epilogue will contain the following, before ==ret==: ~movq %rbp, %rsp; popq %rbp~
+  + this can also be done in the single instruction: ==leave==
+  + the epilogue makes sure that no matter what one does to the stack pointer in the function body, he will always return it to the right place when he returns/leaves. Note that this means that there is no longer need to add to the stack pointer in the epilogue
+  + eg: function which allocates between 8-248 bytes of random stack space during its execution:
+    #+begin_src asm
+    pushq %rbp # Use base pointer
+    movq %rsp, %rbp
+    pushq %rbx # Save registers
+    pushq %r12
+    subq $0x18, %rsp # Allocate some stack space
+    ...
+    call rand # Get random number
+    andq $0xF8, %rax # Make sure the value is 8-248 bytes and
+    # aligned on 8 bytes
+    subq %rax, %rsp # Allocate space
+    …
+    movq (%rbp), %r12 # Restore registers from base of frame
+    movq 0x8(%rbp), %rbx
+    movq %rbp, %rsp # Reset stack pointer and restore base
+    # pointer
+    popq %rbp ret
+    #+end_src
 * Best practices
 * Glossary
   - programming :: writing program that creates, transforms, filters, aggregates and otherwise manipulates data.
