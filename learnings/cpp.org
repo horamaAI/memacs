@@ -176,11 +176,11 @@
   |%r15           |%r15d    |%r15w    |%r15b |
   +---------------+---------+---------+------+
 - register usage :: sixteen 64-bit registers in x86-64: %rax, %rbx, %rcx, %rdx, %rdi, %rsi, %rbp, %rsp, and %r8-r15
-  + %rsp :: used as the stack pointer, a pointer to the topmost element in the stack
+  + %rsp :: (r 'stack pointer')) used as the stack pointer, a pointer to the topmost element in the stack
   + %rax, %rcx, %rdx, %rdi, %rsi, %rsp, and %r8-r11 :: are ==caller-save== registers, meaning that they are not necessarily saved across function calls
     - %rax :: by convention, is used to store a function’s return value, if it exists and is no more than 64 bits long (Larger return types like structs are returned using the stack.)
   + %rbx, %rbp, and %r12-r15 :: are ==callee-save== registers, meaning that they are saved across function calls
-  + %rbp :: in 32-bit x86, the base pointer (formerly %ebp, now %rbp) was used to keep track of the base of the current stack frame, and a called function would save the base pointer of its caller prior to updating the base pointer to its own stack frame.
+  + %rbp :: (r 'base pointer') in 32-bit x86, the base pointer (formerly %ebp, now %rbp) was used to keep track of the base of the current stack frame, and a called function would save the base pointer of its caller prior to updating the base pointer to its own stack frame.
     - with the advent of the 64-bit architecture, this has been mostly eliminated, save for a few special cases when the compiler cannot determine ahead of time how much stack space needs to be allocated for a particular function (see Dynamic stack allocation)
   + %rdi, %rsi, %rdx, %rcx, %r8, and %r9 :: are used to pass the first six integer or pointer parameters to called functions. Additional parameters (or large parameters such as structs passed by value) are passed on the stack
 ** Some assembly instructions
@@ -339,7 +339,7 @@
   #+begin_src asm
   foo:
          # set up
-         pushq %rbx # Save registers, if needed
+         pushq %rbx # Save registers, if needed <=> save the calling function’s stack frame pointer (rbp register)
          pushq %r12
          pushq %r13
          subq $0x18, %rsp # Allocate stack space
@@ -360,7 +360,7 @@
   + the epilogue makes sure that no matter what one does to the stack pointer in the function body, he will always return it to the right place when he returns/leaves. Note that this means that there is no longer need to add to the stack pointer in the epilogue
   + eg: function which allocates between 8-248 bytes of random stack space during its execution:
     #+begin_src asm
-    pushq %rbp # Use base pointer
+    pushq %rbp # Use base pointer/push %rbp to stack/Saves registers, if needed <=> save the calling function’s stack frame pointer (rbp register)
     movq %rsp, %rbp
     pushq %rbx # Save registers
     pushq %r12
@@ -376,6 +376,18 @@
     movq %rbp, %rsp # Reset stack pointer and restore base
     # pointer
     popq %rbp ret
+    #+end_src
+  + eg 2:
+    #+begin_src asm
+    push    rbp       ; Save the calling function’s stack frame pointer (rbp register)
+    mov     rbp, rsp  ; Copy value of rsp into rbp. Make a new stack frame below our caller’s stack
+    sub     rsp, 32   ; Reserve 32 bytes of stack space for this function’s local variables.
+                      ; Local variables will be below rbp and can be referenced relative to rbp,
+                      ; again best for ease of debugging, but for best performance rbp will not
+                      ; be used at all, and local variables would be referenced relative to rsp
+                      ; because, apart from the code saving, rbp then is free for other uses.
+     …       …        ; However, if rbp is altered here, its value should be preserved for the caller.
+    mov [rbp-8], rdx  ; Example of accessing a local variable, from memory location into register rdx
     #+end_src
 * Best practices
 * Glossary
