@@ -422,6 +422,34 @@
     #+end_src
   + assembly ::
     #+begin_src asm
+    test(int, unsigned int):
+            push    rbp
+            mov     rbp, rsp
+            mov     DWORD PTR [rbp-20], edi
+            mov     DWORD PTR [rbp-24], esi
+            mov     eax, DWORD PTR [rbp-20]
+            sub     eax, DWORD PTR [rbp-24]
+            mov     DWORD PTR [rbp-4], eax
+            jmp     .L2
+    .L3:
+            mov     edx, DWORD PTR [rbp-20]
+            mov     eax, DWORD PTR [rbp-24]
+            add     eax, edx
+            mov     DWORD PTR [rbp-20], eax
+            sub     DWORD PTR [rbp-24], 1
+    .L2:
+            cmp     DWORD PTR [rbp-24], 0
+            jne     .L3
+            cmp     DWORD PTR [rbp-4], 0
+            jns     .L4
+            mov     eax, 0
+            jmp     .L5
+    .L4:
+            mov     eax, DWORD PTR [rbp-20]
+    .L5:
+            pop     rbp
+            ret
+
     loop(int, unsigned int):
             push    rbp
             mov     rbp, rsp
@@ -440,6 +468,7 @@
             mov     eax, DWORD PTR [rbp-4]
             pop     rbp
             ret
+
     caller():
             push    rbp
             mov     rbp, rsp
