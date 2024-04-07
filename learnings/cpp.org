@@ -389,6 +389,92 @@
      …       …        ; However, if rbp is altered here, its value should be preserved for the caller.
     mov [rbp-8], rdx  ; Example of accessing a local variable, from memory location into register rdx
     #+end_src
+** More examples
+[2024-04-07 Sun 21:26]
+- loops ::
+  + source code ::
+    #+begin_src cpp
+    int loop(int a, unsigned int b) {
+        for (; b>0; --b) {
+            a += b;
+        }
+        return a;
+    }
+    int caller() {
+        int i = loop(1,3);
+        if (i < 10) {
+            return i;
+        }
+        return 10;
+    }
+    #+end_src
+  + assembly ::
+    #+begin_src asm
+    loop(int, unsigned int):
+            push    rbp
+            mov     rbp, rsp
+            mov     DWORD PTR [rbp-4], edi ; load int argument into the stack => under the base pointer rbp (-4 for int size of 4)
+            mov     DWORD PTR [rbp-8], esi
+            jmp     .L2
+    .L3:
+            mov     edx, DWORD PTR [rbp-4]
+            mov     eax, DWORD PTR [rbp-8]
+            add     eax, edx
+            mov     DWORD PTR [rbp-4], eax
+            sub     DWORD PTR [rbp-8], 1
+    .L2:
+            cmp     DWORD PTR [rbp-8], 0
+            jne     .L3
+            mov     eax, DWORD PTR [rbp-4]
+            pop     rbp
+            ret
+    caller():
+            push    rbp
+            mov     rbp, rsp
+            sub     rsp, 16
+            mov     esi, 3
+            mov     edi, 1
+            call    loop(int, unsigned int)
+            mov     DWORD PTR [rbp-4], eax
+            cmp     DWORD PTR [rbp-4], 9
+            jg      .L6
+            mov     eax, DWORD PTR [rbp-4]
+            jmp     .L7
+    .L6:
+            mov     eax, 10
+    .L7:
+            leave
+            ret
+    __static_initialization_and_destruction_0(int, int):
+            push    rbp
+            mov     rbp, rsp
+            sub     rsp, 16
+            mov     DWORD PTR [rbp-4], edi
+            mov     DWORD PTR [rbp-8], esi
+            cmp     DWORD PTR [rbp-4], 1
+            jne     .L10
+            cmp     DWORD PTR [rbp-8], 65535
+            jne     .L10
+            mov     edi, OFFSET FLAT:_ZStL8__ioinit
+            call    std::ios_base::Init::Init() [complete object constructor]
+            mov     edx, OFFSET FLAT:__dso_handle
+            mov     esi, OFFSET FLAT:_ZStL8__ioinit
+            mov     edi, OFFSET FLAT:_ZNSt8ios_base4InitD1Ev
+            call    __cxa_atexit
+    .L10:
+            nop
+            leave
+            ret
+    _GLOBAL__sub_I_loop(int, unsigned int):
+            push    rbp
+            mov     rbp, rsp
+            mov     esi, 65535
+            mov     edi, 1
+            call    __static_initialization_and_destruction_0(int, int)
+            pop     rbp
+            ret
+    #+end_src
+  
 * Best practices
 * Glossary
   - programming :: writing program that creates, transforms, filters, aggregates and otherwise manipulates data.
