@@ -224,7 +224,7 @@
 [2024-04-06 Sat 02:10]
 - unless otherwise specified, all arithmetic operation instructions have one suffix
 - unary operations :: ~inc D~ (increment by 1) ~dec D; neg D~ (arithmetic negation); ~not D~ (bitwise complement)
-- binary operations :: ~leaq S, D~ (load effective address of source into destination); ~add S, D; sub S, D; imul S, D~ (multiply destination by source); ~xor S, D~ (bitwise XOR destination by source); ~or S, D; and S, D~
+- binary operations :: ~leaq S, D~ (load effective address of source into destination); ~add S, D; sub S, D; imul S, D~ (multiply destination by source, and put result in the destination, so for example with intel syntax: ~imul dest, src~: signed multiplication of two operands, and put result in ==dest==); ~xor S, D~ (bitwise XOR destination by source); ~or S, D; and S, D~
 - shift operations :: ~sal / shl k, D~ (left shift destination by k bits); ~sar k, D~ (arithmetic right shift destination by k bits); ~shr k, D~ (logical right shift destination by k bits)
 - special arithmetic operations ::
   + imulq S :: signed full multiply of %rax by S; result stored in %rdx:%rax
@@ -394,6 +394,18 @@
 - loops ::
   + source code ::
     #+begin_src cpp
+    int test(int a, unsigned int b) {
+    
+        int buff = a - b;
+        for (; b>0; --b) {
+            a += b;
+        }
+        if (buff < 0) {
+            return 0;
+        }
+        return a;
+    }
+    
     int loop(int a, unsigned int b) {
         for (; b>0; --b) {
             a += b;
