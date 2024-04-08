@@ -144,6 +144,11 @@
     - -c :: compile or assemble, but do not link
     - -o <file> :: place output in <file>. Applies regardless to whatever sort of output being produced: executable file, object file, assembler file or preprocessed C code. If -o is not specified, the default is to put an executable file in a.out
 - x64 assembly code uses sixteen 64-bit registers. Additionally, the lower bytes of some of these registers may be accessed independently as 32-, 16- or 8-bit registers
+- memory management ::
+  + top of memory reserved for use by the OS.
+  + global variables are stored in the ==data== section of the memory. Unlike the stack, the data region does not grow or shrink, storage space for global variables persists for the entire run of the program.
+  + the heap portion of memory is the part of a program’s address space associated with dynamic memory allocation. The heap is typically located far from stack memory, and grows into higher addresses as more space is dynamically allocated by the running program.
+  + local variables and parameters reside on the stack. Stack grows as the program calls functions, and shrinks on return from function. Stacks is typically allocated near the bottom of memory (highest memory addresses).
 ** vocabulary
 :PROPERTIES:
 :CUSTOM_ID: vocab
@@ -176,7 +181,7 @@
   |%r15           |%r15d    |%r15w    |%r15b |
   +---------------+---------+---------+------+
 - register usage :: sixteen 64-bit registers in x86-64: %rax, %rbx, %rcx, %rdx, %rdi, %rsi, %rbp, %rsp, and %r8-r15
-  + %rsp :: (r 'stack pointer')) used as the stack pointer, a pointer to the topmost element in the stack
+  + %rsp :: (r 'stack pointer')) used as the stack pointer, a pointer to the topmost element in the stack, the starting point of the current context
   + %rax, %rcx, %rdx, %rdi, %rsi, %rsp, and %r8-r11 :: are ==caller-save== registers, meaning that they are not necessarily saved across function calls
     - %rax :: by convention, is used to store a function’s return value, if it exists and is no more than 64 bits long (Larger return types like structs are returned using the stack.)
   + %rbx, %rbp, and %r12-r15 :: are ==callee-save== registers, meaning that they are saved across function calls
