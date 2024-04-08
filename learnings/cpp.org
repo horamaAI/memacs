@@ -149,7 +149,7 @@
   + global variables are stored in the ==data== section of the memory. Unlike the stack, the data region does not grow or shrink, storage space for global variables persists for the entire run of the program.
   + the heap portion of memory is the part of a program’s address space associated with dynamic memory allocation. The heap is typically located far from stack memory, and grows into higher addresses as more space is dynamically allocated by the running program.
   + local variables and parameters reside on the stack. Stack grows as the program calls functions, and shrinks on return from function. Stacks is typically allocated near the bottom of memory (highest memory addresses).
-- structure of memory address on the stack :: when quadword is split into words for example, the stack can be seen as a stack of words: suppose a quadword ~fedcba9876543210~, on a word stack is: ~fe;dc;ba;98;76;54;32;10~, with ~fe~ (the most significant byte) the top of the stack, and ~10~ the bottom (the least significant byte)
+- memory addresses on the stack :: when quadword is split into words for example, the stack can be seen as a stack addresses of words: given a quadword ~fedcba9876543210~, on a word stack it becomes: ~fe;dc;ba;98;76;54;32;10~, with ~fe~ (the most significant byte) to the *lowest address* available on the stack (the top of the stack %rsp, %esp in this case since it's a word stack) minus the size of the word register, and ~10~ (the least significant byte) at the top of the stack. Can be seen as a reversed storage, with the beginning of the element at the bottom. Reminder: The current available stack memory goes from highest addresses (starting point), to lowest as the stack is growing. So when the stack is "growing" the %rsp address is actually decreasing.
 ** vocabulary
 :PROPERTIES:
 :CUSTOM_ID: vocab
@@ -214,6 +214,7 @@
     - eg: to convert the byte in %al to a doubleword in %ebx with zero-extension would be ~movzbl %al, %ebx~
 *** Data movement
 - instructions with one suffix ::
+  + reminder :: the stack grows from high addresses (bottom, since the address "0" is the memory's "start"), *to lowest*, so, a "push" is really a ~sub %rsp, 8; movq [%rsp], D~, and a "pop" is a ~movq D, [%rsp]; add %rsp, 8~ => the %rsp address actually decreases as its memory increases. It's better to see the stack as a reversed field of addresses
   + mov S, D :: move source to destination
     - depends on assembler's syntax, eg with x64 intel syntax: ~mov m, rax~: move contents of rax to 64-bit address)
     - most UNIX assemblers including the GNU assembler uses AT&T syntax (~mov src, dest~), and others x86 assemblers use intel syntax
