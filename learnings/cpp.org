@@ -300,7 +300,105 @@
 ** Arrays
 [2024-04-05 Fri 22:03]
 - arrays are stored in memory as contiguous blocks of data, with pointer to first element
-- eg: arr[i] = 3, can be expressed in x86-64 as (assuming the address of arr is stored in %rax and the index i is stored in %rcx): ~movq $3, (%rax, %rcx, 8)~
+- arr[i] = 3, can be expressed in x86-64 as (assuming the address of arr is stored in %rax and the index i is stored in %rcx): ~movq $3, (%rax, %rcx, 8)~
+- arrays in assembly example ::
+  + c++ code ::
+    #+begin_src cpp
+    int array() {
+        int arr[] = {1, 2, 3};
+        return arr[0];
+    }
+
+    int array(int arr[3]) {
+        return arr[0];
+    }
+
+    int caller() {
+        int a = array();
+        int arr[] = {1, 2, 3};
+        int b = array(arr);
+        int* c = array(arr, 0);
+        if (a > b) {
+            return a;
+        }
+        return b;
+    }
+    #+end_src
+  + assembly ::
+    #+begin_src asm
+    array():
+            push    rbp
+            mov     rbp, rsp
+            mov     DWORD PTR [rbp-12], 1
+            mov     DWORD PTR [rbp-8], 2
+            mov     DWORD PTR [rbp-4], 3
+            mov     eax, DWORD PTR [rbp-12]
+            pop     rbp
+            ret
+    array(int*):
+            push    rbp
+            mov     rbp, rsp
+            mov     QWORD PTR [rbp-8], rdi  ; the array of int is considered as a ptr
+            mov     rax, QWORD PTR [rbp-8]
+            mov     eax, DWORD PTR [rax]
+            pop     rbp
+            ret
+    array(int*, int):
+            push    rbp
+            mov     rbp, rsp
+            mov     QWORD PTR [rbp-8], rdi
+            mov     DWORD PTR [rbp-12], esi
+            mov     eax, DWORD PTR [rbp-12]
+            cdqe	; convert doubleword to quadword: sign-extend dword in the %eax to %rax
+            lea     rdx, [0+rax*4] ; %rdx can be seen here as the index, lea will just convert the integer value as an address, factor 4 since dword
+            mov     rax, QWORD PTR [rbp-8]
+            add     rax, rdx
+            pop     rbp
+            ret
+    caller():
+            push    rbp
+            mov     rbp, rsp
+            sub     rsp, 32
+            call    array()
+            mov     DWORD PTR [rbp-4], eax
+            mov     DWORD PTR [rbp-28], 1
+            mov     DWORD PTR [rbp-24], 2
+            mov     DWORD PTR [rbp-20], 3
+            lea     rax, [rbp-28]
+            mov     rdi, rax
+            call    array(int*)
+            mov     DWORD PTR [rbp-8], eax
+            lea     rax, [rbp-28]
+            mov     esi, 0
+            mov     rdi, rax
+            call    array(int*, int)
+            mov     QWORD PTR [rbp-16], rax
+            mov     eax, DWORD PTR [rbp-4]
+            cmp     eax, DWORD PTR [rbp-8]
+            jle     .L8
+            mov     eax, DWORD PTR [rbp-4]
+            jmp     .L10
+    .L8:
+            mov     eax, DWORD PTR [rbp-8]
+    .L10:
+            leave
+            ret
+    #+end_src
+- lea :: for ==load effective address==, useful when the address of a particular value in an array is needed, *not* the value itself. lea stores the calculated memory offset in the specified register, eg:
+  + suppose a struct ::
+    #+begin_src cpp
+    struct Point    
+    {
+         int xcoord; // suppose a 64 bits architecture: xcoord and ycoord are both 4 bytes
+         int ycoord; // since x64 => ycoord is at offset 4 bytes
+    };
+    #+end_src
+  + assuming the array's base is in %ebx, and the variable i in %eax
+  + to fetch y's value of i (~int y = points[i].ycoord;~): ~mov edx, [ebx + 8*eax + 4]~ (the right side is the =="effective address"==)
+    - factor 8 since ==Point== is 8 bytes in size
+    - the value of points[i].ycoord is copied into %edx
+  + to fetch *the address* of y at index i (~int *y = &points[i].ycoord;~): ~lea esi, [ebx + 8*eax + 4]~
+    - the value of points[i].ycoord is *loaded* into %esi
 ** Stack Organization and Function Calls
 [2024-04-06 Sat 04:03]
 *** Calling a Function
