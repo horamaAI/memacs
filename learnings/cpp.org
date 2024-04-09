@@ -154,10 +154,10 @@
 :PROPERTIES:
 :CUSTOM_ID: vocab
 :END:
-- "byte" :: a one-byte integer (suffix b)
-- "word" :: a two-byte integer (suffix w)
-- "doubleword" :: a four-byte integer (suffix l)
-- "quadword" :: eight-byte value (suffix q)
+- "byte" :: a one-byte integer (suffix ==b==, for signed/unsigned char for example)
+- "word" :: a two-byte integer (suffix ==w==, for signed/unsigned short)
+- "doubleword" :: a four-byte integer (suffix ==l==, for signed/unsigned int)
+- "quadword" :: eight-byte value (suffix ==q==, for signed/unsigned long)
 ** x64 assembly registers
 [2024-04-05 Fri 22:02]
 - assembly registers :: sixteen 64-bit registers in x86-64:
@@ -189,6 +189,8 @@
   + %rbp :: (r 'base pointer') in 32-bit x86, the base pointer (formerly %ebp, now %rbp) was used to keep track of the base of the current stack frame, and a called function would save the base pointer of its caller prior to updating the base pointer to its own stack frame.
     - with the advent of the 64-bit architecture, this has been mostly eliminated, save for a few special cases when the compiler cannot determine ahead of time how much stack space needs to be allocated for a particular function (see Dynamic stack allocation)
   + %rdi, %rsi, %rdx, %rcx, %r8, and %r9 :: are used to pass the first six integer or pointer parameters to called functions. Additional parameters (or large parameters such as structs passed by value) are passed on the stack
+- register sizes :: eg: %rax: 8 bytes (quadword: 64 bits); %eax: 4 bytes (doubleword: 32 bits); %ax: 2 bytes (word: 16 bits); %ah and %al: 1 byte, with %ah the 4 most significant bits, and %al the 4 least significant bits.
+  + %ah and %al are part of the same byte %ax, just that when for example requesting %ah the operation is done on the highest part of %ax
 ** Some assembly instructions
 [2024-04-05 Fri 22:01]
 - introduction ::
