@@ -34,8 +34,8 @@
   :END:
 ** TODO videos cpp [0/13]
     SCHEDULED: <2023-01-18 Wed>
-    1) [ ] back to basics sessions ::
-       + [ ] cppcon2022 just Enough Assembly for Compiler Explorer :: https://www.youtube.com/watch?v=_sSFtJwgVYQ
+    1) [-] back to basics sessions ::
+       + [X] cppcon2022 just Enough Assembly for Compiler Explorer :: https://www.youtube.com/watch?v=_sSFtJwgVYQ
        + [ ] cppcon2019 Matt godbolt, Compiler explorer behind the scenes :: https://www.youtube.com/watch?v=kIoZDUd5DKw
        + [ ] cppcon2019 non-conforming cpp :: https://www.youtube.com/watch?v=IAdLwUXRUvg
        + [ ] cppcon2022 back to basics :: https://www.youtube.com/watch?v=G9MxNwUoSt0&list=RDCMUCMlGfpWw-RUdWX_JbLCukXg
