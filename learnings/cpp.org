@@ -297,7 +297,7 @@
 - procedure call instructions do not have any suffixes
 - call Label :: push return address and jump to label
 - call *Operand :: push return address and jump to specified location
-- leave :: set %rsp to %rbp, then pop top of stack into %rbp
+- leave :: restores %rsp and %rbp: sets %rsp to %rbp, then pops top of stack into %rbp
 - ret :: pop return address from stack and jump there
 ** Arrays
 [2024-04-05 Fri 22:03]
@@ -360,7 +360,7 @@
     caller():
             push    rbp
             mov     rbp, rsp
-            sub     rsp, 32
+            sub     rsp, 32  ; set aside some space for this current context/function, so that next function(s) doesn't override it. A function that doesn't call another function usually has no need for this sub instruction
             call    array()
             mov     DWORD PTR [rbp-4], eax
             mov     DWORD PTR [rbp-28], 1
@@ -383,7 +383,7 @@
     .L8:
             mov     eax, DWORD PTR [rbp-8]
     .L10:
-            leave
+            leave ; restores %rsp and %rbp
             ret
     #+end_src
 - lea :: for ==load effective address==, useful when the address of a particular value in an array is needed, *not* the value itself. lea stores the calculated memory offset in the specified register, eg:
@@ -667,6 +667,46 @@
             mov     eax, 3
             ret
     #+end_src
+- eg 2: inlining a function call
+  + source code ::
+    #+begin_src cpp
+    int timesthree(int num) {
+        return num * 3;
+    }
+    int dotimestwo() {
+        return timesthree(50);
+    }
+    #+end_src
+  + without optimisation ::
+    #+begin_src asm
+    timesthree(int):
+            push    rbp
+            mov     rbp, rsp
+            mov     DWORD PTR [rbp-4], edi
+            mov     edx, DWORD PTR [rbp-4]
+            mov     eax, edx
+            add     eax, eax
+            add     eax, edx
+            pop     rbp
+            ret
+    dotimestwo():
+            push    rbp
+            mov     rbp, rsp
+            mov     edi, 50
+            call    timesthree(int)
+            pop     rbp
+            ret
+    #+end_src
+  + with optimisation (-O3)::
+    #+begin_src asm
+    timesthree(int):
+            lea     eax, [rdi+rdi*2] ; genius right, only need to do a product only once
+            ret
+    dotimestwo():
+            mov     eax, 150 ; no even need to call the function, just inline the final result
+            ret
+    #+end_src
+    
 * Best practices
 * Glossary
   - programming :: writing program that creates, transforms, filters, aggregates and otherwise manipulates data.
