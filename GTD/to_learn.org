@@ -156,6 +156,7 @@
         + [ ] ep326 deducing `this` :: https://www.youtube.com/watch?v=5EGw4_NKZlY
         + [ ] ep389 avoiding pointer arithmetic :: https://www.youtube.com/watch?v=YahYVRS1Ktg
         + [ ] ep312 stop using constexpr :: https://www.youtube.com/watch?v=4pKtPWcl1Go
+        + [ ] ep421 use optional, variant, pair, tuple, any, and expected correctly :: https://youtu.be/0yJk5yfdih0?si=zb5VnvtuXJzYvCE1
         + [ ] ep259 CRTP :: https://www.youtube.com/watch?v=ZQ-8laAr9Dg
         + [ ] ep329 LTO makes program faster :: https://www.youtube.com/watch?v=9nzT1AFprYM
         + [ ] ep44 compile time constexpr random :: https://www.youtube.com/watch?v=rpn_5Mrrxf8
