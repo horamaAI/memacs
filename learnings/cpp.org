@@ -243,7 +243,7 @@
 *** Comparison and Test Instructions
 [2024-04-06 Sat 02:24]
 - comparison instructions also have one suffix
-- cmp S2, S1 :: set condition codes according to S1 - S2
+- cmp S2, S1 :: set condition codes according to S1 - S2 (or S2 - S1 with intel syntax)
 - test S2, S1 :: set condition codes according to S1 & S2
 *** Accessing Condition Codes
 [2024-04-06 Sat 02:27]
@@ -264,6 +264,7 @@
 - jump instructions ::
   + jmp Label :: jump to label
   + jmp *Operand :: jump to specified location
+  + for signed comparisons, "jump if" is not really doing the whole operation, it's just checks if signed bit flag is set/unset
   + je/jz Label :: jump if equal/zero ==ZF==
   + jne/jnz Label :: jump if not equal/nonzero ==~ZF==
   + js Label :: jump if negative ==SF==
@@ -272,6 +273,7 @@
   + jge/jnl Label :: jump if greater or equal (signed) ==~(SF^0F)==
   + jl/jnge Label :: jump if less (signed) ==SF^0F==
   + jle/jng Label :: jump if less or equal ==(SF^OF)|ZF==
+  + for unsigned bytes use below/above instead of greater/less:
   + ja/jnbe Label :: jump if above (unsigned) ==~CF&~ZF==
   + jae/jnb Label :: jump if above or equal (unsigned) ==~CF==
   + jb/jnae Label :: jump if below (unsigned) ==CF==
@@ -327,8 +329,8 @@
   + assembly ::
     #+begin_src asm
     array():
-            push    rbp
-            mov     rbp, rsp
+            push    rbp ; by convention, %rbp needs to be preserved, it contains the caller's value for %rbp, and will get back that value with ~pop rbp~ at the end of the function
+            mov     rbp, rsp ; now %rbp can build a new context for the current function, %rsp is the beginning of the current function's stack frame
             mov     DWORD PTR [rbp-12], 1
             mov     DWORD PTR [rbp-8], 2
             mov     DWORD PTR [rbp-4], 3
@@ -623,6 +625,48 @@
             ret
     #+end_src
   
+** Optimisation
+[2024-04-10 Wed 22:43]
+- adding an optimisation preprocessing level does reduce the amount of assembly instructions, eg:
+  + source code ::
+    #+begin_src cpp
+    int add(int num, int num2) {
+        return num + num2;
+    }
+    int doadd() {
+        return add(1,2);
+    }
+    #+end_src
+  + with no optimisation ::
+    #+begin_src asm
+    add(int, int):
+            push    rbp
+            mov     rbp, rsp
+            mov     DWORD PTR [rbp-4], edi
+            mov     DWORD PTR [rbp-8], esi
+            mov     edx, DWORD PTR [rbp-4]
+            mov     eax, DWORD PTR [rbp-8]
+            add     eax, edx
+            pop     rbp
+            ret
+    doadd():
+            push    rbp
+            mov     rbp, rsp
+            mov     esi, 2
+            mov     edi, 1
+            call    add(int, int)
+            pop     rbp
+            ret
+    #+end_src
+  + with optimisation (gcc ==-O3== optimisation level) ::
+    #+begin_src asm
+    add(int, int):
+            lea     eax, [rdi+rsi] ; no use of buffer addressing, since with the help of lea, [rdi+rsi] does the addition, and the address of the result is transferred to eax
+            ret
+    doadd():
+            mov     eax, 3
+            ret
+    #+end_src
 * Best practices
 * Glossary
   - programming :: writing program that creates, transforms, filters, aggregates and otherwise manipulates data.
