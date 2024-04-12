@@ -1,5 +1,5 @@
 # -*- mode: org -*-
-#+title: Emacs learning project
+#+title: Emacs and elisp learnings
 #+SETUPFILE: ~/set-up-files/basic-setups.org
 
 * emacs files types
