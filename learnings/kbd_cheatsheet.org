@@ -4,6 +4,7 @@
 
 
 * general emacs/elisp cheatsheet
+
 ** foreword, help and basic
 - C- Ctrl
 - M- Meta (Esc or Alt on keyboard)
@@ -29,26 +30,33 @@
   + ‘RET’ :: to get more infos
 - list available packages with *elpa* :: ==M-x list-packages==
   + refresh after package update :: ==M-x package-refresh-contents==
-** file management and edition
+** file management with dired
 *** filesystem
 - open recent files dialog :: ==C-x C-r==
+- save :: ==C-x C-S==
 - rename file (using dired) ::
   1. switch to dired buffer :: ==C-x d==
   2. navigate to file
   3. go into wdired mode :: ==C-x C-q==
   4. rename file
   5. confirm :: ==C-c C-c==
-*** file search and replace, and filtering
-- search and replace ::
-  + search forward/backward :: ==C-s/C-r==
-  + with REGEX search forward/backward :: ==C-M-s/C-M-r==
-  + query replace (search and replace) :: ==M-S-5==
-  + with REGEX query replace (search and replace) :: ==C-M-S-5==
-  + regex search on current file of *all* matching results in a collapsed view :: ==C-c / /==
-*** file edition and selection
+** emacs buffers and windows management
+ - actions on buffers :: 
+   + list buffers :: =C-x C-b=
+   + local refresh of current buffer :: =C-c C-c=
+   + switch between buffers :: =C-x b=
+   + open buffer in another window :: =C-x 4 b=
+   + minimize window (back to toolbar) :: =C-x C-z=
+   + move current visible window with respect to cursor :: =C-l= (multiple time (3*) until desired display)
+   + kill buffer :: ==C-x k==
+ - execute buffer :: 
+   + execute code block (place first cursor inside code block) :: =C-c C-c=
+ - others ::
+   + deactivate/activate auto-fill (line break) in current buffer :: ==C-c q==
+** searching, editing, and navigating between text, paragraphs, headlines (or sections), and items
+*** select, edit, navigate and motion
 - selection ::
   + select all :: ==C-x h==
-- save :: ==C-x C-S==
 - copy/cut ::
   + kill from cursor to end of line :: ==C-k==
   + duplicate line :: ==C-c d== (own customised definition)
@@ -74,23 +82,49 @@
             std::cout << "Hello world\n";
         }	  
         #+end_src
-- sentences ::
-  + Move between sentences :: ==M-a==, and ==M-e==
-  + Kill sentence forward :: ==M-k==
-  + Kill sentence backward :: ==C-x DEL==
-** emacs buffers and windows management
- - actions on buffers :: 
-   + list buffers :: =C-x C-b=
-   + local refresh of current buffer :: =C-c C-c=
-   + switch between buffers :: =C-x b=
-   + open buffer in another window :: =C-x 4 b=
-   + minimize window (back to toolbar) :: =C-x C-z=
-   + move current visible window with respect to cursor :: =C-l= (multiple time (3*) until desired display)
-   + kill buffer :: ==C-x k==
- - execute buffer :: 
-   + execute code block (place first cursor inside code block) :: =C-c C-c=
- - others ::
-   + deactivate/activate auto-fill (line break) in current buffer :: ==C-c q==
+- text navigation :: 
+  + sentences ::
+    - Move between sentences :: ==M-a==, and ==M-e==
+    - Kill sentence forward :: ==M-k==
+    - Kill sentence backward :: ==C-x DEL==
+  + words ::
+    - move forward/backward on word :: ==M-f/M-b== :: 
+- headlines ::
+  + add headline :: =C-RET=
+  + add item :: =M-RET=
+  + move item/headline up/down :: =M-UP/DOWN=
+  + cycle through available bullets :: =C-c -=
+  + ==C-c C-n/p== :: (org-next-visible-heading), go to next/previous heading
+  + ==C-c C-f/b== :: (org-forward-heading-same-level), go to next/previous heading same level
+  + ==C-c C-u== :: (outline-up-heading), backward to higher level heading
+  + ==C-c C-j== :: (org-goto), jump to a different place without changing the current outline visibility
+    - shows the document structure in a temporary buffer, where you can use the following keys to find your destination ::
+      + ==TAB== :: cycle visibility
+      + ==DOWN/UP==	:: next/previous visible headline
+      + ==RET== :: select this location
+      + ==/== :: do a Sparse-tree search
+      + following keys also work if ==org-goto-auto-isearch== is turned off ::
+        - ==n/p== :: next/previous visible headline
+        - ==f/b== :: next/previous headline same level
+        - ==u== :: one level up
+        - ==0...9== :: digit argument
+        - ==q== :: quit
+*** search, replace, filter
+- search and replace ::
+  + search forward/backward :: ==C-s/C-r==
+  + with REGEX search forward/backward :: ==C-M-s/C-M-r==
+  + query replace (search and replace) :: ==M-S-5==
+  + with REGEX query replace (search and replace) :: ==C-M-S-5==
+  + regex search on current file of *all* matching results in a collapsed view :: ==C-c / /==
+** Screens, windows and panes
+- show next/previous screen :: ==C-v/M-v==
+- reposition window :: ==C-M-l==
+- keep current window, close others :: ==C-x 1==
+** Links
+- insert link :: C-c C-l, and follow instructions
+  + ex (no backslash escape): \[\[https://www.youtube.com/watch?v=SzA2YODtgK4\]\[source video\]\], gives: [[https://www.youtube.com/watch?v=SzA2YODtgK4][source video]]
+  + ex2: link to another file: [​[file:remember.org][remember]], to an image: [​[file:img/test.jpg]]
+  + ==C-c C-l== edits link if already existing
 ** Tables
 - start table ::
   + automatically :: ==C-c |== (default : 5cols*2lines)
@@ -104,24 +138,16 @@
     - display content of narrowed cell :: ==C-u TAB== (or ==C-u C-c `==, or edit conent in separate window: ==C-c `==)
 - actions on cells :: 
   + jump to next cell :: ==TAB==
-** Screens, windows and panes
-- show next/previous screen :: ==C-v/M-v==
-- reposition window :: ==C-M-l==
-- keep current window, close others :: ==C-x 1==
-** org-mode
-*** editing/navigating headlines (or sections) and items
-- editing ::
-  + add headline :: =C-RET=
-  + add item :: =M-RET=
-  + move item/headline up/down :: =M-UP/DOWN=
-  + cycle through available bullets :: =C-c -=
-*** drawers and logging
+** checking spelling, grammar and orthography
+- ==C-M-i== :: ==(ispell-complete-word)==, correct or complete the word before point based on the spelling dictionary
+* org-mode
+** drawers and logging
 - drawers :: 
   + insert a drawer below current headline :: =C-c C-x d= // calls 'org-insert-drawer'
   + insert property drawer below current headline :: // calls 'org-insert-property-drawer'
 - LOGBOOK ::
   + add time-stamped note to ‘LOGBOOK’ drawer :: =C-c C-z=
-*** exporting org-mode files
+** exporting org-mode files
 - insert templates options for exporting :: ==C-c C-e # [category]== // where [category] can be html, latex, ascii, etc.
   + to change option :: ==C-c C-c==
 - insert customized templates (setup files) ::
@@ -132,90 +158,35 @@
     #+end_src
 - export :: =C-c C-e' + key of export type needed=
   + eg, export to html file :: =C-c C-e h h= // bound to org-html-export-to-html
-*** org agenda, capture, refiling, todo items, and clocking
-**** org agenda
+** org-capture and refiling
+*** org-capture
+- call capture templates on task :: ==C-c t==, t is for task, not template
+- after finished entering details, file item in defined org-default-notes-file (will resume previous task) :: ==C-c C-c==
+*** refiling tasks
+-
+** org agenda and "getting things done" ("GTD", for todo tasks)
+*** org agenda
 - call org agenda :: =C-c a=
   + bh keybinding :: =F12 a=
 - reschedule selected item :: =C-c C-s= // and then set relative to today: +1, +2w, etc.
 - add/remove file to org agenda :: C-c [ (remove : C-c ])
   + careful :: to be sure and use whole content of folder, prefer manual edit than C-c [
-**** org agenda todo, checklists, and GTD (getting things done)
+*** org agenda todo, checklists, and GTD (getting things done)
 - add item with checkbox :: ==C-S-M-m==
 - toggle between todo states (TODO-DONE-etc) :: ==C-c C-t== // will create todo task if not one already
 - toggle checkbox ([ ] to [x]) :: ==C-c C-c==
-**** org-capture
-- call capture templates on task :: C-c t // t here is for task, not template
-- after finished entering details, file item in defined org-default-notes-file (will resume previous task) :: C-c C-c
-**** refiling tasks
-- 
-**** time clocking
-***** Clocking in (How to)
-- Select depending on current mode :
-  + ==C-c C-x C-i== :: everywhere ?
-  + ==I== :: while in the agenda
-  + ==I== :: speed key on first character of heading line
-  + ==f9 I== :: (globally defined key bindings) while on the task in agenda
-  + ==f9 I== :: while in the task in an org file
-***** Default task clocking
-- set default timing in a headline for default clocking ('**Organisation' for mine)
-- quick clocking in in default :: ==C-u C-c C-x C-i d==
-- when interruption occurs, set a capture task to pause current time clocking
-- change default clocking task ::
-  1. visit new default task in org buffer
-  2. clock it in with :: C-u C-u C-c C-x C-i
-  3. now new task is the default
-***** Clock history for clocking old tasks
-       - scenario ::
-	 + currently working on and clocking Task A (default 'Organization'
-	   for example)
-	 + get interrupted and switch to Task B (any)
-	 + Task B completed and now want to go back to Task A ('Organization') again to continue
-       - solution ::
-	 + solution 1 :: clock in again on Task A and resume work
-	 + solution 2 :: when completed Task B, hit 'C-u C-c C-x C-i i' to
-	   display clocking history selection buffer (the 'i' at the end
-	   is for 'interrupted')
-
-***** Clocking interruption flow
-       interruption occurs when clocking task:
-       - Create a quick capture task journal entry ::
-	 + is it a one shot uninteresting task ? ::
-	   1. create journal capture for it :: ==C-c c j==
-	   2. create heading for task;
-	   3. do task;
-	   4. file it :: ==C-c C-c== (restores clock back to previous clocking task)
-	   5. clock in something else or continue with current clocking task
-
-***** Find task to clock in
-       :PROPERTIES:
-       :CUSTOM_ID: task_to_clock_in
-       :END:
-       use one of the following (listed by most frequently used first) :
-       1. Use clock history C-u C-c C-x C-i: Go back to something I was clocking that is not finished
-       2. Pick something off today's block agenda: *SCHEDULED* or
-	  *DEADLINE* (items that need to be done soon)
-       3. Pick something off the *NEXT* tasks agenda view Work on some unfinished task to move to completion
-       4. Pick something off the other task list
-       5. Use an agenda view with filtering to pick something to work on
-       Note : punching in on selected task will restrict the agenda view
-       to that project so that can focus on just that thing for some period of time. 
-
-***** Editing clock entries
-       (edition often needed to reflect reality)
-       ex scenario: when not properly clocked in on a task, then previous clocked task still
-       run and count for both tasks, which is wrong.
-       => solution : clock in properly the latest task, and edit start and
-       end times to correct clocking history.
-       Step to edit :
-       1. org-agenda-log-mode : (f12 a l, if f12 is mapped to org-agenda,
-	  C-u C-u l otherwise) visit clock line for an entry, shows all clock lines for today
-       2. then navigate desired clock line
-       3. hit TAB
-       4. put cursor on part needed to edit
-       5. use S-<UP> or S-<DOWN> to change the time
-       !!! CAREFUL not to create overlaps when fixing clock entries, use :
-       - v c :: in daily agenda, and it will identify gaps and overlaps
-*** speed commands
+** time clocking and reporting
+*** Most used, to remember
+- v c :: check for unclosed clock times, gaps, overlaps, etc.
+- check past month clocked times :: ==f12 a v m b v c==
+  + ==f12 a== :: org-agenda
+  + ==v m== :: org-agenda-month-view
+  + ==b== :: org-agenda-earlier : go back in time to display earlier dates (previous month here)
+  + ==v c== :: show overlapping clock entries, clocking gaps, and other clocking problems in current agenda range
+- clock reporting to summarize time spent ::
+  + ==f12 < a v m b R== :: limit agenda to a specific file containing tasks needed to report
+*** Time clocking
+**** speed commands for time clocking
 - defaults ::
   + ==I== and ==O== :: for clocking in and out
   + ==J== :: jump to current or last clocking task
@@ -223,36 +194,68 @@
   + ==TAB== and ==S-TAB== :: for cycling
 - from bh configs :: 
   + ==c== and ==C== :: are disabled by bh so they do not accidentally self insert when not intended to
-
-*** Moving cursor relative to paragraph/section/etc.
-- words ::
-  + move forward/backward on word :: ==M-f/M-b==
-- ==C-c C-n/p== :: (org-next-visible-heading), go to next/previous heading
-- ==C-c C-f/b== :: (org-forward-heading-same-level), go to next/previous heading same level
-- ==C-c C-u== :: (outline-up-heading), backward to higher level heading
-- ==C-c C-j== :: (org-goto), jump to a different place without changing the current outline visibility
-  + shows the document structure in a temporary buffer, where you can use the following keys to find your destination ::
-    - ==TAB== :: cycle visibility
-    - ==DOWN/UP==	:: next/previous visible headline
-    - ==RET== :: select this location
-    - ==/== :: do a Sparse-tree search
-    - following keys also work if ==org-goto-auto-isearch== is turned off ::
-      + ==n/p== :: next/previous visible headline
-      + ==f/b== :: next/previous headline same level
-      + ==u== :: one level up
-      + ==0...9== :: digit argument
-      + ==q== :: quit
-** Links
-- insert link :: C-c C-l, and follow instructions
-  + ex (no backslash escape): \[\[https://www.youtube.com/watch?v=SzA2YODtgK4\]\[source video\]\], gives: [[https://www.youtube.com/watch?v=SzA2YODtgK4][source video]]
-  + ex2: link to another file: [​[file:remember.org][remember]], to an image: [​[file:img/test.jpg]]
-  + ==C-c C-l== edits link if already existing
-** checking spelling, grammar and orthograph
-[2023-12-15 Fri 23:01]
-- C-M-i :: ==(ispell-complete-word)==, complete the word before point based on the spelling dictionary
+**** Clocking in (How to)
+- Select depending on current mode :
+  + ==C-c C-x C-i== :: everywhere ?
+  + ==I== :: while in the agenda
+  + ==I== :: speed key on first character of heading line
+  + ==f9 I== :: (globally defined key bindings) while on the task in agenda
+  + ==f9 I== :: while in the task in an org file
+**** Default task clocking
+- first, set a default timing headline for default clocking ::
+  + default task is set for example to '* Organisation' (file [[id:eb155a82-92b2-4f25-a3c6-0304591af2f9][tasks_list.org]]) on this configuration
+    - generate new drawer property ID with ==M-x org-id-copy== when the point is in the selected default task
+    - locate ==defvar bh/organization-task-id== in the configuration file, and replace it with the new generated ID
+    - to make sure that this default task is found by ID, run ==M-x org-id-goto== and provide the new ID so that emacs routes you to the id, but mainly so that it can save the new ID
+    - if the ID is not unique then rebuilding the ID locations cache may be required using ==M-x org-id-update-id-locations==
+- to change default clocking task, one can ::
+  1. visit new default task in the org buffer
+  2. clock it in with :: ==C-u C-u C-c C-x C-i==
+  3. now new task is the default
+- quick clocking in in default :: ==C-u C-c C-x C-i d==
+- when interruption occurs, set a capture task to pause current time clocking
+**** Clock history for clocking old tasks
+- scenario ::
+  + currently working on and clocking Task A (such as the default 'Organization' for example)
+  + get interrupted and switch to Task B (any)
+  + Task B completed and now want to go back to Task A ('Organization') again to continue
+- solution ::
+  + solution 1 :: clock in again on Task A and resume work
+  + solution 2 :: when Task B completed, hit ==C-u C-c C-x C-i i== to display clocking history selection buffer ('i' at the end is for 'interrupted')
+**** Clocking interruption flow
+- when interruption occurs when clocking task, then create a quick capture task journal entry:
+  + if it is a one shot uninteresting task ::
+    1. create journal capture for it: ==C-c c j==
+    2. create heading for task;
+    3. do task;
+    4. file it :: ==C-c C-c== (restores clock back to previous clocking task)
+    5. clock in something else or continue with current clocking task
+**** Find task to clock in
+- use one of the following (listed by most frequently used first) :
+  1. Use clock history ==C-u C-c C-x C-i==: Go back to something that was being clocking and that is not finished
+  2. Pick something off today's block agenda: *SCHEDULED* or *DEADLINE* (items that need to be done soon)
+  3. Pick something off the *NEXT* tasks agenda view Work on some unfinished task to move to completion
+  4. Pick something off the other task list
+  5. Use an agenda view with filtering to pick something to work on
+- note : punching in on selected task will restrict the agenda view to that project so that can focus on just that thing for some period of time. 
+**** Editing clock entries
+- edition often needed to reflect reality
+- ex scenario :: when not properly clocked in on a task, then previous clocked task still run and count for both tasks, which is wrong.
+  + => solution :: clock in properly the latest task, and edit start and end times to correct clocking history => clock entries edition
+- steps to edit clock entries ::
+  1. launch ==org-agenda-log-mode==, one of following ::
+     + ==f12 a l==, if f12 is mapped to org-agenda,
+     + ==C-u C-u l== otherwise, to visit clock line for an entry and show all clock lines for today
+  2. then navigate desired clock line
+  3. hit ==TAB==
+  4. put cursor on part needed to edit
+  5. use ==S-<UP>== or ==S-<DOWN>== to change the time
+- careful !!! :: CAREFUL not to create overlaps when fixing clock entries, use following to find gaps and overlaps :
+  + ==v c== :: in daily agenda, and it will identify gaps and overlaps
+*** Time reporting
 
 * C++
-  + activate c++ mode (done by default for .cpp, .cxx files, but not .h files that are opened as c files) :: M-x c++-mode
+  + activate c++ mode (done by default for .cpp, .cxx files, but not .h files that are opened as c files) :: ==M-x c++-mode==
 
 * Terminal
 - add last argument of previous command :: ESC - .
@@ -261,17 +264,6 @@
   + add keybinding in ~/.zshrc :: bindkey '#' pound-insert
 
 * Time reporting (org agenda => go into mode first)
-  - v c :: check for unclosed clock times, gaps, overlaps, etc.
-  - check past month clocked times :: 'f12 a v m b v c'
-    + f12 a :: org-agenda
-    + v m :: org-agenda-month-view
-    + b :: org-agenda-earlier : go back in time to display earlier
-      dates (previous month here)
-    + v c :: show overlapping clock entries, clocking gaps, and other
-      clocking problems in current agenda range
-  - clock reporting to summarize time spent ::
-    + 'f12 < a v m b R' :: limit agenda to a specific file containing
-      tasks needed to report
 ** Task time estimate (with column view)
    :PROPERTIES:
    :CUSTOM_ID: task_time_estimate
