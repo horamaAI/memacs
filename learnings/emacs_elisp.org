@@ -9,29 +9,19 @@
 - files in ~./emacs.d :: files that needs to be persistent throughout
   all emacs sessions
 
-
-* First notes :
-- C- Ctrl
-- M- Meta (Esc or Alt)
-- S- Shift
-- RET- well, return
-- C-h b : list all bindings available in a buffer (b for bindings).
-- C-h k [enter key or chain of key] : describe entered key
-- no namespaces in emacs, so to differentiate with existing function
-  names, use short prefixes
-  (https://emacs.stackexchange.com/questions/18030/function-naming-with-forward-slash)
-  ex: bh/a-known-name-here
+* First notes
+- introduction ::
+  #+INCLUDE: "./kbd_cheatsheet.org::#kbd_foreword" :only-contents t
+- help keybindings ::
+  #+INCLUDE: "./kbd_cheatsheet.org::#kbd_help" :only-contents t
+- no namespaces in emacs, so to differentiate with existing function names, use short prefixes (https://emacs.stackexchange.com/questions/18030/function-naming-with-forward-slash)
+  + eg :: bh/a-known-name-here
 - hidden buffers start with space, hidden files of course start with dot
-- prefer customizing variables, groups, etc. through M-x customize-xxx
-  rather than manually adding into emacs initialization file.
+- prefer customizing variables, groups, etc. through ==M-x customize-xxx== rather than manually adding into emacs initialization file.
 
-
-* To remember (marked as very useful)
-  Note : internal links : insert target-id into \[\[LINK\]\[DESCRIPTIONS\]\] (without escaping characters) (source: https://orgmode.org/guide/Hyperlinks.html)
-  - clocking in tasks [[#task_to_clock_in][** Find task to clock in]]
-  - estimating task [[#task_time_estimate][** Task time estimate (with column view)]]
-  - 
-
+* To remember (need to, since very useful and used often)
+- clocking in tasks :: [[file:kbd_cheatsheet.org::#org_task_to_clock_in][Find task to clock in]]
+- estimating task time :: [[file:kbd_cheatsheet.org::#org_task_time_estimate][Task time estimate (with column view)]]
 
 * org-mode
   - references ::
@@ -184,142 +174,8 @@ the daily agenda view.
      project <=> current task).
 
 
-* Time clocking
-** Clocking in (How to)
-   Select any :
-   - C-c C-x C-i
-   - I :: in the agenda
-   - I :: speed key on first character of heading line
-   - f9 I :: (globally defined key bindings) while on the task in agenda
-   - f9 I :: while in the task in an org file
-
-** Default task clocking
-   - set default timing in a headline for default clocking ('**
-     Organisation' for mine)
-   - quick clocking in in default :: C-u C-c C-x C-i d
-   - when interruption occurs, set a capture task to pause current
-     time clocking
-   - change default clocking task ::
-     1. visit new default task in org buffer
-     2. clock it in with :: C-u C-u C-c C-x C-i
-     3. now new task is the default
-
-** Clock history for clocking old tasks
-   - scenario ::
-     + currently working on and clocking Task A (default 'Organization'
-       for example)
-     + get interrupted and switch to Task B (any)
-     + Task B completed and now want to go back to Task A ('Organization') again to continue
-   - solution ::
-     + solution 1 :: clock in again on Task A and resume work
-     + solution 2 :: when completed Task B, hit 'C-u C-c C-x C-i i' to
-       display clocking history selection buffer (the 'i' at the end
-       is for 'interrupted')
-
-** Clocking interruption flow
-   interruption occurs when clocking task:
-   - Create a quick capture task journal entry ::
-     + is it a one shot uninteresting task ? :: 1) create journal capture
-       for it : C-c c j; 2) create heading for task; 3) do task; 4)
-       file it : C-c C-c (restores clock back to previous clocking task)
-     + is it interesting and needs be marked as completed ? :: create
-       capture task in refile file
-
-** Find task to clock in
-   :PROPERTIES:
-   :CUSTOM_ID: task_to_clock_in
-   :END:
-   use one of the following (listed by most frequently used first) :
-   1. Use clock history C-u C-c C-x C-i: Go back to something I was clocking that is not finished
-   2. Pick something off today's block agenda: *SCHEDULED* or
-      *DEADLINE* (items that need to be done soon)
-   3. Pick something off the *NEXT* tasks agenda view Work on some unfinished task to move to completion
-   4. Pick something off the other task list
-   5. Use an agenda view with filtering to pick something to work on
-   Note : punching in on selected task will restrict the agenda view
-   to that project so that can focus on just that thing for some period of time. 
-
-** Editing clock entries
-   (edition often needed to reflect reality)
-   ex scenario: when not properly clocked in on a task, then previous clocked task still
-   run and count for both tasks, which is wrong.
-   => solution : clock in properly the latest task, and edit start and
-   end times to correct clocking history.
-   Step to edit :
-   1. org-agenda-log-mode : (f12 a l, if f12 is mapped to org-agenda,
-      C-u C-u l otherwise) visit clock line for an entry, shows all clock lines for today
-   2. then navigate desired clock line
-   3. hit TAB
-   4. put cursor on part needed to edit
-   5. use S-<UP> or S-<DOWN> to change the time
-   !!! CAREFUL not to create overlaps when fixing clock entries, use :
-   - v c :: in daily agenda, and it will identify gaps and overlaps
-
-
-* Time reporting
-  - v c :: (in agenda) check for unclosed clock times, gaps, overlaps, etc.
-  - check past month clocked times :: 'f12 a v m b v c'
-    + f12 a :: org-agenda
-    + v m :: org-agenda-month-view
-    + b :: org-agenda-earlier : go back in time to display earlier
-      dates (previous month here)
-    + v c :: show overlapping clock entries, clocking gaps, and other
-      clocking problems in current agenda range
-  - clock reporting to summarize time spent ::
-    + 'f12 < a v m b R' :: limit agenda to a specific file containing
-      tasks needed to report
-** Task time estimate (with column view)
-   :PROPERTIES:
-   :CUSTOM_ID: task_time_estimate
-   :END:
-   *Note* : timing a task is a difficult skill to master. Org-mode
-   makes it easy: practice _creating estimates_ for tasks and _then
-   clock the actual time_ it takes to complete. By _repeatedly
-   estimating tasks_ and _reviewing how estimates relate to the actual
-   time clocked_, one can tune his estimating skills.
-
-   - creating estimate with column view :: use 'properties' and
-     'column view' to do project estimates (setq globally variable
-     org-columns-default-format)
-     + create estimate for task or subtree ::
-       1. start column mode : C-c C-x C-c (org-columns, found in org-mode-map)
-       2. collapse tree with 'c'
-       3. put cursor in 'Estimated Effort'
-       4. can set estimated effort with quick keys 1 to 9 (depending
-          on settings)
-       5. exit column mode with 'q'
-     + saving estimates ::
-       - save by creating a dynamic clock report table at the top of
-         the project subtree : 'C-c C-x i' to insert clock table with
-         estimates and any clocked time to date
-	 !!! careful: delete lines #+BEGIN: and #+END: after use,
-         since otherwise can accidentally update table by hitting C-c
-         C-c on line #+BEGIN:
-     + reviewing estimates ::
-       - 'column view' is great to review estimates: creating dynamic
-         clock table ::
-       - 'C-c C-x i RET' :: save project review
-       - C-c C-x C-d :: quick summary of clocked time for current org
-         file
-     + providing progress reports ::
-       - ex: someone wants details of worked done this far => generate
-         log report in agenda with completed tasks and states changed,
-         combined with agenda clock report (generated with 'R') for appropriate time period.
-       - settings to generate aforementioned data:
-	 ```
-           ;; Agenda log mode items to display (closed and state changes by default)
-           (setq org-agenda-log-mode-items (quote (closed state)))
-         ```
-       - => to generate report ::
-	 1. pull up agenda for appropriate time-frame (today,
-            yesterday, this/last week, etc.)
-	 2. hit: 'l R' to add log report without clocking data lines,
-            and agenda clock report at the end
-	 3. export: ex: html : 'C-x C-w /tmp/agenda.html';
-            plain-text : 'C-x C-w /tmp/agenda.txt'
-	 4. *BONUS* : combining with tags filtering help keeping only
-            exporting the needed data
-
+* Time clocking and reporting
+#+INCLUDE: "./kbd_cheatsheet.org::#org_time_clocking_reporting" :only-contents t
 
 * Tags
   - examples of use:

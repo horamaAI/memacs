@@ -4,14 +4,19 @@
 
 
 * general emacs/elisp cheatsheet
-
 ** foreword, help and basic
+:PROPERTIES:
+:CUSTOM_ID: kbd_foreword
+:END:
 - C- Ctrl
 - M- Meta (Esc or Alt on keyboard)
 - S- Shift
 - RET- well, return
 - TAB Tabulation
 ** help
+:PROPERTIES:
+:CUSTOM_ID: kbd_help
+:END:
 - describe tool :: ==C-h 'c'== // where 'c' is what one wants described
   + describe bindings :: list all bindings available in a buffer (b for bindings): ==C-h b==
   + describe function :: ==C-h f==
@@ -53,10 +58,8 @@
    + execute code block (place first cursor inside code block) :: =C-c C-c=
  - others ::
    + deactivate/activate auto-fill (line break) in current buffer :: ==C-c q==
-** searching, editing, and navigating between text, paragraphs, headlines (or sections), and items
-*** select, edit, navigate and motion
-- selection ::
-  + select all :: ==C-x h==
+** include, insert, edit, search, navigate text, paragraphs, headlines (or sections), and items
+*** insert, edit, copy/cut
 - copy/cut ::
   + kill from cursor to end of line :: ==C-k==
   + duplicate line :: ==C-c d== (own customised definition)
@@ -69,9 +72,6 @@
 - insertion :: 
   + insert escape character :: use 'zero width character': ==C-x 8 <RET> 200B <RET>==
     - eg :: to write link example in plain text, use ['x'​[file:remember.org][remember]], where 'x' denotes the zero width character
-  + insert inclusion (include from other file) ::
-    - source :: https://orgmode.org/manual/Include-Files.html
-    - ​#​+INCLUDE: "~/path-to-source-org-file.org" :minlevel 1 :: 'minlevel' to skip adding the included part headers as child, but rather add it as sibling
   + insert code block :: ==C-c C-,==
     - eg: source code block ::
       + at prompt select s (displayed as [s]) for src code
@@ -82,6 +82,9 @@
             std::cout << "Hello world\n";
         }	  
         #+end_src
+*** select, navigate and motion
+- selection ::
+  + select all :: ==C-x h==
 - text navigation :: 
   + sentences ::
     - Move between sentences :: ==M-a==, and ==M-e==
@@ -89,6 +92,23 @@
     - Kill sentence backward :: ==C-x DEL==
   + words ::
     - move forward/backward on word :: ==M-f/M-b== :: 
+*** search, replace, filter
+- search and replace ::
+  + search forward/backward :: ==C-s/C-r==
+  + with REGEX search forward/backward :: ==C-M-s/C-M-r==
+  + query replace (search and replace) :: ==M-S-5==
+  + with REGEX query replace (search and replace) :: ==C-M-S-5==
+  + regex search on current file of *all* matching results in a collapsed view :: ==C-c / /==
+*** inclusions
+:PROPERTIES:
+:CUSTOM_ID: do_inclusion
+:END:
+- insert inclusion (include from other file) ::
+  + source for more :: https://orgmode.org/manual/Include-Files.html
+  + ​#​+INCLUDE: "~/path-to-source-org-file.org" :minlevel 1 :: 'minlevel' to skip adding the included part headers as child, but rather add it as sibling
+  + ​#​+INCLUDE: "~/path-to-source-org-file.org" :only-contents t :: to only include the content of the target ("only-contents"), and not any planning lines or property drawers
+  + reminder, to add a target custom_id property, insert a [[#org_drawers][property drawer]] 
+*** headlines and items
 - headlines ::
   + add headline :: =C-RET=
   + add item :: =M-RET=
@@ -100,7 +120,7 @@
   + ==C-c C-j== :: (org-goto), jump to a different place without changing the current outline visibility
     - shows the document structure in a temporary buffer, where you can use the following keys to find your destination ::
       + ==TAB== :: cycle visibility
-      + ==DOWN/UP==	:: next/previous visible headline
+      + ==DOWN/UP== :: next/previous visible headline
       + ==RET== :: select this location
       + ==/== :: do a Sparse-tree search
       + following keys also work if ==org-goto-auto-isearch== is turned off ::
@@ -109,20 +129,14 @@
         - ==u== :: one level up
         - ==0...9== :: digit argument
         - ==q== :: quit
-*** search, replace, filter
-- search and replace ::
-  + search forward/backward :: ==C-s/C-r==
-  + with REGEX search forward/backward :: ==C-M-s/C-M-r==
-  + query replace (search and replace) :: ==M-S-5==
-  + with REGEX query replace (search and replace) :: ==C-M-S-5==
-  + regex search on current file of *all* matching results in a collapsed view :: ==C-c / /==
+
 ** Screens, windows and panes
 - show next/previous screen :: ==C-v/M-v==
 - reposition window :: ==C-M-l==
 - keep current window, close others :: ==C-x 1==
 ** Links
-- insert link :: C-c C-l, and follow instructions
-  + ex (no backslash escape): \[\[https://www.youtube.com/watch?v=SzA2YODtgK4\]\[source video\]\], gives: [[https://www.youtube.com/watch?v=SzA2YODtgK4][source video]]
+- insert link :: ==C-c C-l==, and follow instructions
+  + ex (without the backslash escape): \[\[https://www.youtube.com/watch?v=SzA2YODtgK4\]\[source video\]\], gives: [[https://www.youtube.com/watch?v=SzA2YODtgK4][source video]]
   + ex2: link to another file: [​[file:remember.org][remember]], to an image: [​[file:img/test.jpg]]
   + ==C-c C-l== edits link if already existing
 ** Tables
@@ -142,9 +156,14 @@
 - ==C-M-i== :: ==(ispell-complete-word)==, correct or complete the word before point based on the spelling dictionary
 * org-mode
 ** drawers and logging
+:PROPERTIES:
+:CUSTOM_ID: org_drawers
+:END:
 - drawers :: 
-  + insert a drawer below current headline :: =C-c C-x d= // calls 'org-insert-drawer'
+  + insert a *property* drawer :: ==C-u M-x org-insert-drawer==
+  + insert a drawer below current headline :: ==C-c C-x d== calls 'org-insert-drawer'
   + insert property drawer below current headline :: // calls 'org-insert-property-drawer'
+  + delete a property drawer :: ==C-c C-c d== (org-delete-property)
 - LOGBOOK ::
   + add time-stamped note to ‘LOGBOOK’ drawer :: =C-c C-z=
 ** exporting org-mode files
@@ -176,8 +195,11 @@
 - toggle between todo states (TODO-DONE-etc) :: ==C-c C-t== // will create todo task if not one already
 - toggle checkbox ([ ] to [x]) :: ==C-c C-c==
 ** time clocking and reporting
-*** Most used, to remember
-- v c :: check for unclosed clock times, gaps, overlaps, etc.
+:PROPERTIES:
+:CUSTOM_ID: org_time_clocking_reporting
+:END:
+*** Need to remember
+- ==v c== :: check for unclosed clock times, gaps, overlaps, etc.
 - check past month clocked times :: ==f12 a v m b v c==
   + ==f12 a== :: org-agenda
   + ==v m== :: org-agenda-month-view
@@ -186,6 +208,9 @@
 - clock reporting to summarize time spent ::
   + ==f12 < a v m b R== :: limit agenda to a specific file containing tasks needed to report
 *** Time clocking
+:PROPERTIES:
+:CUSTOM_ID: org_time_clocking
+:END:
 **** speed commands for time clocking
 - defaults ::
   + ==I== and ==O== :: for clocking in and out
@@ -195,6 +220,9 @@
 - from bh configs :: 
   + ==c== and ==C== :: are disabled by bh so they do not accidentally self insert when not intended to
 **** Clocking in (How to)
+:PROPERTIES:
+:CUSTOM_ID: org_clock_in
+:END:
 - Select depending on current mode :
   + ==C-c C-x C-i== :: everywhere ?
   + ==I== :: while in the agenda
@@ -202,6 +230,9 @@
   + ==f9 I== :: (globally defined key bindings) while on the task in agenda
   + ==f9 I== :: while in the task in an org file
 **** Default task clocking
+:PROPERTIES:
+:CUSTOM_ID: org_clock_in_default_task
+:END:
 - first, set a default timing headline for default clocking ::
   + default task is set for example to '* Organisation' (file [[id:eb155a82-92b2-4f25-a3c6-0304591af2f9][tasks_list.org]]) on this configuration
     - generate new drawer property ID with ==M-x org-id-copy== when the point is in the selected default task
@@ -231,6 +262,9 @@
     4. file it :: ==C-c C-c== (restores clock back to previous clocking task)
     5. clock in something else or continue with current clocking task
 **** Find task to clock in
+:PROPERTIES:
+:CUSTOM_ID: org_task_to_clock_in
+:END:
 - use one of the following (listed by most frequently used first) :
   1. Use clock history ==C-u C-c C-x C-i==: Go back to something that was being clocking and that is not finished
   2. Pick something off today's block agenda: *SCHEDULED* or *DEADLINE* (items that need to be done soon)
@@ -253,6 +287,42 @@
 - careful !!! :: CAREFUL not to create overlaps when fixing clock entries, use following to find gaps and overlaps :
   + ==v c== :: in daily agenda, and it will identify gaps and overlaps
 *** Time reporting
+:PROPERTIES:
+:CUSTOM_ID: org_time_reporting
+:END:
+**** Task time estimate (with column view)
+:PROPERTIES:
+:CUSTOM_ID: org_task_time_estimate
+:END:
+- note :: timing a task is a difficult skill to master. Org-mode makes it easy: practice _creating estimates_ for tasks and _then clock the actual time_ it takes to complete. By _repeatedly estimating tasks_ and _reviewing how estimates relate to the actual time clocked_, one can tune his estimating skills.
+- creating estimate with column view :: use 'properties' and 'column view' to do project estimates (setq globally variable ==org-columns-default-format==)
+  + create estimate for task or subtree ::
+    1. start column mode : ==C-c C-x C-c== (org-columns, found in org-mode-map)
+    2. collapse tree with =='c'==
+    3. put cursor in 'Estimated Effort'
+    4. can set estimated effort with quick keys 1 to 9 (depending on settings)
+    5. exit column mode with =='q'==
+  + saving estimates ::
+    - save by creating a dynamic clock report table at the top of the project subtree : ==C-c C-x i== to insert clock table with estimates and any clocked time to date
+    - careful !!! :: remember to delete lines #+BEGIN: and #+END: after use, otherwise can accidentally update table by hitting ==C-c C-c== on line #+BEGIN:
+  + reviewing estimates ::
+    - 'column view' :: great to review estimates and creating dynamic clock table
+    - ==C-c C-x i RET-- :: save project review
+    - ==C-c C-x C-d== :: quick summary of clocked time for current org file
+  + providing progress reports ::
+    - eg: need details of worked done this far => generate log report in agenda with completed tasks and states changed, combined with agenda clock report (generated with =='R'==) for appropriate time period.
+    - settings :: for generating aforementioned data:
+      #+begin_example
+      ;; Agenda log mode items to display (closed and state changes by default)
+      (setq org-agenda-log-mode-items (quote (closed state)))
+      #+end_example
+    - to generate report ::
+      1. pull up agenda for appropriate time-frame (today, yesterday, this/last week, etc.)
+      2. hit: ==l R== to add log report without clocking data lines, and agenda clock report at the end
+      3. export: eg:
+         + html :: ==C-x C-w /tmp/agenda.html==
+         + plain-text :: ==C-x C-w /tmp/agenda.txt==
+    - *BONUS* :: combining with tags filtering help keeping only exporting the needed data
 
 * C++
   + activate c++ mode (done by default for .cpp, .cxx files, but not .h files that are opened as c files) :: ==M-x c++-mode==
@@ -263,74 +333,22 @@
   + nice to add command in terminal history and find it with :: C-r (backward search)
   + add keybinding in ~/.zshrc :: bindkey '#' pound-insert
 
-* Time reporting (org agenda => go into mode first)
-** Task time estimate (with column view)
-   :PROPERTIES:
-   :CUSTOM_ID: task_time_estimate
-   :END:
-   *Note* : timing a task is a difficult skill to master. Org-mode makes it easy: practice _creating estimates_ for tasks and _then clock the actual time_ it takes to complete. By _repeatedly estimating tasks_ and _reviewing how estimates relate to the actual time clocked_, one can tune his estimating skills.
-   - creating estimate with column view :: use 'properties' and
-     'column view' to do project estimates (setq globally variable
-     org-columns-default-format)
-     + create estimate for task or subtree ::
-       1. start column mode : C-c C-x C-c (org-columns, found in org-mode-map)
-       2. collapse tree with 'c'
-       3. put cursor in 'Estimated Effort'
-       4. can set estimated effort with quick keys 1 to 9 (depending
-          on settings)
-       5. exit column mode with 'q'
-     + saving estimates ::
-       - save by creating a dynamic clock report table at the top of
-         the project subtree : 'C-c C-x i' to insert clock table with
-         estimates and any clocked time to date
-	 !!! careful: delete lines #+BEGIN: and #+END: after use,
-         since otherwise can accidentally update table by hitting C-c
-         C-c on line #+BEGIN:
-     + reviewing estimates ::
-       - 'column view' is great to review estimates: creating dynamic
-         clock table ::
-       - 'C-c C-x i RET' :: save project review
-       - C-c C-x C-d :: quick summary of clocked time for current org
-         file
-     + providing progress reports ::
-       - ex: someone wants details of worked done this far => generate
-         log report in agenda with completed tasks and states changed,
-         combined with agenda clock report (generated with 'R') for appropriate time period.
-       - settings to generate aforementioned data:
-	 ```
-           ;; Agenda log mode items to display (closed and state changes by default)
-           (setq org-agenda-log-mode-items (quote (closed state)))
-         ```
-       - => to generate report ::
-	 1. pull up agenda for appropriate time-frame (today,
-            yesterday, this/last week, etc.)
-	 2. hit: 'l R' to add log report without clocking data lines,
-            and agenda clock report at the end
-	 3. export: ex: html : 'C-x C-w /tmp/agenda.html';
-            plain-text : 'C-x C-w /tmp/agenda.txt'
-	 4. *BONUS* : combining with tags filtering help keeping only
-            exporting the needed data
-
 * Others
 
 
 * Tags
-  - examples of use:
-    + filtering todo lists and agenda views
-    + providing context for tasks
-    + tagging notes, phone calls, meetings, tasks to be refiled, ...
-    + tagging tasks in WAITING state because parent is WAITING
-    + tagging cancelled tasks because parent is CANCELLED
-    + preventing export of some subtrees when publishing
-    + etc.
-  - use mutual exclusion when context appropriate :: @office should mutually
-    exclude @home for example
-  - mutually exclusive tags should be seen as :: "context" tags
-  - tasks are grouped in org files with #+FILETAGS: entry :: apply
-    tags to *all* tags, but to the file only => can use the tag to
-    filter file specific tags
-  - nice use of FILETAGS to apply multiple tags to files (eg: apply
-    refile to all tasks in refile file)
+- examples of use:
+  + filtering todo lists and agenda views
+  + provide context for tasks
+  + tagging notes, phone calls, meetings, tasks to be refiled, etc.
+  + tagging tasks in WAITING state because parent is WAITING
+  + tagging cancelled tasks because parent is CANCELLED
+  + preventing export of some subtrees when publishing
+  + etc.
+- use mutual exclusion when context appropriate :: @office should mutually exclude @home for example
+  + mutually exclusive tags should be seen as :: "context" tags
+- tasks can be grouped in org files with #+FILETAGS: entry :: applies tags to *all* tags, but to the file only => can use the tag to filter file specific tags
+- nice use of FILETAGS to apply multiple tags to files (eg: apply refile to all tasks in refile file)
 
 * Handling phone calls
   (in conjunction with bbdb works better)
