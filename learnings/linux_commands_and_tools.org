@@ -2,6 +2,30 @@
 #+title: Linux commands/tools that are fun and handy
 #+SETUPFILE: ~/set-up-files/basic-setups.org
 
+* args and xargs
+** Intro
+- use :: passing arguments from standard input to other commands. Whereas some commands allow piping (grep for example), others don't (ls, echo for example: can't ~seq 5 | echo~, need to pipe to xargs first: ~seq 5 | xargs echo~)
+- piping to xargs with no following argument, defaults to echo
+-  :: 
+- examples ::
+  + ~cut -d: -f1 < /etc/passwd | sort | xargs~ :: print sorted first field of each line in file /etc/passwd
+
+** Some options
+- -t :: print complete command performed before printing the result
+- -I [replace-str] :: replace occurrences of replace-str in the initial-arguments with names read from standard input, examples:
+  + ~ls ~/Documents | xargs -I {} echo "mamamia/{}"~, where =={}== denote the arguments for xargs (the output of the first command): will print with replaced (added in this case) occurrences of input, eg: mamamia/[adocumentinfolderDocuments]
+  + ~seq 1000 | xargs -I {} touch {}.txt~: create 1000 text files with name n.txt
+  + ~ls | cut -d. -f1 | xargs -I {} mv {}.txt {}.text~: rename .txt extension files to .text, where the delimiter used is the dot, and considering that the files have only one dot in their names, and that it is used for the extension
+- -n [max-args] :: use at most max-args arguments per command line: will run the following command by group of max-args arguments until all arguments are done, eg: ~ls | xargs -t -n 2~ prints the following command (xargs defaults: echo), and then its results (suppose folder contains 5 files: file1.txt...file5.txt):
+  #+begin_example
+  echo file1.txt file2.txt
+  file1.txt file2.txt
+  echo file3.txt file4.txt
+  file3.txt file4.txt
+  echo file5.txt
+  file5.txt
+  #+end_example
+* awk
 
 * cron (crontab, cronjob, etc.)
 ** Notes
@@ -95,5 +119,7 @@ In addition to the fields specified in the cron expression, there’s also suppo
     - send JSON from a local file :: curl --json @json.txt https://example.com/
     - send JSON passed to curl on stdin :: echo '{"a":"b"}' | curl --json @- https://example.com/
     - send JSON from a file and concatenate a string to the end :: curl --json @json.txt --json ', "end": "true"}' https://example.com/
+* cut
+
 * showkey : useful for keybindings when whants to get text version of keys from keyboard
   - find mappings :: showkey -a
