@@ -3,10 +3,10 @@
 #+SETUPFILE: ~/set-up-files/basic-setups.org
 
 * args and xargs
-** Intro
-- use :: passing arguments from standard input to other commands. Whereas some commands allow piping (grep for example), others don't (ls, echo for example: can't ~seq 5 | echo~, need to pipe to xargs first: ~seq 5 | xargs echo~)
+** Notes
+- use :: passing arguments from standard input to other commands. Whereas some commands allow piping (grep for example), others don't (find, ls, or echo for example: can't ~seq 5 | echo~, need to pipe to xargs first: ~seq 5 | xargs echo~)
 - piping to xargs with no following argument, defaults to echo
--  :: 
+- can be faster as some commands, for example, piping to 'find' through xargs can be faster than using the -exec command of find: ~time (find -iname '*.org' | xargs grep -rail 'file:')~ < ~time (find -iname '*.org' -exec grep -rail 'file:' {} \;)~
 - examples ::
   + ~cut -d: -f1 < /etc/passwd | sort | xargs~ :: print sorted first field of each line in file /etc/passwd
 
@@ -25,6 +25,10 @@
   echo file5.txt
   file5.txt
   #+end_example
+- -P :: set number of processes to run together, eg:
+  + ~seq 10 | xargs -n 1 -P 3 bash -c 'echo $0; sleep 2'~: takes 1 arg at the time, executes 3 bash processes, and then sleeps for 2secs. The 10 numbers displayed may not be in order in the final display, but will be by groups of 3, eg: ==213-456-798-10== ('-' is the 2secs delay)
+    - differs from ~seq 10 | xargs -n 3 -P 1 bash -c 'echo $0; sleep 2'~ that takes in 3 args, but only print the first element of the bunch, eg: ==1-4-7-10==
+    - a last one for the road: ~seq 10 | xargs -n 3 -P 2 bash -c 'echo $0; sleep 2'~: ==14-710==
 * awk
 
 * cron (crontab, cronjob, etc.)
@@ -120,6 +124,11 @@ In addition to the fields specified in the cron expression, there’s also suppo
     - send JSON passed to curl on stdin :: echo '{"a":"b"}' | curl --json @- https://example.com/
     - send JSON from a file and concatenate a string to the end :: curl --json @json.txt --json ', "end": "true"}' https://example.com/
 * cut
-
 * showkey : useful for keybindings when whants to get text version of keys from keyboard
   - find mappings :: showkey -a
+* other nice utilities
+- time [command] :: times how long a command takes, eg: ~time (find -iname '*.org' | xargs -I {} basename {})~
+  + has even formatting options, eg : ~time -f '%E %W %r' [command]~
+    - to get a better format for zsh as for bash, set variable TIMEFMT to ~TIMEFMT=$'real\t%E\nuser\t%U\nsys\t%S'~
+  + for longer commands, can either use braces (~time { ls; pwd; whoami; }~), or use a subshell (~time (ls; pwd)~)
+
