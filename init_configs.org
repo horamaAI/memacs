@@ -1,7 +1,7 @@
 # -*- mode: org -*-
 #+TITLE: my emacs init file configs but in orgmode
 #+SETUPFILE: ~/set-up-files/basic-setups.org
-#+PROPERTY: header-args :tangle ./emacs_init_configs.el
+;; #+PROPERTY: header-args :tangle ./emacs_init_configs.el
 #+LANGUAGE: en
 #+OPTIONS: timestamp:t
 #+DESCRIPTION: My org-mode configs and descriptions (got most of them from Bernt Hansen (http://doc.norang.ca/org-mode.html))
@@ -4907,6 +4907,7 @@
   
   #+end_src
 - bh's kbds ::
+  #+header: :tangle yes
   #+begin_src emacs-lisp
   ;; bh Custom Key Bindings
   ;; ======================

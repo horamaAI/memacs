@@ -1,0 +1,6 @@
+#-*- mode: gitignore; -*-
+
+# specific ignore file for this repo
+
+# don't commit 'init_configs.el', it is automatically generated using 'init.el' and 'init_configs.org'
+init_configs.el
