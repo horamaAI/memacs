@@ -78,8 +78,8 @@
         ;; (modus-themes-load-themes)
         ;; (load-theme 'modus-operandi) ; light theme
         ;; (load-theme 'modus-vivendi) ; dark theme
-        (modus-themes-load-theme 'modus-operandi-tinted) ; light-brown theme
-        ;; (modus-themes-load-theme 'modus-vivendi-tritanopia) ; different version of darker theme
+        (modus-themes-load-theme 'modus-operandi-tinted) ; 'tinted' is the slightly tone down counterpart of standard themes operandi and vivendi
+        ;; (modus-themes-load-theme 'modus-vivendi-tinted) ;
         #+end_src
 
     - other themes ::
