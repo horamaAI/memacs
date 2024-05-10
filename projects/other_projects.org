@@ -1,7 +1,6 @@
 # -*- mode: org -*-
 #+TITLE: Other projects: small and temporary projects
 #+SETUPFILE: ~/set-up-files/basic-setups.org
-#+PROPERTY: header-args :tangle ./emacs_init_configs.el
 #+LANGUAGE: en
 #+OPTIONS: timestamp:t
 #+DESCRIPTION: Misc small projects that don't really need project management, but just some basic tracking

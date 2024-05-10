@@ -1,7 +1,6 @@
 # -*- mode: org -*-
 #+TITLE: project: application probing data from world bank api
 #+SETUPFILE: ~/set-up-files/basic-setups.org
-#+PROPERTY: header-args :tangle ./emacs_init_configs.el
 #+LANGUAGE: en
 #+OPTIONS: timestamp:t
 #+DESCRIPTION: Java back-end project for probing data from the world bank api (gradle, angular, spring)

@@ -1,7 +1,6 @@
 # -*- mode: org -*-
 #+TITLE: Guidelines for clean code
 #+SETUPFILE: ~/set-up-files/basic-setups.org
-#+PROPERTY: header-args :tangle ./emacs_init_configs.el
 #+LANGUAGE: en
 #+OPTIONS: timestamp:t
 #+DESCRIPTION: Java/C++ clean code guidelines and formatting
