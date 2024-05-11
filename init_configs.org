@@ -13,7 +13,7 @@
 #+end_comment
 
 * Preliminaries
-  + sources (different sources, but mains here) ::
+  + main sources ::
     - http://www.newartisans.com/2007/08/using-org-mode-as-a-day-planner/
     - http://doc.norang.ca/org-mode.html
   + packages ::
@@ -106,13 +106,14 @@
     #+end_src
   + emacs startup options ::
     - open main agenda file :: 'tasks_list.org'
-    - open emacs manual :: ~ (info-emacs-manual) ;; C-h r~
-    #+header: :tangle yes
-    #+begin_src emacs-lisp
-    ;; open file on start
-    (find-file (file-name-concat memacs "tasks_list.org"))
-    (info-emacs-manual) ;; C-h r
-    #+end_src
+    - open emacs manual :: ~(info-emacs-manual) ;; C-h r~ (first, install 'emacs-common-non-dfsg' on your OS)
+    - entries ::
+      #+header: :tangle yes
+      #+begin_src emacs-lisp
+      ;; open file on start
+      (find-file (file-name-concat memacs "GTD/tasks_list.org"))
+      (info-emacs-manual) ;; C-h r
+      #+end_src
   + other customizations ::
     #+header: :tangle yes
     #+begin_src emacs-lisp
