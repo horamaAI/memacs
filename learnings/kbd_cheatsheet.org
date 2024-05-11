@@ -18,6 +18,8 @@
 :PROPERTIES:
 :CUSTOM_ID: kbd_help
 :END:
+- emacs tutorial :: ==C-h t==
+- emacs documentation :: ==C-h r==
 - describe tool :: ==C-h 'c'== // where 'c' is what one wants described
   + describe bindings :: list all bindings available in a buffer (b for bindings): ==C-h b==
   + describe function :: ==C-h f==
@@ -26,7 +28,6 @@
   + describe mode :: ==C-h m==
   + describe syntax :: ==C-h s==
   + describe entered key :: ==C-h k [enter key or chain of key]==
-- emacs tutorial :: ==C-h t==
 ** install packages with Melpa/Elpa
 - install package with melpa :: ==M-x package-install==
 - list available packages with melpa (and install if needed) :: ==M-x package-list-packages==
