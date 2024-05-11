@@ -3,7 +3,7 @@
 #+SETUPFILE: ~/set-up-files/basic-setups.org
 ;; #+PROPERTY: header-args :tangle ./emacs_init_configs.el
 #+LANGUAGE: en
-#+OPTIONS: timestamp:t
+#+OPTIONS: toc:3 timestamp:t
 #+DESCRIPTION: My org-mode configs and descriptions (got most of them from Bernt Hansen (http://doc.norang.ca/org-mode.html))
 #+KEYWORDS:  org-mode Emacs organization GTD getting-things-done git
 
@@ -94,6 +94,12 @@
       ;; (load-theme 'timu-spacegrey t)
       ;; (setq timu-spacegrey-flavour "light")
       #+end_src
+  + memacs folder ::
+    #+header: :tangle yes
+    #+begin_src emacs-lisp
+    (setq partial-memacs "~/Documents/repos/org/memacs/")
+    (setq memacs (expand-file-name partial-memacs))
+    #+end_src
   + other customizations ::
     #+header: :tangle yes
     #+begin_src emacs-lisp
@@ -122,7 +128,7 @@
     (show-paren-mode +1)
     
     ;; open file on start
-    (find-file "~/Documents/repos/org/memacs/GTD/tasks_list.org")
+    (find-file (file-name-concat memacs "tasks_list.org"))
     #+end_src
 * My organization of org files tree (details in [[file:organisation_org_files.org][organisation_org_files.org]])
 #+INCLUDE: "./organisation_org_files.org::Folders and files:"
@@ -166,8 +172,7 @@
   
   ;; org-agenda-files: to add folders containing files contributing to the agenda
   ; GTD-private: contains contributing agenda files that should not be shared publicly
-  (setq org-agenda-files (quote ("~/Documents/repos/org/memacs/GTD/"
-                                  "~/Documents/repos/org/memacs/GTD-private/")))
+  (setq org-agenda-files (list (file-name-concat memacs "GTD") (file-name-concat memacs "GTD-private")))
   
   ;; Disable keys in org-mode
   ;;    C-c [ 
