@@ -4,7 +4,7 @@
 #+LANGUAGE: en
 #+OPTIONS: timestamp:t
 #+DESCRIPTION: Misc small projects that don't really need project management, but just some basic tracking
-#+KEYWORDS: WBAPI org-mode Emacs organization GTD getting-things-done git
+#+KEYWORDS: org-mode Emacs organization GTD getting-things-done git
 
 * Notes
 * Bill generator Java backend application

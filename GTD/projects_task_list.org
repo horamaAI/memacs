@@ -47,6 +47,7 @@
   + [X] collect information on world bank API official page (https://datahelpdesk.worldbank.org/knowledgebase/topics/125589-developer-information)
   + [ ] learn Quarkus
   + [ ] learn java frameworks for big data: kafka, spark, hadoop, cassandra
-
 ** TODO WB API prober
 [2024-03-14 Thu 02:50]
+** TODO Travel Agency business project
+[2024-05-12 Sun 02:25]

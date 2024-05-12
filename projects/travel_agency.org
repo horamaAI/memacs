@@ -1,0 +1,23 @@
+# -*- mode: org -*-
+#+TITLE: project: starting a travel agency
+#+SETUPFILE: ~/set-up-files/basic-setups.org
+#+LANGUAGE: en
+#+OPTIONS: timestamp:t
+#+DESCRIPTION: Java back-end project for probing data and APIs from GDSs, Online Travel Agencies (OTAs), consolidators, etc.: (gradle, angular, spring)
+#+KEYWORDS: TRAVBIS org-mode Emacs organization GTD getting-things-done git
+
+* Notes
+- sources ::
+  + 
+** 
+* Tickets
+- TRAVBIS001: probing phase:
+  + what are the available APIs/entry points
+  + what are their costs and risk, customer care
+  + (country specific) compliances and regulations 
+  + competition ? : state of the art, what's the business added value
+  + market ? : how to attract customers, who are they, who are the premium customers, how to take care of them
+  + capital/budget/fund rising
+  + employees availability/
+- TRAVBIS002: MVP
+  + first product to present [TODO]
