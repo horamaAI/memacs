@@ -13,164 +13,163 @@
 #+end_comment
 
 * Preliminaries
-  + main sources ::
-    - http://www.newartisans.com/2007/08/using-org-mode-as-a-day-planner/
-    - http://doc.norang.ca/org-mode.html
-  + packages ::
-    - melpa ::
-      + elisp entries ::
-        #+header: :tangle yes
-        #+begin_src emacs-lisp
-        (require 'package)
-        (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
-        ;; Comment/uncomment this line to enable MELPA Stable if desired.  See `package-archive-priorities`
-        ;; and `package-pinned-packages`. Most users will not need or want to do this.
-        ;;(add-to-list 'package-archives '("melpa-stable" . "https://stable.melpa.org/packages/") t)
-        (package-initialize)
-        ;; 'use-package' to ease further installations of packages
-        (unless (package-installed-p 'use-package)
-        (package-refresh-contents)
-        (package-install 'use-package))
-
-        #+end_src
-      + some commands ::
-        - refresh melpa list before installing :: ~M-x package-refresh-contents~ or ~M-x package-list-packages~
-        - install package :: ~M-x package-install~
-    - projectile :: for project management
-      + entries ::
-        #+header: :tangle yes
-        #+begin_src emacs-lisp
-        ;; use projectile for project management
-        (use-package projectile
-          :diminish projectile-mode
-          :config (projectile-mode)
-          :custom ((projectile-completion-system 'ivy))
-          :bind-keymap
-          ("C-c p" . projectile-command-map)
-          :init
-          ;; default projects home
-          (when (file-directory-p "~/Documents/repos/")
-            (setq projectile-project-search-path '("~/Documents/repos/")))
-          ;; first thing to do when switching project: load up 'dired' which list files in project
-          (setq projectile-switch-project-action #'projectile-dired)
-          (projectile-mode +1))
-        #+end_src
-    - eglot :: as a c++ IDE
-      + entries ::
-        #+header: :tangle yes
-        #+begin_src emacs-lisp
-        ;; for c++ IDE
-        (require 'eglot)
-        (add-to-list 'eglot-server-programs '((c++-mode c-mode) "clangd")) ;; c++ language server clangd 
-        (add-hook 'c-mode-hook 'eglot-ensure)
-        (add-hook 'c++-mode-hook 'eglot-ensure)
-        #+end_src
-  + themes ::
-    - modus-vivendi ::
-      + entries ::
-        #+header: :tangle yes
-        #+begin_src emacs-lisp
-        ;; add directories/files to load-path so the files/directories can be found and used
-        ; here, folder for themes to use for example
-        ; expand-file-name to convert relative path to absolute
-        (add-to-list 'load-path (expand-file-name "~/.emacs.d/themes/"))
-
-        ;; clone it first: git clone https://gitlab.com/protesilaos/modus-themes.git ~/.emacs.d/themes/modus-themes
-        (add-to-list 'load-path "~/.emacs.d/themes/modus-themes")
-        (require 'modus-themes)
-        ;; Load the theme files before enabling a theme (else you get an error).
-        ;; (modus-themes-load-themes)
-        ;; (load-theme 'modus-operandi) ; light theme
-        ;; (load-theme 'modus-vivendi) ; dark theme
-        (modus-themes-load-theme 'modus-operandi-tinted) ; 'tinted' is the slightly tone down counterpart of standard themes operandi and vivendi
-        ;; (modus-themes-load-theme 'modus-vivendi-tinted) ;
-        #+end_src
-
-    - other themes ::
+- main sources ::
+  + http://www.newartisans.com/2007/08/using-org-mode-as-a-day-planner/
+  + http://doc.norang.ca/org-mode.html
+- packages ::
+  + melpa ::
+    - elisp entries ::
       #+header: :tangle yes
       #+begin_src emacs-lisp
-      ;;;; load darcula theme not dracula
-      ;;(use-package darcula-theme
-      ;;  :ensure t
-      ;;  :config(load-theme 'darcula t))
-      
-      ;; choose light version of timu-spacegrey
-      ;; (load-theme 'timu-spacegrey t)
-      ;; (setq timu-spacegrey-flavour "light")
+      (require 'package)
+      (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
+      ;; Comment/uncomment this line to enable MELPA Stable if desired.  See `package-archive-priorities`
+      ;; and `package-pinned-packages`. Most users will not need or want to do this.
+      ;;(add-to-list 'package-archives '("melpa-stable" . "https://stable.melpa.org/packages/") t)
+      (package-initialize)
+      ;; 'use-package' to ease further installations of packages
+      (unless (package-installed-p 'use-package)
+      (package-refresh-contents)
+      (package-install 'use-package))
+
       #+end_src
-  + memacs folder ::
-    #+header: :tangle yes
-    #+begin_src emacs-lisp
-    (setq partial-memacs "~/Documents/repos/org/memacs/")
-    (setq memacs (expand-file-name partial-memacs))
-    #+end_src
-  + optimize emacs startup time ::
-    - run emacs as client to server :: with EmacsClient and EmacsAsDaemon
-      + notes ::
-        - EmacsClient and EmacsAsDaemon allow daemons to run in the background and use clients to interface faster with the daemons => gain in opening emacs
-      + run a client to a background daemon :: ~emacsclient -c~ in terminal, or ~emacsclient --create-frame --alternate-editor=""~
-        - while emacs client is running with option ==-c==, it waits for the emacsclient process to finish before giving back the terminal => can use ==-n== to skip waiting for the client to close before giving back the terminal:  ~emacsclient -c -n~ (-n is for "no-wait")
-      + create a daemon :: ~emacs --daemon~, or ~emacs --daemon=your_daemon_name~, or ~emacs --fg-daemon=your_daemon_name~
-      + running multiple daemons ::
-        - possible to run multiple daemons and link to desired one
-        - show folder containing daemons' servers sockets :: ~server-socket-dir~ (*variable* => describe variable: ~C-h v server-socket-dir~)
-        - list running daemons :: just list content of value returned by ~C-h v server-socket-dir~, eg: ~ls -la /run/user/1000/emacs~
-      + kill a daemon ::
-        - command :: ~emacsclient -e "(kill-emacs)"~ , or with ==-s== option to kill e specific server: ~emacsclient -e "(kill-emacs)" -s your_daemon_name~ (-s is for 'socket-name')
-        - kills the main server by default if no ==-s== option
-        - needed for example when made changes to configurations, and wants to apply them. Can do the same though without killing the server, by loading/evaluating the changes from an open frame for example.
-      + some options to run with emacsclient/emacsasdaemon ::
-        - -c, --create-frame :: create new frame instead of current Emacs frame
-        - - -a, --alternate-editor=COMMAND :: if Emacs server is not running, run the specified shell command instead (can also be specified with ==ALTERNATE_EDITOR== environment variable)
-          + eg: run usual emacs if no daemon available: ~emacsclient -c -a "emacs"~
-        - -nw, -t, --tty :: open new Emacs frame on the current terminal
-        - -F, --frame-parameters=ALIST :: set parameters of new frame
-        - -d, --display=DISPLAY :: tells server to display the files on the given display
-      + using emacsClient ::
-        #+header: :tangle yes
-        #+begin_src emacs-lisp
-        ;; enable emacs server
-        (server-start)
-        ;; 
-        #+end_src
-  + emacs startup options :: (files to open on startup)
-    - process :: 
-      + open main agenda file :: 'tasks_list.org'
-      + open emacs manual :: ~(info-emacs-manual) ;; C-h r~ (first, install 'emacs-common-non-dfsg' on your OS)
+    - some commands ::
+      + refresh melpa list before installing :: ~M-x package-refresh-contents~ or ~M-x package-list-packages~
+      + install package :: ~M-x package-install~
+  + projectile :: for project management
     - entries ::
       #+header: :tangle yes
       #+begin_src emacs-lisp
-      ;; open file on start
-      (find-file (file-name-concat memacs "GTD/tasks_list.org"))
-      (info-emacs-manual) ;; C-h r
+      ;; use projectile for project management
+      (use-package projectile
+        :diminish projectile-mode
+        :config (projectile-mode)
+        :custom ((projectile-completion-system 'ivy))
+        :bind-keymap
+        ("C-c p" . projectile-command-map)
+        :init
+        ;; default projects home
+        (when (file-directory-p "~/Documents/repos/")
+          (setq projectile-project-search-path '("~/Documents/repos/")))
+        ;; first thing to do when switching project: load up 'dired' which list files in project
+        (setq projectile-switch-project-action #'projectile-dired)
+        (projectile-mode +1))
       #+end_src
-  + other customizations ::
+  + eglot :: as a c++ IDE
+    - entries ::
+      #+header: :tangle yes
+      #+begin_src emacs-lisp
+      ;; for c++ IDE
+      (require 'eglot)
+      (add-to-list 'eglot-server-programs '((c++-mode c-mode) "clangd")) ;; c++ language server clangd 
+      (add-hook 'c-mode-hook 'eglot-ensure)
+      (add-hook 'c++-mode-hook 'eglot-ensure)
+      #+end_src
+- themes ::
+  + modus-vivendi ::
+    - entries ::
+      #+header: :tangle yes
+      #+begin_src emacs-lisp
+      ;; add directories/files to load-path so the files/directories can be found and used
+      ; here, folder for themes to use for example
+      ; expand-file-name to convert relative path to absolute
+      (add-to-list 'load-path (expand-file-name "~/.emacs.d/themes/"))
+
+      ;; clone it first: git clone https://gitlab.com/protesilaos/modus-themes.git ~/.emacs.d/themes/modus-themes
+      (add-to-list 'load-path "~/.emacs.d/themes/modus-themes")
+      (require 'modus-themes)
+      ;; Load the theme files before enabling a theme (else you get an error).
+      ;; (modus-themes-load-themes)
+      ;; (load-theme 'modus-operandi) ; light theme
+      ;; (load-theme 'modus-vivendi) ; dark theme
+      (modus-themes-load-theme 'modus-operandi-tinted) ; 'tinted' is the slightly tone down counterpart of standard themes operandi and vivendi
+      ;; (modus-themes-load-theme 'modus-vivendi-tinted) ;
+      #+end_src
+  + other themes ::
     #+header: :tangle yes
     #+begin_src emacs-lisp
-    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-    ;; Note: some configs are managed by emacs, so order my change after evaluation
-    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-    ;; allow open recent file
-    (recentf-mode 1)
-    (setq recentf-max-menu-items 25)
-    (setq recentf-max-saved-items 25)
-    (global-set-key "\C-x\ \C-r" 'recentf-open-files)
-
-    ;; line wrap on buffer visualisation (won't affect the actual buffer, just the display of the buffer)
-    (global-visual-line-mode t)
-
-    ;; always display line numbers
-    (global-display-line-numbers-mode)
-
-    ;; show line fill column globally (note that it doesn't break automatically, just display the fill-column)
-    (global-display-fill-column-indicator-mode)
-
-    ;; set company-mode (autocomplete) on all buffers
-    (add-hook 'after-init-hook 'global-company-mode)
-
-    ;; get matching parentheses and other characters
-    (show-paren-mode +1)
+    ;;;; load darcula theme not dracula
+    ;;(use-package darcula-theme
+    ;;  :ensure t
+    ;;  :config(load-theme 'darcula t))
+    
+    ;; choose light version of timu-spacegrey
+    ;; (load-theme 'timu-spacegrey t)
+    ;; (setq timu-spacegrey-flavour "light")
     #+end_src
+- memacs folder ::
+  #+header: :tangle yes
+  #+begin_src emacs-lisp
+  (setq partial-memacs "~/Documents/repos/org/memacs/")
+  (setq memacs (expand-file-name partial-memacs))
+  #+end_src
+- optimize emacs startup time ::
+  + run emacs as client to server :: with EmacsClient and EmacsAsDaemon
+    - notes ::
+      + EmacsClient and EmacsAsDaemon allow daemons to run in the background and use clients to interface faster with the daemons => gain in opening emacs
+    - run a client to a background daemon :: ~emacsclient -c~ in terminal, or ~emacsclient --create-frame --alternate-editor=""~
+      + while emacs client is running with option ==-c==, it waits for the emacsclient process to finish before giving back the terminal => can use ==-n== to skip waiting for the client to close before giving back the terminal:  ~emacsclient -c -n~ (-n is for "no-wait")
+    - create a daemon :: ~emacs --daemon~, or ~emacs --daemon=your_daemon_name~, or ~emacs --fg-daemon=your_daemon_name~
+    - running multiple daemons ::
+      + possible to run multiple daemons and link to desired one
+      + show folder containing daemons' servers sockets :: ~server-socket-dir~ (*variable* => describe variable: ~C-h v server-socket-dir~)
+      + list running daemons :: just list content of value returned by ~C-h v server-socket-dir~, eg: ~ls -la /run/user/1000/emacs~
+    - kill a daemon ::
+      + command :: ~emacsclient -e "(kill-emacs)"~ , or with ==-s== option to kill e specific server: ~emacsclient -e "(kill-emacs)" -s your_daemon_name~ (-s is for 'socket-name')
+      + kills the main server by default if no ==-s== option
+      + needed for example when made changes to configurations, and wants to apply them. Can do the same though without killing the server, by loading/evaluating the changes from an open frame for example.
+    - some options to run with emacsclient/emacsasdaemon ::
+      + -c, --create-frame :: create new frame instead of current Emacs frame
+      + - -a, --alternate-editor=COMMAND :: if Emacs server is not running, run the specified shell command instead (can also be specified with ==ALTERNATE_EDITOR== environment variable)
+        - eg: run usual emacs if no daemon available: ~emacsclient -c -a "emacs"~
+      + -nw, -t, --tty :: open new Emacs frame on the current terminal
+      + -F, --frame-parameters=ALIST :: set parameters of new frame
+      + -d, --display=DISPLAY :: tells server to display the files on the given display
+    - configure emacsClient ::
+      #+header: :tangle yes
+      #+begin_src emacs-lisp
+      ;; enable emacs server
+      (server-start)
+      ;; 
+      #+end_src
+- emacs files to open on startup startup ::
+  + which ones :: 
+    - open main agenda file :: 'tasks_list.org'
+    - open emacs manual :: ==(info-emacs-manual) ;; C-h r== (first, install 'emacs-common-non-dfsg' on OS)
+  + entries ::
+    #+header: :tangle yes
+    #+begin_src emacs-lisp
+    ;; open file on start
+    (find-file (file-name-concat memacs "GTD/tasks_list.org"))
+    (info-emacs-manual) ;; C-h r
+    #+end_src
+- other customizations ::
+  #+header: :tangle yes
+  #+begin_src emacs-lisp
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  ;; Note: some configs are managed by emacs, so order my change after evaluation
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  ;; allow open recent file
+  (recentf-mode 1)
+  (setq recentf-max-menu-items 25)
+  (setq recentf-max-saved-items 25)
+  (global-set-key "\C-x\ \C-r" 'recentf-open-files)
+
+  ;; line wrap on buffer visualisation (won't affect the actual buffer, just the display of the buffer)
+  (global-visual-line-mode t)
+
+  ;; always display line numbers
+  (global-display-line-numbers-mode)
+
+  ;; show line fill column globally (note that it doesn't break automatically, just display the fill-column)
+  (global-display-fill-column-indicator-mode)
+
+  ;; set company-mode (autocomplete) on all buffers
+  (add-hook 'after-init-hook 'global-company-mode)
+
+  ;; get matching parentheses and other characters
+  (show-paren-mode +1)
+  #+end_src
 * My organization of org files tree (details in [[file:organisation_org_files.org][organisation_org_files.org]])
 #+INCLUDE: "./organisation_org_files.org::Folders and files:"
 
