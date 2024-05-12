@@ -516,7 +516,8 @@
   + 
 
 * emacs IDE
-  + 
+** Misc
+- comment/uncomment line :: ~C-x C-;~
 
 * emacs and org-mode:
 ** 'capture', previously known as 'remember' (notes taking)
