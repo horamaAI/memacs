@@ -65,6 +65,45 @@
       (add-hook 'c-mode-hook 'eglot-ensure)
       (add-hook 'c++-mode-hook 'eglot-ensure)
       #+end_src
+- optimize emacs startup time ::
+  + run emacs client to emacs server :: with EmacsClient and EmacsAsDaemon
+    - notes ::
+      + EmacsClient and EmacsAsDaemon allow daemons to run in the background and use clients to interface faster with the daemons => gain in opening emacs
+        - emacsClient is opening a new frame to the running daemon
+    - run a client to a background daemon :: ~emacsclient -c~ in terminal, or ~emacsclient --create-frame --alternate-editor=""~
+      + while emacs client is running with option ==-c==, it waits for the emacsclient process to finish before giving back the terminal => can use ==-n== to skip waiting for the client to close before giving back the terminal:  ~emacsclient -c -n~ (-n is for "no-wait")
+    - create a daemon :: ~emacs --daemon~, or ~emacs --daemon=your_daemon_name~ (runs daemons in background), or ~emacs --fg-daemon=your_daemon_name~ (forces the daemon to run in background)
+    - running multiple daemons ::
+      + possible to run multiple daemons and link to desired one
+      + show folder containing daemons' servers sockets :: ~server-socket-dir~ (*variable* => describe variable: ~C-h v server-socket-dir~)
+      + list running daemons :: just list content of value returned by ~C-h v server-socket-dir~, eg: ~ls -la /run/user/1000/emacs~
+    - closing an emacsclient windows/frame :: since using frames to daemons, ~C-x C-c~ closes the emacsclient frame, not the daemon
+    - kill a daemon ::
+      + command :: ~emacsclient -e "(kill-emacs)"~ , or with ==-s== option to kill e specific server: ~emacsclient -e "(kill-emacs)" -s your_daemon_name~ (-s is for 'socket-name')
+      + kills the main server by default if no ==-s== option
+      + needed for example when made changes to configurations, and wants to apply them. Can do the same though without killing the server, by loading/evaluating the changes from an open frame for example.
+    - some options to run with emacsclient/emacsasdaemon ::
+      + -c, --create-frame :: create new frame instead of current Emacs frame
+      + - -a, --alternate-editor=COMMAND :: if Emacs server is not running, run the specified shell command instead (can also be specified with ==ALTERNATE_EDITOR== environment variable)
+        - eg: run usual emacs if no daemon available: ~emacsclient -c -a "emacs"~
+      + -nw, -t, --tty :: open new Emacs frame on the current terminal
+      + -F, --frame-parameters=ALIST :: set parameters of new frame
+      + -d, --display=DISPLAY :: tells server to display the files on the given display
+    - configurations :: 
+      + configure emacsClient in emacs init file ::
+        #+header: :tangle yes
+        #+begin_src emacs-lisp
+        ;; enable emacs server
+        (server-start)
+        ;; 
+        #+end_src
+      + set emacs daemon to run on startup ::
+        - in linux based OS, use ==systemd== to run emacs at startup: ~systemctl --user enable --now emacs~ (user configuration, system wise: ~systemctl enable --now emacs~)
+      + set required launches and aliases in your terminal, eg in bashrc: ~alias emacs='emacsclient -t'~
+      + set proper shortcut command, eg for debian, set shortcut to launch ::
+        #+begin_example
+        sh -c "if [ -n \"\$*\" ]; then exec emacsclient --alternate-editor= --display=\"\$DISPLAY\" \"\$@\"; else exec emacsclient --alternate-editor= --create-frame; fi" sh 
+        #+end_example
 - themes ::
   + modus-vivendi ::
     - entries ::
@@ -103,35 +142,6 @@
   (setq partial-memacs "~/Documents/repos/org/memacs/")
   (setq memacs (expand-file-name partial-memacs))
   #+end_src
-- optimize emacs startup time ::
-  + run emacs as client to server :: with EmacsClient and EmacsAsDaemon
-    - notes ::
-      + EmacsClient and EmacsAsDaemon allow daemons to run in the background and use clients to interface faster with the daemons => gain in opening emacs
-    - run a client to a background daemon :: ~emacsclient -c~ in terminal, or ~emacsclient --create-frame --alternate-editor=""~
-      + while emacs client is running with option ==-c==, it waits for the emacsclient process to finish before giving back the terminal => can use ==-n== to skip waiting for the client to close before giving back the terminal:  ~emacsclient -c -n~ (-n is for "no-wait")
-    - create a daemon :: ~emacs --daemon~, or ~emacs --daemon=your_daemon_name~, or ~emacs --fg-daemon=your_daemon_name~
-    - running multiple daemons ::
-      + possible to run multiple daemons and link to desired one
-      + show folder containing daemons' servers sockets :: ~server-socket-dir~ (*variable* => describe variable: ~C-h v server-socket-dir~)
-      + list running daemons :: just list content of value returned by ~C-h v server-socket-dir~, eg: ~ls -la /run/user/1000/emacs~
-    - kill a daemon ::
-      + command :: ~emacsclient -e "(kill-emacs)"~ , or with ==-s== option to kill e specific server: ~emacsclient -e "(kill-emacs)" -s your_daemon_name~ (-s is for 'socket-name')
-      + kills the main server by default if no ==-s== option
-      + needed for example when made changes to configurations, and wants to apply them. Can do the same though without killing the server, by loading/evaluating the changes from an open frame for example.
-    - some options to run with emacsclient/emacsasdaemon ::
-      + -c, --create-frame :: create new frame instead of current Emacs frame
-      + - -a, --alternate-editor=COMMAND :: if Emacs server is not running, run the specified shell command instead (can also be specified with ==ALTERNATE_EDITOR== environment variable)
-        - eg: run usual emacs if no daemon available: ~emacsclient -c -a "emacs"~
-      + -nw, -t, --tty :: open new Emacs frame on the current terminal
-      + -F, --frame-parameters=ALIST :: set parameters of new frame
-      + -d, --display=DISPLAY :: tells server to display the files on the given display
-    - configure emacsClient ::
-      #+header: :tangle yes
-      #+begin_src emacs-lisp
-      ;; enable emacs server
-      (server-start)
-      ;; 
-      #+end_src
 - emacs files to open on startup startup ::
   + which ones :: 
     - open main agenda file :: 'tasks_list.org'
