@@ -3,6 +3,19 @@
 #+SETUPFILE: ~/set-up-files/basic-setups.org
 #+TAGS: Cpp C++ Java Craft
 
+* Architecture related
+** General knowledge
+- types of architecture ::
+  + event-driven architecture :: uses events to trigger and communicate between decoupled services and is common in modern applications built with microservices. eg of event: change in state, update, item being placed in a shopping cart on an e-commerce website, etc.
+  + SOA :: service oriented architecture that focuses on discrete services instead of a monolithic design
+    - microservices vs SOA ::
+      + the main distinction between the two approaches comes down to scope. To put it simply, service-oriented architecture (SOA) has an enterprise scope, while the microservices architecture has an application scope. And in microservices, applications are decoupled and each service can have independent data storage — unlike SOA.
+      + other differences ::
+        - on dependency :: SOA is more business units dependent, while for microservices each microservice is independent and they don't usually share a data layer
+        - design :: SOA focuses on application service reusability, while microservices focus on decoupling
+        - software size :: usually larger than in any other architecture, while microservices consist of small independent serice
+        - architecture :: SOA: fine-grained or centralized, microservices: coarse-grained or decentralized
+        - services :: SOA: business, entreprise or infrastructure, microservices: functional and infrastructure
 
 * Conventions and best practices
 [2023-12-06 Wed 09:39]
@@ -369,7 +382,6 @@
   + static code analysis :: some basics included in some IDEs, but can add third party ones: +FindBugs+ (outdated), SonarLint
   + 'boyscout' rule :: "leave the campground cleaner than you found it": if task not too time consuming and time allows, then fix
   + code review :: needs both technical and functional requirement understanding
-
 
 * SOLID principles
 [2023-12-04 Mon 09:30]
