@@ -17,25 +17,25 @@
   + http://www.newartisans.com/2007/08/using-org-mode-as-a-day-planner/
   + http://doc.norang.ca/org-mode.html
 - packages ::
-  + melpa ::
-    - elisp entries ::
-      #+header: :tangle yes
-      #+begin_src emacs-lisp
-      (require 'package)
-      (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
-      ;; Comment/uncomment this line to enable MELPA Stable if desired.  See `package-archive-priorities`
-      ;; and `package-pinned-packages`. Most users will not need or want to do this.
-      ;;(add-to-list 'package-archives '("melpa-stable" . "https://stable.melpa.org/packages/") t)
-      (package-initialize)
-      ;; 'use-package' to ease further installations of packages
-      (unless (package-installed-p 'use-package)
-      (package-refresh-contents)
-      (package-install 'use-package))
-
-      #+end_src
-    - some commands ::
-      + refresh melpa list before installing :: ~M-x package-refresh-contents~ or ~M-x package-list-packages~
-      + install package :: ~M-x package-install~
+  + package.el :: built-in package manager
+    - melpa :: (package.el "repository")
+      + elisp entries ::
+        #+header: :tangle yes
+        #+begin_src emacs-lisp
+        (require 'package)
+        (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
+        ;; Comment/uncomment this line to enable MELPA Stable if desired.  See `package-archive-priorities`
+        ;; and `package-pinned-packages`. Most users will not need or want to do this.
+        ;;(add-to-list 'package-archives '("melpa-stable" . "https://stable.melpa.org/packages/") t)
+        (package-initialize)
+        ;; 'use-package' to ease further installations of packages
+        (unless (package-installed-p 'use-package)
+          (package-refresh-contents)
+          (package-install 'use-package))
+        #+end_src
+      + some commands ::
+        - refresh melpa list before installing :: ~M-x package-refresh-contents~ or ~M-x package-list-packages~
+        - install package :: ~M-x package-install~
   + projectile :: for project management
     - entries ::
       #+header: :tangle yes
@@ -104,6 +104,19 @@
         #+begin_example
         sh -c "if [ -n \"\$*\" ]; then exec emacsclient --alternate-editor= --display=\"\$DISPLAY\" \"\$@\"; else exec emacsclient --alternate-editor= --create-frame; fi" sh 
         #+end_example
+- uniform file formatting (windows+linux) ::
+  + purpose ::
+    - avoiding end of lines issues with windows vs linux since setting git config crlf can be harmful ([[https://markentier.tech/posts/2021/10/autocrlf-true-considered-harmful/][source]])
+    - setting uniform formatting when editing with emacs by using [[https://editorconfig.org/][editorconfig]]
+  + editorconfig for emacs ::
+    - source (clone first) :: https://github.com/editorconfig/editorconfig-emacs
+    - entries ::
+      #+begin_src emacs-lisp
+      ;;(use-package editorconfig
+      ;;  :ensure t
+      ;;  :config
+      ;;  (editorconfig-mode 1))
+      #+end_src
 - themes ::
   + modus-vivendi ::
     - entries ::
@@ -142,7 +155,7 @@
   (setq partial-memacs "~/Documents/repos/org/memacs/")
   (setq memacs (expand-file-name partial-memacs))
   #+end_src
-- emacs files to open on startup startup ::
+- emacs files to open on startup ::
   + which ones :: 
     - open main agenda file :: 'tasks_list.org'
     - open emacs manual :: ==(info-emacs-manual) ;; C-h r== (first, install 'emacs-common-non-dfsg' on OS)
