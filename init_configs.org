@@ -111,6 +111,7 @@
   + editorconfig for emacs ::
     - source (clone first) :: https://github.com/editorconfig/editorconfig-emacs
     - entries ::
+      #+header: :tangle yes
       #+begin_src emacs-lisp
 	(add-to-list 'load-path "~/Documents/repos/opt/elisp/editorconfig-emacs")
 	(require 'editorconfig)
