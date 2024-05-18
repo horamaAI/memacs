@@ -1,0 +1,9 @@
+# -*- mode: org -*-
+#+TITLE: my dotfiles structure and configs but in orgmode
+#+SETUPFILE: ~/set-up-files/basic-setups.org
+#+LANGUAGE: en
+#+OPTIONS: toc:3 timestamp:t
+#+DESCRIPTION: My dotfiles structure, configs and descriptions (got most of them from Bernt Hansen (http://doc.norang.ca/org-mode.html))
+#+KEYWORDS: dotfiles org-mode Emacs organization GTD getting-things-done git
+
+* Intro
