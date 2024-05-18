@@ -29,8 +29,18 @@
   + ~seq 10 | xargs -n 1 -P 3 bash -c 'echo $0; sleep 2'~: takes 1 arg at the time, executes 3 bash processes, and then sleeps for 2secs. The 10 numbers displayed may not be in order in the final display, but will be by groups of 3, eg: ==213-456-798-10== ('-' is the 2secs delay)
     - differs from ~seq 10 | xargs -n 3 -P 1 bash -c 'echo $0; sleep 2'~ that takes in 3 args, but only print the first element of the bunch, eg: ==1-4-7-10==
     - a last one for the road: ~seq 10 | xargs -n 3 -P 2 bash -c 'echo $0; sleep 2'~: ==14-710==
-* awk
-
+* text processing with scripting tools: sed, awk, perl, and python
+** Notes
+- fight! :: sed, awk, perl, python
+  + sed :: to apply actions from a script to each line if input files
+  + awk :: initially made for formatting reports, but now mainly a "program based on 'patterns matched' and 'actions taken when the pattern matches'"
+  + perl :: initially written in part as an awk-killer and sed-killer. Provides access to almost all unix system calls and has great extensibility
+  + python :: came after perl (age(sed) > awk > perl > python)
+- when use one over another ? ([[https://stackoverflow.com/questions/366980/what-are-the-differences-between-perl-python-awk-and-sed][source]]) :: (given just as example, more than one reasons to use one over another)
+  + sed :: when need to do simple text transforms on files
+  + awk :: when need simple formatting, summarising, or transformation of data
+  + perl :: for almost any task, but especially when task needs complex regular expressions
+  + python :: for the same tasks that you could use Perl for
 * cron (crontab, cronjob, etc.)
 ** Notes
 + cron tool format explainer :: https://crontab.cronhub.io/
@@ -136,7 +146,7 @@ In addition to the fields specified in the cron expression, there’s also suppo
     - -a :: include hidden files
     - -d :: list folders only
   + HOWEVER :: can do basic list formatting with sed scripting, examples ::
-    - with grep and sed :: ~alias lst='ls -R | grep ":$" | sed -e '"'"'s/:$//'"'"' -e '"'"'s/[^-][^\/]*\//--/g'"'"' -e '"'"'s/^/   /'"'"' -e '"'"'s/-/|/'"'"~
+    - with grep and sed :: ~ls -R | grep ":$" | sed -e '"'"'s/:$//'"'"' -e '"'"'s/[^-][^\/]*\//--/g'"'"' -e '"'"'s/^/   /'"'"' -e '"'"'s/-/|/'"'"~
     - with grep and perl :: ~ls -aR | grep ":$" | perl -pe 's/:$//;s/[^-][^\/]*\//    /g;s/^    (\S)/└── \1/;s/(^    |    (?= ))/│   /g;s/    (\S)/└── \1/'~
     
   
