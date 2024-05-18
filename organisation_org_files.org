@@ -41,8 +41,7 @@
   + notes.org :: buffer for quick notes, that needs to be reorganised
     later (quicknotes, 1st draft) 
   + commands_to_remember.org :: journal for commands to remember
-  + other_projects.org :: to keep track of non urgent project and
-    notes, "good to have"
+  + other_projects.org :: to keep track of non urgent project and notes, "good to have"
   + us.es_notes.org :: notes specific to us.es
   + us.es_notes.org_archive ::
   + running.org :: running notes and tracking
@@ -52,6 +51,7 @@
 - set-up-files :: (for configs to be shared by different org files)
 |
 - learnings ::
+  + dotfiles.org :: 
   + cpp.org ::
   + finance.org ::
   + emacs.org ::

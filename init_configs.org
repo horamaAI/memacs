@@ -110,6 +110,8 @@
     - setting uniform formatting when editing with emacs by using [[https://editorconfig.org/][editorconfig]]
   + editorconfig for emacs ::
     - source (clone first) :: https://github.com/editorconfig/editorconfig-emacs
+    - editorconfig root file :: [[$memacs/.editorconfig]]
+    - checkout https://editorconfig.org/ for more configs variables, though might not be all available for editorconfig-emacs 
     - entries ::
       #+header: :tangle yes
       #+begin_src emacs-lisp
