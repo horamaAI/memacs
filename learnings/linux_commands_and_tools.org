@@ -131,4 +131,13 @@ In addition to the fields specified in the cron expression, there’s also suppo
   + has even formatting options, eg : ~time -f '%E %W %r' [command]~
     - to get a better format for zsh as for bash, set variable TIMEFMT to ~TIMEFMT=$'real\t%E\nuser\t%U\nsys\t%S'~
   + for longer commands, can either use braces (~time { ls; pwd; whoami; }~), or use a subshell (~time (ls; pwd)~)
+- tree [path-to-folder-to-visualise] :: to visualise directories structures
+  + Some options ::
+    - -a :: include hidden files
+    - -d :: list folders only
+  + HOWEVER :: can do basic list formatting with sed scripting, examples ::
+    - with grep and sed :: ~alias lst='ls -R | grep ":$" | sed -e '"'"'s/:$//'"'"' -e '"'"'s/[^-][^\/]*\//--/g'"'"' -e '"'"'s/^/   /'"'"' -e '"'"'s/-/|/'"'"~
+    - with grep and perl :: ~ls -aR | grep ":$" | perl -pe 's/:$//;s/[^-][^\/]*\//    /g;s/^    (\S)/└── \1/;s/(^    |    (?= ))/│   /g;s/    (\S)/└── \1/'~
+    
+  
 
