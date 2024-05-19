@@ -7,3 +7,5 @@
 #+KEYWORDS: dotfiles org-mode Emacs organization GTD getting-things-done git
 
 * Intro
+** Notes
+- alternative to symlinking everything in $HOME/*
