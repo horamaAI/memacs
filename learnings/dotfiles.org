@@ -8,4 +8,8 @@
 
 * Intro
 ** Notes
-- alternative to symlinking everything in $HOME/*
+- alternative to symlinking the machine's configuration files with its $HOME/*
+- better to split user and hostname-based configurations containing configuration files based on target environment and specific configurations : ==user, server, common, private, public, work, work-a, etc.==
+  + for ease of use and retrieval, better to add target's specific configuration files into these configuration directories, eg: ~user/configuration-file~
+** What is it used for
+[2024-05-20 Mon 22:07]
