@@ -13,3 +13,17 @@
   + for ease of use and retrieval, better to add target's specific configuration files into these configuration directories, eg: ~user/configuration-file~
 ** What is it used for
 [2024-05-20 Mon 22:07]
+** Managing dotfiles as git repositories
+[2024-05-24 Fri 22:35]
+- Notes ::
+  + set $HOME as git repository
+  + add .gitignore to contain only ~*~, so that unless a file is added explicitly (with ~git add -f~, or ~--force~, eg: ~git add -f .zshrc_user~)
+    - gitignore does not apply to files already being tracked by git, so any future changes to files added with ==force== show up in git status, git diff, etc, and can be easily committed, or staged, using -f is no longer necessary
+  + setting up a new machine is then easy: after installation, just:
+    #+begin_example
+    cd ~
+    git init
+    git remote add origin [your-dotfiles-git-repo]
+    git fetch
+    git checkout -f [your-master-branch]
+    #+end_example
