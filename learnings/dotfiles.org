@@ -8,18 +8,23 @@
 
 * Intro
 ** Notes
+- sources ::
+  + main reference :: https://dotfiles.github.io/tutorials/
 - alternative to symlinking the machine's configuration files with its $HOME/*
 - better to split user and hostname-based configurations containing configuration files based on target environment and specific configurations : ==user, server, common, private, public, work, work-a, etc.==
   + for ease of use and retrieval, better to add target's specific configuration files into these configuration directories, eg: ~user/configuration-file~
 ** What is it used for
 [2024-05-20 Mon 22:07]
-** Managing dotfiles as git repositories
+* dotfiles configurations styles
+[2024-05-24 Fri 23:41]
+** dotfiles as git repositories ($HOME only, or one hostname-based configuration per git repo)
 [2024-05-24 Fri 22:35]
 - Notes ::
-  + set $HOME as git repository
-  + add .gitignore to contain only ~*~, so that unless a file is added explicitly (with ~git add -f~, or ~--force~, eg: ~git add -f .zshrc_user~)
-    - gitignore does not apply to files already being tracked by git, so any future changes to files added with ==force== show up in git status, git diff, etc, and can be easily committed, or staged, using -f is no longer necessary
-  + setting up a new machine is then easy: after installation, just:
+  + purpose :: having $HOME as git repository: any personal config can be repurposed on any new installation
+  + main idea :: set ~$HOME/.gitignore~ to contain only one byte element: ~*~
+    - that way, unless a file is added explicitly (with ~git add -f~, or ~--force~, eg: ~git add -f .zshrc_user~), unwanted $HOME element are not added to the repo
+    - after ==--force==, gitignore configs won't apply to files already being tracked by git: so, any future changes to files previously added with ==force== will show up in git status, diff, etc., and will be easily committed, staged, etc., with ==-f== no longer necessary
+  + setting up a new machine is then easy :: after installation, just:
     #+begin_example
     cd ~
     git init
@@ -27,3 +32,32 @@
     git fetch
     git checkout -f [your-master-branch]
     #+end_example
+  + with this dotfiles configuration as repo, it's even possible to shadow system programs by wrapping those sometimes not easy to configure system programs with custom scripts/actions: put ~$HOME/bin~ always ahead of any other tools in ~$PATH~:
+    - example: wrap xdg-open with custom pre-commands in script ==~/bin/xdg-open== (replace annoying-to-customize xdg-open with own version, and only fall back to /usr/bin/xdg-open if necessary):
+      #+begin_example
+      #!/bin/sh
+      case "${1%%:*}" in
+      	http|https|*.pdf)
+      		exec qutebrowser "$1"
+      		;;
+      	mailto)
+      		exec aerc "$1"
+      		;;
+      	*)
+      		exec /usr/bin/xdg-open "$@"
+      		;;
+      esac
+      #+end_example
+  + configuring custom dotfiles for other environments/distributions/hosts/purpose ::
+    - the same as ~$HOME/bin~ is prefixed before any other element in ~$PATH~ for custom configs, one can further customise the dotfiles to consider different hostnames: just need to preface ~$HOME/bin/$(hostname)~ before ~$HOME/bin~ in $PATH
+      + to also consider the different architectures in the configurations: can add ~$HOME/bin/$(uname -m)~ configurations to the dotfiles repo
+        - eg: to customize sway configurations to consider the different device configurations of each host, use following directive in ==~/.config/sway/config==: ~include ~/.config/sway/`hostname`~
+- pros and cons ::
+  + pros ::
+    - main tools and configurations ready to use :: ==~/bin, ~/lib, ~/config==, etc.
+  + cons ::
+    - one hostname-based configuration per repo. Further configurations need to add those in the repo, with all different usecases, architectures, etc.
+** dotfiles and host-based environment profiles with additional tools
+[2024-05-25 Sat 00:24]
+** dotfiles for configs + ansible for dependencies
+[2024-05-25 Sat 01:13]
