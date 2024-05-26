@@ -2,6 +2,11 @@
 #+title: Linux commands/tools that are fun and handy
 #+SETUPFILE: ~/set-up-files/basic-setups.org
 
+* shell
+[2024-05-26 Sun 21:56]
+** shell startup and scripts
+*** notes
+
 * args and xargs
 ** Notes
 - use :: passing arguments from standard input to other commands. Whereas some commands allow piping (grep for example), others don't (find, ls, or echo for example: can't ~seq 5 | echo~, need to pipe to xargs first: ~seq 5 | xargs echo~)
