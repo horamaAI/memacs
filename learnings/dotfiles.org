@@ -17,8 +17,24 @@
 - alternative to symlinking the machine's configuration files with its $HOME/*
 - better to split user and hostname-based configurations containing configuration files based on target environment and specific configurations : ==user, server, common, private, public, work, work-a, etc.==
   + for ease of use and retrieval, better to add target's specific configuration files into these configuration directories, eg: ~user/configuration-file~
+** some dotfiles
+[2024-05-26 Sun 21:39]
+- .inputrc :: for keybindings
+- .alias ::
+- .functions :: for functions that are too complex to be aliases, and too short to be added as scripts
+- .env :: for environment variables
 * dotfiles configurations styles
 [2024-05-24 Fri 23:41]
+** dotfiles and topical organisation (dotfiles organised into directories, each entitled to specific subject)
+[2024-05-26 Sun 19:35]
+- notes ::
+  + example of topical organisation: has directories: ==git/==, ==ruby/==, etc., each dedicated to appropriate settings: git, ruby, etc.
+  + directories have each their own aliases, path settings, etc., separated
+- pros and cons ::
+  + pros ::
+    - neat structure, easy to navigate
+  + cons ::
+    - too many directories, most of the time too few content, and with too few rules in those files content
 ** dotfiles as git repositories ($HOME only, or one hostname-based configuration per git repo)
 [2024-05-24 Fri 22:35]
 - Notes ::
