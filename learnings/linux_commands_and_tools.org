@@ -6,7 +6,52 @@
 [2024-05-26 Sun 21:56]
 ** shell startup and scripts
 *** notes
-
+- [non-]interactive shells and [non-]login shells :: there are two kinds of shells:
+  + [non-]interactive shells :: you type into them (shell scripts)
+  + [non-]login shells :: the shell run them when you first login (subshells)
+- shells execution order ::
+  + all shells will first run ==env==,
+  + then login shells will run ==login==,
+  + then interactive shells will run ==interactive==,
+  + once finished, login shells will run ==logout==
+- managing multiple shells :: when using more than one shell, always remember to manage files with respect to their specific shell and specify things which any POSIX-compliant shell (like aliases and environment variables) can understand in a common startup file
+  + dotfiles :: when organising things in dotfiles for example, a solution would be to organise dotfiles folders, one for each shell (==.bash/, .zsh/== and ==.sh/==), and one for shell-independent files (==.shell/==):
+    #+begin_example
+    .bash/
+        env
+        interactive
+        login
+        logout
+    .sh/
+        env
+        interactive
+        login
+    .shell/
+        env
+        interactive
+        login
+        logout
+    .zsh/
+        env
+        interactive
+        login
+        logout
+    #+end_example
+*** where to put configs
+[2024-05-27 Mon 19:56]
+- deciding when action needs to be run:
+  + does the command set/modify environment variables ? :: then ==login==
+  + is it an alias, or a terminal specific environment variable (eg: $GREP_COLOR) ? :: then ==interactive==
+  + ==env== :: for useful functions and other tools, eg: ~umask~, or modifying $PATH, for example to filter out duplicate
+*** implementing shell configs
+[2024-05-27 Mon 22:28]
+- notes ::
+  + fortunately [[https://blog.flowblok.id.au/2013-02/shell-startup-scripts.html][flowblok]] did a wonderful job of following the flow of startup files and help in finding which level of the shell these config files have to be implemented:
+    #+CAPTION: shell startup flow
+    #+NAME: fig:shell-startup-actual
+    #+ATTR_ORG: :width 500
+    #+ATTR_HTML: :width 300px
+    [[../images/shell-startup-actual.png]]
 * args and xargs
 ** Notes
 - use :: passing arguments from standard input to other commands. Whereas some commands allow piping (grep for example), others don't (find, ls, or echo for example: can't ~seq 5 | echo~, need to pipe to xargs first: ~seq 5 | xargs echo~)
