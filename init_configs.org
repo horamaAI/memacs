@@ -2161,6 +2161,13 @@
     2. edit the text
     3. build the pictures :: ==C-c C-c==
     4. can toggle display of inline images with :: ==C-c C-x C-v==
+       - to display inline image in org-mode use ==ATTR_ORG== attribute :: ~#+ATTR_ORG: :width 100~
+       - and set variable ==org-image-actual-width== to nil (default is t), to allow inline images sizing:
+         #+header: :tangle yes
+         #+begin_src emacs-lisp
+         ;; my config, to allow inline images sizing with ~#+ATTR_ORG: :width 100~ for example
+         (setq org-image-actual-width nil)
+         #+end_src
   + better to disable default startup with inline images since when accessing org-files from an SSH session with no X (X window system, eg: Android phone) it fails to display the images and breaks ::
     #+header: :tangle yes
     #+begin_src emacs-lisp
