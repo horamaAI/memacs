@@ -2159,6 +2159,22 @@
 [2024-02-21 Wed 00:25]
 **** Gradle directories
 [2024-02-21 Wed 00:23]
+** Maven
+[2024-05-28 Tue 15:10]
+*** Tips and tricks
+- local maven repository :: 
+  + default location :: ~/home/<user_name>/.m2~ (linux), ~C:\Users\<user_name>\.m2~ (windows)
+  + is the usual target folder of maven files install and builds
+  + if not on default location, then use ==maven help plugin== to find it: ~mvn help:evaluate -Dexpression=settings.localRepository -q -DforceStdout~
+- clearing caches ::
+  + sources ::
+    - https://www.baeldung.com/maven-clear-cache
+  + direct deletion :: eg: ~rm -rf ~/.m2/repository~
+  + with ==maven dependency plugin== :: by using ~purge-local-repository~ goal: ~mvn dependency:purge-local-repository~ (in root of Maven project)
+    - when run without any additional flags, it downloads artifacts not present in the cache to resolve the dependency tree ("transitive dependency resolution")
+    - next, it deletes the local cache and, finally, re-downloads the artifacts
+    - to avoid pre-downloading those missing dependencies, use flag ~actTransitively=false~: ~mvn dependency:purge-local-repository -DactTransitively=false~
+    - if only want to clear out our cache (no pre-downloading or re-resolving artifacts): ~mvn dependency:purge-local-repository -DactTransitively=false -DreResolve=false~ (flag ~reResolve=false~ makes the plugin avoid re-downloading dependencies)
 * Testing
 [2023-12-17 Sun 03:51]
 ** JUnit 5
