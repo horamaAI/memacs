@@ -6,15 +6,16 @@
 #+DESCRIPTION: My dotfiles structure, configs and descriptions (got most of them from Bernt Hansen (http://doc.norang.ca/org-mode.html))
 #+KEYWORDS: dotfiles org-mode Emacs organization GTD getting-things-done git
 
+
 * Intro
-** What is it used for
-[2024-05-20 Mon 22:07]
-- pros :: fetching configurations whenever needed and ready to go; easy to deploy when installing from scratch; useful for syncing preferences across multiple devices
 ** Notes
 - sources ::
   + main reference :: https://dotfiles.github.io/tutorials/
-- existing dotfiles configurations are diverse and with various styles, dotfiles are very personal, no /one way to rule them all/ setup
-- alternative to symlinking the machine's configuration files with its $HOME/*
+- what is it used for ::
+  + handy way to customize one's system ('dotfiles' is derived from Unix-like systems' configuration files that start with a dot: .bash_profile, .gitconfig, etc.)
+  + fetching configurations whenever needed and ready to go; easy to deploy when installing from scratch; useful for syncing preferences across multiple devices
+- existing dotfiles configurations are diverse and with various styles. dotfiles are very personal, no "one way to rule them all" setup
+- alternative to symlinking the machine's configuration files to $HOME/* for example (though symlinking is part of some dotfiles configuration styles)
 - better to split user and hostname-based configurations containing configuration files based on target environment and specific configurations : ==user, server, common, private, public, work, work-a, etc.==
   + for ease of use and retrieval, better to add target's specific configuration files into these configuration directories, eg: ~user/configuration-file~
 ** some dotfiles
@@ -23,6 +24,22 @@
 - .alias ::
 - .functions :: for functions that are too complex to be aliases, and too short to be added as scripts
 - .env :: for environment variables
+** awesome dotfiles (list of useful dotfiles repos and other tools)
+[2024-05-29 Wed 21:19]
+- https://github.com/webpro/awesome-dotfiles
+* Getting started with dotfiles (very basic descriptions)
+[2024-05-29 Wed 20:02]
+** Notes
+- sources ::
+  + https://www.webpro.nl/articles/getting-started-with-dotfiles
+    - see Lars Kappert's [[https://github.com/webpro/dotfiles][dotfiles configs]], and [[https://github.com/mathiasbynens/dotfiles][Mathias Bynens' one]] (Lars based his configs from his)
+- tips and tricks ::
+  + structure abd organise dotfiles in directories as per your need: topic/environment/hostname/etc.
+  + set root installer to use basic tools such as curl or wget (later usually not available on vanilla linux), and add git as a further installation (see example: ~bash -c "`curl -fsSL https://raw.githubusercontent.com/webpro/dotfiles/master/remote-install.sh`"~)
+  + use dependencies manager or other tools for dependencies and additional tools (eg: cmake, makefile, ansible, etc.)
+  + git actions and git submodules are powerful tools to enhance dotfiles configurations
+  + updating dotfiles script(s) :: plan for a smooth and idempotent (same and deterministic results for each run) script/ update
+    - why :: fix symlinks, update packages
 * dotfiles configurations styles
 [2024-05-24 Fri 23:41]
 ** dotfiles and topical organisation (dotfiles organised into directories, each entitled to specific subject)
