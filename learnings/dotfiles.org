@@ -37,7 +37,7 @@
   + structure abd organise dotfiles in directories as per your need: topic/environment/hostname/etc.
   + set root installer to use basic tools such as curl or wget (later usually not available on vanilla linux), and add git as a further installation (see example: ~bash -c "`curl -fsSL https://raw.githubusercontent.com/webpro/dotfiles/master/remote-install.sh`"~)
   + use dependencies manager or other tools for dependencies and additional tools (eg: cmake, makefile, ansible, etc.)
-  + git actions and git submodules are powerful tools to enhance dotfiles configurations
+  + git actions, git submodules, and git subtree are powerful tools to enhance dotfiles configurations
   + updating dotfiles script(s) :: plan for a smooth and idempotent (same and deterministic results for each run) script/ update
     - why :: fix symlinks, update packages
 * dotfiles configurations styles
@@ -93,6 +93,16 @@
     - main tools and configurations ready to use :: ==~/bin, ~/lib, ~/config==, etc.
   + cons ::
     - one hostname-based configuration per repo. Further configurations need to add those in the repo, with all different usecases, architectures, etc.
+** dotfiles as bare git repositories
+[2024-05-29 Wed 22:25]
+- notes ::
+  + 'bare' repositories are kind of "side" repositories (see [[https://www.saintsjd.com/2011/01/what-is-a-bare-git-repository/]["working" vs "bare" repositories]])
+  + sources ::
+    - https://www.atlassian.com/git/tutorials/dotfiles
+  + main idea ::
+    - create a bare repository to interact with when updating configurations
+    - create alias to interact with that bare repository instead of usual git
+    - 
 ** dotfiles as host-based environment profiles with various tools
 [2024-05-25 Sat 00:24]
 ** dotfiles for configs + ansible for dependencies
