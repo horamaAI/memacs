@@ -254,6 +254,23 @@ In addition to the fields specified in the cron expression, there’s also suppo
 - allows switching between different works in progress (WIP) and branches/commits/etc.
   + instead of usual check out, for which can't have different branches at once, worktree allows checking out on different branches at once. Each working tree is checked out in different folders
   + worktree is somehow similar to cloning the same repository in different folders, but with worktree all work-trees are still linked to the same clone
+*** git worktree basic commands (some)
+[2024-05-31 Fri 23:34]
+- notes ::
+  + as always with git, there are plenty of ways of doing the same thing
+- create worktree from current branch :: and have two different branches of the same clone at once
+  + ~git worktree add [path-to-new-worktree] [target-branch-to-check-out-to]~
+    - eg: ~git worktree add ../new-worktree current-or-other-branch-or-commit~
+    - ~new-worktree~ will be a new folder with current WIP snapshot, and parallel to the current repo (~../~)
+    - ~current-or-other-branch-or-commit~ will be the target commit/branch after creating the new worktree
+    - ~new-worktree~ will not have any ~.git/~ within, but instead a ~.git~ file
+      + ~.git~ points to the original ~.git/~ directory in its parent clone => all git commands will work with it, as well as its parent
+  + as for git switch, can even use remote branch to switch to after adding worktree: eg:  ~git worktree add ../new-worktree a-remote/a-remote-branch -b name-of-local-from-remote-branch~
+    - means 
+- remove worktree ::
+  + ~git worktree remove [path-to-worktree-from-within-parent]~
+    - if still has change, unless use ==--force==, git will block the worktree deletion
+- main con of worktree :: can't check out on the same branch for more than one worktree at the time, get an error
 * showkey : useful for keybindings when whants to get text version of keys from keyboard
   - find mappings :: showkey -a
 * other nice utilities
