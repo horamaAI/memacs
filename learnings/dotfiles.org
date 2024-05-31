@@ -93,16 +93,30 @@
     - main tools and configurations ready to use :: ==~/bin, ~/lib, ~/config==, etc.
   + cons ::
     - one hostname-based configuration per repo. Further configurations need to add those in the repo, with all different usecases, architectures, etc.
-** dotfiles as bare git repositories
+** dotfiles as --bare git repositories
 [2024-05-29 Wed 22:25]
 - notes ::
-  + 'bare' repositories are kind of "side" repositories (see [[https://www.saintsjd.com/2011/01/what-is-a-bare-git-repository/]["working" vs "bare" repositories]])
   + sources ::
     - https://www.atlassian.com/git/tutorials/dotfiles
+  + 'bare' repositories :: can be seen as "side" repositories that don't update its content with usual git commands such as git pull/push (see [[https://www.saintsjd.com/2011/01/what-is-a-bare-git-repository/]["working" vs "bare" repositories]]), and need specific way to do so
+    - => prerequisite :: have git pre-installed
+  + pros ::
+    - no extra tools, or symlinks, the files are tracked with a version control system
+    - switch to extra branch and fetch to include different environment
+  + cons ::
+    - complex actions to segregate specific data to push
   + main idea ::
-    - create a bare repository to interact with when updating configurations
-    - create alias to interact with that bare repository instead of usual git
-    - 
+    - create a bare repository to interact with when updating mother configuration (eg: ~$HOME/.cfg~, or ~$HOME/.topcfg~)
+    - add alias for interactions with the bare repository instead of using the usual git (otherwise it would interfere with working repository)
+*** process
+- example ::
+  #+begin_example
+  git init --bare $HOME/.cfg
+  alias config='/usr/bin/git --git-dir=$HOME/.cfg/ --work-tree=$HOME'
+  config config --local status.showUntrackedFiles no
+  echo "alias config='/usr/bin/git --git-dir=$HOME/.cfg/ --work-tree=$HOME'" >> $HOME/.bashrc
+  #+end_example
+- :: 
 ** dotfiles as host-based environment profiles with various tools
 [2024-05-25 Sat 00:24]
 ** dotfiles for configs + ansible for dependencies
