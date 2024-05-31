@@ -1,5 +1,5 @@
 # -*- mode: org -*-
-#+title: Linux commands/tools that are fun and handy
+#+title: Linux (not only) commands/tools that are fun and handy
 #+SETUPFILE: ~/set-up-files/basic-setups.org
 
 * shell
@@ -248,6 +248,12 @@ In addition to the fields specified in the cron expression, there’s also suppo
     - send JSON passed to curl on stdin :: echo '{"a":"b"}' | curl --json @- https://example.com/
     - send JSON from a file and concatenate a string to the end :: curl --json @json.txt --json ', "end": "true"}' https://example.com/
 * cut
+* git
+[2024-05-31 Fri 22:58]
+** git worktree
+- allows switching between different works in progress (WIP) and branches/commits/etc.
+  + instead of usual check out, for which can't have different branches at once, worktree allows checking out on different branches at once. Each working tree is checked out in different folders
+  + worktree is somehow similar to cloning the same repository in different folders, but with worktree all work-trees are still linked to the same clone
 * showkey : useful for keybindings when whants to get text version of keys from keyboard
   - find mappings :: showkey -a
 * other nice utilities
