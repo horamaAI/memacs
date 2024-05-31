@@ -112,13 +112,23 @@
     - source (clone first) :: https://github.com/editorconfig/editorconfig-emacs
     - editorconfig root file :: [[$memacs/.editorconfig]]
     - checkout https://editorconfig.org/ for more configs variables, though might not be all available for editorconfig-emacs 
-    - entries ::
-      #+header: :tangle yes
+    - eg entries :: (disabled)
+      #+header: :tangle no
       #+begin_src emacs-lisp
 	(add-to-list 'load-path "~/Documents/repos/opt/elisp/editorconfig-emacs")
 	(require 'editorconfig)
 	(editorconfig-mode 1)
       #+end_src
+  + define function for dealing with windows' crlf :: automatic line ending conversion to unix
+    #+header: :tangle yes
+    #+begin_src emacs-lisp
+    (defun no-junk-please-were-unixish ()
+      (let ((coding-str (symbol-name buffer-file-coding-system)))
+        (when (string-match "-\\(?:dos\\|mac\\)$" coding-str)
+          (set-buffer-file-coding-system 'unix))))
+
+    (add-hook 'find-file-hooks 'no-junk-please-were-unixish)
+    #+end_src
 - themes ::
   + modus-vivendi ::
     - entries ::
