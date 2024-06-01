@@ -99,7 +99,12 @@
   + sources ::
     - https://www.atlassian.com/git/tutorials/dotfiles
   + 'bare' repositories :: can be seen as "side" repositories that don't update its content with usual git commands such as git pull/push (see [[https://www.saintsjd.com/2011/01/what-is-a-bare-git-repository/]["working" vs "bare" repositories]]), and need specific way to do so
-    - => prerequisite :: have git pre-installed
+    - by convention, bare repos need to have extension ==.git== (eg: ~mybarerepo.git~)
+    - bare repos can be seen as 'shared' repos, where one can only push/pull from, but never directly commit to
+    - recommended for shared and central repositories, kind of 'managers' repos
+    - most common use case for  ~git init --bare~ is creating a remote central repository: ~ssh <user>@<host> cd path/above/repo git init --bare my-project.git~
+      + ssh connect to server containing bare repository, create bare repo, and then users will clone bare repo to create local repo
+  + => prerequisite :: have git pre-installed
   + pros ::
     - no extra tools, or symlinks, the files are tracked with a version control system
     - switch to extra branch and fetch to include different environment
@@ -111,12 +116,75 @@
 *** process
 - example ::
   #+begin_example
-  git init --bare $HOME/.cfg
-  alias config='/usr/bin/git --git-dir=$HOME/.cfg/ --work-tree=$HOME'
-  config config --local status.showUntrackedFiles no
-  echo "alias config='/usr/bin/git --git-dir=$HOME/.cfg/ --work-tree=$HOME'" >> $HOME/.bashrc
+  $git init --bare $HOME/.cfg
+  # creates alias to use a specific git command with git directory the bare repo, and with work-tree set at $HOME
+  $alias config='/usr/bin/git --git-dir=$HOME/.cfg/ --work-tree=$HOME'
+  # flag --local to hide files not explicitly tracked yet
+  # twice 'config' might be a typo, check first without
+  $config config --local status.showUntrackedFiles no
+  # add config alias to bash/zsh startup file
+  $echo "alias config='/usr/bin/git --git-dir=$HOME/.cfg/ --work-tree=$HOME'" >> $HOME/.bashrc
   #+end_example
-- :: 
+- after setup steps :: any file within ~$HOME~ can be versioned using ~config~:
+  #+begin_example
+  config status
+  config add .vimrc
+  config commit -m "Add vimrc"
+  config add .bashrc
+  config commit -m "Add bashrc"
+  config push
+  #+end_example
+- installing dotfiles on new system ::
+  + first ::
+    - make sure ~config~ alias is set on bash or zsh :: ~alias config='/usr/bin/git --git-dir=$HOME/.cfg/ --work-tree=$HOME'~
+    - and that source repo will ignore folder where will be cloned :: (otherwise might create weird recursion issues): ~echo ".cfg" >> .gitignore~
+  + then clone dotfiles into bare repo :: ~git clone --bare <git-repo-url> $HOME/.cfg~
+  + define alias in current shell scope :: ~alias config='/usr/bin/git --git-dir=$HOME/.cfg/ --work-tree=$HOME'~
+  + checkout actual content from the bare repository to $HOME :: ~config checkout~
+    - if steps fails with following error:
+      #+begin_example
+      error: The following untracked working tree files would be overwritten by checkout:
+          .bashrc
+          .gitignore
+      Please move or remove them before you can switch branches.
+      Aborting
+      #+end_example
+    - it's due to existing config files
+    - if need to backup:
+      #+begin_example
+      mkdir -p .config-backup && \
+      config checkout 2>&1 | egrep "\s+\." | awk {'print $1'} | \
+      xargs -I{} mv {} .config-backup/{}
+      #+end_example
+    - and rerun ~config checkout~
+    - set flag showUntrackedFiles to no on the local repository: ~config config --local status.showUntrackedFiles no~
+    - and done!
+    - from there, can use ==config== to add/update dotfiles:
+      #+begin_example
+      config status
+      config add .vimrc
+      config commit -m "Add vimrc"
+      config add .bashrc
+      config commit -m "Add bashrc"
+      config push
+      #+end_example
+  + example script for previous points ::
+    #+begin_example
+    git clone --bare https://bitbucket.org/durdn/cfg.git $HOME/.cfg
+    function config {
+       /usr/bin/git --git-dir=$HOME/.cfg/ --work-tree=$HOME $@
+    }
+    mkdir -p .config-backup
+    config checkout
+    if [ $? = 0 ]; then
+      echo "Checked out config.";
+      else
+        echo "Backing up pre-existing dot files.";
+        config checkout 2>&1 | egrep "\s+\." | awk {'print $1'} | xargs -I{} mv {} .config-backup/{}
+    fi;
+    config checkout
+    config config status.showUntrackedFiles no
+    #+end_example
 ** dotfiles as host-based environment profiles with various tools
 [2024-05-25 Sat 00:24]
 ** dotfiles for configs + ansible for dependencies
