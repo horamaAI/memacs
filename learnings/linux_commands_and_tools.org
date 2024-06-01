@@ -4,6 +4,22 @@
 
 * shell
 [2024-05-26 Sun 21:56]
+** Notes
+[2024-06-01 Sat 16:28]
+- cheatsheet :: https://devhints.io/bash, examples:
+  + shell arguments ::
+    - $# :: number of arguments
+    - $* :: all positional arguments (as a single word)
+    - $@ :: all positional arguments (as separate strings)
+    - $1 :: first argument
+    - $_ :: last argument of the previous command
+  + special variables ::
+    - $? :: exit status of last task
+    - $! :: PID of last background task
+    - $$ :: PID of shell
+    - $0 :: filename of the shell script, or name of current script
+    - $_ :: last argument of the previous command
+    - ${PIPESTATUS[n]} :: return value of piped commands (array)
 ** shell startup and scripts
 *** notes
 - [non-]interactive shells and [non-]login shells :: there are two kinds of shells:
