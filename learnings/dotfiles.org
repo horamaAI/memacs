@@ -33,6 +33,7 @@
 - sources ::
   + https://www.webpro.nl/articles/getting-started-with-dotfiles
     - see Lars Kappert's [[https://github.com/webpro/dotfiles][dotfiles configs]], and [[https://github.com/mathiasbynens/dotfiles][Mathias Bynens' one]] (Lars based his configs from his)
+  + https://kalis.me/dotfiles-automating-macos-system-configuration/
 - tips and tricks ::
   + structure abd organise dotfiles in directories as per your need: topic/environment/hostname/etc.
   + set root installer to use basic tools such as curl or wget (later usually not available on vanilla linux), and add git as a further installation (see example: ~bash -c "`curl -fsSL https://raw.githubusercontent.com/webpro/dotfiles/master/remote-install.sh`"~)
@@ -40,6 +41,33 @@
   + git actions, git submodules, and git subtree are powerful tools to enhance dotfiles configurations
   + updating dotfiles script(s) :: plan for a smooth and idempotent (same and deterministic results for each run) script/ update
     - why :: fix symlinks, update packages
+  + create '*.list' files for tool specific installations, eg: ~apt.list~ for packages to install with apt, ~npm.list~ for those to install with npm, etc.
+    - same, can also create '*.list' files for repositories and make a script to automatise the git cloning
+    - can be tidier to group repository folders, per project or topic for example, eg: ==~/dev/personal==, ==~/dev/work==,  ==~/dev/research==, etc.
+    - eg:
+      #+begin_example
+      #! /usr/bin/env sh
+      
+      DIR=$(dirname "$0")
+      cd "$DIR"
+      
+      COMMENT=\#*
+      REPO_PATH=$(realpath ~/repos)
+      
+      find * -name "*.list" | while read fn; do
+          folder="${fn%.*}"
+          mkdir -p "$REPO_PATH/$folder"
+          while read repo; do
+              if [[ $repo == $COMMENT ]];
+                  then continue;
+              else
+                  pushd "$REPO_PATH/$folder"
+                  git clone $repo
+                  popd
+              fi
+          done < "$fn"
+      done
+      #+end_example
 * dotfiles configurations styles
 [2024-05-24 Fri 23:41]
 ** dotfiles and topical organisation (dotfiles organised into directories, each entitled to specific subject)
@@ -189,3 +217,24 @@
 [2024-05-25 Sat 00:24]
 ** dotfiles for configs + ansible for dependencies
 [2024-05-25 Sat 01:13]
+* My dotfiles
+[2024-06-01 Sat 15:25]
+- draft ::
+  + to include ::
+    - ==user, server, common, private, public, mybusiness, work, work-a, etc.==
+    - '*.list' files for tool specific installations, eg: ~apt.list~ for packages to install with apt, ~npm.list~ for npm
+      + for packages to install, line starts with:
+        - ==$== : then the line is the command to use for following packages
+        - ==#== comment, skip
+        - all remaining lines are packages to install using current command
+      + setup for installation first some essentials packages that are mandatory (build-essential, emacs, python, npm, etc.) to have before installing other tools
+        - for example in [[https://github.com/rkalis/dotfiles/][this repo]], the main setup is running the [[https://github.com/rkalis/dotfiles/blob/master/bootstrap.sh#L30][main packages install]] (~./packages/setup.sh~ which is [[https://github.com/rkalis/dotfiles/blob/master/packages/setup.sh][here]]), and then locate and run the remaining setup (~find * -name "setup.sh" -not -wholename "packages*"~ and skips ~./packages/setup.sh~ which was run before)
+    - '*.list' files for repositories
+    - git bare repo ?
+    - direnv ?
+    - .inputrc, .alias, etc
+    - git configs
+    - add configs for IDE too (settings, format, plugins, etc.)
+    - emacs ::
+      + add in-terminal settings
+
