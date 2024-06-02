@@ -18,15 +18,16 @@
 - alternative to symlinking the machine's configuration files to $HOME/* for example (though symlinking is part of some dotfiles configuration styles)
 - better to split user and hostname-based configurations containing configuration files based on target environment and specific configurations : ==user, server, common, private, public, work, work-a, etc.==
   + for ease of use and retrieval, better to add target's specific configuration files into these configuration directories, eg: ~user/configuration-file~
-** some dotfiles
-[2024-05-26 Sun 21:39]
-- .inputrc :: for keybindings
-- .alias ::
-- .functions :: for functions that are too complex to be aliases, and too short to be added as scripts
-- .env :: for environment variables
 ** awesome dotfiles (list of useful dotfiles repos and other tools)
 [2024-05-29 Wed 21:19]
 - https://github.com/webpro/awesome-dotfiles
+** some dotfiles stuff
+[2024-05-26 Sun 21:39]
+- files name :: 
+  + .alias ::
+  + .env :: for environment variables
+  + .functions :: for functions that are too complex to be aliases, and too short to be added as scripts
+  + .inputrc :: for keybindings and other keys behaviour, eg: ~set completion-ignore-case on~
 * Getting started with dotfiles (very basic descriptions)
 [2024-05-29 Wed 20:02]
 ** Notes
@@ -222,6 +223,8 @@
 - draft ::
   + to include ::
     - ==user, server, common, private, public, mybusiness, work, work-a, etc.==
+    - stow ? checkout [[https://brandon.invergo.net/news/2012-05-26-using-gnu-stow-to-manage-your-dotfiles.html][this]], [[https://spin.atomicobject.com/manage-dotfiles-gnu-stow/][this]] and [[https://blog.palcu.net/2014/06/dotfiles-and-dev-tools-provisioned-by.html][this one maybe]] which relies more on ansible ("bash on steroid")
+      + ansible is a more robust alternative to writing your own bash script, it manages checking for example if an action was successful, or if an error occurs, resume where left off
     - '*.list' files for tool specific installations, eg: ~apt.list~ for packages to install with apt, ~npm.list~ for npm
       + for packages to install, line starts with:
         - ==$== : then the line is the command to use for following packages
@@ -233,8 +236,14 @@
     - git bare repo ?
     - direnv ?
     - .inputrc, .alias, etc
-    - git configs
-    - add configs for IDE too (settings, format, plugins, etc.)
+    - git configs with multiple configs (direnv maybe ?)
+    - [[https://zellij.dev/documentation/][zellij]] (terminal multiplexer written in rust and made to be a better tool than tmux, which is written in C, and sometimes lacking)
+      + checkout how to create workspaces: https://spin.atomicobject.com/dev-project-workspace-tmux/
+      + checkout how to add more functionalities to it:
+        - https://jolicode.com/blog/organiser-son-terminal-avec-des-workspaces
+        - https://github.com/niflostancu/tmux-workspaces
+    - vim (learn basics, and tweak configs, seems there is no way to escape from it when working with bare installation or with the terminal)
+    - add configs for one 'big' IDE too (settings, format, plugins, etc.)
     - emacs ::
       + add in-terminal settings
 
