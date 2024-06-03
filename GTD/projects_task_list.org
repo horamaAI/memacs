@@ -15,6 +15,9 @@
 
 * Placeholder for misc project tickets
 [2024-03-15 Fri 21:20]
+** dotfiles
+[2024-06-03 Mon 20:53]
+- DOTF000: minor dotfiles update
 ** Design
 [2024-03-15 Fri 21:21]
 - DES000: design update; // Generic ticket number for small design tasks that do not need tracing
