@@ -37,6 +37,7 @@
   + https://kalis.me/dotfiles-automating-macos-system-configuration/
 - tips and tricks ::
   + structure abd organise dotfiles in directories as per your need: topic/environment/hostname/etc.
+  + use version control systems "branches" to adapt configs to different systems (linux distros, macOS, etc.)
   + set root installer to use basic tools such as curl or wget (later usually not available on vanilla linux), and add git as a further installation (see example: ~bash -c "`curl -fsSL https://raw.githubusercontent.com/webpro/dotfiles/master/remote-install.sh`"~)
   + use dependencies manager or other tools for dependencies and additional tools (eg: cmake, makefile, ansible, etc.)
   + git actions, git submodules, and git subtree are powerful tools to enhance dotfiles configurations
