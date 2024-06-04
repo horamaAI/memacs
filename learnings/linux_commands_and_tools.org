@@ -266,7 +266,7 @@ In addition to the fields specified in the cron expression, there’s also suppo
 * cut
 * git
 [2024-05-31 Fri 22:58]
-** git worktree
+** git worktrees (work with different "branches" at the time)
 - allows switching between different works in progress (WIP) and branches/commits/etc.
   + instead of usual check out, for which can't have different branches at once, worktree allows checking out on different branches at once. Each working tree is checked out in different folders
   + worktree is somehow similar to cloning the same repository in different folders, but with worktree all work-trees are still linked to the same clone
@@ -287,6 +287,25 @@ In addition to the fields specified in the cron expression, there’s also suppo
   + ~git worktree remove [path-to-worktree-from-within-parent]~
     - if still has change, unless use ==--force==, git will block the worktree deletion
 - main con of worktree :: can't check out on the same branch for more than one worktree at the time, get an error
+** git subtrees and git submodules
+[2024-06-04 Tue 21:58]
+*** git submodules vs git subtrees
+[2024-06-04 Tue 21:59]
+- subtrees and submodules allow nesting subprojects within projects, useful for example when subprojects are dependencies of "super" projects
+- submodules are pointers to commits, usually in another repositories
+- subtrees are directories in the "main" repositories
+- when use one over another ? ::
+  + project has dependency updated in another repo? :: => submodules
+  + project has dependency maintained in same repo? :: => subtrees
+  + want to push a subdirectory, not the whole directory, to a branch on the same repo? :: => subtrees, but can work with worktrees ([[https://nicolevanderhoeven.com/blog/20210302-presentation-slides-as-code/][checkout this]])
+*** git submodules
+[2024-06-04 Tue 21:36]
+- allows tracking version history of external submodules into parent repo
+- with submodules it's possible to lock the version in its parent (no git submodule update)
+- as there is a .git folder in the repo, when it has submodules, there is a .gitsubmodules folder added to it
+- possible to have nested submodules (in that case to clone /super/ parent, use: ~git submodule update –init –recursive~)
+*** git subtrees
+[2024-06-04 Tue 21:56]
 * showkey : useful for keybindings when whants to get text version of keys from keyboard
   - find mappings :: showkey -a
 * other nice utilities
