@@ -255,4 +255,28 @@
     - emacs ::
       + add in-terminal settings
     - preferably add 'uninstall' or remove command
+- structure ::
+  + academic ::
+  + basic ::
+    - emacs ? :: what to split from common ?
+  + common ::
+  + dmahoro ::
+    - profile: basic + common + academic
+      + (suppose need to configure docker profile that contains dmahoro-academic, or its equivalent: basic+common)
+      + full profile for dev for example, with c++/cmake/java/docker/etc.
+  + opt ::
+    - create a '*.list' for repos to clone (clone own forks too if any)
+    - preferably use git submodules, but maybe worktrees might work better ?
+  + org ::
+    - '*.list' for memacs
+  + dev :: for repos
+    - submodules 
+  + private ::
+    - :: 
+    - dmahoro ::
+      - for private stuff (*NOT SECURITY BREACHES*)
+    - work ::
+      + company_a ::
+        - dev :: for repos
+        - org :: for org stuff
 
