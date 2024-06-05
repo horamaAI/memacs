@@ -302,8 +302,17 @@ In addition to the fields specified in the cron expression, there’s also suppo
 [2024-06-04 Tue 21:36]
 - allows tracking version history of external submodules into parent repo
 - with submodules it's possible to lock the version in its parent (no git submodule update)
-- as there is a .git folder in the repo, when it has submodules, there is a .gitsubmodules folder added to it
-- possible to have nested submodules (in that case to clone /super/ parent, use: ~git submodule update –init –recursive~)
+- the same way a git repo has a .git folder, when it has submodules, there is a .gitmodules file added to it
+- link submodule to current repo (of course current has to be a valid repo) : ~git submodule add [link-to-existing-submodule-repo]~
+- it's possible to have nested submodules, and in that case to update from the "super" parent, use: ~git submodule update –init –recursive~
+- clone repo with submodules, eg:
+  #+begin_example
+  git clone /url/to/repo/with/submodules
+  # git submodule init: copies mapping from .gitmodules file into the local ./.git/config file
+  git submodule init
+  git submodule update
+  #+end_example
+  
 *** git subtrees
 [2024-06-04 Tue 21:56]
 * showkey : useful for keybindings when whants to get text version of keys from keyboard
