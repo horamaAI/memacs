@@ -224,6 +224,7 @@
 - draft ::
   + to include ::
     - ==user, server, common, private, public, mybusiness, work, work-a, etc.==
+    - don't forget adding ppas for additional apt installs (https://github.com/cowboy/dotfiles/blob/master/init/20_ubuntu_apt.sh#L16)
     - stow ? checkout [[https://brandon.invergo.net/news/2012-05-26-using-gnu-stow-to-manage-your-dotfiles.html][this]], [[https://spin.atomicobject.com/manage-dotfiles-gnu-stow/][this]] and [[https://blog.palcu.net/2014/06/dotfiles-and-dev-tools-provisioned-by.html][this one maybe]] which relies more on ansible ("bash on steroid")
       + ansible is a more robust alternative to writing your own bash script, it manages checking for example if an action was successful, or if an error occurs, resume where left off
     - '*.list' files for tool specific installations, eg: ~apt.list~ for packages to install with apt, ~npm.list~ for npm
@@ -274,7 +275,7 @@
   + private ::
     - :: 
     - dmahoro ::
-      - for private stuff (*NOT SECURITY BREACHES*)
+      - for private stuff (*DON'T commit keys/tokens/passwords and create SECURITY BREACHES*)
     - work ::
       + company_a ::
         - dev :: for repos
