@@ -261,6 +261,7 @@
   + basic ::
     - emacs ? :: what to split from common ?
   + common ::
+    - 
   + dmahoro ::
     - profile: basic + common + academic
       + (suppose need to configure docker profile that contains dmahoro-academic, or its equivalent: basic+common)
@@ -272,6 +273,9 @@
     - '*.list' for memacs
   + dev :: for repos
     - submodules 
+  + dev-configs ::
+    - contains configs for IDEs, formatting, dev utils, etc.
+    - additional tools/repos/plugins/etc. are either in 'dev' folder, or any other dotfile/**/*.list, such as ==./common/ide.list==
   + private ::
     - :: 
     - dmahoro ::
