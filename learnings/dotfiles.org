@@ -44,6 +44,7 @@
   + updating dotfiles script(s) :: plan for a smooth and idempotent (same and deterministic results for each run) script/ update
     - why :: fix symlinks, update packages
   + create '*.list' files for tool specific installations, eg: ~apt.list~ for packages to install with apt, ~npm.list~ for those to install with npm, etc.
+    - source :: https://kalis.me/dotfiles-automating-macos-system-configuration/
     - same, can also create '*.list' files for repositories and make a script to automatise the git cloning
     - can be tidier to group repository folders, per project or topic for example, eg: ==~/dev/personal==, ==~/dev/work==,  ==~/dev/research==, etc.
     - eg:
@@ -223,11 +224,11 @@
 [2024-06-01 Sat 15:25]
 - draft ::
   + to include ::
-    - ==user, server, common, private, public, mybusiness, work, work-a, etc.==
+    - ==user, server, common, private, business, work, work-a, etc.==
     - don't forget adding ppas for additional apt installs (https://github.com/cowboy/dotfiles/blob/master/init/20_ubuntu_apt.sh#L16)
     - stow ? checkout [[https://brandon.invergo.net/news/2012-05-26-using-gnu-stow-to-manage-your-dotfiles.html][this]], [[https://spin.atomicobject.com/manage-dotfiles-gnu-stow/][this]] and [[https://blog.palcu.net/2014/06/dotfiles-and-dev-tools-provisioned-by.html][this one maybe]] which relies more on ansible ("bash on steroid")
       + ansible is a more robust alternative to writing your own bash script, it manages checking for example if an action was successful, or if an error occurs, resume where left off
-    - '*.list' files for tool specific installations, eg: ~apt.list~ for packages to install with apt, ~npm.list~ for npm
+    - '*.list' files for tool specific installations (filed by command to use), eg: ~apt.list~ for packages to install with apt, ~npm.list~ for npm, ~python2.list~, etc.
       + for packages to install, line starts with:
         - ==$== : then the line is the command to use for following packages
         - ==#== comment, skip
@@ -256,32 +257,58 @@
     - emacs ::
       + add in-terminal settings
     - preferably add 'uninstall' or remove command
-- structure ::
-  + academic ::
-  + basic ::
-    - emacs ? :: what to split from common ?
-  + common ::
-    - 
-  + dmahoro ::
-    - profile: basic + common + academic
-      + (suppose need to configure docker profile that contains dmahoro-academic, or its equivalent: basic+common)
-      + full profile for dev for example, with c++/cmake/java/docker/etc.
-  + opt ::
-    - create a '*.list' for repos to clone (clone own forks too if any)
-    - preferably use git submodules, but maybe worktrees might work better ?
-  + org ::
-    - '*.list' for memacs
-  + dev :: for repos
-    - submodules 
-  + dev-configs ::
+  + "update" ::
+    - script for updating target 
+- dotfiles structure :: source of things to do
+  + configs :: 
+    - basic ::
+      + emacs ? :: what to split from common ?
+        - '*.list' for emacs configs (basics)
+    - add default compilers and tools (c++, python, java, docker), just in case, so can do basic tasks such as running a basic test environment
+      + opt ::
+        - create a '*.list' for repos (for *opt*) to clone
+        - preferably use git submodules, but maybe worktrees might work better ?
+    - common ::
+      + add to default compilers further debugging, dependencies managers, and optimisation tools (valgrind, ansible, etc.)
+      + opt :: don't forget cloning additional elisp stuff, eg: ==opt/elisp/org-contrib==
+    - academic ::
+  + repos ::
+    - use submodules 
+  + dev-configs ?? :: (wouldn't be better to organise this by tool? eg: vscode, vs, vim, etc.)
     - contains configs for IDEs, formatting, dev utils, etc.
     - additional tools/repos/plugins/etc. are either in 'dev' folder, or any other dotfile/**/*.list, such as ==./common/ide.list==
+  + profiles :: allows easy selection of given profile (suppose one needs to configure a basic easy working docker profile: ==basic+common==, or a profile that contains all "dmahoro" minus "private" stuff and "academic", etc.)
+    - all have same basic folders organisation :: content varies with respect to profile
+      + opt ::
+      + emacs ::
+      + repos ::
+      + etc. ::
+      + other profiles have this basic files structure, plus further customisation
+    - dmahoro :: configs: ==basic + common + academic + private==
+      + env :: 
+      + opt :: add further full profile for dmahoro "dev" for example, with c++/cmake/java/docker/etc.
+      + repos :: add complete list of repos
+      + repos-private :: folder containing private submodules, or with different remote links (direnv ?)
+        - work ::
+          + company_a ::
+          + company_b ::
+          + etc. :: 
+      + org :: memacs
+    - basic ::
+      + basic profile to bootstrap a light ready to go environment, eg: for a docker environment to use for tests
+    - common :: (is it really needed ?)
+    - can create others when needed
   + private ::
     - :: 
     - dmahoro ::
-      - for private stuff (*DON'T commit keys/tokens/passwords and create SECURITY BREACHES*)
+      + for private stuff (*DON'T commit keys/tokens/passwords and create SECURITY BREACHES*)
+      + dev-repos ::
+        - 
     - work ::
       + company_a ::
         - dev :: for repos
         - org :: for org stuff
+- target structure ::
+  + questions ::
+    - should be different than the dotfiles structure ? => how will updates work when wants to change something and push it to dotfiles repo ?
 
