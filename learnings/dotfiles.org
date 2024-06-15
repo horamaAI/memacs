@@ -260,55 +260,110 @@
   + "update" ::
     - script for updating target 
 - dotfiles structure :: source of things to do
+  + install.sh ::
+    - main entry point for dotfiles installation
   + configs :: 
-    - basic ::
-      + emacs ? :: what to split from common ?
-        - '*.list' for emacs configs (basics)
-    - add default compilers and tools (c++, python, java, docker), just in case, so can do basic tasks such as running a basic test environment
-      + opt ::
-        - create a '*.list' for repos (for *opt*) to clone
-        - preferably use git submodules, but maybe worktrees might work better ?
-    - common ::
-      + add to default compilers further debugging, dependencies managers, and optimisation tools (valgrind, ansible, etc.)
-      + opt :: don't forget cloning additional elisp stuff, eg: ==opt/elisp/org-contrib==
     - academic ::
-  + repos ::
-    - use submodules 
-  + dev-configs ?? :: (wouldn't be better to organise this by tool? eg: vscode, vs, vim, etc.)
-    - contains configs for IDEs, formatting, dev utils, etc.
-    - additional tools/repos/plugins/etc. are either in 'dev' folder, or any other dotfile/**/*.list, such as ==./common/ide.list==
-  + profiles :: allows easy selection of given profile (suppose one needs to configure a basic easy working docker profile: ==basic+common==, or a profile that contains all "dmahoro" minus "private" stuff and "academic", etc.)
-    - all have same basic folders organisation :: content varies with respect to profile
-      + opt ::
-      + emacs ::
-      + repos ::
-      + etc. ::
+      + 'smthing.list', and 'smthing' file for specific installs and configs
+      + decouple config from 'private'
+      + latex for emacs
+    - basic ::
+      + apt.list (file) ::
+        - main tools needed for basic install use
+        - others tools to install are to be put in specific "group" of '*.list' installation files ('dpkg.list', 'pip.list', etc.)
+        - add some basic tools and default compilers to start with, so can do basic tasks such as running a basic test environment
+        - to install ::
+          + build-essential, git, tree, curl, wget, g++, python, java jdk, valgrind
+      + bin (folder) :: 
+      + opt (file) :: for opt configs
+      + opt.list ::
+        - basic 'opt' tools that needs to be cloned (org-contrib ?), or installed specifically in 'opt' folder
+        - to install :: ==opt/elisp/org-contrib==
+      + vim ::
+        - vim configs
+        - emacs configs to be put in 'common' profile, in basic one just deal with vim terminal
+    - common ::
+      + apt.list ::
+        - add to default compilers further debugging, dependencies managers, and optimisation tools (valgrind, ansible, etc.)
+        - to install ::
+          + docker, ansible
+      + opt (file) :: further opt configs
+      + opt.list ::
+        - cloning additional elisp stuff, knowing that some are already in 'basic', eg: ==opt/elisp/org-contrib==
+      + dev (folder) ::
+        - contains configs for IDEs, formatting, dev utils, etc.
+        - additional tools/repos/plugins/etc. are either in 'dev' folder, or any other dotfile/**/*.list, such as ==./common/some-ide.list==
+        - docker ::
+        - podman ::
+        - vscode (folder) ::
+          + vscode (file) :: for configs
+          + vscode.list (file) ::
+            - to install extensions through command line, checkout how to do it [[https://code.visualstudio.com/docs/editor/extension-marketplace#_command-line-extension-management][here]]
+          + settings.json ::
+          + *.json :: 
+      + emacs (file) ? :: what to install in basic emacs split from common ?
+        - no 'emacs.list' file, emacs packages are installed and set in .el configuration files
+        - basic emacs configs
+        - undo-tree, global-undo-tree-mode
+      + emacs (folder) ? ::
+        - clone of ==~/.emacs.d/== ? :: should contain emacs.d content, ones that can't be installed
+      + git ::
+        - advanced configs, such as direnv
+        - preferably use git submodules when dealing with embedded repos, and maybe use subtree and worktrees when appropriate
+    - private ::
+      + added as a private repo with git submodules
+  + profiles ::
+    - allows easy selection of given profile: suppose one needs to configure a very light basic environment (==basic==), an more heavier environment that is still missing personal stuff, but with a working docker environment: (==basic+common==), or a full personal profile that contains all "dmahoro" environment (==basic+common+private+academic==), etc.
+    - install.sh ::
+      + so that can setup the selected profile, and also have the same basic folders organisation for all profiles  :: all profiles have the same basic folder organisation, and each content will expand from it:
+        - opt ::
+        - emacs ::
+        - repos ::
+        - etc. ::
       + other profiles have this basic files structure, plus further customisation
-    - dmahoro :: configs: ==basic + common + academic + private==
+      + "custom" profile ::
+        - if select a specific profile, it might install others:
+          + common :: basic+common
+          + academic :: dmahoro-private
+          + private :: dmahoro-acade
+          + dmahoro :: all
+    - basic ::
+      + basic profile to bootstrap a lightweight and ready-to-go environment, eg: for a docker environment to use for tests
+    - common ::
+      + less lightweight than basic and close to full working environment, but still not too cluttered to be described as a "light" environment
+    - dmahoro ::
+      + "configs": ==basic + common + academic + private== (all)
       + env :: 
       + opt :: add further full profile for dmahoro "dev" for example, with c++/cmake/java/docker/etc.
       + repos :: add complete list of repos
-      + repos-private :: folder containing private submodules, or with different remote links (direnv ?)
+        - org :: memacs
+      + private ::
+        - set through profile 'private'
+        - folder containing private submodules, some with different remote links (direnv ?), but in any case need to set a ==gitignore== to adapt git configs to target different remotes for example
+        - see private for content structure pro
         - work ::
           + company_a ::
           + company_b ::
           + etc. :: 
-      + org :: memacs
-    - basic ::
-      + basic profile to bootstrap a light ready to go environment, eg: for a docker environment to use for tests
-    - common :: (is it really needed ?)
-    - can create others when needed
-  + private ::
-    - :: 
-    - dmahoro ::
-      + for private stuff (*DON'T commit keys/tokens/passwords and create SECURITY BREACHES*)
-      + dev-repos ::
-        - 
-    - work ::
-      + company_a ::
-        - dev :: for repos
-        - org :: for org stuff
-- target structure ::
-  + questions ::
+    - private ::
+      + profile for private stuff =>
+        - *DON'T commit keys/tokens/passwords and create SECURITY BREACHES*
+        - *DON'T push on public profile*
+        - dev-repos ::
+      + repos-private ::
+        - bizz ::
+          + for private projects with "for-profit" intent
+          + proj-a ::
+            - dev :: for repos
+            - org :: for org stuff
+          + proj-b ::
+          + etc.
+        - work ::
+          + company_a ::
+            - dev :: for repos
+            - org :: for org stuff
+    - can create others whenever needed
+- questions ::
+  + target structure ::
     - should be different than the dotfiles structure ? => how will updates work when wants to change something and push it to dotfiles repo ?
 
