@@ -273,7 +273,7 @@
         - others tools to install are to be put in specific "group" of '*.list' installation files ('dpkg.list', 'pip.list', etc.)
         - add some basic tools and default compilers to start with, so can do basic tasks such as running a basic test environment
         - to install ::
-          + build-essential, git, tree, curl, wget, g++, python, java jdk, valgrind
+          + build-essential, git, tree, curl, wget, g++, python, java jdk (basic one: default-jre), valgrind
       + bin (folder) :: 
       + opt (file) :: for opt configs
       + opt.list ::
@@ -328,6 +328,7 @@
           + private :: dmahoro-acade
           + dmahoro :: all
     - basic ::
+      + default environment installed if no particular one specified
       + basic profile to bootstrap a lightweight and ready-to-go environment, eg: for a docker environment to use for tests
     - common ::
       + less lightweight than basic and close to full working environment, but still not too cluttered to be described as a "light" environment
@@ -362,6 +363,8 @@
           + company_a ::
             - dev :: for repos
             - org :: for org stuff
+    - "custom" ::
+      + alias for "common", but with different $USER value (is it even possible ? $USER is set at installation right ?)
     - can create others whenever needed
 - questions ::
   + target structure ::
