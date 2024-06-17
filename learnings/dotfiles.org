@@ -314,6 +314,7 @@
       + added as a private repo with git submodules
   + profiles ::
     - allows easy selection of given profile: suppose one needs to configure a very light basic environment (==basic==), an more heavier environment that is still missing personal stuff, but with a working docker environment: (==basic+common==), or a full personal profile that contains all "dmahoro" environment (==basic+common+private+academic==), etc.
+    - when a profile is configured meaning the structure is there, the env set, bin, etc. then one can stow that profile, for example ~stow common~
     - install.sh ::
       + so that can setup the selected profile, and also have the same basic folders organisation for all profiles  :: all profiles have the same basic folder organisation, and each content will expand from it:
         - opt ::
