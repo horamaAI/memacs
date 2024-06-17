@@ -60,10 +60,11 @@
    + execute code block (place first cursor inside code block) :: =C-c C-c=
  - others ::
    + deactivate/activate auto-fill (line break) in current buffer :: ==C-c q==
-** include, insert, edit, search, filter, navigate text, paragraphs, headlines (or sections), and items
+** text include, insert, edit, search, filter, navigate, paragraphs, headlines (or sections), items, etc.
 *** insert, edit, copy/cut
-- copy/cut ::
-  + kill from cursor to end of line :: ==C-k==
+- kill/copy/cut ::
+  + lines ::
+    - kill from cursor to end of line :: ==C-k==
   + duplicate line :: ==C-c d== (own customised definition)
   + rectangle edition ::
     - select rectangle :: ==C-x Space==, or M-x rectangle-mark-mode
@@ -87,6 +88,7 @@
 *** select, navigate and motion
 - selection ::
   + select all :: ==C-x h==
+  + select paragraph :: ==M-h==
 - text navigation :: 
   + sentences ::
     - Move between sentences :: ==M-a==, and ==M-e==
@@ -514,7 +516,8 @@
 
 ** hledger
   + 
-
+* vim
+[2024-06-17 Mon 20:16]
 * emacs IDE
 ** Misc
 - comment/uncomment line :: ~C-x C-;~
