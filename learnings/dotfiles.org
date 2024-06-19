@@ -273,7 +273,7 @@
         - others tools to install are to be put in specific "group" of '*.list' installation files ('dpkg.list', 'pip.list', etc.)
         - add some basic tools and default compilers to start with, so can do basic tasks such as running a basic test environment
         - to install ::
-          + build-essential, git, tree, curl, wget, g++, python, java jdk (basic one: default-jre), valgrind
+          + build-essential, git, tree, curl, wget, screen (GNU screen, multiplexer), g++, python, java jdk (basic one: default-jre), valgrind
       + bin (folder) :: 
       + opt (file) :: for opt configs
       + opt.list ::
@@ -304,7 +304,7 @@
       + emacs (file) ? :: what to install in basic emacs split from common ?
         - no 'emacs.list' file, emacs packages are installed and set in .el configuration files
         - basic emacs configs
-        - undo-tree, global-undo-tree-mode
+        - undo-tree, global-undo-tree-mode, emacs multiplexer
       + emacs (folder) ? ::
         - clone of ==~/.emacs.d/== ? :: should contain emacs.d content, ones that can't be installed
       + git ::
@@ -316,11 +316,12 @@
     - allows easy selection of given profile: suppose one needs to configure a very light basic environment (==basic==), an more heavier environment that is still missing personal stuff, but with a working docker environment: (==basic+common==), or a full personal profile that contains all "dmahoro" environment (==basic+common+private+academic==), etc.
     - when a profile is configured meaning the structure is there, the env set, bin, etc. then one can stow that profile, for example ~stow common~
     - install.sh ::
-      + so that can setup the selected profile, and also have the same basic folders organisation for all profiles  :: all profiles have the same basic folder organisation, and each content will expand from it:
-        - opt ::
-        - emacs ::
-        - repos ::
-        - etc. ::
+      + so that can setup the selected profile, and also have the same basic folders organisation for all profiles  ::
+        - all profiles have the same basic folder organisation, and each content will expand from it:
+          + opt ::
+          + emacs ::
+          + repos ::
+          + etc. ::
       + other profiles have this basic files structure, plus further customisation
       + "custom" profile ::
         - if select a specific profile, it might install others:
