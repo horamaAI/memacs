@@ -2,7 +2,7 @@
 #+title: Linux (not only) commands/tools that are fun and handy
 #+SETUPFILE: ~/set-up-files/basic-setups.org
 
-* shell
+* shell and shell scripting
 [2024-05-26 Sun 21:56]
 ** Notes
 [2024-06-01 Sat 16:28]
@@ -20,7 +20,7 @@
     - $0 :: filename of the shell script, or name of current script
     - $_ :: last argument of the previous command
     - ${PIPESTATUS[n]} :: return value of piped commands (array)
-** shell startup and scripts
+** shell types and shell startup configs
 *** notes
 - [non-]interactive shells and [non-]login shells :: there are two kinds of shells:
   + [non-]interactive shells :: you type into them (shell scripts)
@@ -68,6 +68,22 @@
     #+ATTR_ORG: :width 500
     #+ATTR_HTML: :width 300px
     [[../images/shell-startup-actual.png]]
+** shell scripting
+[2024-06-23 Sun 02:07]
+*** Notes
+- arrays ::
+  + arrays and environment variables ::
+    - array can not be an array of environment variables as environment variables may only be key-value string pairs
+    - however, as done for $PATH, the trick is to turn array into a string delimited with a character not otherwise present in the values:
+      #+begin_example
+      $ arr=( aa bb cc "some string" )
+      $ arr=$( printf '%s:' "${arr[@]}" )
+      # ~printf '%s\n' "$arr"~ gives "aa:bb:cc:some string:"
+      #+end_example
+** shell special variables
+[2024-06-23 Sun 03:45]
+- IFS (Internal Field Separator) ::
+  
 * args and xargs
 ** Notes
 - use :: passing arguments from standard input to other commands. Whereas some commands allow piping (grep for example), others don't (find, ls, or echo for example: can't ~seq 5 | echo~, need to pipe to xargs first: ~seq 5 | xargs echo~)
@@ -315,6 +331,78 @@ In addition to the fields specified in the cron expression, there’s also suppo
   
 *** git subtrees
 [2024-06-04 Tue 21:56]
+* screen (terminal multiplexer)
+:PROPERTIES:
+:CUSTOM_ID: screen_configs
+:END:
+[2024-06-22 Sat 19:28]
+- Notes ::
+  + terminal multiplexer :: tool used to multiplex several pseudoterminal-based login sessions inside a single terminal display/terminal emulator window/PC/workstation system console/remote login session, or to detach and reattach sessions from a terminal
+    - some examples: tmux, GNU screen, terminator
+  + some main features ::
+    - open multiple windows within the screen session
+    - disconnect and reconnect Screen without losing the current session
+- basics ::
+  + launch a session :: ~$screen~
+  + screen control sequence prefix :: ~C-a~ as in ~C-a [command]~
+    - sometimes default control sequence ~C-a~ is used somewhere else (eg: emacs), so it can be changed by setting the command into ==~/.screenrc==
+      + eg: to change the default screen prefix to ~C-x~: ~$echo "escape ^Xx" >> ~/.screenrc~
+    - since prefix can be changed, from now forward, it will be referred to as ~[screen-prefix]~
+    - ~M-1~ as prefix ::
+      + source :: https://stackoverflow.com/questions/1543427/gnu-screen-changing-the-default-escape-command-key-to-alt-x
+      + ~/.screenrc ::
+        #+begin_example
+        # trick to use M-1 as the gnu screen prefix (source: https://stackoverflow.com/questions/1543427/gnu-screen-changing-the-default-escape-command-key-to-alt-x)
+        # set prefix to "C-m", but since key sequence ~C-m~ is too far apart to be comfortably used, set its "alias" ~M-1~
+        escape ^ma
+        
+        # use screen auxiliary register to save C-a into register S
+        register S ^m
+        
+        # M-1 produces ^A and acts as an escape key
+        bindkey "^[1" process S
+        #+end_example
+  + help :: ~[screen-prefix] ?~
+- screen and windows ::
+  + start new window (independent window with its own shell) :: ~[screen-prefix] c~
+  + move to next/previous window :: ~[screen-prefix] n~ / ~[screen-prefix] p~
+  + move to windows/screen by number :: ~[screen-prefix] [n]~
+  + list all windows and select with cursor :: ~[screen-prefix] "~
+  + list all running sessions (screen offline mode) :: ~screen -ls~
+  + kill current window :: ~[screen-prefix] K~
+- (de)attach screen session ::
+  + disconnect from screen session and keep it running on the host :: ~[screen-prefix] d~
+  + resume (-r) connection to session :: ~$screen -r~
+  + resume connection to a session that was not disconnected properly due to unstable network for example :: ~$screen -r -d~ (disconnect first from host: -d, and then resume to reconnect)
+- split screens ::
+  + horizontal split :: ~[screen-prefix] S~
+  + vertical split :: ~[screen-prefix] |~
+  + switch between screens :: ~[screen-prefix] <Tab>~
+  + remove all screen region but the current one :: ~[screen-prefix] Q~
+- advanced ::
+  + log files ::
+    - start logging current session :: ~[screen-prefix] H~
+      + generates a file named ~screenlog.n~, where n is the screen session number
+      + can also enable logging in detached mode with -L: ~screen -L~
+  + screenshot ::
+    - make a screenshot of what's currently on the screen :: ~[screen-prefix] h~
+      + generates a file named ~hardcopy.n~
+  + lock screen session ::
+    - lock current screen session :: ~[screen-prefix] x~ (locks screen with user's password)
+- examples ::
+  + monitor the outputs of a detached session :: 
+    - ~screen -dmS test -L~ :: start screen session named 'test' (-S defines session name), but start it in detached mode (-dm), and enable logging (-L)
+      + can then attach to session with ~screen -r test~, but here want to do it from another session
+    - ~screen -S test -X colon "logfile flush 0^M"~ :: enable real-time logging:
+      + send command to an alive session (-X)
+      + signal the session that a command is being sent (~colon~)
+      + set the screen session to fix the log interval time in seconds (~logfile flush~), and value 0 for real-time logging (default is 10secs)
+      + execute (enter) sent command with ~C-M~ (~^M~)
+    - ~tail -Fn 0 screenlog.0~ :: monitor outputs from detached screen
+      + ~-F~ ::  keep watching screen log file for changes
+      + ~-n 0~ :: only watch, don’t output older lines
+      + ~screenlog.0~ :: .0 since the detached screen is supposed to be the first
+    - ~tail -Fn 0 screenlog.0 | ccze | grep -i error~ :: watch for errors using ccze (logs colorizer)
 * showkey : useful for keybindings when whants to get text version of keys from keyboard
   - find mappings :: showkey -a
 * other nice utilities
