@@ -60,7 +60,7 @@
    + execute code block (place first cursor inside code block) :: =C-c C-c=
  - others ::
    + deactivate/activate auto-fill (line break) in current buffer :: ==C-c q==
-** text include, insert, edit, search, filter, navigate, paragraphs, headlines (or sections), items, etc.
+** text edition: include, insert, edit, search, replace, filter, navigate, paragraphs, headlines (or sections), items, etc.
 *** insert, edit, copy/cut
 - kill/copy/cut ::
   + lines ::
@@ -97,10 +97,11 @@
   + words ::
     - move forward/backward on word :: ==M-f/M-b== :: 
 *** search, replace, filter
-- search and replace ::
+- search ::
   + search forward/backward :: ==C-s/C-r==
   + with REGEX search forward/backward :: ==C-M-s/C-M-r==
-  + query replace (search and replace) :: ==M-S-5==
+- replace :: 
+  + query replace (search and replace) :: ==M-S-5== (or ==M-%==)
   + with REGEX query replace (search and replace) :: ==C-M-S-5==
   + regex search on current file of *all* matching results in a collapsed view :: ==C-c / /==
 - filter ::
@@ -518,6 +519,7 @@
   + 
 * vim
 [2024-06-17 Mon 20:16]
+- undo/redo :: ~u~, ~C-r~
 * emacs IDE
 ** Misc
 - comment/uncomment line :: ~C-x C-;~
