@@ -71,19 +71,49 @@
 ** shell scripting
 [2024-06-23 Sun 02:07]
 *** Notes
-- arrays ::
-  + arrays and environment variables ::
-    - array can not be an array of environment variables as environment variables may only be key-value string pairs
-    - however, as done for $PATH, the trick is to turn array into a string delimited with a character not otherwise present in the values:
-      #+begin_example
-      $ arr=( aa bb cc "some string" )
-      $ arr=$( printf '%s:' "${arr[@]}" )
-      # ~printf '%s\n' "$arr"~ gives "aa:bb:cc:some string:"
-      #+end_example
-** shell special variables
+*** shell special variables
 [2024-06-23 Sun 03:45]
 - IFS (Internal Field Separator) ::
+  + IFS :: variable used by the shell to determines word boundaries while splitting a sequence of character strings
+    - default values: at least three-characters string: space, tab, and newline
+  + temporarily use different IFS value ::
+    - eg: iterate over content of $PATH:
+      #+begin_example
+      buff="$IFS"
+      IFS=:
+      (
+          for ele in $PATH[@]; do
+      	echo "content: $ele"
+          done
+          )
+      IFS="$buff"
+      #+end_example
+  + IFS and ==read== command ::
+    - eg: read from a csv file (comma separated): read the 2 last lines only (tail -n +2)
+      #+begin_example
+      #!/bin/bash
+      while IFS="," read -r rec_column1 rec_column2 rec_column3
+      do
+       echo "Displaying Record-$rec_column1"
+       echo "Quantity: $rec_column2"
+       echo "Price: $rec_column3"
+       echo ""
+      done < <(tail -n +2 input.csv)
+      #+end_example
   
+*** shell commands
+[2024-06-23 Sun 19:39]
+- set vs export ::
+*** Arrays
+[2024-06-23 Sun 19:38]
+- arrays and environment variables ::
+  + array can not be an array of environment variables as environment variables may only be key-value string pairs
+  + however, as done for $PATH, the trick is to turn array into a string delimited with a character not otherwise present in the values:
+    #+begin_example
+    $ arr=( aa bb cc "some string" )
+    $ arr=$( printf '%s:' "${arr[@]}" )
+    # ~printf '%s\n' "$arr"~ gives "aa:bb:cc:some string:"
+    #+end_example
 * args and xargs
 ** Notes
 - use :: passing arguments from standard input to other commands. Whereas some commands allow piping (grep for example), others don't (find, ls, or echo for example: can't ~seq 5 | echo~, need to pipe to xargs first: ~seq 5 | xargs echo~)
@@ -186,7 +216,12 @@
         - g :: to apply command on all matches
       + 's/─/├/' :: replace the first '-' with '├', for pretty printing
       + '$s/├/└/' :: further pretty print (notice the '$')
-      
+* cat, printf
+[2024-06-23 Sun 18:51]
+- examples ::
+  + print IFS characters ::
+    - ~echo "$IFS" | cat -et~: add ==$== at each en of line (-e), and print tabulation as ==^I== (-t)
+    - ~printf %q "$IFS"~: ==%q== to escape non-printable characters with POSIX ==$''==
 * cron (crontab, cronjob, etc.)
 ** Notes
 + cron tool format explainer :: https://crontab.cronhub.io/
@@ -353,11 +388,11 @@ In addition to the fields specified in the cron expression, there’s also suppo
       + ~/.screenrc ::
         #+begin_example
         # trick to use M-1 as the gnu screen prefix (source: https://stackoverflow.com/questions/1543427/gnu-screen-changing-the-default-escape-command-key-to-alt-x)
-        # set prefix to "C-m", but since key sequence ~C-m~ is too far apart to be comfortably used, set its "alias" ~M-1~
-        escape ^ma
+        # set prefix to "C-@" (or ~C-2~), and also set its "alias": ~M-1~
+        escape ^@a
         
         # use screen auxiliary register to save C-a into register S
-        register S ^m
+        register S ^@
         
         # M-1 produces ^A and acts as an escape key
         bindkey "^[1" process S
@@ -379,6 +414,11 @@ In addition to the fields specified in the cron expression, there’s also suppo
   + vertical split :: ~[screen-prefix] |~
   + switch between screens :: ~[screen-prefix] <Tab>~
   + remove all screen region but the current one :: ~[screen-prefix] Q~
+- copy paste mode ::
+  1. enter copy mode :: ~[screen-prefix] [~, or ~[screen-prefix] <Esc>~
+  2. select region :: ~<Space>~ + move to end of region to copy + ~<Space>~
+  3. paste copy buffer to cursor :: ~[screen-prefix] ]~
+  4. leave copy mode :: ~q~
 - advanced ::
   + log files ::
     - start logging current session :: ~[screen-prefix] H~
