@@ -273,7 +273,11 @@
         - others tools to install are to be put in specific "group" of '*.list' installation files ('dpkg.list', 'pip.list', etc.)
         - add some basic tools and default compilers to start with, so can do basic tasks such as running a basic test environment
         - to install ::
-          + build-essential, git, tree, curl, wget, screen (GNU screen, multiplexer), g++, python, java jdk (basic one: default-jre), valgrind
+          + build-essential, git, tree, curl, wget, screen (GNU screen, multiplexer), g++, python, java jdk (basic one: default-jre), valgrind, ccze (log files colorizer)
+      + basic.env ::
+        - GNU screen custom configs ::
+          + change GNU screen's default control sequence prefix ~C-a~ (which is used a lot for other commands) to ~C-m~, and its alias ~M-1~ (see [[file:linux_commands_and_tools.org::#screen_configs][see screen (terminal multiplexer)/basics/screen control sequence prefix]])
+          + bind ~[prefix] X~ to close current screen split region: ~bind X remove~ (same as doing into the split screen ~[prefix] ':remove'~)
       + bin (folder) :: 
       + opt (file) :: for opt configs
       + opt.list ::
@@ -281,6 +285,11 @@
         - to install :: ==opt/elisp/org-contrib==
       + vim ::
         - vim configs
+          + ".vimrc" :
+            #+begin_example
+            " show line numbers
+            set number
+            #+end_example
         - emacs configs to be put in 'common' profile, in basic one just deal with vim terminal
     - common ::
       + apt.list ::
@@ -303,8 +312,26 @@
           + *.json :: 
       + emacs (file) ? :: what to install in basic emacs split from common ?
         - no 'emacs.list' file, emacs packages are installed and set in .el configuration files
+          + or maybe an emacs.sh since script will execute installation instructions
         - basic emacs configs
         - undo-tree, global-undo-tree-mode, emacs multiplexer
+        - do not forget to adapt emacs to windows, for example when enabling flyspell/ispell, one needs to install the dictionary first (here hunspell aspell is used in place of usual ispell):
+          #+begin_example
+          ;; add the path of the aspell exec to your emacs exec-path (absolute path required)
+          ;; but better use a generic path: ==~/opt/Hunspell== instead of "c:/Program Files (x86)/Hunspell/bin/"
+          (add-to-list 'exec-path "c:/Program Files (x86)/Hunspell/bin/")
+          
+          ;; tell emacs to use aspell in place of ispell
+          (setq ispell-program-name "hunspell")
+          
+          ;; from any file, one can select a different language dictionary with ==M-x ispell-change-dictionary==
+          (setq ispell-local-dictionary "en_US")
+          
+          ;; For saving new words to the personal dictionary, don't infer it from the locale, otherwise it will be saved to the default
+          (setq ispell-personal-dictionary "~/.hunspell_personal")
+          
+          (require 'ispell)
+          #+end_example
       + emacs (folder) ? ::
         - clone of ==~/.emacs.d/== ? :: should contain emacs.d content, ones that can't be installed
       + git ::
