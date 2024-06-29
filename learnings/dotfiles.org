@@ -43,11 +43,11 @@
   + git actions, git submodules, and git subtree are powerful tools to enhance dotfiles configurations
   + updating dotfiles script(s) :: plan for a smooth and idempotent (same and deterministic results for each run) script/ update
     - why :: fix symlinks, update packages
-  + create '*.list' files for tool specific installations, eg: ~apt.list~ for packages to install with apt, ~npm.list~ for those to install with npm, etc.
+  + create '*.yaml' files for tool specific installations, eg: ~apt.yaml~ for packages to install with apt, ~npm.yaml~ for those to install with npm, etc.
     - source :: https://kalis.me/dotfiles-automating-macos-system-configuration/
-    - same, can also create '*.list' files for repositories and make a script to automatise the git cloning
+    - same, can also create '*.yaml' files for repositories and make a script to automatise the git cloning
     - can be tidier to group repository folders, per project or topic for example, eg: ==~/dev/personal==, ==~/dev/work==,  ==~/dev/research==, etc.
-    - eg:
+    - eg: (.list files are instead to be used as .yaml files)
       #+begin_example
       #! /usr/bin/env sh
       
@@ -228,14 +228,14 @@
     - don't forget adding ppas for additional apt installs (https://github.com/cowboy/dotfiles/blob/master/init/20_ubuntu_apt.sh#L16)
     - stow ? checkout [[https://brandon.invergo.net/news/2012-05-26-using-gnu-stow-to-manage-your-dotfiles.html][this]], [[https://spin.atomicobject.com/manage-dotfiles-gnu-stow/][this]] and [[https://blog.palcu.net/2014/06/dotfiles-and-dev-tools-provisioned-by.html][this one maybe]] which relies more on ansible ("bash on steroid")
       + ansible is a more robust alternative to writing your own bash script, it manages checking for example if an action was successful, or if an error occurs, resume where left off
-    - '*.list' files for tool specific installations (filed by command to use), eg: ~apt.list~ for packages to install with apt, ~npm.list~ for npm, ~python2.list~, etc.
+    - '*.list' ('*.yaml') files for tool specific installations (filed by command to use), eg: ~apt.yaml~ for packages to install with apt, ~npm.yaml~ for npm, ~python2.yaml~, etc.
       + for packages to install, line starts with:
         - ==$== : then the line is the command to use for following packages
         - ==#== comment, skip
         - all remaining lines are packages to install using current command
       + setup for installation first some essentials packages that are mandatory (build-essential, emacs, python, npm, etc.) to have before installing other tools
         - for example in [[https://github.com/rkalis/dotfiles/][this repo]], the main setup is running the [[https://github.com/rkalis/dotfiles/blob/master/bootstrap.sh#L30][main packages install]] (~./packages/setup.sh~ which is [[https://github.com/rkalis/dotfiles/blob/master/packages/setup.sh][here]]), and then locate and run the remaining setup (~find * -name "setup.sh" -not -wholename "packages*"~ and skips ~./packages/setup.sh~ which was run before)
-    - '*.list' files for repositories
+    - '*.yaml' files for repositories
     - git bare repo ?
       + user's home is overflowing with dotfiles ('hidden'), mind it could be tedious if choose git bare and have to go through all the files to add to own dotfiles (https://web.archive.org/web/20171003124306/https://plus.google.com/+RobPikeTheHuman/posts/R58WgWwN9jp)
     - checkout use of environment variables $XDG_* (https://0x46.net/thoughts/2019/02/01/dotfile-madness/ and https://wiki.gentoo.org/wiki/XDG/Base_Directories)
@@ -264,13 +264,13 @@
     - main entry point for dotfiles installation
   + configs :: 
     - academic ::
-      + 'smthing.list', and 'smthing' file for specific installs and configs
+      + 'smthing.yaml', and 'smthing' file for specific installs and configs
       + decouple config from 'private'
       + latex for emacs
     - basic ::
-      + apt.list (file) ::
+      + apt.yaml (file) ::
         - main tools needed for basic install use
-        - others tools to install are to be put in specific "group" of '*.list' installation files ('dpkg.list', 'pip.list', etc.)
+        - others tools to install are to be put in specific "group" of '*.yaml' installation files ('dpkg.yaml', 'pip.yaml', etc.)
         - add some basic tools and default compilers to start with, so can do basic tasks such as running a basic test environment
         - to install ::
           + build-essential, git, tree, curl, wget, screen (GNU screen, multiplexer), g++, python, java jdk (basic one: default-jre), valgrind, ccze (log files colorizer)
@@ -281,7 +281,7 @@
           + bind ~[prefix] X~ to close current screen split region: ~bind X remove~ (same as doing into the split screen ~[prefix] ':remove'~)
       + bin (folder) :: 
       + opt (file) :: for opt configs
-      + opt.list ::
+      + opt.yaml ::
         - basic 'opt' tools that needs to be cloned (org-contrib ?), or installed specifically in 'opt' folder
         - to install :: ==opt/elisp/org-contrib==
       + vim ::
@@ -293,26 +293,26 @@
             #+end_example
         - emacs configs to be put in 'common' profile, in basic one just deal with vim terminal
     - common ::
-      + apt.list ::
+      + apt.yaml ::
         - add to default compilers further debugging, dependencies managers, and optimisation tools (valgrind, ansible, etc.)
         - to install ::
           + docker, ansible
       + opt (file) :: further opt configs
-      + opt.list ::
+      + opt.yaml ::
         - cloning additional elisp stuff, knowing that some are already in 'basic', eg: ==opt/elisp/org-contrib==
       + dev (folder) ::
         - contains configs for IDEs, formatting, dev utils, etc.
-        - additional tools/repos/plugins/etc. are either in 'dev' folder, or any other dotfile/**/*.list, such as ==./common/some-ide.list==
+        - additional tools/repos/plugins/etc. are either in 'dev' folder, or any other dotfile/**/*.yaml, such as ==./common/some-ide.yaml==
         - docker ::
         - podman ::
         - vscode (folder) ::
           + vscode (file) :: for configs
-          + vscode.list (file) ::
+          + vscode.yaml (file) ::
             - to install extensions through command line, checkout how to do it [[https://code.visualstudio.com/docs/editor/extension-marketplace#_command-line-extension-management][here]]
           + settings.json ::
           + *.json :: 
       + emacs (file) ? :: what to install in basic emacs split from common ?
-        - no 'emacs.list' file, emacs packages are installed and set in .el configuration files
+        - no 'emacs.yaml' file, emacs packages are installed and set in .el configuration files
           + or maybe an emacs.sh since script will execute installation instructions
         - basic emacs configs
         - undo-tree, global-undo-tree-mode, emacs multiplexer
