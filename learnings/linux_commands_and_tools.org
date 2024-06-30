@@ -73,33 +73,66 @@
 *** Notes
 *** shell special variables
 [2024-06-23 Sun 03:45]
-- IFS (Internal Field Separator) ::
+**** separators with FS (Field Separator), IFS (Internal FS), OFS (Output FS), RS (record separator), ORS, NR, NF, FILENAME, FNR
+- IFS (Internal Field Separator) and OFS ::
   + IFS :: variable used by the shell to determines word boundaries while splitting a sequence of character strings
     - default values: at least three-characters string: space, tab, and newline
-  + temporarily use different IFS value ::
-    - eg: iterate over content of $PATH:
-      #+begin_example
-      buff="$IFS"
-      IFS=:
-      (
-          for ele in $PATH[@]; do
-      	echo "content: $ele"
-          done
-          )
-      IFS="$buff"
-      #+end_example
-  + IFS and ==read== command ::
-    - eg: read from a csv file (comma separated): read the 2 last lines only (tail -n +2)
-      #+begin_example
-      #!/bin/bash
-      while IFS="," read -r rec_column1 rec_column2 rec_column3
-      do
-       echo "Displaying Record-$rec_column1"
-       echo "Quantity: $rec_column2"
-       echo "Price: $rec_column3"
-       echo ""
-      done < <(tail -n +2 input.csv)
-      #+end_example
+    - temporary IFS value ::
+      + eg: iterate over content of $PATH:
+        #+begin_example
+        buff="$IFS"
+        IFS=:
+        (
+            for ele in $PATH[@]; do
+      	  echo "content: $ele"
+            done
+            )
+        IFS="$buff"
+        #+end_example
+    - IFS and ==read== command ::
+      + eg: read from a csv file (comma separated): read the 2 last lines only (tail -n +2)
+        #+begin_example
+        #!/bin/bash
+        while IFS="," read -r rec_column1 rec_column2 rec_column3
+        do
+         echo "Displaying Record-$rec_column1"
+         echo "Quantity: $rec_column2"
+         echo "Price: $rec_column3"
+         echo ""
+        done < <(tail -n +2 input.csv)
+        #+end_example
+  + OFS :: for output separator formatting
+    - in the print/output command, the comma (",") concatenates two parameters with the value of awk OFS
+    - eg: parse '/etc/passwd', and display columns 1, 3, and 6 (Name, UserID, HomeDirectory respectively), with " XXX " as field separator
+      + inline: ~awk -F':' 'BEGIN{OFS=" XXX ";print "Name\tUserID\tHomeDirectory";} {print $1,$3,$6}END {print NR,"Records Processed";}' /etc/passwd | head -10~
+      + or using a script in an awk file:
+        - ~$cat etc_passwd.awk~ ::
+          #+begin_example
+          BEGIN{
+            OFS=" XXX ";
+            print "Name\tUserID\tHomeDirectory";
+          }
+          {
+            print $1,$3,$6
+          }
+          END {
+            print NR,"Records Processed";
+          }
+          #+end_example
+        - command: ~$awk -f etc_passwd.awk /etc/passwd | head -10~
+        - result:
+          #+begin_example
+          Name    UserID  HomeDirectory
+          root XXX 0 XXX /root
+          daemon XXX 1 XXX /usr/sbin
+          bin XXX 2 XXX /bin
+          sys XXX 3 XXX /dev
+          sync XXX 4 XXX /bin
+          games XXX 5 XXX /usr/games
+          man XXX 6 XXX /var/cache/man
+          lp XXX 7 XXX /var/spool/lpd
+          mail XXX 8 XXX /var/mail
+          #+end_example
   
 *** shell commands
 [2024-06-23 Sun 19:39]
