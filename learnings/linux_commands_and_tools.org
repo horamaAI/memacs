@@ -103,6 +103,10 @@
   
 *** shell commands
 [2024-06-23 Sun 19:39]
+- ==local== ::
+  + ~local [option] name[=value] ...~ :: create local variable ==NAME==, and with value ==VALUE==
+  + ==...== means that previous argument can be repeated
+  + eg: ~local cword words=()~ defines scalar variable ==cword== and empty array ==words==
 - set vs export ::
 *** Arrays
 [2024-06-23 Sun 19:38]
@@ -156,66 +160,70 @@
 ** sed
 *** Notes
 - sources :: https://www.gnu.org/software/sed/manual/sed.html
-- how sed works (in a nutshell) ::
-  + sed maintains two data buffers: the active *pattern space*, and the auxiliary *hold space* (all initially empty)
-  + sed operates by performing the following cycle on each line of input:
-    1. reads one line from the input stream, removes any trailing newline, and places it in the pattern space
-    2. execute the command
-       - (commands can have an address associated, and the command is only executed if the condition is verified before the command is to be executed)
-    3. when end of the script reached (unless -n option is used), print content of *pattern space* to the output stream
-    4. start next cycle for the next input line
-  + unless special commands (such as 'D') are used, the pattern space is deleted between two cycles.
-    - only the hold space keeps its data between cycles
-  + examples of sed commands ::
-    - 'b [label]' :: branch unconditionally to [label]. Label may be omitted, in which case the next cycle is started
-    - 'c [text]' :: replace (change) lines with [text]
-    - 'd' :: delete pattern space
-    - 'g' :: replace the contents of the pattern space with the contents of the hold space
-      + attention !! :: do not confuse command 'g', with flag 'g'
-    - 'i [text]' :: insert [text] before line
-    - 's' :: ~s/regexp/replacement/[flags]~, match regular-expression against content of pattern space, if match, then replace
-- 's' command ::
-  + some s command sed extensions :: (made of a backslash and one of the letters L, l, U, u, or E)
-    - \U :: turn the s replacement to uppercase until a \L or \E is found
-    - \u :: turn the next character to uppercase
-    - \E :: stop case conversion started by \L or \U
-  + 's' command's flags (some) ::
-    - g :: apply replacement to all matches
-    - e :: allows one to pipe input from a shell command into pattern space
-    - i :: or I, matches in a case-insensitive manner
-- examples ::
-  + ~sed s/^\(.\{81\}\).*$/\1/~, to keep first 81 chars (80 + new line). '\1' is referring to first occurrence of pattern
-  + ~echo 'a-b-' | sed 's/\(b\?\)-/x\u\1/g'~, outputs: 'axxB'
-    - ~/x\u\1~ ::
-      1. replace occurrences of 'b-', or just '-' by an x
-      2. \u turns the next character to uppercase
-      3. the next character being the first referenced set of characters matched (the referenced nth character within \( and its matching \) here being '\1')
-         - the character may or may not exist in this case (due to '?': ~\(b\?\)~)
-    - g flag is used, so case conversion (uppercase '\u') does not propagate from one occurrence of the regular expression to another, eg: first pattern matched '-' only affects empty replacement of '\1'
-    - thus ::
-      + first chain matched: '-' => replaced with just x, since \1 is empty
-      + second chain matched: 'b-' => replaced by 'xB', since first char is b
-  + pretty print folders architecture with sed :: ~ls -R | grep ":$" | sed -e 's/:$//' -e 's/[^-][^\/]*\//──/g' -e 's/─/├/' -e '$s/├/└/'~
-    - assume in folder containing sub directories and one file: ~a/b/c/d.txt~
-    - ~ls -R~ :: prints folders recursively content until there is no folder to visit:
-      #+begin_example
-      .:
-      b
-      
-      ./b:
-      c
-      
-      ./b/c:
-      c.txt
-      #+end_example
-    - grep :: will select only folders (ending with ~:$~)
-    - sed scripts (-e) :: in input lines returned by grep (only folders, files not included)
-      + 's/:$//' :: remove colons
-      + 's/[^-][^\/]*\//──/g' :: remove all occurrences of sub strings ending with '/' (and not starting with a '-'), and replace them with '--' (each successions of matches will be replaced by successions of '--', adding more depth to sub folders)
-        - [^-][^\/]*\/ :: the inner (~[^\/]*~) to restrict the expressions to omit inner folders (in 'a/b/c/', select a/, b/, and c/, instead of matching the whole string 'a/b/c/' when the inner ~[^\/]*~ is not used) 
-        - g :: to apply command on all matches
-      + 's/─/├/' :: replace the first '-' with '├', for pretty printing
-      + '$s/├/└/' :: further pretty print (notice the '$')
+*** how sed works (in a nutshell) ::
++ sed maintains two data buffers: the active *pattern space*, and the auxiliary *hold space* (all initially empty)
++ sed operates by performing the following cycle on each line of input:
+  1. reads one line from the input stream, removes any trailing newline, and places it in the pattern space
+  2. execute the command
+     - (commands can have an address associated, and the command is only executed if the condition is verified before the command is to be executed)
+  3. when end of the script reached (unless -n option is used), print content of *pattern space* to the output stream
+  4. start next cycle for the next input line
++ unless special commands (such as 'D') are used, the pattern space is deleted between two cycles.
+  - only the hold space keeps its data between cycles
++ examples of sed commands ::
+  - 'b [label]' :: branch unconditionally to [label]. Label may be omitted, in which case the next cycle is started
+  - 'c [text]' :: replace (change) lines with [text]
+  - 'd' :: delete pattern space
+  - 'g' :: replace the contents of the pattern space with the contents of the hold space
+    + attention !! :: do not confuse command 'g', with flag 'g'
+  - 'i [text]' :: insert [text] before line
+  - 's' :: ~s/regexp/replacement/[flags]~, match regular-expression against content of pattern space, if match, then replace
+*** 's' command ::
++ some s command sed extensions :: (made of a backslash and one of the letters L, l, U, u, or E)
+  - \U :: turn the s replacement to uppercase until a \L or \E is found
+  - \u :: turn the next character to uppercase
+  - \E :: stop case conversion started by \L or \U
++ 's' command's flags (some) ::
+  - g :: apply replacement to all matches
+  - e :: allows one to pipe input from a shell command into pattern space
+  - i :: or I, matches in a case-insensitive manner
+*** sed command options
+[2024-06-30 Sun 01:58]
+- ~e~ :: add script to be executed
+- ~n~ :: suppress automatic printing of pattern space
+*** examples ::
+1. ~sed s/^\(.\{81\}\).*$/\1/~, to keep first 81 chars (80 + new line). '\1' is referring to first occurrence of pattern
+2. ~echo 'a-b-' | sed 's/\(b\?\)-/x\u\1/g'~, outputs: 'axxB'
+   - ~/x\u\1~ ::
+     1. replace occurrences of 'b-', or just '-' by an x
+     2. \u turns the next character to uppercase
+     3. the next character being the first referenced set of characters matched (the referenced nth character within \( and its matching \) here being '\1')
+        - the character may or may not exist in this case (due to '?': ~\(b\?\)~)
+   - g flag is used, so case conversion (uppercase '\u') does not propagate from one occurrence of the regular expression to another, eg: first pattern matched '-' only affects empty replacement of '\1'
+   - thus ::
+     + first chain matched: '-' => replaced with just x, since \1 is empty
+     + second chain matched: 'b-' => replaced by 'xB', since first char is b
+3. pretty print folders architecture with sed :: ~ls -R | grep ":$" | sed -e 's/:$//' -e 's/[^-][^\/]*\//──/g' -e 's/─/├/' -e '$s/├/└/'~
+   - assume in folder containing sub directories and one file: ~a/b/c/d.txt~
+   - ~ls -R~ :: prints folders recursively content until there is no folder to visit:
+     #+begin_example
+     .:
+     b
+    
+     ./b:
+     c
+    
+     ./b/c:
+     c.txt
+     #+end_example
+   - grep :: will select only folders (ending with ~:$~)
+   - sed scripts (-e) :: in input lines returned by grep (only folders, files not included)
+     + 's/:$//' :: remove colons
+     + 's/[^-][^\/]*\//──/g' :: remove all occurrences of sub strings ending with '/' (and not starting with a '-'), and replace them with '--' (each successions of matches will be replaced by successions of '--', adding more depth to sub folders)
+       - [^-][^\/]*\/ :: the inner (~[^\/]*~) to restrict the expressions to omit inner folders (in 'a/b/c/', select a/, b/, and c/, instead of matching the whole string 'a/b/c/' when the inner ~[^\/]*~ is not used) 
+       - g :: to apply command on all matches
+     + 's/─/├/' :: replace the first '-' with '├', for pretty printing
+     + '$s/├/└/' :: further pretty print (notice the '$')
 * cat, printf
 [2024-06-23 Sun 18:51]
 - examples ::
