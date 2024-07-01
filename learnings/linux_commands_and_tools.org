@@ -74,65 +74,175 @@
 *** shell special variables
 [2024-06-23 Sun 03:45]
 **** separators with FS (Field Separator), IFS (Internal FS), OFS (Output FS), RS (record separator), ORS, NR, NF, FILENAME, FNR
-- IFS (Internal Field Separator) and OFS ::
-  + IFS :: variable used by the shell to determines word boundaries while splitting a sequence of character strings
-    - default values: at least three-characters string: space, tab, and newline
-    - temporary IFS value ::
-      + eg: iterate over content of $PATH:
+***** IFS (Internal Field Separator) for bash separator in general
+- IFS :: variable used by the shell to determine word boundaries while splitting a sequence of character strings
+  + default values: at least three-characters string: space, tab, and newline
+  + temporary IFS value ::
+    - eg: iterate over content of $PATH:
+      #+begin_example
+      buff="$IFS"
+      IFS=:
+      (
+          for ele in $PATH[@]; do
+      	echo "content: $ele"
+          done
+          )
+      IFS="$buff"
+      #+end_example
+  + IFS and ==read== command ::
+    - eg: read from a csv file (comma separated): read the 2 last lines only (tail -n +2)
+      #+begin_example
+      #!/bin/bash
+      while IFS="," read -r rec_column1 rec_column2 rec_column3
+      do
+       echo "Displaying Record-$rec_column1"
+       echo "Quantity: $rec_column2"
+       echo "Price: $rec_column3"
+       echo ""
+      done < <(tail -n +2 input.csv)
+      #+end_example
+***** awk separators with FS, OFS, RS, ORS, NR, NF, FILENAME, FNR
+- ==FS== for awk internal field separators (example: ~awk -F':'~) and ==OFS== for output separator formatting
+  + in the print/output command, the comma (",") concatenates two parameters with the value of awk OFS
+  + eg: parse '/etc/passwd', and display columns 1, 3, and 6 (Name, UserID, HomeDirectory respectively), with " XXX " as field separator
+    - inline: ~awk -F':' 'BEGIN{OFS=" XXX ";print "Name\tUserID\tHomeDirectory";} {print $1,$3,$6}END {print NR,"Records Processed";}' /etc/passwd | head -10~
+    - or using a script in an awk file:
+      + ~$cat etc_passwd.awk~ ::
         #+begin_example
-        buff="$IFS"
-        IFS=:
-        (
-            for ele in $PATH[@]; do
-      	  echo "content: $ele"
-            done
-            )
-        IFS="$buff"
+        BEGIN{
+          OFS=" XXX ";
+          print "Name\tUserID\tHomeDirectory";
+        }
+        {
+          print $1,$3,$6
+        }
+        END {
+          print NR,"Records Processed";
+        }
         #+end_example
-    - IFS and ==read== command ::
-      + eg: read from a csv file (comma separated): read the 2 last lines only (tail -n +2)
+      + command :: ~$awk -f etc_passwd.awk /etc/passwd | head -10~
+      + result ::
         #+begin_example
-        #!/bin/bash
-        while IFS="," read -r rec_column1 rec_column2 rec_column3
-        do
-         echo "Displaying Record-$rec_column1"
-         echo "Quantity: $rec_column2"
-         echo "Price: $rec_column3"
-         echo ""
-        done < <(tail -n +2 input.csv)
+        Name    UserID  HomeDirectory
+        root XXX 0 XXX /root
+        daemon XXX 1 XXX /usr/sbin
+        bin XXX 2 XXX /bin
+        sys XXX 3 XXX /dev
+        sync XXX 4 XXX /bin
+        games XXX 5 XXX /usr/games
+        man XXX 6 XXX /var/cache/man
+        lp XXX 7 XXX /var/spool/lpd
+        mail XXX 8 XXX /var/mail
         #+end_example
-  + OFS :: for output separator formatting
-    - in the print/output command, the comma (",") concatenates two parameters with the value of awk OFS
-    - eg: parse '/etc/passwd', and display columns 1, 3, and 6 (Name, UserID, HomeDirectory respectively), with " XXX " as field separator
-      + inline: ~awk -F':' 'BEGIN{OFS=" XXX ";print "Name\tUserID\tHomeDirectory";} {print $1,$3,$6}END {print NR,"Records Processed";}' /etc/passwd | head -10~
-      + or using a script in an awk file:
-        - ~$cat etc_passwd.awk~ ::
-          #+begin_example
-          BEGIN{
-            OFS=" XXX ";
-            print "Name\tUserID\tHomeDirectory";
-          }
-          {
-            print $1,$3,$6
-          }
-          END {
-            print NR,"Records Processed";
-          }
-          #+end_example
-        - command: ~$awk -f etc_passwd.awk /etc/passwd | head -10~
-        - result:
-          #+begin_example
-          Name    UserID  HomeDirectory
-          root XXX 0 XXX /root
-          daemon XXX 1 XXX /usr/sbin
-          bin XXX 2 XXX /bin
-          sys XXX 3 XXX /dev
-          sync XXX 4 XXX /bin
-          games XXX 5 XXX /usr/games
-          man XXX 6 XXX /var/cache/man
-          lp XXX 7 XXX /var/spool/lpd
-          mail XXX 8 XXX /var/mail
-          #+end_example
+- RS :: allows using separators for records ("sets" or "groups" of records)
+  + ORS :: for format records output
+  + example :: records of students
+    - record ::
+      #+begin_example
+      $cat student.txt
+      Jones
+      2143
+      78
+      84
+      77
+       
+      Gondrol
+      2321
+      56
+      58
+      45
+       
+      RinRao
+      2122
+      38
+      37
+      65
+      #+end_example
+    - awk script ::
+      #+begin_example
+      $cat student.awk
+      BEGIN {
+              RS="\n\n";
+              FS="\n";
+        
+      }
+      {
+              print $1,$2;
+      }
+      #+end_example
+    - result ::
+      #+begin_example
+      $ awk -f student.awk  student.txt
+      Jones 2143
+      Gondrol 2321
+      RinRao 2122
+      #+end_example
+- ==FILENAME== for filename output :), example: ~$ awk '{print FILENAME}' student-marks~, where student-marks has 5 lines, will return 5 "student-marks" lines
+- NR, NF, and FNR :: for number of records and fields
+  + ==NR== for number of records variable, ==NF== for number of fields in a record
+  + ==FNR==: when dealing with multiple files, it returns the number of records relative to the current input file
+  + example: have 2 files with 5 lines each "student-marks" and "bookdetails". command: ~awk '{print FILENAME, FNR;}' student-marks bookdetails~ will return:
+    #+begin_example
+    student-marks 1
+    student-marks 2
+    student-marks 3
+    student-marks 4
+    student-marks 5
+    bookdetails 1
+    bookdetails 2
+    bookdetails 3
+    bookdetails 4
+    bookdetails 5
+    #+end_example
+- example :: FS, OFS, RS, ORS, NF, NR
+  + input ::
+   #+begin_example
+   $ cat <<$'EOF' | awk 'BEGIN {RS="\n\n"; FS="\n"; OFS=" -- "; ORS="\nXX\n";} {print "record#"NR":"$1,$2" has nfields:"NF;} END {print "#records: "NR;}'
+   Jones
+   2143
+   78
+   84
+    
+   Gondrol
+   2321
+   56
+   58
+   45
+    
+   RinRao
+   2122
+   38
+   37
+   65
+    
+   Edwin
+   2537
+   78
+   67
+   45
+    
+   Dayan
+   2415
+   30
+   47
+   20
+   EOF
+   #+end_example
+  + result ::
+    #+begin_example
+    record#1:Jones -- 2143 has nfields:4
+    XX
+    record#2:Gondrol -- 2321 has nfields:5
+    XX
+    record#3:RinRao -- 2122 has nfields:5
+    XX
+    record#4:Edwin -- 2537 has nfields:5
+    XX
+    record#5:Dayan -- 2415 has nfields:6
+    XX
+    #records: 5
+    XX
+    #+end_example
   
 *** shell commands
 [2024-06-23 Sun 19:39]
