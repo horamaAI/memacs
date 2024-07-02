@@ -244,6 +244,28 @@
     XX
     #+end_example
   
+**** FS/IFS/RS/etc. default separators (==\034==, ==\035==, etc.)
+[2024-07-02 Tue 21:19]
+- ==\034==, ==\035== are ASCII octal values for non printable characters usually used as special default characters to separate data into strings
+  + find references here :: https://donsnotes.com/tech/charsets/ascii.html
+- eg ::
+  #+begin_example
+  BEGIN { FS="\034"; RS="\035"; OFS="," }
+  { gsub( /\n/, "" )
+    $1=$1
+    # If last field is empty, remove it.
+    if ( ""==$NF )  NF--
+    print
+  }
+  #+end_example
+- why ? ::
+  + usecase :: awk multidimensional arrays
+    - awk treats multidimensional arrays as a one dimensional arrays where the index is a sequence of indexes separated by a special separator ==SUBSEP==
+      + eg: awk stores ~grid[x,y]=value~ with SUBSEP ==@== as ~grid["x@y"]=value~
+    - more details: https://www.gnu.org/software/gawk/manual/html_node/Multidimensional.html
+  + however, some separators such as ==@== might be used somewhere in the data or the awk program and then lead to ambiguities
+    - eg: ~foo["a@b", "c"]~ and ~foo["a", "b@c"]~ are stored as ~foo["a@b@c"]~,awk is not able to tell one from the other if SUBSEP is ==@==
+  + thus the use of these non printable characters that are unlikely to appear in an awk program or in most input data
 *** shell commands
 [2024-06-23 Sun 19:39]
 - ==local== ::
