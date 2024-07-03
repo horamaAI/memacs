@@ -273,6 +273,29 @@
   + ==...== means that previous argument can be repeated
   + eg: ~local cword words=()~ defines scalar variable ==cword== and empty array ==words==
 - set vs export ::
+*** file read/write
+[2024-07-03 Wed 20:43]
+- read file ::
+  + eg ::
+   #+begin_example
+   #!/bin/bash
+   INFILE=/root/names.txt
+   
+   # with while loop
+   while read -r col1 col2
+   do
+     printf '%s - %s' "$col1" "$col2"
+   done < "$INFILE"
+
+   # with for loop
+   IFS=$'\n' # set the Internal Field Separator to newline
+   for LINE in $(cat "$INFILE")
+   do
+       echo "$LINE"
+   done
+   #+end_example
+  + -r :: option prevents backslashes in the input from being interpreted as escape characters: "Hello\nWorld" is then read as is, not as two lines
+
 *** Arrays
 [2024-06-23 Sun 19:38]
 - arrays and environment variables ::
