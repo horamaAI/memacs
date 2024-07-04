@@ -71,8 +71,33 @@
 ** shell scripting
 [2024-06-23 Sun 02:07]
 *** Notes
+- utils ::
+  + run a child process :: ==bash -c==, eg: ~bash -c 'echo "$me"';~ to print local variable $me in a child process (subshell)
 *** shell special variables
 [2024-06-23 Sun 03:45]
+**** environment variables with set vs export
+[2024-07-04 Thu 22:41]
+- set :: allows changes to environment variables and options on current shell session, and also show values of variables *and functions*
+  + syntax :: ~set [options] [arguments]~
+  + if no option or argument, then the set command prints all variables and functions in the current shell
+  + set has many options that can be used to modify various aspects of the shell: error handling, debugging, expansion, job control, etc.
+  + set positional parameters ::
+    #+begin_example
+    #!/usr/bin/env bash
+    set me=great foo bar;
+    echo "$@";
+    # returns:
+    # me=great foo bar // $1 is "me=great" (literal, not variable "me"), $2 "foo", $3 "bar"
+    #+end_example
+  + some options ::
+    - -e :: exit right away if a command exits with a non-zero status (~set +e~ to turn off option after use)
+    - -u :: treat unset variables as an error
+    - -x :: print commands and their arguments as they are run, mostly useful for debugging and tracing
+    - -o :: set or unset one of the shell options 
+- export :: for creating global variables (environment variables in particular) that are accessible by all processes running in the current shell session and its child processes
+  + can use export to configure system-wide settings by exporting environment variables in ==~/.bashrc== or ==/etc/profile== for example
+- export vs set ::
+  + 
 **** separators with FS (Field Separator), IFS (Internal FS), OFS (Output FS), RS (record separator), ORS, NR, NF, FILENAME, FNR
 ***** IFS (Internal Field Separator) for bash separator in general
 - IFS :: variable used by the shell to determine word boundaries while splitting a sequence of character strings
