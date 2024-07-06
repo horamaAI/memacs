@@ -4,14 +4,15 @@
 #+LANGUAGE: en
 #+OPTIONS: timestamp:t
 #+DESCRIPTION: Java back-end project for probing data and APIs from GDSs, Online Travel Agencies (OTAs), consolidators, etc.: (gradle, angular, spring)
-#+KEYWORDS: TRAVBIS org-mode Emacs organization GTD getting-things-done git
+#+KEYWORDS: YTA org-mode Emacs organization GTD getting-things-done git
 
 * Notes
 - sources ::
   + 
 ** 
 * Tickets
-- TRAVBIS001: probing phase:
+- YTA000: YTA basic building: MVP, basic structure, architecture
+- YTA001: probing phase: further than basic foundations
   + what are the available APIs/entry points
   + what are their costs and risk, customer care
   + (country specific) compliances and regulations 
@@ -19,5 +20,5 @@
   + market ? : how to attract customers, who are they, who are the premium customers, how to take care of them
   + capital/budget/fund rising
   + employees availability/
-- TRAVBIS002: MVP
+- YTA002: MVP, bit advanced than basic foundations 
   + first product to present [TODO]
