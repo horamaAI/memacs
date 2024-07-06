@@ -454,6 +454,8 @@
   - g :: apply replacement to all matches
   - e :: allows one to pipe input from a shell command into pattern space
   - i :: or I, matches in a case-insensitive manner
+  - p :: if the substitution was made, then print the new pattern space
+    + by default, sed prints everything, but with -n option, it suppresses default printing, and together with the p flag, only matching patters are printed
 *** sed command options
 [2024-06-30 Sun 01:58]
 - ~e~ :: add script to be executed
@@ -721,6 +723,8 @@ In addition to the fields specified in the cron expression, there’s also suppo
 * showkey : useful for keybindings when whants to get text version of keys from keyboard
   - find mappings :: showkey -a
 * other nice utilities
+- yq :: for yaml files configurations
+  + 
 - time [command] :: times how long a command takes, eg: ~time (find -iname '*.org' | xargs -I {} basename {})~
   + has even formatting options, eg : ~time -f '%E %W %r' [command]~
     - to get a better format for zsh as for bash, set variable TIMEFMT to ~TIMEFMT=$'real\t%E\nuser\t%U\nsys\t%S'~
