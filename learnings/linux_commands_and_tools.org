@@ -1,5 +1,5 @@
 # -*- mode: org -*-
-#+title: Linux (not only) commands/tools that are fun and handy
+#+title: Linux (mainly, but not just) commands/tools that are fun and handy
 #+SETUPFILE: ~/set-up-files/basic-setups.org
 
 * shell and shell scripting
@@ -81,7 +81,7 @@
   + syntax :: ~set [options] [arguments]~
   + if no option or argument, then the set command prints all variables and functions in the current shell
   + set has many options that can be used to modify various aspects of the shell: error handling, debugging, expansion, job control, etc.
-  + set positional parameters ::
+  + set as a positional parameters assigner ::
     #+begin_example
     #!/usr/bin/env bash
     set me=great foo bar;
@@ -89,6 +89,7 @@
     # returns:
     # me=great foo bar // $1 is "me=great" (literal, not variable "me"), $2 "foo", $3 "bar"
     #+end_example
+  + set is a local variable assigner. The values assigned in current shell are not inherited by its child processes (or set positional parameters for that matter)
   + some options ::
     - -e :: exit right away if a command exits with a non-zero status (~set +e~ to turn off option after use)
     - -u :: treat unset variables as an error
@@ -96,8 +97,61 @@
     - -o :: set or unset one of the shell options 
 - export :: for creating global variables (environment variables in particular) that are accessible by all processes running in the current shell session and its child processes
   + can use export to configure system-wide settings by exporting environment variables in ==~/.bashrc== or ==/etc/profile== for example
-- export vs set ::
-  + 
+- pitfalls of export and set ::
+  + quoted variables ::
+    - need for quoted variables :: prevent issues with spaces and special characters
+    - eg:
+      #+begin_example
+      !/usr/bin/env bash
+      
+      # Initialize variable with special characters
+      var="Hello * World!"
+      
+      # Print variable without quotes
+      echo $var
+      
+      # Output: Hello (and the files in the current directory)
+      # unexpected output since shell interprets asterisks as pathname expansion
+      
+      # Print variable with quotes
+      echo "$var"
+      
+      # Output: Hello * World!
+      # The output is expected because the quotes preserve the special characters
+      #+end_example
+  + overwriting built-in variables/functions ::
+    - eg:
+      #+begin_example
+      !/usr/bin/env bash
+      
+      echo "Current user: $USER" # Outputs the current user (e.g. "john")
+      
+      # Overwrite the built-in variable USER with our own value
+      USER="hacker"
+      echo "Current user: $USER" # Outputs "hacker" instead of the actual user
+      
+      # Restore the original value of USER
+      USER=$(/usr/bin/id -un)
+      echo "Current user: $USER" # Outputs the actual user again
+      #+end_example
+  + overusing set options ::
+    - risk :: unexpected behaviour, harder to read scripts
+    - eg:
+      + use set -x only for the parts that need debugging, and use explicit commands to output relevant information elsewhere:
+        #+begin_example
+        !/usr/bin/env bash
+        echo "This is a simple script"
+        x=10
+        y=20
+        set -x                 # Turn on tracing only for the calculation, and not before starting assignments
+        z=$((x+y))
+        set +x                 # Turn off tracing
+        echo "The sum of x and y is $z"
+        #+end_example
+      + unclutter debugging outputs when using ~set -x~: use it only when necessary, prefer other debugging techniques such as logging or using a debugger
+  + conventions ::
+    - by convention, environment variables are named with uppercase letters, not local variables
+  + always remember to unset used variables after use (with ~unset~)
 **** separators with FS (Field Separator), IFS (Internal FS), OFS (Output FS), RS (record separator), ORS, NR, NF, FILENAME, FNR
 ***** IFS (Internal Field Separator) for bash separator in general
 - IFS :: variable used by the shell to determine word boundaries while splitting a sequence of character strings
