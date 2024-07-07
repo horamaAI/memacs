@@ -723,8 +723,59 @@ In addition to the fields specified in the cron expression, there’s also suppo
 * showkey : useful for keybindings when whants to get text version of keys from keyboard
   - find mappings :: showkey -a
 * other nice utilities
-- yq :: for yaml files configurations
-  + 
+- yq and yaml :: yaml files parser and processor
+  + yaml ::
+    - format ::
+      + yaml file has start (~---~) and end (~...~) line indicators (just convention)
+      + comments :: start with hash symbol (#)
+    - structure ::
+      + structure of a YAML file is a map or a list, it follows a hierarchy depending on the indentation
+      + mapping blocks ::
+        - maps allow key-value pairs association
+        - yaml maps need to be resolved before it can be closed, and a new map created
+          #+begin_example
+          # KO!
+          akey: some value
+            a_wrong_new_map: will generate an error
+          # OK!
+          akey: # no value to allow creation of a new embedded map
+            a_correct_new_map: this one will not generate an error
+          #+end_example
+        - avoid flat mapping when dealing with lists:
+          + eg:
+            #+begin_example
+            Store: Bakery
+              - Sourdough loaf
+              - Bagels
+            #+end_example
+          + yaml is valid, but flat and somehow ambiguous since json counterpart is =={“Store”: “Bakery - Sourdough loaf - Bagels”}==
+          + furthermore, ==store== mapping block is never closed
+          + better version:
+            #+begin_example
+            Store:
+              Bakery
+                - Sourdough loaf
+                - Bagels
+            #+end_example      
+      + each key must be unique, order doesn't matter
+      + a new map can be created by either increasing the indentation or by resolving previous maps and starting an adjacent map
+      + lists ::
+        - lists include values listed in a specific order
+        - a list sequence starts with a dash (-) and a space, while indentation separates it from the parent
+        - embedded lists: (json: ~[“Flour”, “Salt”, “Water”, {“Sugar”: [“caster”, “granulated”, “icing”]}]~)
+          #+begin_example
+          ---
+          - Flour
+          - Water
+          - Salt
+          - Sugar:
+              - caster
+              - granulated
+              - icing
+          ...
+          #+end_example
+  + yq :: 
+- jq and json :: 
 - time [command] :: times how long a command takes, eg: ~time (find -iname '*.org' | xargs -I {} basename {})~
   + has even formatting options, eg : ~time -f '%E %W %r' [command]~
     - to get a better format for zsh as for bash, set variable TIMEFMT to ~TIMEFMT=$'real\t%E\nuser\t%U\nsys\t%S'~
