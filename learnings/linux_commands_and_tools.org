@@ -654,56 +654,75 @@ In addition to the fields specified in the cron expression, there’s also suppo
   + some main features ::
     - open multiple windows within the screen session
     - disconnect and reconnect Screen without losing the current session
-- basics ::
+- screen control sequence prefix :: default is: ~C-a~ as in ~C-a [command]~
+  + sometimes default control sequence ~C-a~ is used somewhere else (eg: emacs), so it can be changed by setting the command into ==~/.screenrc==
+    - eg: to change the default screen prefix to ~C-x~: ~$echo "escape ^Xx" >> ~/.screenrc~
+  + since prefix can be changed, from now forward, it will be referred to as ~[screen-prefix]~
+  + ~M-1~ as prefix ::
+    + source :: https://stackoverflow.com/questions/1543427/gnu-screen-changing-the-default-escape-command-key-to-alt-x
+    + ~/.screenrc ::
+      #+begin_example
+      # trick to use M-1 as the gnu screen prefix (source: https://stackoverflow.com/questions/1543427/gnu-screen-changing-the-default-escape-command-key-to-alt-x)
+      # set prefix to "C-@" (or ~C-2~), and also set its "alias": ~M-1~
+      escape ^@a
+        
+      # use screen auxiliary register to save C-a into register S
+      register S ^@
+        
+      # M-1 produces ^A and acts as an escape key
+      bindkey "^[1" process S
+      #+end_example
+- help :: ~[screen-prefix] ?~
+- sessions ::
   + launch a session :: ~$screen~
-  + screen control sequence prefix :: ~C-a~ as in ~C-a [command]~
-    - sometimes default control sequence ~C-a~ is used somewhere else (eg: emacs), so it can be changed by setting the command into ==~/.screenrc==
-      + eg: to change the default screen prefix to ~C-x~: ~$echo "escape ^Xx" >> ~/.screenrc~
-    - since prefix can be changed, from now forward, it will be referred to as ~[screen-prefix]~
-    - ~M-1~ as prefix ::
-      + source :: https://stackoverflow.com/questions/1543427/gnu-screen-changing-the-default-escape-command-key-to-alt-x
-      + ~/.screenrc ::
-        #+begin_example
-        # trick to use M-1 as the gnu screen prefix (source: https://stackoverflow.com/questions/1543427/gnu-screen-changing-the-default-escape-command-key-to-alt-x)
-        # set prefix to "C-@" (or ~C-2~), and also set its "alias": ~M-1~
-        escape ^@a
-        
-        # use screen auxiliary register to save C-a into register S
-        register S ^@
-        
-        # M-1 produces ^A and acts as an escape key
-        bindkey "^[1" process S
-        #+end_example
-  + help :: ~[screen-prefix] ?~
-- screen and windows ::
-  + start new window (independent window with its own shell) :: ~[screen-prefix] c~
-  + move to next/previous window :: ~[screen-prefix] n~ / ~[screen-prefix] p~
+    - start named session :: ~screen -S nameofsession~
+  + (de)attach screen session ::
+    - disconnect from screen session and keep it running on the host (detach: d) :: ~[screen-prefix] d~
+    - resume (-r) connection to session :: ~$screen -r~
+    - resume connection to a session that was not disconnected properly due to unstable network for example :: ~$screen -r -d~ (disconnect first from host: -d, and then resume to reconnect)
+    - resume session, or create new one if none pending :: ~screen -d -RR~
+    - start detach session and run command on it (option -m) :: ~screen -d -m ping 10.10.10.10~
+  + kill session ::
+    - ~screen -X -S nameofsession quit~ :: -X: send command to alive session, -S: define session name
+    - ~screen -X 269 quit~ :: auto-completes if unique
+  + rename session ::
+    - ~screen -S OLDSESSIONNAME -X sessionname NEWSESSIONNAME~
+    - ~[screen-prefix] :sessionname NEW-NAME~ :: in-screen session
+- screen windows ::
+  + start new window (independent window with its own shell, in same region/) :: ~[screen-prefix] c~
+  + move to next/previous window :: ~[screen-prefix] n~ or ~[screen-prefix] <space>~ / ~[screen-prefix] p~
   + move to windows/screen by number :: ~[screen-prefix] [n]~
+  + rename current windows :: ~[screen-prefix] A~
   + list all windows and select with cursor :: ~[screen-prefix] "~
   + list all running sessions (screen offline mode) :: ~screen -ls~
-  + kill current window :: ~[screen-prefix] K~
-- (de)attach screen session ::
-  + disconnect from screen session and keep it running on the host :: ~[screen-prefix] d~
-  + resume (-r) connection to session :: ~$screen -r~
-  + resume connection to a session that was not disconnected properly due to unstable network for example :: ~$screen -r -d~ (disconnect first from host: -d, and then resume to reconnect)
+  + kill current window :: ~[screen-prefix] K~, or ~exit~, or ~C-d~
 - split screens ::
   + horizontal split :: ~[screen-prefix] S~
   + vertical split :: ~[screen-prefix] |~
   + switch between screens :: ~[screen-prefix] <Tab>~
-  + remove all screen region but the current one :: ~[screen-prefix] Q~
+  + close current split/region :: ~[screen-prefix] x~
+  + remove all screen region but the current one (doesn't kill windows) :: ~[screen-prefix] Q~
+- lookup if in screen session ::
+  + ~echo $STY~ :: custom screen environment variable
+  + ~echo $TERM~ :: linux terminal environment variable
+  + ~[screen-prefix] x~ :: screen will print time, if does then current is a screen session
 - copy paste mode ::
   1. enter copy mode :: ~[screen-prefix] [~, or ~[screen-prefix] <Esc>~
   2. select region :: ~<Space>~ + move to end of region to copy + ~<Space>~
   3. paste copy buffer to cursor :: ~[screen-prefix] ]~
   4. leave copy mode :: ~q~
 - advanced ::
-  + log files ::
+  + logging ::
     - start logging current session :: ~[screen-prefix] H~
       + generates a file named ~screenlog.n~, where n is the screen session number
       + can also enable logging in detached mode with -L: ~screen -L~
-  + screenshot ::
-    - make a screenshot of what's currently on the screen :: ~[screen-prefix] h~
-      + generates a file named ~hardcopy.n~
+        - customise target file ~screen -L -Logfile /path/to/logfile.txt~
+    - screenshot ::
+      + make screenshot of what's currently on the screen :: ~[screen-prefix] h~
+        - generates a file named ~hardcopy.n~, n being the current window number
+          + by default, each time a screenshot is taken it overwrites the previous content of ~hardcopy.n~
+            - to append instead of the overwrite, add to configuration file (==screenrc==): ~hardcopy_append on~
+            - and to customise target directory for screenshots: ~hardcopydir /your/dir/~
   + lock screen session ::
     - lock current screen session :: ~[screen-prefix] x~ (locks screen with user's password)
 - examples ::
