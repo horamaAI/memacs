@@ -793,7 +793,51 @@ In addition to the fields specified in the cron expression, there’s also suppo
               - icing
           ...
           #+end_example
-  + yq :: 
+  + yq ::
+    - at time of writing this notes, exists 2 versions of yq: in go, and in python
+    - input example :: apt.yaml
+      #+begin_example
+      ---
+      note: install with debian like apt tool
+      apt:
+        command: sudo apt install
+        pkgs:
+          - git
+          - tree
+          - curl  # likely already installed, but do it anyway
+          - screen  # GNU screen, multiplexer
+          - g++
+          - python
+          - yamllint  # yaml file linter
+          - ccze  # log files coloriser
+          - wget
+      dpkg:
+        command: ""
+        pkgs:
+          - ""
+      jtodo:
+        - java jdk (basic one: default-jre), valgrind
+      ...
+      #+end_example
+    - examples ::
+      + accessing properties :: (the brackets [] provide all values from a structure)
+        - ~$cat configs/basic/apt.yaml | yq '.apt.pkgs[]'~ (or ~yq '.apt.pkgs[]' configs/basic/apt.yaml~)
+          + results:
+            #+begin_example
+            "git"
+            "tree"
+            "curl"
+            "screen"
+            "g++"
+            "python"
+            "yamllint"
+            "ccze"
+            "wget"          
+            #+end_example
+        - ~$yq '.apt.command' configs/basic/apt.yaml~ :: ~"sudo apt install"~
+        - ~yq '.apt.pkgs[] | select(. == "screen")' configs/basic/apt.yaml~ :: ~git~
+      + searching for value :: (
+        - ~~
 - jq and json :: 
 - time [command] :: times how long a command takes, eg: ~time (find -iname '*.org' | xargs -I {} basename {})~
   + has even formatting options, eg : ~time -f '%E %W %r' [command]~
