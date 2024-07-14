@@ -285,12 +285,8 @@
         - basic 'opt' tools that needs to be cloned (org-contrib ?), or installed specifically in 'opt' folder
         - to install :: ==opt/elisp/org-contrib==
       + vim ::
-        - vim configs
-          + ".vimrc" :
-            #+begin_example
-            " show line numbers
-            set number
-            #+end_example
+        - ".vimrc": vim configs
+        - vim.sh: for eventual plugin install
         - emacs configs to be put in 'common' profile, in basic one just deal with vim terminal
     - common ::
       + apt.yaml ::

@@ -742,7 +742,7 @@ In addition to the fields specified in the cron expression, there’s also suppo
 * showkey : useful for keybindings when whants to get text version of keys from keyboard
   - find mappings :: showkey -a
 * other nice utilities
-- yq and yaml :: yaml files parser and processor
+- jq and json, yq and yaml :: yaml files parser and processor
   + yaml ::
     - format ::
       + yaml file has start (~---~) and end (~...~) line indicators (just convention)
@@ -793,9 +793,12 @@ In addition to the fields specified in the cron expression, there’s also suppo
               - icing
           ...
           #+end_example
-  + yq ::
+  + yaml and json processing with jq ::
     - at time of writing this notes, exists 2 versions of yq: in go, and in python
-    - input example :: apt.yaml
+    - yq ::
+      + yq: Command-line YAML processor, a jq wrapper for YAML documents (converts yaml to json)
+      + preserve yaml format in output :: (by defaults no conversion of jq output is done and the output is in json format) use ==--yaml-output/-y== option to convert it back into YAML, eg: ~cat input.yml | yq -y .foo.bar~
+    - input example :: apt.yaml, and later on a json example file fruits.json
       #+begin_example
       ---
       note: install with debian like apt tool
@@ -819,8 +822,45 @@ In addition to the fields specified in the cron expression, there’s also suppo
         - java jdk (basic one: default-jre), valgrind
       ...
       #+end_example
-    - examples ::
-      + accessing properties :: (the brackets [] provide all values from a structure)
+    - use ::
+      + prettify :: ~echo '{"fruit":{"name":"apple","color":"green","price":1.20}}' | jq '.'~
+      + json to yaml ::
+        #+begin_example
+        $cat << EOF > fruits.json | yq -y
+        [
+          {
+            "name": "apple",
+            "color": "green",
+            "price": 1.2
+          },
+          {
+            "name": "banana",
+            "color": "yellow",
+            "price": 0.5
+          },
+          {
+            "name": "kiwi",
+            "color": "green",
+            "price": 1.25
+          }
+        ]
+        EOF
+        - name: apple
+          color: green
+          price: 1.2
+        - name: banana
+          color: yellow
+          price: 0.5
+        - name: kiwi
+          color: green
+          price: 1.25
+        #+end_example
+      + accessing properties ::
+        - access property values with ==.field== operator: filter operator + property name
+        - brackets (==[]==) provide all values from a structure/array
+        - ~$jq '.[] | .name' fruits.json~: ~"apple" "banana" "kiwi"~
+          + brackets iterate over content of list, pass each object to next filter using a pipe (==|==), and then outputs 'name' field content
+          + same outcome with: ~$ jq '.[].name' fruits.json~
         - ~$cat configs/basic/apt.yaml | yq '.apt.pkgs[]'~ (or ~yq '.apt.pkgs[]' configs/basic/apt.yaml~)
           + results:
             #+begin_example
@@ -835,10 +875,115 @@ In addition to the fields specified in the cron expression, there’s also suppo
             "wget"          
             #+end_example
         - ~$yq '.apt.command' configs/basic/apt.yaml~ :: ~"sudo apt install"~
-        - ~yq '.apt.pkgs[] | select(. == "screen")' configs/basic/apt.yaml~ :: ~git~
-      + searching for value :: (
-        - ~~
-- jq and json :: 
+        - fetch multiple keys :: use comma as separator: ~yq '.apt.pkgs,.apt' configs/basic/apt.yaml~
+          #+begin_example
+          [
+            "git",
+            "tree",
+            "curl",
+            "screen",
+            "g++",
+            "python",
+            "yamllint",
+            "ccze",
+            "wget"
+          ]
+          {
+            "command": "sudo apt install",
+            "pkgs": [
+              "git",
+              "tree",
+              "curl",
+              "screen",
+              "g++",
+              "python",
+              "yamllint",
+              "ccze",
+              "wget"
+            ]
+          }
+          #+end_example
+        - access by index :: ~$ jq '.[1].name' fruits.json~: "banana"
+        - slicing (subarray) ::
+          + ~echo '[1,2,3,4,5,6,7,8,9,10]' | jq '.[6:9]'~ : ~[7,8,9]~
+          + ~echo '[1,2,3,4,5,6,7,8,9,10]' | jq '.[:6]' | jq '.[-2:]'~ : ~[5,6]~
+        - ~$yq '.apt.pkgs[] | select(. == "screen")' configs/basic/apt.yaml~ :: ~screen~
+      + built-in functions ::
+        - keys (and 'value') :: ~jq '.[] | keys' fruits.json~ : ~["color", "name", "price"]~ 3 times
+        - length ::
+          + ~jq '.[].name | length' fruits.json~ : ~5,6,4~, the length of 'name' contents
+          + ~jq '.[] | length' fruits.json~ : ~3,3,3~, the number of properties in each object
+        - map ::
+          + handy when filtering needed to then apply further operations on selected values
+          + ~jq 'map(has("name"))' fruits.json~: keep objects in list that have property 'name'
+          + ~jq 'map(.price+2)' fruits.json~: increase content of property 'price' by 2
+        - min/max ::
+          + ~jq '[.[].price] | max' fruits.json~ : returns the price of the most expensive fruit
+        - min_by/max_by ::
+          + returns *object* that matches the given min/max condition
+          + ~jq 'max_by(.price)' tmp.json~: ~{"name": "kiwi", "color": "green", "price": 1.25}~
+        - to_entries[] :: convert each object in the array into an array of key-value pairs
+        - select ::
+          + for searching for values
+          + ~jq '.[] | select(.color=="yellow" and .price>=0.5)' fruits.json~
+          + ~jq '.[] | to_entries[] | select(.key | startswith("name")) | .value' fruits.json~ : ~"apple" "banana" "kiwi"~
+        - unique ::
+          + find unique occurrences of a value, or remove duplicates
+          + ~jq 'map(.color) | unique' fruits.json~
+        - del ::
+          + remove keys/values from the outputs
+          + ~jq 'del(.[].name)' fruit.json~
+        - support for regex (with 'test' function) ::
+          + tests if an input matches against a given regular expression
+          + ~jq '.[] | select(.name|test("^a.")) | .price' fruits.json~
+      + data transformation with jq ::
+        - pages.json ::
+          #+begin_example
+          {
+            "query": {
+              "pages": [
+                {
+                  "21721040": {
+                    "pageid": 21721040,
+                    "ns": 0,
+                    "title": "Stack Overflow",
+                    "extract": "Some interesting text about Stack Overflow"
+                  }
+                },
+                {
+                  "21721041": {
+                    "pageid": 21721041,
+                    "ns": 0,
+                    "title": "Baeldung",
+                    "extract": "A great place to learn about Java"
+                  }
+                }
+              ]
+            }
+          }
+          #+end_example
+        - command :: ~jq '.query.pages | [.[] | map(.) | .[] | {page_title: .title, page_description: .extract}]' pages.json~
+          + ~.[] | map(.) | .[]~:
+            1. take all content of .query.pages
+            2. map it <=> turn pages objects into arrays of their content: in the original structure, the pages are objects identified by their ISBN, getting their content leaves out the identifier/key and keeps only the content
+            3. take content => 1-3: transform original pages with ISBNs as keys into just their content
+        - results ::
+          #+begin_example
+          [
+            {
+              "page_title": "Stack Overflow",
+              "page_description": "Some interesting text about Stack Overflow"
+            },
+            {
+              "page_title": "Baeldung",
+              "page_description": "A great place to learn about Java"
+            }
+          ]
+          #+end_example
+      + going further ::
+        - cookbook :: https://github.com/jqlang/jq/wiki/Cookbook
+        - official documentation :: https://jqlang.github.io/jq/manual/
+        - cheatsheet :: https://gist.github.com/olih/f7437fb6962fb3ee9fe95bda8d2c8fa4
 - time [command] :: times how long a command takes, eg: ~time (find -iname '*.org' | xargs -I {} basename {})~
   + has even formatting options, eg : ~time -f '%E %W %r' [command]~
     - to get a better format for zsh as for bash, set variable TIMEFMT to ~TIMEFMT=$'real\t%E\nuser\t%U\nsys\t%S'~
