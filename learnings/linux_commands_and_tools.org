@@ -592,6 +592,9 @@ In addition to the fields specified in the cron expression, there’s also suppo
     - send JSON passed to curl on stdin :: echo '{"a":"b"}' | curl --json @- https://example.com/
     - send JSON from a file and concatenate a string to the end :: curl --json @json.txt --json ', "end": "true"}' https://example.com/
 * cut
+* json and yaml data format
+[2024-07-14 Sun 20:12]
+** schema and data validation
 * git
 [2024-05-31 Fri 22:58]
 ** git worktrees (work with different "branches" at the time)
@@ -739,9 +742,10 @@ In addition to the fields specified in the cron expression, there’s also suppo
       + ~-n 0~ :: only watch, don’t output older lines
       + ~screenlog.0~ :: .0 since the detached screen is supposed to be the first
     - ~tail -Fn 0 screenlog.0 | ccze | grep -i error~ :: watch for errors using ccze (logs colorizer)
-* showkey : useful for keybindings when whants to get text version of keys from keyboard
-  - find mappings :: showkey -a
 * other nice utilities
+- showkey ::
+  + useful for keybindings when whants to get text version of keys from keyboard
+  + find mappings :: ~showkey -a~, and then type the key sequence to know its value
 - jq and json, yq and yaml :: yaml files parser and processor
   + yaml ::
     - format ::
@@ -797,7 +801,7 @@ In addition to the fields specified in the cron expression, there’s also suppo
     - at time of writing this notes, exists 2 versions of yq: in go, and in python
     - yq ::
       + yq: Command-line YAML processor, a jq wrapper for YAML documents (converts yaml to json)
-      + preserve yaml format in output :: (by defaults no conversion of jq output is done and the output is in json format) use ==--yaml-output/-y== option to convert it back into YAML, eg: ~cat input.yml | yq -y .foo.bar~
+      + preserve yaml format in output :: option: ==--yaml-output/-y==, to convert json output back to YAML, eg: ~cat input.yml | yq -y .foo.bar~ (by defaults jq output is in json format)
     - input example :: apt.yaml, and later on a json example file fruits.json
       #+begin_example
       ---
@@ -936,6 +940,8 @@ In addition to the fields specified in the cron expression, there’s also suppo
         - support for regex (with 'test' function) ::
           + tests if an input matches against a given regular expression
           + ~jq '.[] | select(.name|test("^a.")) | .price' fruits.json~
+      + working with nodes ::
+        
       + data transformation with jq ::
         - pages.json ::
           #+begin_example
