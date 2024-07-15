@@ -801,7 +801,11 @@ In addition to the fields specified in the cron expression, there’s also suppo
     - at time of writing this notes, exists 2 versions of yq: in go, and in python
     - yq ::
       + yq: Command-line YAML processor, a jq wrapper for YAML documents (converts yaml to json)
-      + preserve yaml format in output :: option: ==--yaml-output/-y==, to convert json output back to YAML, eg: ~cat input.yml | yq -y .foo.bar~ (by defaults jq output is in json format)
+      + options ::
+        - preserve yaml format in output :: option: ==--yaml-output/-y==, to convert json output back to YAML, eg: ~cat input.yml | yq -y .foo.bar~ (by defaults jq output is in json format)
+    - jq ::
+      + options ::
+        - insert changes in input :: -i
     - input example :: apt.yaml, and later on a json example file fruits.json
       #+begin_example
       ---
@@ -826,7 +830,7 @@ In addition to the fields specified in the cron expression, there’s also suppo
         - java jdk (basic one: default-jre), valgrind
       ...
       #+end_example
-    - use ::
+    - processing with jq and yq ::
       + prettify :: ~echo '{"fruit":{"name":"apple","color":"green","price":1.20}}' | jq '.'~
       + json to yaml ::
         #+begin_example
@@ -940,8 +944,10 @@ In addition to the fields specified in the cron expression, there’s also suppo
         - support for regex (with 'test' function) ::
           + tests if an input matches against a given regular expression
           + ~jq '.[] | select(.name|test("^a.")) | .price' fruits.json~
-      + working with nodes ::
-        
+      + jq nodes ::
+        - use nodes to query and modify yaml/json structures: add/delete/find nodes
+        - create ::
+          + create new property:
       + data transformation with jq ::
         - pages.json ::
           #+begin_example
