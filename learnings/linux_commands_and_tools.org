@@ -946,8 +946,15 @@ In addition to the fields specified in the cron expression, there’s also suppo
           + ~jq '.[] | select(.name|test("^a.")) | .price' fruits.json~
       + jq nodes ::
         - use nodes to query and modify yaml/json structures: add/delete/find nodes
-        - create ::
-          + create new property:
+        - create/add node ::
+          + add new object :: ~yq '. + [{"name": "avocado", "color": "green", "price": "3.5"}]' fruits.json~
+            - adds a new object "avocado" to the result
+            - the command only outputs the result, if need to update the yaml file, remember to use the ==-iy== option
+          + add new property :: ~yq -y '. | .[] | select(.name=="banana") |= . + {"tastes": "amazing"}'  tmp.json | yq -sy~
+            - adds a new field/property to the fruit object banana
+            - option ==-s== (slurp) in the second part so that the result (a list of fruit objects) is translated into an array
+            - option ==-y== on both commands to work in full yaml format
+        - delete node ::
       + data transformation with jq ::
         - pages.json ::
           #+begin_example
