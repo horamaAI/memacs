@@ -923,13 +923,20 @@ In addition to the fields specified in the cron expression, there’s also suppo
           + ~jq '.[] | length' fruits.json~ : ~3,3,3~, the number of properties in each object
         - map ::
           + handy when filtering needed to then apply further operations on selected values
-          + ~jq 'map(has("name"))' fruits.json~: keep objects in list that have property 'name'
           + ~jq 'map(.price+2)' fruits.json~: increase content of property 'price' by 2
+        - has ::
+          + allows recursive evaluation
+          + has and map :: ~jq 'map(has("name"))' fruits.json~: boolean evaluation of objects in list that have property 'name' (returns 3 times 'true')
+            - to get the actual result, use select: ~jq 'select(map(has("name")))' fruits.json~
+            - can't however just select without mapping (~jq 'select(has("name"))' fruits.json~), since ~jq 'has("name")' fruits.json~ alone is evaluating the array itself, not its content
+              + => need to pass the content of the array to select: ~jq '.[] | select(has("name"))' fruits.json~
+            - so, an even better version to: ~jq 'select(map(has("name")))' fruits.json~, is: ~jq '.[] | select(has("name"))' fruits.json~
+          + chaining has and select :: ~jq 'select(map(has("name"))) | .[] | select(.color == "green")' fruits.json~
         - min/max ::
           + ~jq '[.[].price] | max' fruits.json~ : returns the price of the most expensive fruit
         - min_by/max_by ::
           + returns *object* that matches the given min/max condition
-          + ~jq 'max_by(.price)' tmp.json~: ~{"name": "kiwi", "color": "green", "price": 1.25}~
+          + ~jq 'max_by(.price)' fruits.json~: ~{"name": "kiwi", "color": "green", "price": 1.25}~
         - to_entries[] :: convert each object in the array into an array of key-value pairs
         - select ::
           + for searching for values
@@ -941,6 +948,9 @@ In addition to the fields specified in the cron expression, there’s also suppo
         - del ::
           + remove keys/values from the outputs
           + ~jq 'del(.[].name)' fruit.json~
+        - recursive operations with '..' and 'recurse' ::
+          + '..' ::
+          + 'recurse' :: 
         - support for regex (with 'test' function) ::
           + tests if an input matches against a given regular expression
           + ~jq '.[] | select(.name|test("^a.")) | .price' fruits.json~
@@ -950,11 +960,14 @@ In addition to the fields specified in the cron expression, there’s also suppo
           + add new object :: ~yq '. + [{"name": "avocado", "color": "green", "price": "3.5"}]' fruits.json~
             - adds a new object "avocado" to the result
             - the command only outputs the result, if need to update the yaml file, remember to use the ==-iy== option
-          + add new property :: ~yq -y '. | .[] | select(.name=="banana") |= . + {"tastes": "amazing"}'  tmp.json | yq -sy~
+          + add new property :: ~yq -y '. | .[] | select(.name=="banana") |= . + {"tastes": "amazing"}'  fruits.json | yq -sy~
             - adds a new field/property to the fruit object banana
             - option ==-s== (slurp) in the second part so that the result (a list of fruit objects) is translated into an array
             - option ==-y== on both commands to work in full yaml format
-        - delete node ::
+        - delete node :: with del function: ~yq 'del(. | .[] | select(.name=="banana"))' fruits.json~
+        - retrieving nodes entries :: with function ~to_entries~: ~yq '.[1] | to_entries' fruits.json~, returns: ~[{"key": "name","value": "banana"},{"key": "color","value": "yellow"},{"key": "price","value": 0.5}]~
+          + for arrays the keys are the indexes: ~yq 'to_entries' fruits.json~ returns ~[{"key": 0,"value": {"name": "apple","color": "green","price": 1.2}},...]~
+          + pipe returned array to .key/.value filters to retrieve entries' elements :: ~yq '.[1] | to_entries | .[] | .values' fruits.json~,returns: ~banana yellow 0.5~ 
       + data transformation with jq ::
         - pages.json ::
           #+begin_example
