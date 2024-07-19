@@ -949,7 +949,9 @@ In addition to the fields specified in the cron expression, there’s also suppo
           + remove keys/values from the outputs
           + ~jq 'del(.[].name)' fruit.json~
         - recursive operations with '..' and 'recurse' ::
-          + '..' ::
+          + '..' ("recursive descent") :: for key lookup
+            - eg: ~yq '.[1] | select(has("name")) ' fruits.json~
+              + indexed element since 
           + 'recurse' :: 
         - support for regex (with 'test' function) ::
           + tests if an input matches against a given regular expression
