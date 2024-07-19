@@ -948,11 +948,35 @@ In addition to the fields specified in the cron expression, there’s also suppo
         - del ::
           + remove keys/values from the outputs
           + ~jq 'del(.[].name)' fruit.json~
-        - recursive operations with '..' and 'recurse' ::
-          + '..' ("recursive descent") :: for key lookup
-            - eg: ~yq '.[1] | select(has("name")) ' fruits.json~
+        - recursive operations with '..', 'recurse' and 'walk' ::
+          + '..' ("recursive descent") ::
+            - for key lookup, same as zero-argument ==recurse== function (see next)
+            - ~..a~ does not work; use ~.. | .a~
+            - safer to use ~.. | .a?~ to find values of keys in any object, in case for example the function iterates over values objects such as strings
+            - eg: ~yq '.. | select(.name?) ' fruits.json~, to select any object that has key 'name' (~select(.name)~ will break when jq tries to apply '.name' to string "apple" for example)
               + indexed element since 
-          + 'recurse' :: 
+          + 'recurse' ::
+            - fitting recursive structures
+            - eg:
+              + given a json file with recursive elements to search through:
+                #+begin_example
+                {"name": "/", "children": [
+                  {"name": "/bin", "children": [
+                    {"name": "/bin/ls", "children": []},
+                    {"name": "/bin/sh", "children": []}]},
+                  {"name": "/home", "children": [
+                    {"name": "/home/stephen", "children": [
+                      {"name": "/home/stephen/jq", "children": []}]}]}]}
+                #+end_example
+              + to extract all filenames, one needs to retrieve .name, .children[].name, .children[].children[].name, and so on
+              + or can just use recurse instead: ~recurse(.children[]) | .name~
+            - can even do cool operations: ~echo 2 | jq 'recurse(. * .; . < 20)'~ returns: ~2 4 16~
+          + walk ::
+            - to apply operations recursively
+            - not 'recurse' that only go through the json/yaml elements
+            - eg:
+              + ~echo "[[4, 1, 7], [8, 5, 2], [3, 6, 9]]" | jq 'walk(if type == "array" then sort else . end)'~ returns : ~[[1,4,7],[2,5,8],[3,6,9]]~
+              + ~echo "[ { "_a": { "__b": 2 } } ]" | jq 'walk( if type == "object" then with_entries( .key |= sub( "^_+"; "") ) else . end )'~ returns: ~[{"a":{"b":2}}]~ (removes underscores)
         - support for regex (with 'test' function) ::
           + tests if an input matches against a given regular expression
           + ~jq '.[] | select(.name|test("^a.")) | .price' fruits.json~
