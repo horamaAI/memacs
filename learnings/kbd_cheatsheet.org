@@ -357,10 +357,12 @@
   + activate c++ mode (done by default for .cpp, .cxx files, but not .h files that are opened as c files) :: ==M-x c++-mode==
 
 * Terminal
-- add last argument of previous command :: ESC - .
-- comment current command line :: ESC - #
-  + nice to add command in terminal history and find it with :: C-r (backward search)
-  + add keybinding in ~/.zshrc :: bindkey '#' pound-insert
+- autocomplete ::
+  + add last argument of previous command :: ESC - .
+  + comment current command line :: ESC - #
+    - nice to keep command in terminal history and find it with backward search :: (~C-r~)
+    - add keybinding in ~/.zshrc/~ or ~/.zshrc_user~ ::
+      + eg: ~bindkey '#' pound-insert~
 
 * Others
 
