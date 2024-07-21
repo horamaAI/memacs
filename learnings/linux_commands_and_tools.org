@@ -803,36 +803,39 @@ In addition to the fields specified in the cron expression, there’s also suppo
       + yq: Command-line YAML processor, a jq wrapper for YAML documents (converts yaml to json)
       + options ::
         - preserve yaml format in output :: option: ==--yaml-output/-y==, to convert json output back to YAML, eg: ~cat input.yml | yq -y .foo.bar~ (by defaults jq output is in json format)
+        - insert changes in input :: -i (only available in ==yq== mode. To insert with jq use [[https://www.baeldung.com/linux/jq-add-objects-json-array][–argjson for example]])
     - jq ::
       + options ::
-        - insert changes in input :: -i
-    - input example :: apt.yaml, and later on a json example file fruits.json
-      #+begin_example
-      ---
-      note: install with debian like apt tool
-      apt:
-        command: sudo apt install
-        pkgs:
-          - git
-          - tree
-          - curl  # likely already installed, but do it anyway
-          - screen  # GNU screen, multiplexer
-          - g++
-          - python
-          - yamllint  # yaml file linter
-          - ccze  # log files coloriser
-          - wget
-      dpkg:
-        command: ""
-        pkgs:
-          - ""
-      jtodo:
-        - java jdk (basic one: default-jre), valgrind
-      ...
-      #+end_example
-    - processing with jq and yq ::
+        - translate multiple JSONs/YAMLs into a single array with slurp :: ==-s/--slurp==
+    - processing YAMLs and JSONs with jq and yq ::
       + prettify :: ~echo '{"fruit":{"name":"apple","color":"green","price":1.20}}' | jq '.'~
-      + json to yaml ::
+      + used examples :: apt.yaml, fruits.json
+        - apt.yaml:
+          #+begin_example
+          ---
+          note: install with debian like apt tool
+          apt:
+            command: sudo apt install
+            pkgs:
+              - git
+              - tree
+              - curl  # likely already installed, but do it anyway
+              - screen  # GNU screen, multiplexer
+              - g++
+              - python
+              - yamllint  # yaml file linter
+              - ccze  # log files coloriser
+              - wget
+          dpkg:
+            command: ""
+            pkgs:
+              - ""
+          jtodo:
+            - java jdk (basic one: default-jre), valgrind
+          ...
+          #+end_example
+        - fruits.json (see next)
+      + json to yaml :: (fruits.json)
         #+begin_example
         $cat << EOF > fruits.json | yq -y
         [
@@ -916,6 +919,9 @@ In addition to the fields specified in the cron expression, there’s also suppo
           + ~echo '[1,2,3,4,5,6,7,8,9,10]' | jq '.[6:9]'~ : ~[7,8,9]~
           + ~echo '[1,2,3,4,5,6,7,8,9,10]' | jq '.[:6]' | jq '.[-2:]'~ : ~[5,6]~
         - ~$yq '.apt.pkgs[] | select(. == "screen")' configs/basic/apt.yaml~ :: ~screen~
+      + merging multiple independent JSON/YAML objects or files with slurp ::
+        - eg: ~yq -sy '.' apt.yaml fruits.json~
+        - works with mix of json and yaml too, cool!
       + built-in functions ::
         - keys (and 'value') :: ~jq '.[] | keys' fruits.json~ : ~["color", "name", "price"]~ 3 times
         - length ::
@@ -980,7 +986,7 @@ In addition to the fields specified in the cron expression, there’s also suppo
         - support for regex (with 'test' function) ::
           + tests if an input matches against a given regular expression
           + ~jq '.[] | select(.name|test("^a.")) | .price' fruits.json~
-      + jq nodes ::
+      + working with jq nodes ::
         - use nodes to query and modify yaml/json structures: add/delete/find nodes
         - create/add node ::
           + add new object :: ~yq '. + [{"name": "avocado", "color": "green", "price": "3.5"}]' fruits.json~
@@ -988,7 +994,7 @@ In addition to the fields specified in the cron expression, there’s also suppo
             - the command only outputs the result, if need to update the yaml file, remember to use the ==-iy== option
           + add new property :: ~yq -y '. | .[] | select(.name=="banana") |= . + {"tastes": "amazing"}'  fruits.json | yq -sy~
             - adds a new field/property to the fruit object banana
-            - option ==-s== (slurp) in the second part so that the result (a list of fruit objects) is translated into an array
+            - option ==-s== (slurp) in the second part so that the result (a list of independent fruit objects) is translated into an array
             - option ==-y== on both commands to work in full yaml format
         - delete node :: with del function: ~yq 'del(. | .[] | select(.name=="banana"))' fruits.json~
         - retrieving nodes entries :: with function ~to_entries~: ~yq '.[1] | to_entries' fruits.json~, returns: ~[{"key": "name","value": "banana"},{"key": "color","value": "yellow"},{"key": "price","value": 0.5}]~
@@ -1038,10 +1044,13 @@ In addition to the fields specified in the cron expression, there’s also suppo
             }
           ]
           #+end_example
-      + going further ::
-        - cookbook :: https://github.com/jqlang/jq/wiki/Cookbook
-        - official documentation :: https://jqlang.github.io/jq/manual/
-        - cheatsheet :: https://gist.github.com/olih/f7437fb6962fb3ee9fe95bda8d2c8fa4
+    - going further ::
+      + cookbook :: https://github.com/jqlang/jq/wiki/Cookbook
+      + official documentation :: https://jqlang.github.io/jq/manual/
+      + cheatsheet :: https://gist.github.com/olih/f7437fb6962fb3ee9fe95bda8d2c8fa4
+  + jq/yq and bash scripting ::
+    - bash to yq/jq ::
+    - yq/jq to bash :: 
 - time [command] :: times how long a command takes, eg: ~time (find -iname '*.org' | xargs -I {} basename {})~
   + has even formatting options, eg : ~time -f '%E %W %r' [command]~
     - to get a better format for zsh as for bash, set variable TIMEFMT to ~TIMEFMT=$'real\t%E\nuser\t%U\nsys\t%S'~
