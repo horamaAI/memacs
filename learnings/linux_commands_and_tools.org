@@ -1051,11 +1051,27 @@ In addition to the fields specified in the cron expression, there’s also suppo
   + jq/yq and bash scripting ::
     - bash to yq/jq ::
       + using bash variables ::
-        - straightforward way (no args to jq) :: ~ax=xoxo && echo "{'a':'$ax'}" | yq .~
-        - with --args option ::
-          + format :: ~jq --arg jq_var ${bash_var} [options...] filter [files ...]~
-          + eg :: ~bash_fruit_var=Banana && jq --arg jq_fruit_var $bash_fruit_var '.[] | select(.name == "apple") | .name |= $jq_fruit_var' fruits.json~
-        - other options :: ==$ENV, env, --args, --argjson, --slurpfile, etc.== (checkout [[https://www.baeldung.com/linux/jq-passing-bash-variables][jq and bash with baeldung]])
+        - straightforward way (no option to jq) :: ~ax=xoxo && echo "{'a':'$ax'}" | yq .~
+        - with options :: 
+          + --args option ::
+            - format :: ~jq --arg jq_var ${bash_var} [options...] filter [files ...]~
+            - eg ::
+              + ~bash_fruit_var=Banana && jq --arg jq_fruit_var $bash_fruit_var '.[] | select(.name == "apple") | .name |= $jq_fruit_var' fruits.json~
+              + ~bash_fruit_var=Banana && jq --arg jq_fruit_var $bash_fruit_var '.[] | select(.name == $jq_fruit_var)' fruits.json~
+          + other options :: ==$ENV, env, --args, --argjson, --slurpfile, etc.== (checkout [[https://www.baeldung.com/linux/jq-passing-bash-variables][jq and bash with baeldung]])
+        - as jq filter field :: (with .[$var] instead of just .$var)
+          + ~var=name && jq --arg jq_var $var '.[] | select(.[$jq_var] == "banana")' fruits.json~
+        - with variables within yaml/json file ::
+          + input :: ~$cat input.yaml~
+            #+begin_example
+            hostname: ${HOSTNAME}
+            user: ${USER}
+            shell: ${SHELL}
+            #+end_example
+          + several possible way ::
+            - with bash builtin 'envsubst' ::
+              + key-value pair :: ~envsubst < input.yaml~
+              + values only :: ~alo=$(yq '.[]' input.yaml | envsubst)~
     - yq/jq to bash :: 
 - time [command] :: times how long a command takes, eg: ~time (find -iname '*.org' | xargs -I {} basename {})~
   + has even formatting options, eg : ~time -f '%E %W %r' [command]~
