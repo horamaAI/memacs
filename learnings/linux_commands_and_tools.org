@@ -1049,7 +1049,7 @@ In addition to the fields specified in the cron expression, there’s also suppo
       + official documentation :: https://jqlang.github.io/jq/manual/
       + cheatsheet :: https://gist.github.com/olih/f7437fb6962fb3ee9fe95bda8d2c8fa4
   + jq/yq and bash scripting ::
-    - bash to yq/jq ::
+    - from bash :: bash -> yq/jq
       + using bash variables ::
         - straightforward way (no option to jq) :: ~ax=xoxo && echo "{'a':'$ax'}" | yq .~
         - with options :: 
@@ -1072,7 +1072,8 @@ In addition to the fields specified in the cron expression, there’s also suppo
             - with bash builtin 'envsubst' ::
               + key-value pair :: ~envsubst < input.yaml~
               + values only :: ~alo=$(yq '.[]' input.yaml | envsubst)~
-    - yq/jq to bash :: 
+    - from script :: yq/jq -> bash script
+      + 
 - time [command] :: times how long a command takes, eg: ~time (find -iname '*.org' | xargs -I {} basename {})~
   + has even formatting options, eg : ~time -f '%E %W %r' [command]~
     - to get a better format for zsh as for bash, set variable TIMEFMT to ~TIMEFMT=$'real\t%E\nuser\t%U\nsys\t%S'~
