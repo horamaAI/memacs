@@ -73,6 +73,11 @@
 *** Notes
 - utils ::
   + run a child process :: ==bash -c==, eg: ~bash -c 'echo "$me"';~ to print local variable $me in a child process (subshell)
+- redirections ::
+  + single redirection :: (==<==) to overwrite
+  + double redirection :: (==<<==) to append
+  + triple redirection :: (==<<<==) to redirect a string to STDIN of a command, similar to piping
+- process substitution :: ==<(list)==
 *** shell special variables
 [2024-06-23 Sun 03:45]
 **** environment variables with set vs export
@@ -181,7 +186,7 @@
       done << (tail -n +2 input.csv)
       #+end_example
     - note :: (or rather a remainder)
-      + bash single vs double redirection :: (==< vs <<==) single is for overwrite, whereas double is for appending
+      + 
 ***** awk separators with FS, OFS, RS, ORS, NR, NF, FILENAME, FNR
 - ==FS== for awk internal field separators (example: ~awk -F':'~) and ==OFS== for output separator formatting
   + in the print/output command, the comma (",") concatenates two parameters with the value of awk OFS
@@ -354,6 +359,9 @@
   + ==...== means that previous argument can be repeated
   + eg: ~local cword words=()~ defines scalar variable ==cword== and empty array ==words==
 - set vs export ::
+- parameter expansion (TODO) ::
+  + bash: https://www.gnu.org/software/bash/manual/html_node/Shell-Parameter-Expansion.html
+  + zsh: https://zsh.sourceforge.io/Doc/Release/Expansion.html
 *** file read/write
 [2024-07-03 Wed 20:43]
 - read file ::
@@ -379,7 +387,18 @@
 
 *** Arrays
 [2024-06-23 Sun 19:38]
-- all variables in general are declared implicitly in bash, to explicitly declare an array, use ==declare==: explicit declaration of a simple array: ==declare -a==, declaration of an associative array: ==declare -A==
+- since all variables in general are declared implicitly in bash, to explicitly declare an array, use ==declare==: explicit declaration of a simple indexed array: ==declare -a==, declaration of an associative array: ==declare -A==
+- indexed arrays ::
+  + iterate/loop :: ~for index in ${!indexed_array[@]}; do echo "["$index"]:["${indexed_array[$index]}"]"; done~
+  + ~${!indexed_array[@]}~ returns the indexes of the array
+  + assign :: by index: ~indexed_array[2]=value~
+  + append :: ~indexed_array+=([new] [more] [elements] [for] [the] [array])~
+- associative arrays ::
+  + iterate/loop :: ~for key in ${!associative_array[@]}; do echo "["$key"]:["${associative_array[$key]}"]"; done~
+  + ~${!associative_array[@]}~ returns the keys of the array
+- remove elements from array ::
+  + by index/key :: ~unset indexed_array[1]~, ~unset associative_array[$"key"]~
+  + whole array :: ~unset array~, or using ==@== and ==*==: ~unset array[@]~
 - arrays and environment variables ::
   + array can not be an array of environment variables as environment variables may only be key-value string pairs
   + however, as done for $PATH, the trick is to turn array into a string delimited with a character not otherwise present in the values:
@@ -388,8 +407,21 @@
     $ arr=$( printf '%s:' "${arr[@]}" )
     # ~printf '%s\n' "$arr"~ gives "aa:bb:cc:some string:"
     #+end_example
-- associative arrays ::
-  + 
+- offset and length traversal :: ==${array[@]:offset:length}==: ~array=("Baeldung" "is" "cool" "and" "better" "than" "before") && echo "${array[@]:1:3}"~: "is cool and"
+  + if no length provided :: the result goes from offset to end: ~echo "${array[@]:1}"~: "is cool and better than before"
+  + negative offset :: then relative to end of array: ~echo "${array[@]: -5:3}"~: "cool and better"
+    - notice the whitespace before the negative symbol
+- transforming arrays :: with parameter expansion" (some tricks other than just using loop)
+  + replace elements of arrays ::
+    - as for any bash variable, it's possible to format display of an array, eg:
+      + suppose array "allo": ~alo=("one two three") && alo+=("twoone" "twoo" "three")~
+      + replace first occurrence of an element in an item (==/==) :: since local option, it replaces first occurrence of 'e' by 'x' in each item of allo:
+        - ~echo "${alo[*]/e/x}"~: ==onx two three twoonx twoo thrxe== (remaining 'e' stayed as were)
+      + replace all occurrences with global option (==//==) :: ~echo "${alo[*]//e/x}"~: ==onx two thrxx twoonx twoo thrxx==
+  + to uppercase/lowercase ::
+    - lowercase: varies with the shell being used, eg with zsh: ~${array[@]:l}~, with bash: ==,==, or ==,,== , eg: ~${array[@],}"~
+- notes ::
+  + ==@== vs ==*== :: ==*== returns single element of merged items in the array separated by defined IFS, whereas ==@== returns separate elements (careful when using quotes)
 * args and xargs
 ** Notes
 - use :: passing arguments from standard input to other commands. Whereas some commands allow piping (grep for example), others don't (find, ls, or echo for example: can't ~seq 5 | echo~, need to pipe to xargs first: ~seq 5 | xargs echo~)
@@ -1104,10 +1136,14 @@ In addition to the fields specified in the cron expression, there’s also suppo
           do
             # echo "process $key - $value"
             content+=($key $value);
-          done < <(yq '.[] | to_entries | map([.key, .value] | join("=")) | .[]' tmp.yaml)
+          done < <(yq '.[] | to_entries | map([.key, .value] | join("=")) | .[]' fruits.yaml)
 
           echo "${content[*]}"
           #+end_example
+- read ::
+  + transform string to array of strings (split) :: ~echo "one two three" | read -ra array~, or ~read -ra array <<< "one two three"~ => alo: ["one" "two" "three"]
+    - option -a to specify the array to redirect the split into (may vary with the shell, eg: -A with zsh)
+    
 - time [command] :: times how long a command takes, eg: ~time (find -iname '*.org' | xargs -I {} basename {})~
   + has even formatting options, eg : ~time -f '%E %W %r' [command]~
     - to get a better format for zsh as for bash, set variable TIMEFMT to ~TIMEFMT=$'real\t%E\nuser\t%U\nsys\t%S'~
