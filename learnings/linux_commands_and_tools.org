@@ -178,8 +178,10 @@
        echo "Quantity: $rec_column2"
        echo "Price: $rec_column3"
        echo ""
-      done < <(tail -n +2 input.csv)
+      done << (tail -n +2 input.csv)
       #+end_example
+    - note :: (or rather a remainder)
+      + bash single vs double redirection :: (==< vs <<==) single is for overwrite, whereas double is for appending
 ***** awk separators with FS, OFS, RS, ORS, NR, NF, FILENAME, FNR
 - ==FS== for awk internal field separators (example: ~awk -F':'~) and ==OFS== for output separator formatting
   + in the print/output command, the comma (",") concatenates two parameters with the value of awk OFS
@@ -377,6 +379,7 @@
 
 *** Arrays
 [2024-06-23 Sun 19:38]
+- all variables in general are declared implicitly in bash, to explicitly declare an array, use ==declare==: explicit declaration of a simple array: ==declare -a==, declaration of an associative array: ==declare -A==
 - arrays and environment variables ::
   + array can not be an array of environment variables as environment variables may only be key-value string pairs
   + however, as done for $PATH, the trick is to turn array into a string delimited with a character not otherwise present in the values:
@@ -385,6 +388,8 @@
     $ arr=$( printf '%s:' "${arr[@]}" )
     # ~printf '%s\n' "$arr"~ gives "aa:bb:cc:some string:"
     #+end_example
+- associative arrays ::
+  + 
 * args and xargs
 ** Notes
 - use :: passing arguments from standard input to other commands. Whereas some commands allow piping (grep for example), others don't (find, ls, or echo for example: can't ~seq 5 | echo~, need to pipe to xargs first: ~seq 5 | xargs echo~)
@@ -1073,7 +1078,36 @@ In addition to the fields specified in the cron expression, there’s also suppo
               + key-value pair :: ~envsubst < input.yaml~
               + values only :: ~alo=$(yq '.[]' input.yaml | envsubst)~
     - from script :: yq/jq -> bash script
-      + 
+      + build an associative array from a yaml/json :: key: property name, value: well... its corresponding value :-P
+        - example ::
+          #+begin_example
+          declare -A content
+          
+          while IFS="=" read -r key value;
+          do
+            echo "process $key - $value"
+            content["$key"]=$value;
+          done < <(yq '.[] | to_entries | map([.key, .value] | join("=")) | .[]' fruits.yaml)
+           
+          for key in "${!content[@]}";
+          do
+            printf "key %s, value %s\n" "$key" "${content[$key]}";
+          done
+          #+end_example
+        - cons :: since key-value pair, will overwrite/replace previous values => will keep the last occurrence
+      + using a simple array of size n*2 :: where each line contains 2 elements: the key and its value
+        - example ::
+          #+begin_example
+          declare -a content
+          
+          while IFS="=" read -r key value;
+          do
+            # echo "process $key - $value"
+            content+=($key $value);
+          done < <(yq '.[] | to_entries | map([.key, .value] | join("=")) | .[]' tmp.yaml)
+
+          echo "${content[*]}"
+          #+end_example
 - time [command] :: times how long a command takes, eg: ~time (find -iname '*.org' | xargs -I {} basename {})~
   + has even formatting options, eg : ~time -f '%E %W %r' [command]~
     - to get a better format for zsh as for bash, set variable TIMEFMT to ~TIMEFMT=$'real\t%E\nuser\t%U\nsys\t%S'~
@@ -1086,5 +1120,3 @@ In addition to the fields specified in the cron expression, there’s also suppo
     - with grep and sed :: ~ls -R | grep ":$" | sed -e '"'"'s/:$//'"'"' -e '"'"'s/[^-][^\/]*\//--/g'"'"' -e '"'"'s/^/   /'"'"' -e '"'"'s/-/|/'"'"~
     - with grep and perl :: ~ls -aR | grep ":$" | perl -pe 's/:$//;s/[^-][^\/]*\//    /g;s/^    (\S)/└── \1/;s/(^    |    (?= ))/│   /g;s/    (\S)/└── \1/'~
     
-  
-
