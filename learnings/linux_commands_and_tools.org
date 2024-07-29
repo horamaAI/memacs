@@ -20,6 +20,41 @@
     - $0 :: filename of the shell script, or name of current script
     - $_ :: last argument of the previous command
     - ${PIPESTATUS[n]} :: return value of piped commands (array)
+** notorious folders in the filesystem [TODO]
+[2024-07-28 Sun 17:09]
+*** /proc
+- ==/proc== is not a real filesystem directory, but a virtual file system (don’t actually exist on disk, created on the fly by the OS) created dynamically by Linux to provide access to certain types of hardware information and information about the running Linux system: kernel, running processes, devices, configuration parameters, etc. It is mapped to ==/proc== and mounted at boot time
+  + its zero-length files are neither binary nor text, but can be examined and displayed. It's very handy to know how Linux commands work and do administrative tasks
+  + most files are read-only, but a few writable ones (notably ==/proc/sys==) allow changes in the kernel parameters (of course caution is strongly advised :-P)
+- ==/proc/<PID>== :: in ==/proc== are also found numbered directories depicting PIDS of running processes, and the files/links within them represent the commands in the PID context
+  + each ==/proc/<PID>== contents have similar structures, and contain same file/links/directories such as (non-exhaustive):
+    - cmdline :: contains the command that started the process
+    - environ :: contains names and content of environment variables for the process
+    - fd :: file descriptors
+    - limits :: information about the limits of the process
+    - mounts :: related information
+    - cwd :: link to current working directory of the process
+    - exe :: link to executable of the process
+    - root :: link to work directory of the process
+    - maps, statm, and mem :: deal with the memory in use by the process
+    - stat and status :: provide infos about the status of the process (the latter is far clearer than the former)
+- some notorious /proc folders/files/links :: (just 'cat' to show their contents)
+  + /proc/self :: points to the currently scheduled pid (the currently running process on current logical CPU, points to the asking program's pid)
+  + /proc/cmdline :: shows the parameters passed to the kernel at boot time, eg: ==BOOT_IMAGE=/boot/vmlinuz-6.1.0-23-amd64 root=UUID=d9cf6dd7-5ad1-44a9-a329-4fc1f8fa9aab ro quiet== ('root' gives the partition is the root of the filesystem)
+  + /proc/cpuinfo :: cpu information
+  + /proc/filesystems :: infos about filesystems supported by current kernel
+  + /proc/meminfo :: stats on system's memory usage
+  + /proc/version :: for kernel version and other kernel related infos
+    - some commands such as ~uname -srv~ are also checking /proc/version to get their information
+  + /proc/mounts :: shows all the mounts used by the machine (output similar to: ==/etc/mtab==)
+  + /proc/partitions and /proc/swaps :: show all partitions and swap space
+  + /proc/net :: rich of network and communication related files: network device (==/proc/net/dev==), several iptables (firewall) related files, net and socket statistics, wireless information, etc.
+    - ~lsof -i TCP...~ for example is getting infos from
+      ==/proc/net/tcp==, but also exists ==/proc/net/udp==, etc.
+- some usecase examples ::
+  + hunt zombie processes with 'status' file :: check whether status files contain "State: (Z) zombie": ~find /proc -name 'status' 2>/dev/null | xargs grep "zombie"~
+  + check whether a given program is running :: exists some running PID with cmdline firefox: ~find /proc -name 'status' 2>/dev/null | xargs grep "firefox"~
+    - ==ps== is using infos from /proc
 ** shell types and shell startup configs
 *** notes
 - [non-]interactive shells and [non-]login shells :: there are two kinds of shells:
@@ -77,9 +112,95 @@
   + single redirection :: (==<==) to overwrite
   + double redirection :: (==<<==) to append
   + triple redirection :: (==<<<==) to redirect a string to STDIN of a command, similar to piping
-- process substitution :: ==<(list)==
+  + redirection and file descriptors ::
+    - command 2>&1 :: send error output to standard output
+    - command > file 2>&1 :: send standard output to file (defines where stdout should go), and send stderr where stdout went ('file')
+      + order counts, different than ~command 2>&1 > file~ which sends stderr to terminal, and stdout to file
+      + command >> file 2>&1 :: same as ==command > file 2>&1==, but appends to file instead
+    - command &> file :: send stdout and stderr to file
+      + &>file is the same as >&file :: send stdout and stderr to file (&> is preferred)
+      + semantically equivalent to ==>file 2>&1==
+      + &>>file :: appends instead
+    - command 2>&1 > file :: send stderr to stdout, and stdout to file
+      + command 2>&1 >> file :: appends
+    - examples ::
+      + ~find /usr -name ls > myfile 2>&1~ : send both fd1 and fd2 to 'myfile'
+      + ~find /usr -name cd >> myfile 2>&1~ : find in /usr files 'cd', and append both stderr and stdout to myfile
+- process substitution :: ==>(command_list)== and ==<(command_list)== (and ~=(command_list)~ for zsh)
+  + allow piping STDOUT of one or multiple commands into STDIN of some other command, even when piping with ==|== is not possible
+  + process substitution uses ==/dev/fd/<n>== (for bash, or ==/proc/self/<n>== for zsh) files to send the results of the process(es) within parentheses to another process
+  + examples ::
+    #+begin_example
+    $ echo >(true)
+    /proc/self/fd/18
+    
+    $ echo <(true)
+    /proc/self/fd/14
+    
+    $ echo >(true) <(true)
+    /proc/self/fd/18 /proc/self/fd/14
+    
+    $ wc <(cat /usr/share/dict/words)
+     104334  104334  985084 /proc/self/fd/14
+    
+    $ cat /usr/share/dict/words | wc
+     104334  104334  985084
+    #+end_example
+  + some usecase :: (main source: https://tldp.org/LDP/abs/html/process-sub.html)
+    - compare outputs of two different commands, or outputs of different options to the same command ::
+      + examples ::
+        - compare command with different option :: ~$ comm <(ls -l) <(ls -al)~
+        - compare content of directories :: ~diff <(ls $first_directory) <(ls $second_directory)~, ~$ comm <(sort file1) <(sort file2)~
+    - generate an array variable of random numbers ::
+      #+begin_example
+      read -a list < <( od -Ad -w24 -t u2 /dev/urandom )
+      # read random numbers from /dev/urandom, process with "od" and feed into stdin of "read" into variable "list"
+      # -Ad: show offset (8 adjacent bits, distance between beginning of object and other element or point on the page): in decimal format (d);
+      # -w24: limit bytes per output line to 24 bytes;
+      # -t u2: dump output as unsigned decimal 2-byte units 0 (same as option: -d)
+      #+end_example
+    - monitor bitorrent port ::
+      #+begin_example
+      PORT=6881   # bittorrent
+      
+      # Scan the port to make sure nothing nefarious is going on.
+      netcat -l $PORT | tee>(md5sum ->mydata-orig.md5) |
+      gzip | tee>(md5sum - | sed 's/-$/mydata.lz2/'>mydata-gz.md5)>mydata.gz
+      
+      # Check the decompression:
+      gzip -d<mydata.gz | md5sum -c mydata-orig.md5)
+      # The MD5sum of the original checks stdin and detects compression issues.
+      #+end_example
+    - use buffer for compression/decompression ::
+      #+begin_example
+      tar cf >(bzip2 -c > file.tar.bz2) $directory_name
+      # calls "tar cf /dev/fd/?? $directory_name", and "bzip2 -c > file.tar.bz2".
+      # bzip2 -c: compress/decompress to standard output
+      # Because of the /dev/fd/<n> system feature, the pipe between both commands does not need to be named
+      # same as:
+      bzip2 -c < pipe > file.tar.bz2&
+      tar cf pipe $directory_name
+      rm pipe
+      # or:
+      exec 3>&1 # open fd3 and redirect it to stdout
+      tar cf /dev/fd/4 $directory_name 4>&1 >&3 3>&- | bzip2 -c > file.tar.bz2 3>&-
+      # close fd3
+      exec 3>&-
+      #+end_example
 *** shell special variables
 [2024-06-23 Sun 03:45]
+**** file descriptors (fd)
+[2024-07-29 Mon 22:29]
+- 0: stdin
+- 1: stdout
+- 2: stderr
+- 3..9: available additional fds that need to be opened first before they can be used, eg:
+  #+begin_example
+  exec 3<> /tmp/foo  #open fd 3 in read+write mode
+  echo "test" >&3
+  exec 3>&- #close fd 3.
+  #+end_example
+- 
 **** environment variables with set vs export
 [2024-07-04 Thu 22:41]
 - set :: allows changes to environment variables and options on current shell session, and also show values of variables *and functions*
@@ -1140,6 +1261,32 @@ In addition to the fields specified in the cron expression, there’s also suppo
 
           echo "${content[*]}"
           #+end_example
+- lsof ::
+  + lsof :: "List Open Files"
+    - does what its name, but its potential isn't limited to just that, since in Linux everything is a file (kind of),
+    - lsof utility is a robust interface for information inside the ==/proc== virtual filesystem for example
+    - examples ::
+      + what process are using a specific directory :: (here ==/run==)
+        #+begin_example
+        lsof /run
+        COMMAND    PID            USER   FD   TYPE DEVICE SIZE/OFF NODE NAME
+        mate-scre 1640 myfirstdebianpc   15w  FIFO   0,22      0t0 1596 /run/systemd/inhibit/5.ref
+        mate-powe 1654 myfirstdebianpc   13w  FIFO   0,22      0t0 1581 /run/systemd/inhibit/3.ref
+        #+end_example
+      + what files a user is using :: ~lsof -u <user-name>~
+      + what files a particular process has opened :: ~lsof -p <pid-number>~
+      + what process is using a specific TCP port :: ~lsof -i TCP:<port-number>~ (22 for example)
+      + generate report on all network processes associated with a particular interface :: ~lsof -i TCP@<IP-address>~ (eg: ~lsof -i TCP@127.0.0.1~)
+    - columns output of lsof :: (some)
+      + FD :: File descriptor definition
+        - when a file is opened, the OS creates an entry to represent that file and store the information about it. So if there are 100 files opened then there will be 100 entries somewhere in the kernel. These entries are represented by integers (...100, 101, 102....) known as "file descriptor". FD is an integer that uniquely represents an opened file for the process
+      + DEVICE :: device number or, in the case of a block device, character or other
+      + SIZE/OFF :: dimension of the file or offset (the suffix 0t is the offset)
+      + NODE :: node description of the local file; could be the number of the local file, TCP, UDP, or STR (stream)
+      + NAME :: the name of the mount point where the file resides
+
+Similarly, when you open a network socket, it is also represented by an integer and it is called Socket Descriptor. I hope you understand.
+  + format :: ~lsof -p <process id>~
 - read ::
   + transform string to array of strings (split) :: ~echo "one two three" | read -ra array~, or ~read -ra array <<< "one two three"~ => alo: ["one" "two" "three"]
     - option -a to specify the array to redirect the split into (may vary with the shell, eg: -A with zsh)
@@ -1148,6 +1295,8 @@ In addition to the fields specified in the cron expression, there’s also suppo
   + has even formatting options, eg : ~time -f '%E %W %r' [command]~
     - to get a better format for zsh as for bash, set variable TIMEFMT to ~TIMEFMT=$'real\t%E\nuser\t%U\nsys\t%S'~
   + for longer commands, can either use braces (~time { ls; pwd; whoami; }~), or use a subshell (~time (ls; pwd)~)
+- top ::
+  + 
 - tree [path-to-folder-to-visualise] :: to visualise directories structures
   + Some options ::
     - -a :: include hidden files
