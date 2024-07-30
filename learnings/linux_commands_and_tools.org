@@ -123,6 +123,12 @@
       + &>>file :: appends instead
     - command 2>&1 > file :: send stderr to stdout, and stdout to file
       + command 2>&1 >> file :: appends
+    - misc ::
+      + ~N>&-~ : close fd N
+      + ~M>/dev/null~ : ignore whatever is redirected to fd N
+        - ~>/dev/null~ is specific to stdout: ignore whatever is redirected to stdout
+      + ~|&~ : abbreviation for ~2>&1 |~: redirect stderr to stdout, and pipe everything to command after pipe
+      + ~&>/dev/null~ : abbreviation for ~>/dev/null 2>&1~ : ignore stdout, and redirect stderr to stdout: in other word ignore everything
     - examples ::
       + ~find /usr -name ls > myfile 2>&1~ : send both fd1 and fd2 to 'myfile'
       + ~find /usr -name cd >> myfile 2>&1~ : find in /usr files 'cd', and append both stderr and stdout to myfile
@@ -133,16 +139,12 @@
     #+begin_example
     $ echo >(true)
     /proc/self/fd/18
-    
     $ echo <(true)
     /proc/self/fd/14
-    
     $ echo >(true) <(true)
     /proc/self/fd/18 /proc/self/fd/14
-    
     $ wc <(cat /usr/share/dict/words)
      104334  104334  985084 /proc/self/fd/14
-    
     $ cat /usr/share/dict/words | wc
      104334  104334  985084
     #+end_example
@@ -173,16 +175,23 @@
       #+end_example
     - use buffer for compression/decompression ::
       #+begin_example
+      # tar command format: tar -cf [target-archive-file] [files/dir to be archived] ; options: c to create compressed file, f to give it a name
+      # bzip2 -c: block compress/decompress to stdout (will further sort compressed .tar)
+      # complete command:
+      # - compress data that is in $directory_name,
+      # - redirect result to compressed file given by the result of >(), and then do to this result a block-sorted process with bzip2
+      # - the result of bzip2 is redirected to stdout (-c), which is redirected to file file.tar.bz2
+      # calls "tar cf /dev/fd/?? $directory_name", and "bzip2 -c > file.tar.bz2". // bzip2 -c: compress/decompress to standard output
+      # because of the /dev/fd/<n> system feature, the pipe between both commands does not need to be named
       tar cf >(bzip2 -c > file.tar.bz2) $directory_name
-      # calls "tar cf /dev/fd/?? $directory_name", and "bzip2 -c > file.tar.bz2".
-      # bzip2 -c: compress/decompress to standard output
-      # Because of the /dev/fd/<n> system feature, the pipe between both commands does not need to be named
       # same as:
       bzip2 -c < pipe > file.tar.bz2&
       tar cf pipe $directory_name
       rm pipe
       # or:
-      exec 3>&1 # open fd3 and redirect it to stdout
+      # open fd3 and redirect it to stdout
+      exec 3>&1
+      # define fd4, redirect fd4 to stdout, redirect stdout to fd3, close fd3, pipe result to bzip2, which uses stdout data to create file.tar.bz2
       tar cf /dev/fd/4 $directory_name 4>&1 >&3 3>&- | bzip2 -c > file.tar.bz2 3>&-
       # close fd3
       exec 3>&-
