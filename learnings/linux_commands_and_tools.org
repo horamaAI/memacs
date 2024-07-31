@@ -135,6 +135,13 @@
 - process substitution :: ==>(command_list)== and ==<(command_list)== (and ~=(command_list)~ for zsh)
   + allow piping STDOUT of one or multiple commands into STDIN of some other command, even when piping with ==|== is not possible
   + process substitution uses ==/dev/fd/<n>== (for bash, or ==/proc/self/<n>== for zsh) files to send the results of the process(es) within parentheses to another process
+  + ~=(command_list)~ :: (zsh only)
+    - if used, then a temporary file is used instead of file in ~/dev/fd or a FIFO~
+    - can be used in place of ~<(...)~ when the program needs to lseek in the output
+    - useful as both ~/dev/fd~ and the named pipe implementation of ~<(...)~ have drawbacks:
+      + ~/dev/fd~: some programmes may automatically close the file descriptor in question before examining the file on the command line, particularly if this is necessary for security reasons such as when the programme is running setuid
+      + named pipe: if the programme does not actually open the file, the subshell attempting to read from or write to the pipe will (different OS may have different behaviour) block for ever and have to be killed explicitly
+      + in both cases: the shell actually supplies the information using a pipe, so that programmes that expect to lseek (see man page lseek(2) for more details) on the file will not work
   + examples ::
     #+begin_example
     $ echo >(true)
@@ -196,6 +203,97 @@
       # close fd3
       exec 3>&-
       #+end_example
+    - global variables with while-read and process substitution ::
+      #+begin_example
+      # 1: variable not available outside of subshell:
+      echo "random input" | while read i
+      do
+        global=3D": variable $global not available outside the loop."
+        # ... because it runs in a subshell.
+      done
+      
+      # 2. share the variable with process substitution:
+      echo "\$global (from outside the subprocess) = $global"
+      # $global (from outside the subprocess) =
+      
+      echo "--"; echo
+      
+      while read i
+      do
+        echo $i
+        global=3D": Available outside the loop."
+        # ... because it does NOT run in a subshell.
+      done < <( echo "random input" )
+      #    ^ ^ : process substitution: piping instead of redirection to subshell
+      
+      # $global (using process substitution) = 3D: now available outside the loop
+      echo "\$global (using process substitution) = $global"
+      
+      # 3. and likewise:
+      declare -a inloop
+      index=0
+      cat $0 | while read line # try to read this bash script line by line
+      do
+        inloop[$index]="$line"
+        ((index++))
+        # It runs in a subshell, so ...
+      done
+      echo "OUTPUT = "
+      echo ${inloop[*]}           # ... nothing echoes.
+      
+      echo; echo "--"; echo
+      
+      declare -a outloop
+      index=0
+      while read line
+      do
+        outloop[$index]="$line"
+        ((index++))
+        # It does NOT run in a subshell, so ...
+      done < <( cat $0 ) # try process substitution this time
+      echo "OUTPUT = "
+      echo ${outloop[*]}          # ... the entire script echoes.
+      
+      exit $? # exit with status of last task
+      #+end_example
+    - global variables with while-read and process substitution :: (eg2: redirect process substitution to loop)
+      #+begin_example
+      #!/bin/bash
+      # psub.bash
+      declare -a array0
+      while read
+      do
+        array0[${#array0[@]}]="$REPLY" # auto-increment since assigning by length of array0
+        #+ $REPLY value is taken from the process substitution result redirected into the read loop
+      done < <( sed -e 's/bash/CRASH-BANG!/' $0 | grep bin | awk '{print $1}' )
+      # sets the default 'read' variable, $REPLY, by process substitution,
+      #+ then copies it into an array
+      #+ sed alone for example will replace literal sed command ~'s/bash/CRASH-BANG!/'~ with ~'s/CRASH-BANG!/CRASH-BANG!/'~, and awk will only keep the first column
+      
+      echo "${array0[@]}"
+      
+      exit $?
+      
+      # ====================================== #
+      # because of the 'exit' above, following instructions won't be executed
+      bash psub.bash
+      # result of running this script should produce following result:
+      #!/bin/CRASH-BANG! done #!/bin/CRASH-BANG!
+      #+end_example
+    - note ::
+      + from "main source" above ::
+        #+begin_example
+        # more generally spoken
+        (
+        : | x=x
+        # seems to start a subshell like
+        : | ( x=x )
+        # while
+        x=x < <(:)
+        # does not
+        )
+        # This is useful, when parsing csv and the like
+        #+end_example
 *** shell special variables
 [2024-06-23 Sun 03:45]
 **** file descriptors (fd)
