@@ -857,9 +857,9 @@ In addition to the fields specified in the cron expression, there’s also suppo
     - send JSON passed to curl on stdin :: echo '{"a":"b"}' | curl --json @- https://example.com/
     - send JSON from a file and concatenate a string to the end :: curl --json @json.txt --json ', "end": "true"}' https://example.com/
 * cut
-* json and yaml data format
+* json and yaml
 [2024-07-14 Sun 20:12]
-** introduction
+** introduction: yaml/json format and structure
 [2024-08-01 Thu 21:17]
 - yaml ::
   + format ::
@@ -911,7 +911,8 @@ In addition to the fields specified in the cron expression, there’s also suppo
             - icing
         ...
         #+end_example
-- jq and yq; json and yaml files parser and processor ::
+** jq and yq (json and yaml files parser and processor)
+- json and yaml files parsing and processing ::
   + yaml ::
   + yaml and json processing with jq ::
     - at time of writing this notes, exists 2 versions of yq: in go, and in python
@@ -1220,6 +1221,12 @@ In addition to the fields specified in the cron expression, there’s also suppo
           echo "${content[*]}"
           #+end_example
 ** schema and data validation
+- notes ::
+  + each time a yaml parser reads a value, it guesses the type tag in a process called "tag resolution":
+    - eg: the "Norway problem": suppose a yaml parser reads: ~country-list: [DK, NO, SE]~, with no context, or details given, it interprets that as: ~{'country-list': ['DK', False, 'SE']}~
+    - hence the need for a schema, so that there is no ambiguities in the parser result
+- schemas ::
+  + 
 * git
 [2024-05-31 Fri 22:58]
 ** git worktrees (work with different "branches" at the time)
