@@ -1227,22 +1227,22 @@ In addition to the fields specified in the cron expression, there’s also suppo
     - hence the need for a schema, so that there is no ambiguities in the parser result
 - schemas ::
   + notes ::
-    - json/yaml schemas are standards that describe the structure, constraints, and data types for a set of json/yaml data
+    - json/yaml schemas are standards that describe structure, constraints, and data types for a set of json/yaml data
     - vocabulary ::
       + "instance" :: the document being validated or described,
       + "schema" :: the document that contains the description
-    - json/yaml schemas are "hypermedia-ready", meaning that resources' representation contains links to other resources, enabling the client to navigate the API without knowing the URL for that resource, except the API "entry point"
-    - json/yaml schema documents are identified by URIs (URLs specify the location of a resource on the internet, while a URI can be used to identify any type of resource, not just those on the internet), which can be used in HTTP link headers and within schema documents to allow for recursive definitions
-    - most programming languages have builtin types that easily map to yaml data models, but a general purpose validator is still needed to ensure that the data is formed as expected
-      + for example, when loading a yaml document in json with ==js-yaml==, it only returns a tree of JavaScript objects and values which hasn't been validated against any schema
+    - json/yaml schemas are "hypermedia-ready", meaning that resources' representation contains links to other resources, enabling the client to navigate APIs without knowing URLs for that resource, only the API "entry point" is required
+    - json/yaml schema documents are identified by URIs (Uniform Resource Identifiers: whereas URLs specify the location of a resource on the internet, a URI can be used to identify any type of resource, not just those on the internet), which can be used in HTTP link headers and within schema documents to allow recursive definitions for example
+    - most programming languages have builtin types that map yaml data models to objects, but further features/tools might be needed to completely integrate them
+      + for example, a general purpose validator is needed to ensure that the data is formed as expected: in JavaScript, when loading a json document with ==js-yaml==, it only returns a tree of JavaScript objects and values which hasn't been validated against any schema
       + some languages like C have no built-in way to represent yaml models, and additional libraries are required to define their own types to represent the yaml data: == libyaml== C library for example provides a low-level token-based API, but can be inconvenient to use
       + C++ ?
       + validating yaml with yq ::
         - ~yq v -d1 multidoc.yml~ :: validates both document 0 and document 1 (but not document 2)
         - ~yq v -d'*'~ multidoc.yml :: validates all documents in the yaml (==*== is quoted to avoid the CLI from processing the wildcard)
-    - in many cases a validator supports only some subset of the yaml data model, and not the whole, but it's usually enough when one knows what he needs and expects
-      + also, for the same programming language, there can be different libraries or frameworks providing schema validators/generators, code generators, documentation generators, UI generation, json schema processing, etc., so keep in mind that they might have or miss some of a desired feature, or might conflict/mismatch with what's provided by other tools for the same schema/model/etc.
-      + in other words, know what you need and try to find the tools that match the most your expectations
+    - in many cases a validator supports only some subset of the yaml data model and not all of it, but it's usually enough when one knows what he needs and expects
+      + also, for the same programming language, there can be different libraries or frameworks providing schema validators/generators, code generators, documentation generators, UI generation, json schema processing, etc., so keep in mind that they might have (or miss) some of desired features, or might conflict/mismatch with what's provided by other tools for the same schema/model/etc.
+      + in other words, know what you need and try to search a bit for the best tools that match the most your needs
     - example of json schema ::
       #+begin_example
       $id: https://example.com/schema.json
@@ -1253,7 +1253,7 @@ In addition to the fields specified in the cron expression, there’s also suppo
           type: array
           items: { "type": "string" }
       #+end_example
-  + input example ::
+  + input example used ::
     - product catalogue storing json data, eg:
       #+begin_example
       {
@@ -1263,10 +1263,193 @@ In addition to the fields specified in the cron expression, there’s also suppo
         "tags": [ "home", "green" ]
       }
       #+end_example
-- create schema ::
-  
-- basic schemas' desciptors ::
-  + "type" :: eg: ~{ "type": "string" }~
+  + creating schemas ::
+    - required definitions at the beginning of the json schema ::
+      + $schema :: specifies which draft of the JSON Schema standard the schema adheres to
+      + $id :: sets a unique URI for the schema, that can be used to refer to elements of the schema from inside the same document or from external JSON documents
+        - reminder :: can be URL or a local reference (prefer relative path instead of absolute)
+      + title, description :: state the intent of the schema (doesn't add any constraints to the data being validated)
+      + type :: defines the first constraint on the JSON data (on the json document itself)
+        - in the product catalogue example considered here, this keyword would specify that the data in the json document must be a JSON object (~{"type": "object" }~)
+        - but in general ==type== is used to define any type constraint on a property's (key) value : ~{ "type": "string" }~, ~{ "type": "integer" }~, etc.
+      + vocabulary ::
+        - [[https://json-schema.org/draft/2020-12/json-schema-core#name-keyword-behaviors][schema keywords]] :: $schema, $id, etc.
+        - [[https://json-schema.org/draft/2020-12/json-schema-validation#name-a-vocabulary-for-basic-meta][schema annotations]] :: title, description, etc.
+        - [[https://json-schema.org/draft/2020-12/json-schema-validation#name-validation-keywords-for-any][validation keywords]] :: properties, type, enum, const, etc.
+      + eg ::
+        #+begin_example
+        {
+          "$schema": "https://json-schema.org/draft/2020-12/schema",
+          "$id": "https://example.com/product.schema.json",
+          "title": "Product",
+          "description": "A product in the catalog",
+          "type": "object"
+        }
+        #+end_example
+  + defining properties ::
+    - ==properties==: validation keyword, that define properties (keys) that are used in yaml/json documents that needs to be validated
+      + used to define constraint, structure, data types, etc., against which a validator is to validate the data content
+      + property productId can also be defined without any annotation: the productId description or title, and just ~{"properties": {"productId": {}}~
+    - requirements ::
+      + value of "properties" MUST be an object, and each value of this object MUST be a valid JSON Schema
+    - required properties ::
+      + done with object ==required==, eg: ~"required": [ "productId", "productName", "price" ]~ (defined at same level as properties)
+    - arrays ::
+      + define item properties in an array property ::
+        - ==uniqueItems== :: enforces uniqueness of items in an array
+        - ==minItems== :: for example a product can have tags, which can be a list of strings, and when a tag is defined, it has to have at least one tag:
+          #+begin_example
+           ...
+          "tags": {
+            "description": "Tags for the product",
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "minItems": 1
+          }
+          #+end_example
+    - nested structures :: insert object with properties inside a property
+      + eg: a product has a dimension with width, length, etc.: ==product/dimensions/{length,width,height}==
+        #+begin_example
+        {
+          "$schema": "https://json-schema.org/draft/2020-12/schema",
+          "$id": "https://example.com/product.schema.json",
+          "title": "Product",
+          ...
+          "properties": {
+            "productId": {
+              "description": "The unique identifier for a product",
+              "type": "integer"
+            },
+            ...
+            "dimensions": {
+              "type": "object",
+              "properties": {
+                "length": {
+                  "type": "number"
+                },
+                "width": {
+                  "type": "number"
+                },
+                "height": {
+                  "type": "number"
+                }
+              },
+              "required": [ "length", "width", "height" ]
+            }
+          },
+          "required": [ "productId", "productName", "price" ]
+        }
+        #+end_example
+    - add external reference with ==$ref== ::
+      + used to reference resources outside of current schema, and allow schema sharing across data structures
+      + advantages: easy to share, use, read, and keep up-to-date
+      + eg: create new schema (geographical location), and reference it in our product schema
+        - geographical location ::
+          #+begin_example
+          {
+            "$id": "https://example.com/geographical-location.schema.json",
+            "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "title": "Longitude and Latitude",
+            "description": "A geographical coordinate on a planet (most commonly Earth).",
+            "required": [ "latitude", "longitude" ],
+            "type": "object",
+            "properties": {
+              "latitude": {
+                "type": "number",
+                "minimum": -90,
+                "maximum": 90
+              },
+              "longitude": {
+                "type": "number",
+                "minimum": -180,
+                "maximum": 180
+              }
+            }
+          }
+          #+end_example
+        - product schema ::
+          #+begin_example
+          {
+            "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "$id": "https://example.com/product.schema.json",
+            "title": "Product",
+            "description": "A product from Acme's catalog",
+            "type": "object",
+            "properties": {
+              "productId": {
+                "description": "The unique identifier for a product",
+                "type": "integer"
+              },
+              ...
+              "warehouseLocation": {
+                "description": "Coordinates of the warehouse where the product is located.",
+                "$ref": "https://example.com/geographical-location.schema.json"
+              }
+            },
+            "required": [ "productId", "productName", "price" ]
+          }
+                    #+end_example
+        - reminder :: $ref refers a URI, so can also be a local relative reference
+    - final complete product schema example ::
+      + product catalogue schema ::
+        #+begin_example
+        {
+          "$schema": "https://json-schema.org/draft/2020-12/schema",
+          "$id": "https://example.com/product.schema.json",
+          "title": "Product",
+          "description": "A product from Acme's catalog",
+          "type": "object",
+          "properties": {
+            "productId": {
+              "description": "The unique identifier for a product",
+              "type": "integer"
+            },
+            "productName": {
+              "description": "Name of the product",
+              "type": "string"
+            },
+            "price": {
+              "description": "The price of the product",
+              "type": "number",
+              "exclusiveMinimum": 0
+            },
+            "tags": {
+              "description": "Tags for the product",
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "minItems": 1,
+              "uniqueItems": true
+            },
+            "dimensions": {
+              "type": "object",
+              "properties": {
+                "length": {
+                  "type": "number"
+                },
+                "width": {
+                  "type": "number"
+                },
+                "height": {
+                  "type": "number"
+                }
+              },
+              "required": [ "length", "width", "height" ]
+            },
+            "warehouseLocation": {
+              "description": "Coordinates of the warehouse where the product is located.",
+              "$ref": "https://example.com/geographical-location.schema.json"
+            }
+          },
+          "required": [ "productId", "productName", "price" ]
+        }
+        #+end_example
+      + ==exclusiveMinimum==: to set a minimum acceptable value to a numerical type (0 not included)
+        - ==minimum== : to also include 0
+  + validating yaml/json against its schema :: 
 ** schema generation
 [2024-08-04 Sun 03:14]
 * git
