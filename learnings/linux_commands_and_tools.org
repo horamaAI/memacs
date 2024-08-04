@@ -1226,24 +1226,49 @@ In addition to the fields specified in the cron expression, there’s also suppo
     - eg: the "Norway problem": suppose a yaml parser reads: ~country-list: [DK, NO, SE]~, with no context, or details given, it interprets that as: ~{'country-list': ['DK', False, 'SE']}~
     - hence the need for a schema, so that there is no ambiguities in the parser result
 - schemas ::
-  + most programming languages have builtin types that easily map to yaml data models, but a general purpose validator is still needed to ensure that the data is formed as expected
-    - for example, when loading a yaml document in json with ==js-yaml==, it only returns a tree of JavaScript objects and values which hasn't been validated against any schema
-    - some languages like C have no built-in way to represent yaml models, and additional libraries are required to define their own types to represent the yaml data: == libyaml== C library for example provides a low-level token-based API, but can be inconvenient to use
-    - C++ ?
-    - validating yaml with yq ::
-      + ~yq v -d1 multidoc.yml~ :: validates both document 0 and document 1 (but not document 2)
-      + ~yq v -d'*'~ multidoc.yml :: validates all documents in the yaml (==*== is quoted to avoid the CLI from processing the wildcard)
-  + in many cases a validator supports a reasonable subset of the YAML data model, which is usually enough when one knows what to expect
-  + example of json schema ::
-    #+begin_example
-    $id: https://example.com/schema.json
-    $schema: https://json-schema.org/draft/2020-12/schema
-    type: object
-    properties:
-      country-list:
-        type: array
-        items: { "type": "string" }
-    #+end_example
+  + notes ::
+    - json/yaml schemas are standards that describe the structure, constraints, and data types for a set of json/yaml data
+    - vocabulary ::
+      + "instance" :: the document being validated or described,
+      + "schema" :: the document that contains the description
+    - json/yaml schemas are "hypermedia-ready", meaning that resources' representation contains links to other resources, enabling the client to navigate the API without knowing the URL for that resource, except the API "entry point"
+    - json/yaml schema documents are identified by URIs (URLs specify the location of a resource on the internet, while a URI can be used to identify any type of resource, not just those on the internet), which can be used in HTTP link headers and within schema documents to allow for recursive definitions
+    - most programming languages have builtin types that easily map to yaml data models, but a general purpose validator is still needed to ensure that the data is formed as expected
+      + for example, when loading a yaml document in json with ==js-yaml==, it only returns a tree of JavaScript objects and values which hasn't been validated against any schema
+      + some languages like C have no built-in way to represent yaml models, and additional libraries are required to define their own types to represent the yaml data: == libyaml== C library for example provides a low-level token-based API, but can be inconvenient to use
+      + C++ ?
+      + validating yaml with yq ::
+        - ~yq v -d1 multidoc.yml~ :: validates both document 0 and document 1 (but not document 2)
+        - ~yq v -d'*'~ multidoc.yml :: validates all documents in the yaml (==*== is quoted to avoid the CLI from processing the wildcard)
+    - in many cases a validator supports only some subset of the yaml data model, and not the whole, but it's usually enough when one knows what he needs and expects
+      + also, for the same programming language, there can be different libraries or frameworks providing schema validators/generators, code generators, documentation generators, UI generation, json schema processing, etc., so keep in mind that they might have or miss some of a desired feature, or might conflict/mismatch with what's provided by other tools for the same schema/model/etc.
+      + in other words, know what you need and try to find the tools that match the most your expectations
+    - example of json schema ::
+      #+begin_example
+      $id: https://example.com/schema.json
+      $schema: https://json-schema.org/draft/2020-12/schema
+      type: object
+      properties:
+        country-list:
+          type: array
+          items: { "type": "string" }
+      #+end_example
+  + input example ::
+    - product catalogue storing json data, eg:
+      #+begin_example
+      {
+        "productId": 1,
+        "productName": "A green door",
+        "price": 12.50,
+        "tags": [ "home", "green" ]
+      }
+      #+end_example
+- create schema ::
+  
+- basic schemas' desciptors ::
+  + "type" :: eg: ~{ "type": "string" }~
+** schema generation
+[2024-08-04 Sun 03:14]
 * git
 [2024-05-31 Fri 22:58]
 ** git worktrees (work with different "branches" at the time)
