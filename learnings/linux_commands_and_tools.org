@@ -1225,14 +1225,21 @@ In addition to the fields specified in the cron expression, there’s also suppo
   + each time a yaml parser reads a value, it guesses the type tag in a process called "tag resolution":
     - eg: the "Norway problem": suppose a yaml parser reads: ~country-list: [DK, NO, SE]~, with no context, or details given, it interprets that as: ~{'country-list': ['DK', False, 'SE']}~
     - hence the need for a schema, so that there is no ambiguities in the parser result
+  + json/yaml schemas are standards that describe structure, constraints, and data types for a set of json/yaml data
+  + json/yaml schemas are "hypermedia-ready", meaning that resources' representation contains links to other resources, enabling the client to navigate APIs without knowing URLs for that resource, only the API "entry point" is required
+  + json/yaml schema documents are identified by URIs (Uniform Resource Identifiers: whereas URLs specify the location of a resource on the internet, a URI can be used to identify any type of resource, not just those on the internet), which can be used in HTTP link headers and within schema documents to allow recursive definitions for example
+  + pros/cons ::
+    - pros ::
+      + allows validity of json/yaml structures, constraints, entries' values, etc.
+      + json/yaml schemas are leveraged by many IDEs to provide json/yaml documents auto-completion, error highlighting (live validation), documentation on hover, etc. (eg with vscode plugin ==yaml== by redhat: https://marketplace.visualstudio.com/items?itemName=redhat.vscode-yaml)
+        - [[https://www.schemastore.org/json/][json schema store]] registry provides a large choice of ready to use schemas to choose from
+    - cons ::
+      + indentation sensitive
 - schemas ::
   + notes ::
-    - json/yaml schemas are standards that describe structure, constraints, and data types for a set of json/yaml data
     - vocabulary ::
       + "instance" :: the document being validated or described,
       + "schema" :: the document that contains the description
-    - json/yaml schemas are "hypermedia-ready", meaning that resources' representation contains links to other resources, enabling the client to navigate APIs without knowing URLs for that resource, only the API "entry point" is required
-    - json/yaml schema documents are identified by URIs (Uniform Resource Identifiers: whereas URLs specify the location of a resource on the internet, a URI can be used to identify any type of resource, not just those on the internet), which can be used in HTTP link headers and within schema documents to allow recursive definitions for example
     - most programming languages have builtin types that map yaml data models to objects, but further features/tools might be needed to completely integrate them
       + for example, a general purpose validator is needed to ensure that the data is formed as expected: in JavaScript, when loading a json document with ==js-yaml==, it only returns a tree of JavaScript objects and values which hasn't been validated against any schema
       + some languages like C have no built-in way to represent yaml models, and additional libraries are required to define their own types to represent the yaml data: == libyaml== C library for example provides a low-level token-based API, but can be inconvenient to use
