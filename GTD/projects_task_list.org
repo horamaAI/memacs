@@ -56,29 +56,10 @@
   + [ ] learn java frameworks for big data: kafka, spark, hadoop, cassandra
 ** TODO WB API prober
 [2024-03-14 Thu 02:50]
-** TODO Travel Agency (TA) business project
+* TODO Travel Agency (TA) business project
 [2024-05-12 Sun 02:25]
-*** notes
-- name ::
-  + YTA ::
-    - Your Travel agency
-    - YTA's a Travel Agency (recursive name as for "GNU")
-    - Yawe Travel Agency
-*** advantages of having a TA
-[2024-07-06 Sat 01:54]
-*** advantages of using a TA (a "middle man", that can also be used as a selling marketing argument)
-[2024-07-06 Sat 01:55]
-- sources ::
-  + 
-- advantages (some) ::
-  + range of travel content, ancillaries, and additional related content :: (accommodation, car rental, etc.)
-  + real-time updates ::
-  + efficiency, productivity, global reach :: TAs can streamline their workflow by using GDSs and save time on manual tasks such as globally checking multiple websites for availability and pricing
-  + booking flexibility ::
-    - TAs can customize travel itineraries based on their customers' preferences
-    - TAs can easily make changes to bookings, issue tickets, and handle cancellations through the system.
-  + reporting and analysis ::
-    - *provide (sell and market) customers' product* and insight to airlines/GDSs
-    - analysis tools for potential track of enhancement/improvement
-      + => need for professional analysts
-  + support and training :: 
+** NEXT ADAP
+- create MVP bridge to 1A API ::
+  + [ ] link successfully to 1A:
+    - [ ] required and security setup
+    - [ ] do a first test query
