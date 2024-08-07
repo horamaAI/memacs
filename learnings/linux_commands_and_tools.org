@@ -1456,7 +1456,8 @@ In addition to the fields specified in the cron expression, there’s also suppo
         #+end_example
       + ==exclusiveMinimum==: to set a minimum acceptable value to a numerical type (0 not included)
         - ==minimum== : to also include 0
-  + validating yaml/json against its schema :: 
+  + validating yaml/json against its schema ::
+    - 
 ** schema generation
 [2024-08-04 Sun 03:14]
 * git
