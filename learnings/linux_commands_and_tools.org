@@ -1220,6 +1220,115 @@ In addition to the fields specified in the cron expression, there’s also suppo
 
           echo "${content[*]}"
           #+end_example
+** data models
+[2024-08-08 Thu 22:09]
+- primitive :: string (for dates and files too), number, integer, boolean, array, object, ==nullable== attribute for potential null values
+- ==oneOf== or ==anyOf== :: to mix values
+  #+begin_example
+  oneOf:
+    - type: string
+    - type: integer
+  #+end_example
+- ==nullable== ::
+  #+begin_example
+  id:
+    type: number
+    nullable: false
+  #+end_example
+- numbers/integer ::
+  + ranges with ==minimum== and ==maximum== ::
+    - ~minimum ≤ value ≤ maximum~, use ~exclusiveMinimum: true~ and ~exclusiveMaximum: true~ to exclude boundaries
+    #+begin_example
+    # same level, when defining a number/integer with ranges: floating-point between 0 and 50, 0 excluded
+    type: number
+    minimum: 0
+    exclusiveMinimum: true
+    maximum: 50
+    #+end_example
+  + ==multipleOf== :: to define multiple of another number (may be used with floating-point, but can be unreliable due to limited precision or floating point math)
+    #+begin_example
+    type: integer
+    multipleOf: 10
+    #+end_example
+- strings ::
+  + ==minLength== and ==maxLength== :: to set range for string's size
+    #+begin_example
+    type: string
+    minLength: 3
+    maxLength: 20
+    #+end_example
+  + ==pattern== :: to define string pattern schema with regex (enclosed in ==^…$==, ==^== for string beginning, and ==$== for end)
+    #+begin_example
+    # social security format
+    ssn:
+      type: string
+      pattern: '^\d{3}-\d{2}-\d{4}$'
+    #+end_example
+- array ::
+  + ==items== :: always required in arrays (unlike with json)
+  + ==minItems== and ==maxItems== :: to set range for length of array
+  + ==uniqueItems== :: for unique items :-P
+    #+begin_example
+    type: array
+    items:
+      type: integer
+    uniqueItems: true
+    # [1, 2, 3] – valid
+    # [1, 1, 3] – not valid
+    # [ ] – valid
+    #+end_example
+  + 2D arrays ::
+    #+begin_example
+    # [ [1, 2], [3, 4] ]
+    type: array
+    items:
+      type: array
+      items:
+        type: integer
+    #+end_example
+  + array of objects ::
+    - using items inline schema ::
+      #+begin_example
+      # [ {"id": 5}, {"id": 8} ]
+      type: array
+      items:
+        type: object
+        properties:
+          id:
+            type: integer
+      #+end_example
+    - with $ref for items ::
+      #+begin_example
+      # Array of Pets
+      type: array
+      items:
+        $ref: '#/components/schemas/Pet'
+      #+end_example
+  + mixed type array ::
+    - inline item schema ::
+      #+begin_example
+      # ["foo", 5, -2, "bar"]
+      type: array
+      items:
+        oneOf:
+          - type: string
+          - type: integer
+      #+end_example
+    - reference ::
+      #+begin_example
+      # Array of Cats and Dogs
+      type: array
+      items:
+        oneOf:
+          - $ref: '#/components/schemas/Cat'
+          - $ref: '#/components/schemas/Dog'
+      #+end_example
+  + arbitrary types array :: (=={}== for any-type)
+    #+begin_example
+    type: array
+    items: {}
+    # [ "hello", -2, true, [5.7], {"id": 5} ]
+    #+end_example
 ** schema and data validation
 - notes ::
   + each time a yaml parser reads a value, it guesses the type tag in a process called "tag resolution":
