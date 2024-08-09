@@ -57,7 +57,13 @@
 ** ADAP
 [2024-08-07 Wed 22:03]
 - notes ::
-  + a bridge, the interface to 1A public API
+  + ADAP for "adaptor", a bridge to 1A API, the interface to amadeus public API
+  + ADAP: a compound of components, one service that can be considered as a global group of microservices performing one business objective: providing an adapted API that links to 1A API
+  + components in ADAP:
+    - FORM :: a formatter/wrapper of data that's exchanged with 1A: requests that are being written/read to/from 1A)
+    - RW :: for Reader-Writer, the actual linker/interface/bridge to 1A. The component pulls/pushes 1A formatted requests from/to ==FORM==
+*** FORM
+*** RW
 ** OPTI
 * Architectures and workflows
 [2024-08-07 Wed 21:41]
