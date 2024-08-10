@@ -1220,9 +1220,9 @@ In addition to the fields specified in the cron expression, there’s also suppo
 
           echo "${content[*]}"
           #+end_example
-** data models
+** data models (mainly yaml schemas, but most properties are json valid as well)
 [2024-08-08 Thu 22:09]
-- primitive :: string (for dates and files too), number, integer, boolean, array, object, ==nullable== attribute for potential null values
+- primitive types :: string (for dates and files too), number, integer, boolean, array, object, ==nullable== attribute for potential null values
 - ==oneOf== or ==anyOf== :: to mix values
   #+begin_example
   oneOf:
@@ -1331,14 +1331,100 @@ In addition to the fields specified in the cron expression, there’s also suppo
     #+end_example
 - objects ::
   + objects are collections of property-value
-  + ==properties== is used to define object properties
+  + ==properties==: used to define object properties
+  + ==required==: same as json's ==required==, used to define required properties
+    - to remember :: ==required== is an object-level attribute, not a property attribute
     #+begin_example
     type: object
     properties:
       id:
         type: integer
+      username:
+        type: string
       name:
         type: string
+    required:
+      - id
+      - username
+    #+end_example
+  + nested objects ::
+    - in OpenAPI, objects are usually defined in the global ==components/schemas== section rather than inline in the request and response, so, since yaml data models are so powerful, why not adopt the same modelling structure. Who knows how much a simple model can be extended in the future
+    - ==$ref== can also be used with nested objects
+    - example:
+      #+begin_example
+      components:
+        schemas:
+          User:
+            type: object
+            properties:
+              id:
+                type: integer
+              name:
+                type: string
+              contact_info:
+                $ref: '#/components/schemas/ContactInfo'
+          ContactInfo:
+            type: object
+            properties:
+              email:
+                type: string
+                format: email
+              phone:
+                type: string
+      #+end_example
+  + free-form objects :: (for arbitrary property/value pairs) use of ==additionalProperties== in the background
+    - many forms ::
+      #+begin_example
+      # either:
+      type: object
+      # or:
+      type: object
+      additionalProperties: true
+      # or:
+      type: object
+      additionalProperties: {}
+      #+end_example
+- ==properties== ::
+  + ==readOnly==, ==writeOnly==: does exactly what it says to the defined property
+    - usecase :: when defining an openAPI with yaml, and wants to define that GET returns more properties than used in POST:
+      + the same schema can be used for both GET and POST (or PUT, PATCH)
+      + keep unmarked the properties that are common to both GET and POST
+      + mark properties that are only returned for a GET as ==readOnly== (with the openAPI generator, ==readOnly== properties are included in responses but not in requests)
+      + mark properties specific to POST with ==writeOnly== (==writeOnly== properties may be sent in requests but not in responses)
+      + data model:
+        #+begin_example
+        type: object
+        properties:
+          id:
+            # Returned by GET, not used in POST/PUT/PATCH
+            type: integer
+            readOnly: true
+          username:
+            type: string
+          password:
+            # Used in POST/PUT/PATCH, not returned by GET
+            type: string
+            writeOnly: true
+        #+end_example
+    - ==required== works as expected with ==readOnly== and ==writeOnly==, it affects just the relevant scope: read-only required properties apply to responses only, and write-only to requests only
+  + ==minProperties== and ==maxProperties== :: to set number of properties
+    - handy when used with free-form objects or ==additionalProperties==
+    - eg:
+      #+begin_example
+      # ~{"id": 5, "username": "trillian"}~ matches the schema, ~{"id": 5}~ does not
+      type: object
+      minProperties: 2
+      maxProperties: 10
+      #+end_example
+- files ::
+  + files defined as strings, but ==format== can be defined
+    #+begin_example
+    # for binary
+    type: string
+    format: binary  # binary file contents
+    # base64 content
+    type: string
+    format: byte    # base64-encoded file contents
     #+end_example
 ** schema and data validation
 - notes ::
