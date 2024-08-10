@@ -1267,7 +1267,7 @@ In addition to the fields specified in the cron expression, there’s also suppo
 - array ::
   + ==items== :: always required in arrays (unlike with json)
   + ==minItems== and ==maxItems== :: to set range for length of array
-  + ==uniqueItems== :: for unique items :-P
+  + ==uniqueItems== :: well, to define unique items :-P
     #+begin_example
     type: array
     items:
@@ -1328,6 +1328,17 @@ In addition to the fields specified in the cron expression, there’s also suppo
     type: array
     items: {}
     # [ "hello", -2, true, [5.7], {"id": 5} ]
+    #+end_example
+- objects ::
+  + objects are collections of property-value
+  + ==properties== is used to define object properties
+    #+begin_example
+    type: object
+    properties:
+      id:
+        type: integer
+      name:
+        type: string
     #+end_example
 ** schema and data validation
 - notes ::
