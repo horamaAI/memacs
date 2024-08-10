@@ -1416,6 +1416,45 @@ In addition to the fields specified in the cron expression, there’s also suppo
       minProperties: 2
       maxProperties: 10
       #+end_example
+- ==AnyValue== :: (=={}==) to define any type: object, string, number, etc.
+  + schema without type matches any data type: numbers, strings, objects, and so on
+  + =={}== is shorthand syntax for an arbitrary-type schema
+  + eg:
+    #+begin_example
+    components:
+      schemas:
+        AnyValue: {}
+    #+end_example
+  + with description:
+    #+begin_example
+    components:
+      schemas:
+        AnyValue:
+          description: Can be any value - string, number, boolean, array or object.
+    #+end_example
+  + restrict any value to be set:
+    #+begin_example
+    schemas:
+      AnyValue:
+        anyOf:
+          - type: string
+          - type: number
+          - type: integer
+          - type: boolean
+          - type: array
+            items: {}
+          - type: object
+    #+end_example
+  + any value, including null:
+    #+begin_example
+    components:
+      schemas:
+        AnyValue:
+          nullable: true
+          description: Can be any value, including `null`
+    #+end_example
+- enums ::
+  
 - files ::
   + files defined as strings, but ==format== can be defined
     #+begin_example
