@@ -1454,7 +1454,7 @@ In addition to the fields specified in the cron expression, there’s also suppo
           description: Can be any value, including `null`
     #+end_example
 - enums ::
-  
+  + 
 - files ::
   + files defined as strings, but ==format== can be defined
     #+begin_example
