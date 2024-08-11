@@ -192,8 +192,7 @@
   + activate evil-mode:
     #+header: :tangle yes
     #+begin_src emacs-lisp
-    (add-to-list 'load-path )
-    (add-to-list 'load-path (expand-file-name "~/Documents/repos/opt/evil-mode"))
+    # (add-to-list 'load-path (expand-file-name "~/Documents/repos/opt/evil-mode"))
     # (require 'evil)
     # (evil-mode 1)
     #+end_src
