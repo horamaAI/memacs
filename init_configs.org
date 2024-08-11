@@ -194,8 +194,8 @@
     #+begin_src emacs-lisp
     (add-to-list 'load-path )
     (add-to-list 'load-path (expand-file-name "~/Documents/repos/opt/evil-mode"))
-    (require 'evil)
-    (evil-mode 1)
+    # (require 'evil)
+    # (evil-mode 1)
     #+end_src
 - autocompletion ::
   #+header: :tangle yes
