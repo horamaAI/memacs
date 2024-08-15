@@ -1599,6 +1599,50 @@ In addition to the fields specified in the cron expression, there’s also suppo
                 type: string
             …
       #+end_example
+    - ==discriminator== can be used by various API consumers, such as code generation tools: they can use discriminator to generate program statements that typecast request data to appropriate object type based on the discriminator property value
+  + mapping type names ::
+    - use :: further to discriminating and help identify objects types, can add an additional specialisation and map to specific objects
+    - as seen previously, with ==discriminator==, the property to which discriminator refers, contains the name of the target schema (in example above: ==objectType== property should contain either ==simpleObject==, or ==complexObject== string). If the property values do not match the schema names, it's possible to map the values to the names. To do this, use the ==discriminator/mapping== keyword
+    - use ==discriminator/mapping== keyword :: 
+    - eg:
+      #+begin_example
+      components:
+        responses:
+          sampleObjectResponse:
+            content:
+              application/json:
+                schema:
+                  oneOf:
+                    - $ref: '#/components/schemas/Object1'
+                    - $ref: '#/components/schemas/Object2'
+                    - $ref: 'sysObject.json#/sysObject'
+                  discriminator:
+                    propertyName: objectType
+                    mapping:
+                      obj1: '#/components/schemas/Object1'
+      		  obj2: '#/components/schemas/Object2'
+                      system: 'sysObject.json#/sysObject'
+        …
+        schemas:
+          Object1:
+            type: object
+            required:
+              - objectType
+            properties:
+              objectType:
+                type: string
+            …
+          Object2:
+            type: object
+            required:
+              - objectType
+            properties:
+              objectType:
+                type: string
+            …
+      #+end_example
+    - in example, all objects are discriminated to ~objectType~ property, and mapped to respective values ~obj1~, ~obj2~, or ~system~
+    - ~obj1~ value is mapped to the ~Object1~, ~obj2~ value is mapped to the ~Object2~, and value ~system~ matches the ~sysObject~ model that is located in an external file
 - all supported json schemas keywords :: checkout: https://swagger.io/docs/specification/data-models/keywords/
 ** schema and data validation
 - notes ::
