@@ -1222,19 +1222,7 @@ In addition to the fields specified in the cron expression, there’s also suppo
           #+end_example
 ** data models (mainly yaml schemas, but most properties are json valid as well)
 [2024-08-08 Thu 22:09]
-- primitive types :: string (for dates and files too), number, integer, boolean, array, object, ==nullable== attribute for potential null values
-- ==oneOf== or ==anyOf== :: to mix values
-  #+begin_example
-  oneOf:
-    - type: string
-    - type: integer
-  #+end_example
-- ==nullable== ::
-  #+begin_example
-  id:
-    type: number
-    nullable: false
-  #+end_example
+- primitive types :: string (for dates and files too), number, integer, boolean, array, object, and ==nullable== attribute for potential null values
 - numbers/integer ::
   + ranges with ==minimum== and ==maximum== ::
     - ~minimum ≤ value ≤ maximum~, use ~exclusiveMinimum: true~ and ~exclusiveMaximum: true~ to exclude boundaries
@@ -1384,6 +1372,12 @@ In addition to the fields specified in the cron expression, there’s also suppo
       type: object
       additionalProperties: {}
       #+end_example
+- ==nullable== ::
+  #+begin_example
+  id:
+    type: number
+    nullable: false
+  #+end_example
 - ==properties== ::
   + ==readOnly==, ==writeOnly==: does exactly what it says to the defined property
     - usecase :: when defining an openAPI with yaml, and wants to define that GET returns more properties than used in POST:
@@ -1416,6 +1410,12 @@ In addition to the fields specified in the cron expression, there’s also suppo
       minProperties: 2
       maxProperties: 10
       #+end_example
+- ==oneOf== or ==anyOf== :: to mix values
+  #+begin_example
+  oneOf:
+    - type: string
+    - type: integer
+  #+end_example
 - ==AnyValue== :: (=={}==) to define any type: object, string, number, etc.
   + schema without type matches any data type: numbers, strings, objects, and so on
   + =={}== is shorthand syntax for an arbitrary-type schema
@@ -1454,7 +1454,52 @@ In addition to the fields specified in the cron expression, there’s also suppo
           description: Can be any value, including `null`
     #+end_example
 - enums ::
-  + 
+  + eg: defining your own API data model with a sorting parameter feature having two possible values: asc, desc, and nullable:
+    #+begin_example
+    paths:
+      /items:
+        get:
+          parameters:
+            - in: query
+              name: sort
+              description: Sort order
+              schema:
+                type: string # <--- all enums have to be of the same type (string here), except for null value (null object, not string)
+                nullable: true  # <--- enum may be nullable
+                enum: # can also just be in array form instead of per line: ~enum: [asc, desc]~
+                  - asc
+                  - desc
+                  - null # <--- got to be explicitly included, "nullable: true" alone is not enough, and without quotes, i.e. null object not "null"
+                description: >
+                  Sort order:
+                   * `asc` - Ascending, from A to Z
+                   * `desc` - Descending, from Z to A
+    #+end_example
+  + reusable enums :: by defining reusable enums in the global ==components== section and reference them via ==$ref== elsewhere:
+    #+begin_example
+    paths:
+      /products:
+        get:
+          parameters:
+          - in: query
+            name: color
+            required: true
+            schema:
+              $ref: '#/components/schemas/Color'
+          responses:
+            '200':
+              description: OK
+    components:
+      schemas:
+        Color:
+          type: string
+          enum:
+            - black
+            - white
+            - red
+            - green
+            - blue    
+    #+end_example
 - files ::
   + files defined as strings, but ==format== can be defined
     #+begin_example
@@ -1465,6 +1510,96 @@ In addition to the fields specified in the cron expression, there’s also suppo
     type: string
     format: byte    # base64-encoded file contents
     #+end_example
+- inheritance and polymorphism ::
+  + model composition ::
+    - use :: when some model schemas share common properties, instead of describing those properties for each schema repeatedly, describe schemas as a composition of common property set and schema-specific properties
+    - use ==allOf== to combine different properties ::
+    - in following example ==ExtendedErrorModel== schema includes its own properties and properties inherited from ==BasicErrorModel==:
+      #+begin_example
+      components:
+        schemas:
+          BasicErrorModel:
+            type: object
+            required:
+              - message
+              - code
+            properties:
+              message:
+                type: string
+              code:
+                type: integer
+                minimum: 100
+                maximum: 600
+          ExtendedErrorModel:
+            allOf:     # Combines the BasicErrorModel and the inline model
+              - $ref: '#/components/schemas/BasicErrorModel'
+              - type: object
+                required:
+                  - rootCause
+                properties:
+                  rootCause:
+                    type: string
+      #+end_example
+  + polymorphism ::
+    - use :: when possible to have different alternatives
+    - can use ==oneOf==, or ==anyOf== ::
+    - eg: an openAPI with request and responses that can be described by several alternative schemas:
+      #+begin_example
+      components:
+        responses:
+          sampleObjectResponse:
+            content:
+              application/json:
+                schema:
+                  oneOf:
+                    - $ref: '#/components/schemas/simpleObject'
+                    - $ref: '#/components/schemas/complexObject'
+        …
+      components:
+        schemas:
+          simpleObject:
+            …
+          complexObject:
+            …
+        #+end_example
+  + discriminator ::
+    - use :: to help identify an object type
+    - add ==discriminator/propertyName== keyword to the model definitions
+      + the discriminator is used with ==anyOf== or ==oneOf== keywords only
+      + it's important that all models mentioned below ==anyOf== or ==oneOf== contain the property that the discriminator specifies
+    - eg: help an API consumers detect an object type: the discriminator points to ~objectType~ property that contains the data type name, and both ~simpleObject~ and ~complexObject~ have (must) the ~objectType~ property
+      #+begin_example
+      components:
+        responses:
+          sampleObjectResponse:
+            content:
+              application/json:
+                schema:
+                  oneOf:
+                    - $ref: '#/components/schemas/simpleObject'
+                    - $ref: '#/components/schemas/complexObject'
+                  discriminator:
+                    propertyName: objectType
+        …
+        schemas:
+          simpleObject:
+            type: object
+            required:
+              - objectType
+            properties:
+              objectType:
+                type: string
+            …
+          complexObject:
+            type: object
+            required:
+              - objectType
+            properties:
+              objectType:
+                type: string
+            …
+      #+end_example
+- all supported json schemas keywords :: checkout: https://swagger.io/docs/specification/data-models/keywords/
 ** schema and data validation
 - notes ::
   + each time a yaml parser reads a value, it guesses the type tag in a process called "tag resolution":
