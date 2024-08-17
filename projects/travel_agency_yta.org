@@ -53,9 +53,14 @@
 - YTA030 :: build-up on YTA010,
   + how to further take care of solid customers
   + how to attract more customers, based on the potential of available products, and the identified needs of the clients found during phase 1 (YTA003)
-** Phase 3: maintenance, handovers, professionalisation, and division of labour on each main speciality
+    - advantages on ancillaries, subscriptions, earning miles and points, travelling in group/with kids, retailing, etc.
+  + main customers to earn loyalty are those travelling from/to Africa, but can extend that definition to "African" travellers in general
+** Phase 3 (000). maintenance, handovers, professionalisation, and division of labour on each main speciality
 [2024-08-17 Sat 17:42]
-- 
+- YTA100 ::
+- YTA200 :: 
+** Phase 4 (YTA-xxx): position is strongly sustained, look for further opportunities (definitely need for change on version release)
+- YTA-000 :: extend to more opportunities: adapt product(s) to market outside of the one originally intended (Africa centred to more regions)
 * Studies findings
 [2024-08-07 Wed 21:40]
 ** notes
