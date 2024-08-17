@@ -11,18 +11,52 @@
   + 
 ** 
 * Tickets
-- YTA000: YTA basic building: MVP, basic structure, architecture
-- YTA001: probing phase: further than basic foundations
-  + what are the available APIs/entry points
-  + what are their costs and risk, customer care
-  + (country specific) compliances and regulations 
-  + competition ? : state of the art, what's the business added value
+** Phase 1 (0). MVP, architecture definition, first successful tests (unit, regression, non-reg)
+- YTA000 :: 1A and business centred: testing the water of the business, do a basic successful CRUD requests (complete, all of them), but do not focus on specifics of the response
+  + record cost and risk of a TA, for reporting and business presentations
+  + paper work: (country specific) compliance and regulations on the sector
+  + visit 1A API, be acquainted to its basic/main functional/technical flow
+  + what are the basic available 1A APIs/entry points
+  + competition ? : state of the art, compare results from competitors, and record all possible business added value compared to others
+  + YTA basic build: very basic structure, architecture, test (automatic preferable)
+  + run first CRUD requests successfully (in TEST environment)
+- YTA001 :: YTA components centred, define basic architectures, and technical tools (ci-cd, dotfiles, etc)
+  + define :
+    - YTA components (and sub-components maybe): basic solid architecture tailored for modularity, maintenance, and monitoring
+  + tools ::
+    - dotfiles
+    - openAPI
+    - ci-cd: workflows probing phase: to enhance further basic foundations and later refine architectures
+      - github actions, gitlab ci, or jenkins ?
+    - microservices:
+      - podman a priori
+    - automated tests:
+      - 
+- YTA002 :: 1A API and functional centred, refine and strengthen built YTA architectures considering already acquired knowledge: functional and technical experiences, issues, design encumbrance, optimisation impediments, new investigation, and technical tools considerations (ci-cd, dotfiles, etc) , etc.
+  + visit API contract
+  + start the design of OPTI, now that have a better functional understanding to detect optimisation improvements
+    - OPTI interface provided as a REST API or internal gRPC calls (remote procedure calls) ?
+  + further technical refactoring:
+    - 
+- YTA003 :: YTA overall components (including OPTI) specialisation: provide 1A improved functional service to client, and platform stability; monitor (and alert) for KPIs, issues, etc.
+  + put in place monitoring tools and their configurations
+  + fine-tune workflow, and all tests according to feedback
+  + identify improvements for platform stability (not just technical, but also functional: smooth refunds, luggage tracking, etc.), to be used in phase 2 (YTA0x0)
+** Phase 2 (00). maturity and strengthening phase: refactoring based on feedback from phase 1, secure components, 
+[2024-08-17 Sat 17:39]
+- YTA010 :: growth centred, just first studies based on feedback, to determine growth potential, resources availability to execute further steps, etc.
+  + employees availability
+  + capital/budget/fund rising needed ?
   + market ? : how to attract customers, who are they, who are the premium customers, how to take care of them
-  + capital/budget/fund rising
-  + employees availability/
-- YTA002: MVP, bit advanced than basic foundations 
-  + first product to present [TODO]
-* Studies
+- YTA020 :: security centred
+  + API token, security, etc.
+- YTA030 :: build-up on YTA010,
+  + how to further take care of solid customers
+  + how to attract more customers, based on the potential of available products, and the identified needs of the clients found during phase 1 (YTA003)
+** Phase 3: maintenance, handovers, professionalisation, and division of labour on each main speciality
+[2024-08-17 Sat 17:42]
+- 
+* Studies findings
 [2024-08-07 Wed 21:40]
 ** notes
 - name ::
@@ -57,7 +91,7 @@
 ** ADAP
 [2024-08-07 Wed 22:03]
 - notes ::
-  + ADAP for "adaptor", a bridge to 1A API, the interface to amadeus public API
+  + ADAP for "Adaptor", a bridge to 1A API, the interface to amadeus public API
   + ADAP: a compound of components, one service that can be considered as a global group of microservices performing one business objective: providing an adapted API that links to 1A API
   + components in ADAP:
     - FORM :: a formatter/wrapper of data that's exchanged with 1A: requests that are being written/read to/from 1A)
@@ -65,7 +99,12 @@
 *** FORM
 *** RW
 ** OPTI
+- OPTI for "Optimiser", a set of libraries (or framework?) to optimise and perform efficient search in data returned by ADAP
+- OPTI: is provided as a micro-service, so still means an interface that wraps external input/output, calls, or requests for optimisation
+  + [TODO] : interface provided as a REST API or internal gRPC calls (remote procedure calls) ?
+- 
 * Architectures and workflows
 [2024-08-07 Wed 21:41]
+- 
 * Prospects (potential improvements)
 [2024-08-07 Wed 21:37]
