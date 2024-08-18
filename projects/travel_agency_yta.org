@@ -23,6 +23,10 @@
 - YTA001 :: YTA components centred, define basic architectures, and technical tools (ci-cd, dotfiles, etc)
   + define :
     - YTA components (and sub-components maybe): basic solid architecture tailored for modularity, maintenance, and monitoring
+      + ADAP ::
+        - RW ::
+        - (really no FORM component yet this far)
+      + (no OPTI yet this far, but since will)
   + tools ::
     - dotfiles
     - openAPI
@@ -34,7 +38,10 @@
       - 
 - YTA002 :: 1A API and functional centred, refine and strengthen built YTA architectures considering already acquired knowledge: functional and technical experiences, issues, design encumbrance, optimisation impediments, new investigation, and technical tools considerations (ci-cd, dotfiles, etc) , etc.
   + visit API contract
-  + start the design of OPTI, now that have a better functional understanding to detect optimisation improvements
+  + ADAP ::
+    - RW :: should only be completed with more requests
+    - FORM :: unless really necessary due to some reason (genericity and modularity requirements, internal components requirements, etc.) do not diverge too much from 1A API data model, they know what they're doing
+  + OPTI :: start the design of OPTI, now that have a better functional understanding to detect optimisation improvements
     - OPTI interface provided as a REST API or internal gRPC calls (remote procedure calls) ?
   + further technical refactoring:
     - 
@@ -42,20 +49,49 @@
   + put in place monitoring tools and their configurations
   + fine-tune workflow, and all tests according to feedback
   + identify improvements for platform stability (not just technical, but also functional: smooth refunds, luggage tracking, etc.), to be used in phase 2 (YTA0x0)
-** Phase 2 (00). maturity and strengthening phase: refactoring based on feedback from phase 1, secure components, 
+  + data collection: caching, kafka vs nats
+  + data search and filtering
+- YTA004 :: security oriented (build basic but solid security foundations)
+  + API token, security, etc.
+  + passwords management
+** Phase 2 (00). maturity and strengthening phase: refactoring (studies mainly) based on feedback from phase 1 (technical, functional, and HR), secure components and product in general, etc
 [2024-08-17 Sat 17:39]
-- YTA010 :: growth centred, just first studies based on feedback, to determine growth potential, resources availability to execute further steps, etc.
+- YTA010 :: growth centred, but exclusively on business and "HR" perspective, do studies based on experience, to determine further growth potential, and resources availability to execute and achieve those steps
   + employees availability
   + capital/budget/fund rising needed ?
   + market ? : how to attract customers, who are they, who are the premium customers, how to take care of them
-- YTA020 :: security centred
-  + API token, security, etc.
-- YTA030 :: build-up on YTA010,
-  + how to further take care of solid customers
-  + how to attract more customers, based on the potential of available products, and the identified needs of the clients found during phase 1 (YTA003)
-    - advantages on ancillaries, subscriptions, earning miles and points, travelling in group/with kids, retailing, etc.
-  + main customers to earn loyalty are those travelling from/to Africa, but can extend that definition to "African" travellers in general
-** Phase 3 (000). maintenance, handovers, professionalisation, and division of labour on each main speciality
+- YTA020 :: further strengthen technical and security
+  + refactoring of security
+  + stress tests on passwords management
+- YTA030 :: preparation for phase 3, studies, exclusively functional, continuity of YTA010, studies on how to strengthen the existing and make the platform sustainable over time
+  + how to further take care of prime customers
+  + how to attract more customers, based on the potential of available products and the identified needs of the clients found during phase 1 (YTA003)
+  + main original customers are those travelling from/to Africa, but can extend that definition to "African" travellers in general
+  + find new features based on advantages provided by ancillaries:
+    - earning miles and points (loyalty),
+    - travelling in group/with kids,
+    - travel solutions for companies,
+    - retailing,
+    - subscriptions,
+    - etc.
+- YTA040 :: still continuity of YTA010, exclusively technical studies, preparation for phase 3, after previous functional studies (YTA030) and having some functional prospects to enrich YTA product, these technical studies are aiming at finding technical improvements to optimise resources usage, savings on cost, and detect potential of investments
+  + what resources, how should be allocated, to who, how much, etc.:
+    - human:
+      + hiring
+      + training: functional, technical
+      + teams:
+        + dev
+        + devops
+        + maintenance team, after-sale
+    - technical:
+      + platform hosting (physical, virtual), 
+    - financial: growth investment
+    - logistic: material, office(s), etc
+  + FinOps
+  + OPTI:
+    - identify ways of optimising further OPTI: multi-objectives optimisation, AI, etc.
+    - always remember abstraction level of OPTI to allow for *genericity and re-usability* (by WBAPI for example)
+** Phase 3 (000). maintenance, handovers, professionalisation and division of labour on every main speciality based on effort and knowledge
 [2024-08-17 Sat 17:42]
 - YTA100 ::
 - YTA200 :: 
@@ -99,15 +135,29 @@
   + ADAP for "Adaptor", a bridge to 1A API, the interface to amadeus public API
   + ADAP: a compound of components, one service that can be considered as a global group of microservices performing one business objective: providing an adapted API that links to 1A API
   + components in ADAP:
-    - FORM :: a formatter/wrapper of data that's exchanged with 1A: requests that are being written/read to/from 1A)
-    - RW :: for Reader-Writer, the actual linker/interface/bridge to 1A. The component pulls/pushes 1A formatted requests from/to ==FORM==
+    - FORM :: a formatter/wrapper of data that are exchanged with 1A (data from/to *RW* really)
+      + ==FORM== is wrapping 1A data to add more flexibility to be easily used internally by other YTA components (eg: OPTI)
+      + it's also providing the format used outside of YTA (through YTAPI entry point)
+      + FORM also interfaces 1A API resources with respect to some needs,eg:
+        - process (wrap/filter/hide) some errors
+        - restrict/hide some resources that should not yet appear in the product (for example, for confidentiality reasons deactivate a feature that is not ready yet, that is going through an asset development)
+      + error management ::
+        - FORM is in charge of wrapping 1A errors, or return YTA specific errors
+    - RW :: for Reader-Writer, the actual direct link/interface/bridge to 1A
+      + component pulls/pushes 1A formatted requests from/to ==FORM==
 *** FORM
+**** data models
+**** error management
+[2024-08-18 Sun 19:03]
 *** RW
 ** OPTI
 - OPTI for "Optimiser", a set of libraries (or framework?) to optimise and perform efficient search in data returned by ADAP
 - OPTI: is provided as a micro-service, so still means an interface that wraps external input/output, calls, or requests for optimisation
   + [TODO] : interface provided as a REST API or internal gRPC calls (remote procedure calls) ?
 - 
+** YTAPI (orchestrator, YTA entry point)
+[2024-08-18 Sun 17:10]
+- entry point of the overall platform, the orchestrator that receives and send all requests to/from YTA platform
 * Architectures and workflows
 [2024-08-07 Wed 21:41]
 - 
