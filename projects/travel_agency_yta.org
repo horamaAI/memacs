@@ -20,6 +20,7 @@
   + competition ? : state of the art, compare results from competitors, and record all possible business added value compared to others
   + YTA basic build: very basic structure, architecture, test (automatic preferable)
   + run first CRUD requests successfully (in TEST environment)
+  + at this step *no DB management is defined yet*, if need one use light for basic CRUD actions
 - YTA001 :: YTA components centred, define basic architectures, and technical tools (ci-cd, dotfiles, etc)
   + define :
     - YTA components (and sub-components maybe): basic solid architecture tailored for modularity, maintenance, and monitoring
@@ -30,10 +31,13 @@
   + tools ::
     - dotfiles
     - openAPI
+    - microservices: CNA (for cloud native applications)
+      - podman a priori
+    - DB management: SQL/noSQL, if noSQL then prefer couchbase over mongo for example, in order to expand on CNA
+      + couchbase XDCR ?
+    - ansible
     - ci-cd: workflows probing phase: to enhance further basic foundations and later refine architectures
       - github actions, gitlab ci, or jenkins ?
-    - microservices:
-      - podman a priori
     - automated tests:
       - 
 - YTA002 :: 1A API and functional centred, refine and strengthen built YTA architectures considering already acquired knowledge: functional and technical experiences, issues, design encumbrance, optimisation impediments, new investigation, and technical tools considerations (ci-cd, dotfiles, etc) , etc.
