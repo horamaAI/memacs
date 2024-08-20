@@ -9,8 +9,8 @@
 * Tickets
 ** Phase 0. Generic tasks, recurring tasks, all tasks that are repetitive, short-term tasks that don't need tracking
 [2024-08-20 Tue 20:26]
-- 
-- subscribe to travel specialised mailing lists/news (few but trustworthy), etc., and review from there the component(s)/product(s) that need refactoring
+- YTA000 :: misc, small tasks, updates, etc. everything that don't need tracking (still need proper commit message)
+  - subscribe to travel specialised mailing lists/news (few but trustworthy), etc., and review from there the component(s)/product(s) that need refactoring
 ** Phase 1 (0). MVP, architecture definition, first successful tests (unit, regression, non-reg)
 - YTA001 :: 1A and business centred: testing the water of the business, do a basic successful CRUD requests (complete, all of them), but do not focus on specifics of the response
   + record cost and risk of a TA, for reporting and business presentations
