@@ -6,13 +6,13 @@
 #+DESCRIPTION: Java back-end project for probing data and APIs from GDSs, Online Travel Agencies (OTAs), consolidators, etc.: (gradle, angular, spring)
 #+KEYWORDS: YTA org-mode Emacs organization GTD getting-things-done git
 
-* Notes
-- sources ::
-  + 
-** 
 * Tickets
+** Phase 0. Generic tasks, recurring tasks, all tasks that are repetitive, short-term tasks that don't need tracking
+[2024-08-20 Tue 20:26]
+- 
+- subscribe to travel specialised mailing lists/news (few but trustworthy), etc., and review from there the component(s)/product(s) that need refactoring
 ** Phase 1 (0). MVP, architecture definition, first successful tests (unit, regression, non-reg)
-- YTA000 :: 1A and business centred: testing the water of the business, do a basic successful CRUD requests (complete, all of them), but do not focus on specifics of the response
+- YTA001 :: 1A and business centred: testing the water of the business, do a basic successful CRUD requests (complete, all of them), but do not focus on specifics of the response
   + record cost and risk of a TA, for reporting and business presentations
   + paper work: (country specific) compliance and regulations on the sector
   + visit 1A API, be acquainted to its basic/main functional/technical flow
@@ -31,16 +31,21 @@
   + tools ::
     - dotfiles
     - openAPI
+    - clean code compliance:
+      + format (always standard, independently of platform: windows, mac, linux, etc.): clang format, editorconfig
+      + indentation vs spaces
+      + git hooks
+      + static/dynamic program analysis tools
+    - ansible
     - microservices: CNA (for cloud native applications)
-      - podman a priori
+      + podman a priori
+    - ci-cd: workflows probing phase: to enhance further basic foundations and later refine architectures
+      + github actions, gitlab ci, or jenkins ?
+    - automated tests:
+      + 
     - DB management: SQL/noSQL, if noSQL then prefer couchbase over mongo for example, in order to expand on CNA
       + couchbase XDCR ?
-    - ansible
-    - ci-cd: workflows probing phase: to enhance further basic foundations and later refine architectures
-      - github actions, gitlab ci, or jenkins ?
-    - automated tests:
-      - 
-- YTA002 :: 1A API and functional centred, refine and strengthen built YTA architectures considering already acquired knowledge: functional and technical experiences, issues, design encumbrance, optimisation impediments, new investigation, and technical tools considerations (ci-cd, dotfiles, etc) , etc.
+- YTA003 :: 1A API and functional centred, refine and strengthen built YTA architectures considering already acquired knowledge: functional and technical experiences, issues, design encumbrance, optimisation impediments, new investigation, and technical tools considerations (ci-cd, dotfiles, etc) , etc.
   + visit API contract
   + ADAP ::
     - RW :: should only be completed with more requests
@@ -49,13 +54,13 @@
     - OPTI interface provided as a REST API or internal gRPC calls (remote procedure calls) ?
   + further technical refactoring:
     - 
-- YTA003 :: YTA overall components (including OPTI) specialisation: provide 1A improved functional service to client, and platform stability; monitor (and alert) for KPIs, issues, etc.
+- YTA004 :: YTA overall components (including OPTI) specialisation: provide 1A improved functional service to client, and platform stability; monitor (and alert) for KPIs, issues, etc.
   + put in place monitoring tools and their configurations
   + fine-tune workflow, and all tests according to feedback
   + identify improvements for platform stability (not just technical, but also functional: smooth refunds, luggage tracking, etc.), to be used in phase 2 (YTA0x0)
   + data collection: caching, kafka vs nats
   + data search and filtering
-- YTA004 :: security oriented (build basic but solid security foundations)
+- YTA005 :: security oriented (build basic but solid security foundations)
   + API token, security, etc.
   + passwords management
 ** Phase 2 (00). maturity and strengthening phase: refactoring (studies mainly) based on feedback from phase 1 (technical, functional, and HR), secure components and product in general, etc
@@ -69,7 +74,7 @@
   + stress tests on passwords management
 - YTA030 :: preparation for phase 3, studies, exclusively functional, continuity of YTA010, studies on how to strengthen the existing and make the platform sustainable over time
   + how to further take care of prime customers
-  + how to attract more customers, based on the potential of available products and the identified needs of the clients found during phase 1 (YTA003)
+  + how to attract more customers, based on the potential of available products and the identified needs of the clients found during phase 1 (YTA004)
   + main original customers are those travelling from/to Africa, but can extend that definition to "African" travellers in general
   + find new features based on advantages provided by ancillaries:
     - earning miles and points (loyalty),
@@ -78,6 +83,7 @@
     - retailing,
     - subscriptions,
     - etc.
+  + if volume of transactions justifies it, can't we use our position as business providers to demand some more other advantages ?
 - YTA040 :: still continuity of YTA010, exclusively technical studies, preparation for phase 3, after previous functional studies (YTA030) and having some functional prospects to enrich YTA product, these technical studies are aiming at finding technical improvements to optimise resources usage, savings on cost, and detect potential of investments
   + what resources, how should be allocated, to who, how much, etc.:
     - human:
@@ -93,7 +99,7 @@
     - logistic: material, office(s), etc
   + FinOps
   + OPTI:
-    - identify ways of optimising further OPTI: multi-objectives optimisation, AI, etc.
+    - identify ways of optimising further OPTI: multi-objectives optimisation to find better offers, AI, etc.
     - always remember abstraction level of OPTI to allow for *genericity and re-usability* (by WBAPI for example)
 ** Phase 3 (000). maintenance, handovers, professionalisation and division of labour on every main speciality based on effort and knowledge
 [2024-08-17 Sat 17:42]
@@ -101,6 +107,13 @@
 - YTA200 :: 
 ** Phase 4 (YTA-xxx): position is strongly sustained, look for further opportunities (definitely need for change on version release)
 - YTA-000 :: extend to more opportunities: adapt product(s) to market outside of the one originally intended (Africa centred to more regions)
+- YTA-001 :: extend the actual products provision
+  + is it advantageous to expand the pool of providers ? (won't it threaten our position with 1A ?): sabre, travelport, others ?
+    - check out the pros/cons of each: offers catalogue, retailing, travelling in group advantages
+  + is it advantageous to expand the product on top of providers ? (won't it threaten our position with 1A ?) ?
+    - for example, improving on travelport product of seat automatic allocation
+    - google is enriching its position into the travel industry, can't it be worthwhile to plug into its service catalogue ?
+  + is it advantageous to expand the type of clients ? (won't it threaten our position with 1A ?): for example can't we use our knowledge of the travel market to negociate products directly with airlines such as rwandair ?
 * Studies findings
 [2024-08-07 Wed 21:40]
 ** notes
@@ -126,7 +139,10 @@
     - *provide (sell and market) customers' product* and insight to airlines/GDSs
     - analysis tools for potential track of enhancement/improvement
       + => need for professional analysts
-  + support and training :: 
+  + support and training ::
+
+** Miscellaneous
+- main GDS: Amadeus, Sabre, Travelport
 * Features (MVP)
 [2024-08-07 Wed 21:37]
 * Data models
