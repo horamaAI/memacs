@@ -20,7 +20,7 @@
   + competition ? : state of the art, compare results from competitors, and record all possible business added value compared to others
   + YTA basic build: very basic structure, architecture, test (automatic preferable)
   + run first CRUD requests successfully (in TEST environment)
-  + at this step *no DB management is defined yet*, if need one use light for basic CRUD actions
+  + at this step *no DB management is defined yet*, if need one, use light one for basic CRUD actions
 - YTA001 :: YTA components centred, define basic architectures, and technical tools (ci-cd, dotfiles, etc)
   + define :
     - YTA components (and sub-components maybe): basic solid architecture tailored for modularity, maintenance, and monitoring
@@ -30,7 +30,7 @@
       + (no OPTI yet this far, but since will)
   + tools ::
     - dotfiles
-    - openAPI
+    - openAPI, openAPI state graphs ?
     - clean code compliance:
       + format (always standard, independently of platform: windows, mac, linux, etc.): clang format, editorconfig
       + indentation vs spaces
@@ -47,11 +47,14 @@
       + couchbase XDCR ?
 - YTA003 :: 1A API and functional centred, refine and strengthen built YTA architectures considering already acquired knowledge: functional and technical experiences, issues, design encumbrance, optimisation impediments, new investigation, and technical tools considerations (ci-cd, dotfiles, etc) , etc.
   + visit API contract
+    - start documenting the product catalogue ([[*Products catalogue][Products catalogue]]) of YTA with first product ideas, just some basic to start with
   + ADAP ::
     - RW :: should only be completed with more requests
     - FORM :: unless really necessary due to some reason (genericity and modularity requirements, internal components requirements, etc.) do not diverge too much from 1A API data model, they know what they're doing
-  + OPTI :: start the design of OPTI, now that have a better functional understanding to detect optimisation improvements
-    - OPTI interface provided as a REST API or internal gRPC calls (remote procedure calls) ?
+  + OPTI :: start the design of OPTI, now that have a better functional understanding to detect optimisation improvements, simple design, not yet use of optimisation algorithms
+    - OPTI interface provided as an API (REST API or internal gRPC calls (remote procedure calls) ?)
+    - C++ component
+    - C++ state graphs
   + further technical refactoring:
     - 
 - YTA004 :: YTA overall components (including OPTI) specialisation: provide 1A improved functional service to client, and platform stability; monitor (and alert) for KPIs, issues, etc.
@@ -84,6 +87,8 @@
     - subscriptions,
     - etc.
   + if volume of transactions justifies it, can't we use our position as business providers to demand some more other advantages ?
+  + enrich further the [[*Products catalogue][Products catalogue]]
+    - hotels, car rental, place to visits, etc.
 - YTA040 :: still continuity of YTA010, exclusively technical studies, preparation for phase 3, after previous functional studies (YTA030) and having some functional prospects to enrich YTA product, these technical studies are aiming at finding technical improvements to optimise resources usage, savings on cost, and detect potential of investments
   + what resources, how should be allocated, to who, how much, etc.:
     - human:
@@ -99,7 +104,19 @@
     - logistic: material, office(s), etc
   + FinOps
   + OPTI:
-    - identify ways of optimising further OPTI: multi-objectives optimisation to find better offers, AI, etc.
+    - identify ways of optimising further OPTI:
+      + OPTI is supposed to be one optimisation component doing travel specific optimisation work, why not make an optimisation orchestrator that calls a set of optimisation tools from a more general optimisation framework (or sets of libraries) that provides various optimisation algorithms/solver
+        - that way can even independently contribute to this framework with not travel related algorithms/tools that can be used somewhere else, for example the Travelling Salesman Problem solver (which might be travel related too, who knows)
+          + checkout:
+            - https://en.wikipedia.org/wiki/COIN-OR, https://www.coin-or.org/
+            - https://en.wikipedia.org/wiki/List_of_optimization_software
+            - https://en.wikipedia.org/wiki/OR-Tools
+      + multi-objectives optimisation to find better offers,
+      + global or local optimiser, both ?
+      + use of static libraries ?
+        - 
+      + AI ?
+      + etc.
     - always remember abstraction level of OPTI to allow for *genericity and re-usability* (by WBAPI for example)
 ** Phase 3 (000). maintenance, handovers, professionalisation and division of labour on every main speciality based on effort and knowledge
 [2024-08-17 Sat 17:42]
@@ -113,7 +130,11 @@
   + is it advantageous to expand the product on top of providers ? (won't it threaten our position with 1A ?) ?
     - for example, improving on travelport product of seat automatic allocation
     - google is enriching its position into the travel industry, can't it be worthwhile to plug into its service catalogue ?
-  + is it advantageous to expand the type of clients ? (won't it threaten our position with 1A ?): for example can't we use our knowledge of the travel market to negociate products directly with airlines such as rwandair ?
+  + is it advantageous to expand the type of clients ? (won't it threaten our position with 1A ?):
+    - for example, can't we use our knowledge of the travel market to negociate products directly with airlines such as rwandair ?
+  + is it advantageous to expand our type of services ? (won't it threaten our position with 1A ?):
+    - for example, can't we use our knowledge or those of our contacts/clients to change our position ? not just as a consumer only, but also as products providers to our suppliers: add hotels, car rental, places to visit to 1A catalogue for example
+    - to goal being to be the "middleman" between our local African clients (hotels, touristic places, ), and GDSs
 * Studies findings
 [2024-08-07 Wed 21:40]
 ** notes
@@ -147,6 +168,7 @@
 [2024-08-07 Wed 21:37]
 * Data models
 [2024-08-07 Wed 21:41]
+** Products catalogue
 * Components
 [2024-08-07 Wed 21:46]
 ** ADAP
@@ -174,7 +196,7 @@
 - OPTI for "Optimiser", a set of libraries (or framework?) to optimise and perform efficient search in data returned by ADAP
 - OPTI: is provided as a micro-service, so still means an interface that wraps external input/output, calls, or requests for optimisation
   + [TODO] : interface provided as a REST API or internal gRPC calls (remote procedure calls) ?
-- 
+- c++ component
 ** YTAPI (orchestrator, YTA entry point)
 [2024-08-18 Sun 17:10]
 - entry point of the overall platform, the orchestrator that receives and send all requests to/from YTA platform
