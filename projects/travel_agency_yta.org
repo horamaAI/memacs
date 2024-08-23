@@ -7,12 +7,12 @@
 #+KEYWORDS: YTA org-mode Emacs organization GTD getting-things-done git
 
 * Tickets
-** Phase 0. Generic tasks, recurring tasks, all tasks that are repetitive, short-term tasks that don't need tracking
+** Reference 0: Generic tasks, recurring tasks, all tasks that are repetitive, short-term tasks that don't need tracking
 [2024-08-20 Tue 20:26]
 - YTA000 :: misc, small tasks, updates, etc. everything that don't need tracking (still need proper commit message)
   - subscribe to travel specialised mailing lists/news (few but trustworthy), etc., and review from there the component(s)/product(s) that need refactoring
 ** Phase 1 (0). MVP, architecture definition, first successful tests (unit, regression, non-reg)
-- YTA001 :: 1A and business centred: testing the water of the business, do a basic successful CRUD requests (complete, all of them), but do not focus on specifics of the response
+- YTA001 :: *1A and business centred*: testing the water of the business, make basic successful CRUD requests to 1A (all CRUD), but do not focus on specifics of the response
   + record cost and risk of a TA, for reporting and business presentations
   + paper work: (country specific) compliance and regulations on the sector
   + visit 1A API, be acquainted to its basic/main functional/technical flow
@@ -21,7 +21,7 @@
   + YTA basic build: very basic structure, architecture, test (automatic preferable)
   + run first CRUD requests successfully (in TEST environment)
   + at this step *no DB management is defined yet*, if need one, use light one for basic CRUD actions
-- YTA001 :: YTA components centred, define basic architectures, and technical tools (ci-cd, dotfiles, etc)
+- YTA001 :: *YTA components centred*, define basic architectures, and technical tools (ci-cd, dotfiles, etc)
   + define :
     - YTA components (and sub-components maybe): basic solid architecture tailored for modularity, maintenance, and monitoring
       + ADAP ::
@@ -45,9 +45,26 @@
       + 
     - DB management: SQL/noSQL, if noSQL then prefer couchbase over mongo for example, in order to expand on CNA
       + couchbase XDCR ?
-- YTA003 :: 1A API and functional centred, refine and strengthen built YTA architectures considering already acquired knowledge: functional and technical experiences, issues, design encumbrance, optimisation impediments, new investigation, and technical tools considerations (ci-cd, dotfiles, etc) , etc.
-  + visit API contract
+- YTA003 :: *1A API, functional centred, and YTA design*, refine and strengthen built YTA architectures considering already acquired knowledge: functional and technical experiences, issues, design encumbrance, optimisation impediments, new investigation, and technical tools considerations (ci-cd, dotfiles, etc) , etc.
+  + visit further 1A API contract, study, compare, enrich
     - start documenting the product catalogue ([[*Products catalogue][Products catalogue]]) of YTA with first product ideas, just some basic to start with
+    - know and complete vocabulary/lexicon into [[*Glossary][Glossary]] section from API contract, products, domain based terminology, etc.
+      + some services/products to checkout for:
+        - offers (vs shopping and pricing), post-booking, re-booking, redemption,
+        - alliances:
+          + advantages of connection based alliances: if connections involve airlines in same alliances, sometimes it is easier/cheaper/more advantageous to leverage more ancillaries/services: more convenient connections, minimised connection delay time (really ??? need more details and sources), disruptions handling, frequent flyer privileges, redemption, priority check-in/boarding, easy ticketing, luggage tracking can be done on same app, etc.)
+          + checkout https://www.altexsoft.com/blog/airline-alliances-explained/
+    - enrich product catalogue ::
+      + results optimisation with popular, simple and straightforward criteria:
+        - lowest prices, low number of connections, low travel time, etc.
+      + advanced criteria:
+        - is there any way of searching and filtering through "good deals": buckled together trip services: flights + hotel + car rental
+        - is there any way of refining the results by adding additional criteria to requests: by theme (vacation, honeymoon, etc.), by requirements (visa, easy to visit, administrative requirements, etc.), or any other criteria (number of connections, fastest/cheapest, low expenditure places, low affluence in summer, "jewel" locations: for great but rarely visited places, frequency of flights, etc.)
+      + case study: "Broke and Abroad":
+        - how are they able to find their deals, can it be emulated to African market, etc.
+        - do they have an API to connect to, or data to compare with
+        - is it profitable to provide them with new products (checkout more details in YTA-xxx, Phase 4)
+      + TODO: collect every findings, add to product catalogue, develop in further phases
   + ADAP ::
     - RW :: should only be completed with more requests
     - FORM :: unless really necessary due to some reason (genericity and modularity requirements, internal components requirements, etc.) do not diverge too much from 1A API data model, they know what they're doing
@@ -57,18 +74,23 @@
     - C++ state graphs
   + further technical refactoring:
     - 
-- YTA004 :: YTA overall components (including OPTI) specialisation: provide 1A improved functional service to client, and platform stability; monitor (and alert) for KPIs, issues, etc.
-  + put in place monitoring tools and their configurations
+- YTA004 :: *code oriented*, and review *YTA overall components* (including OPTI) for code cleaning, specialisation and optimisation, and based on observations and assessments collected from previous phase (YTA003: design and functional)
+  + clean code
   + fine-tune workflow, and all tests according to feedback
-  + identify improvements for platform stability (not just technical, but also functional: smooth refunds, luggage tracking, etc.), to be used in phase 2 (YTA0x0)
   + data collection: caching, kafka vs nats
   + data search and filtering
-- YTA005 :: security oriented (build basic but solid security foundations)
-  + API token, security, etc.
-  + passwords management
-** Phase 2 (00). maturity and strengthening phase: refactoring (studies mainly) based on feedback from phase 1 (technical, functional, and HR), secure components and product in general, etc
+- YTA005 :: *CI/CD oriented*, provide 1A improved "technical for functional" to client with platform stability, security, tools for analytics, surveillance, discussion, issues tracking, delivering, etc.
+  + identify improvements for platform stability (not just technical, but also functional: smooth refunds, luggage tracking, etc.), to be used in phase 2 (YTA0x0)
+  + put in place monitoring tools and their configurations
+  + monitor and alert, KPIs, issues, etc. (checkout grafana, argocd, etc.)
+  + issues monitoring and tracking
+  + chats
+  + security oriented (build basic but solid security foundations)
+    - API token, security, etc.
+    - passwords management
+** Phase 2 (00). maturity and strengthening phase: analysis phase before further business/design/documentation/components/etc. refactoring (here studies mainly). Based on experiences from phase 1 (technical, functional, HR, etc.), review/design security, components, products, etc., an overall review study
 [2024-08-17 Sat 17:39]
-- YTA010 :: growth centred, but exclusively on business and "HR" perspective, do studies based on experience, to determine further growth potential, and resources availability to execute and achieve those steps
+- YTA010 :: growth centred, but exclusively on *business and "HR" perspective*, do studies based on experience, to determine further growth potential, and resources availability to execute and achieve those steps
   + employees availability
   + capital/budget/fund rising needed ?
   + market ? : how to attract customers, who are they, who are the premium customers, how to take care of them
@@ -77,14 +99,14 @@
   + stress tests on passwords management
 - YTA030 :: preparation for phase 3, studies, exclusively functional, continuity of YTA010, studies on how to strengthen the existing and make the platform sustainable over time
   + how to further take care of prime customers
-  + how to attract more customers, based on the potential of available products and the identified needs of the clients found during phase 1 (YTA004)
+  + how to attract more customers, based on the potential of available products and the identified needs of the clients found during phase 1 (YTA003)
   + main original customers are those travelling from/to Africa, but can extend that definition to "African" travellers in general
-  + find new features based on advantages provided by ancillaries:
+  + find new features based on advantages provided by different advanced services: user profile, number/type of travellers, ancillaries, etc.:
     - earning miles and points (loyalty),
+    - subscriptions,
     - travelling in group/with kids,
     - travel solutions for companies,
     - retailing,
-    - subscriptions,
     - etc.
   + if volume of transactions justifies it, can't we use our position as business providers to demand some more other advantages ?
   + enrich further the [[*Products catalogue][Products catalogue]]
@@ -102,7 +124,6 @@
       + platform hosting (physical, virtual), 
     - financial: growth investment
     - logistic: material, office(s), etc
-  + FinOps
   + OPTI:
     - identify ways of optimising further OPTI:
       + OPTI is supposed to be one optimisation component doing travel specific optimisation work, why not make an optimisation orchestrator that calls a set of optimisation tools from a more general optimisation framework (or sets of libraries) that provides various optimisation algorithms/solver
@@ -118,6 +139,10 @@
       + AI ?
       + etc.
     - always remember abstraction level of OPTI to allow for *genericity and re-usability* (by WBAPI for example)
+  + products integration:
+    - checkout if cannot combine products that are otherwise independent:
+      + help customer (1. user profile) choosing alliances (2. alliances and airlines profiles ) based on customer's frequent trips, alliance's reputation (3. OPTI: weighted objective function on alliances)
+  + FinOps
 ** Phase 3 (000). maintenance, handovers, professionalisation and division of labour on every main speciality based on effort and knowledge
 [2024-08-17 Sat 17:42]
 - YTA100 ::
@@ -135,7 +160,7 @@
   + is it advantageous to expand our type of services ? (won't it threaten our position with 1A ?):
     - for example, can't we use our knowledge or those of our contacts/clients to change our position ? not just as a consumer only, but also as products providers to our suppliers: add hotels, car rental, places to visit to 1A catalogue for example
     - to goal being to be the "middleman" between our local African clients (hotels, touristic places, ), and GDSs
-* Studies findings
+* Studies findings (various findings, draft version before it is validated and put in specs/documentation pages)
 [2024-08-07 Wed 21:40]
 ** notes
 - name ::
@@ -203,5 +228,21 @@
 * Architectures and workflows
 [2024-08-07 Wed 21:41]
 - 
+* Glossary
+[2024-08-23 Fri 22:09]
+** Per product level
+*** Shopping
+[2024-08-23 Fri 22:19]
+*** Pricing
+[2024-08-23 Fri 22:20]
+*** Offers
+[2024-08-23 Fri 22:20]
+*** Booking
+- redemption
+*** Post Booking
+*** Ticketing
+*** Aftersales
+[2024-08-23 Fri 22:19]
+[2024-08-23 Fri 22:19]
 * Prospects (potential improvements)
 [2024-08-07 Wed 21:37]
