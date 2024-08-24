@@ -42,7 +42,8 @@
     - clean code compliance:
       + format (always standard, independently of platform: windows, mac, linux, etc.): clang format, editorconfig
       + indentation vs spaces
-      + git hooks
+      + git hooks:
+        - enforce yaml files are valid (and when a schema is referenced, that it is compliant)
       + static/dynamic program analysis tools
     - ansible
     - microservices: CNA (for cloud native applications)
