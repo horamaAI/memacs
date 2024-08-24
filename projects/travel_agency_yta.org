@@ -7,10 +7,18 @@
 #+KEYWORDS: YTA org-mode Emacs organization GTD getting-things-done git
 
 * Tickets
-** Reference 0: Generic tasks, recurring tasks, all tasks that are repetitive, short-term tasks that don't need tracking
+** Notes
+[2024-08-24 Sat 17:47]
+- everything that is not tag as [PUBLIC] is internal to YTA
+- as soon as a feature or an ongoing task is completed, and it involves a ==[DRAFT]== marked section, clear it from there after completion ([DRAFT] section are not supposed to stay, moved yes, but staying no)
+  + example: section [[*\[DRAFT\] Studies findings (various findings, draft version before it is validated and put in specs/documentation pages)][[DRAFT] Studies findings]] is a buffer place that contains all ongoing subsection tasks, after those are completed, they should disappear from "Studies findings"
+- *DO NOT ENGAGE* any competitor upfront, or get involved with any partnership *UNTIL THE PRODUCT IS MATURE*, so at least *NOT UNTIL PHASE 3* (phase 2 is just a preparation phase for phase 3)
+  + example: do not open YTA to any other TA, or subcontract bookings
+  + the risk is that the team (the development in fact) is not ready to handle issues that might occur
+- subscribe to travel + hospitality specialised mailing lists/news/communities/forums/etc. (few but trustworthy), and review from there the component(s)/product(s) that need developing/refactoring/etc.
+** Reference 0 (YTA000): Generic tasks, recurring tasks, all tasks that are repetitive, short-term tasks that don't need tracking
 [2024-08-20 Tue 20:26]
-- YTA000 :: misc, small tasks, updates, etc. everything that don't need tracking (still need proper commit message)
-  - subscribe to travel specialised mailing lists/news (few but trustworthy), etc., and review from there the component(s)/product(s) that need refactoring
+- what is reference used for :: for misc, small tasks, updates, etc., everything that don't need tracking (*still need proper commit message and tags*, for references)
 ** Phase 1 (0). MVP, architecture definition, first successful tests (unit, regression, non-reg)
 - YTA001 :: *1A and business centred*: testing the water of the business, make basic successful CRUD requests to 1A (all CRUD), but do not focus on specifics of the response
   + record cost and risk of a TA, for reporting and business presentations
@@ -46,13 +54,15 @@
     - DB management: SQL/noSQL, if noSQL then prefer couchbase over mongo for example, in order to expand on CNA
       + couchbase XDCR ?
 - YTA003 :: *1A API, functional centred, and YTA design*, refine and strengthen built YTA architectures considering already acquired knowledge: functional and technical experiences, issues, design encumbrance, optimisation impediments, new investigation, and technical tools considerations (ci-cd, dotfiles, etc) , etc.
-  + visit further 1A API contract, study, compare, enrich
+  + visit further 1A API contract, study (complete section [[*\[DRAFT\] Studies findings (various findings, draft version before it is validated and put in specs/documentation pages)][[DRAFT] Studies findings]]), compare, enrich
     - start documenting the product catalogue ([[*Products catalogue][Products catalogue]]) of YTA with first product ideas, just some basic to start with
     - know and complete vocabulary/lexicon into [[*Glossary][Glossary]] section from API contract, products, domain based terminology, etc.
       + some services/products to checkout for:
         - offers (vs shopping and pricing), post-booking, re-booking, redemption,
         - alliances:
-          + advantages of connection based alliances: if connections involve airlines in same alliances, sometimes it is easier/cheaper/more advantageous to leverage more ancillaries/services: more convenient connections, minimised connection delay time (really ??? need more details and sources), disruptions handling, frequent flyer privileges, redemption, priority check-in/boarding, easy ticketing, luggage tracking can be done on same app, etc.)
+          + advantages of connection based alliances:
+            - if connections involve airlines in same alliances, sometimes it is easier/cheaper/more advantageous to leverage more ancillaries/services:
+              + more convenient connections, minimised connection delay time (really ??? need more details and sources), disruptions handling, frequent flyer privileges, redemption, priority check-in/boarding, easy ticketing, luggage tracking can be done on same app, etc.)
           + checkout https://www.altexsoft.com/blog/airline-alliances-explained/
     - enrich product catalogue ::
       + results optimisation with popular, simple and straightforward criteria:
@@ -60,6 +70,9 @@
       + advanced criteria:
         - is there any way of searching and filtering through "good deals": buckled together trip services: flights + hotel + car rental
         - is there any way of refining the results by adding additional criteria to requests: by theme (vacation, honeymoon, etc.), by requirements (visa, easy to visit, administrative requirements, etc.), or any other criteria (number of connections, fastest/cheapest, low expenditure places, low affluence in summer, "jewel" locations: for great but rarely visited places, frequency of flights, etc.)
+      + start investigating hospitality market:
+        - advantages of selecting flight + hotel (some airlines possess hotels' shares)
+        - advantages of hospitality subscriptions (or airlines subscriptions including hospitality advantages)
       + case study: "Broke and Abroad":
         - how are they able to find their deals, can it be emulated to African market, etc.
         - do they have an API to connect to, or data to compare with
@@ -70,15 +83,17 @@
     - FORM :: unless really necessary due to some reason (genericity and modularity requirements, internal components requirements, etc.) do not diverge too much from 1A API data model, they know what they're doing
   + OPTI :: start the design of OPTI, now that have a better functional understanding to detect optimisation improvements, simple design, not yet use of optimisation algorithms
     - OPTI interface provided as an API (REST API or internal gRPC calls (remote procedure calls) ?)
-    - C++ component
-    - C++ state graphs
-  + further technical refactoring:
-    - 
-- YTA004 :: *code oriented*, and review *YTA overall components* (including OPTI) for code cleaning, specialisation and optimisation, and based on observations and assessments collected from previous phase (YTA003: design and functional)
+    - OPTI as C++ component, not ?
+- YTA004 :: *code oriented*, review *YTA overall components* (including OPTI) for code cleaning, specialisation and optimisation, and based on observations and assessments collected from previous phase (YTA003: design and functional)
   + clean code
   + fine-tune workflow, and all tests according to feedback
   + data collection: caching, kafka vs nats
   + data search and filtering
+  + OPTI :: based on design of OPTI sketched in previous stage, review code, implement first optimisation algorithms and unit tests
+    - C++ component ?
+    - C++ state graphs
+  + further technical refactoring on components:
+    - 
 - YTA005 :: *CI/CD oriented*, provide 1A improved "technical for functional" to client with platform stability, security, tools for analytics, surveillance, discussion, issues tracking, delivering, etc.
   + identify improvements for platform stability (not just technical, but also functional: smooth refunds, luggage tracking, etc.), to be used in phase 2 (YTA0x0)
   + put in place monitoring tools and their configurations
@@ -109,9 +124,10 @@
     - retailing,
     - etc.
   + if volume of transactions justifies it, can't we use our position as business providers to demand some more other advantages ?
+  + 
   + enrich further the [[*Products catalogue][Products catalogue]]
     - hotels, car rental, place to visits, etc.
-- YTA040 :: still continuity of YTA010, exclusively technical studies, preparation for phase 3, after previous functional studies (YTA030) and having some functional prospects to enrich YTA product, these technical studies are aiming at finding technical improvements to optimise resources usage, savings on cost, and detect potential of investments
+- YTA040 :: continuation of YTA010, exclusively technical studies, preparation for phase 3, after previous functional studies (YTA030) and having some functional prospects to enrich YTA product, these technical studies are aiming at finding technical improvements to optimise resources usage, savings on cost, and detect potential of investments
   + what resources, how should be allocated, to who, how much, etc.:
     - human:
       + hiring
@@ -139,9 +155,12 @@
       + AI ?
       + etc.
     - always remember abstraction level of OPTI to allow for *genericity and re-usability* (by WBAPI for example)
-  + products integration:
-    - checkout if cannot combine products that are otherwise independent:
-      + help customer (1. user profile) choosing alliances (2. alliances and airlines profiles ) based on customer's frequent trips, alliance's reputation (3. OPTI: weighted objective function on alliances)
+  + YTA products internal integration:
+    - find ways of linking results from different products/services to add more value to YTA
+      + checkout if cannot combine products that are otherwise independent:
+        - help customer (1. user profile) choosing alliances (2. alliances and airlines profiles ) based on customer's frequent trips, or alliance's reputation (3. use OPTI for optimisation)
+          + OPTI: use each advantages of alliances as weighted variables in objective functions for each alliance => multi-objective problem to solve (pareto)
+    - try to patch boarding pass issues when has connections and alliances' practices cannot fix it
   + FinOps
 ** Phase 3 (000). maintenance, handovers, professionalisation and division of labour on every main speciality based on effort and knowledge
 [2024-08-17 Sat 17:42]
@@ -158,10 +177,14 @@
   + is it advantageous to expand the type of clients ? (won't it threaten our position with 1A ?):
     - for example, can't we use our knowledge of the travel market to negociate products directly with airlines such as rwandair ?
   + is it advantageous to expand our type of services ? (won't it threaten our position with 1A ?):
-    - for example, can't we use our knowledge or those of our contacts/clients to change our position ? not just as a consumer only, but also as products providers to our suppliers: add hotels, car rental, places to visit to 1A catalogue for example
+    - for example, can't we use our knowledge or those of our contacts/clients to change our position ? not just as a consumer only, but also as new products providers to our own suppliers: add hotels, car rental, places to visit to 1A catalogue for example
+      + in other words, being a broker in both direction
+      + what are our type of business:
+        - intermediary in just one direction ? : 1A consumer, travelling client provider, or can expand to both direction
     - to goal being to be the "middleman" between our local African clients (hotels, touristic places, ), and GDSs
-* Studies findings (various findings, draft version before it is validated and put in specs/documentation pages)
-[2024-08-07 Wed 21:40]
+- reminder :: update [[*what's our business position in the travelling market][section: "what's our business position in the travelling market"]], and when done: update planned destination section, and clear draft subsection
+* [DRAFT] Studies findings (various findings, draft version before it is validated and put in specs/documentation pages)
+[2024-08-07 Wed 21:40]j
 ** notes
 - name ::
   + YTA ::
@@ -186,7 +209,8 @@
     - analysis tools for potential track of enhancement/improvement
       + => need for professional analysts
   + support and training ::
-
+** what's our business position in the travelling market
+[2024-08-24 Sat 18:45]
 ** Miscellaneous
 - main GDS: Amadeus, Sabre, Travelport
 * Features (MVP)
@@ -244,5 +268,21 @@
 *** Aftersales
 [2024-08-23 Fri 22:19]
 [2024-08-23 Fri 22:19]
+* YTA API documentation
+[2024-08-24 Sat 18:51]
+** technical documentation: see [[*YTAPI (orchestrator, YTA entry point)][YTAPI (orchestrator, YTA entry point)]]
+* About YTA
+[2024-08-24 Sat 18:46]
+** what's our business position in the travelling market (what are the type of services we provide to our clients)
+* [PUBLIC] About YTA
+[2024-08-24 Sat 18:32]
+** Introduction
+[2024-08-24 Sat 18:39]
+Hello World, we are YTA, Your Travel agency, as in GNU's own tradition: YTA's a Travel Agency :)
+** Products and services
+** Partners
+[2024-08-24 Sat 18:32]
+** Demos
+[2024-08-24 Sat 18:34]
 * Prospects (potential improvements)
 [2024-08-07 Wed 21:37]
