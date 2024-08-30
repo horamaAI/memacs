@@ -911,7 +911,7 @@ In addition to the fields specified in the cron expression, there’s also suppo
             - icing
         ...
         #+end_example
-** jq and yq (json and yaml files parser and processor)
+** jq and yq (json and yaml files parser, processor, and basic format validation)
 - json and yaml files parsing and processing ::
   + yaml ::
   + yaml and json processing with jq ::
@@ -1644,7 +1644,7 @@ In addition to the fields specified in the cron expression, there’s also suppo
     - in example, all objects are discriminated to ~objectType~ property, and mapped to respective values ~obj1~, ~obj2~, or ~system~
     - ~obj1~ value is mapped to the ~Object1~, ~obj2~ value is mapped to the ~Object2~, and value ~system~ matches the ~sysObject~ model that is located in an external file
 - all supported json schemas keywords :: checkout: https://swagger.io/docs/specification/data-models/keywords/
-** schema and data validation
+** schemas for yaml/json data validation
 - notes ::
   + each time a yaml parser reads a value, it guesses the type tag in a process called "tag resolution":
     - eg: the "Norway problem": suppose a yaml parser reads: ~country-list: [DK, NO, SE]~, with no context, or details given, it interprets that as: ~{'country-list': ['DK', False, 'SE']}~
@@ -1884,12 +1884,19 @@ In addition to the fields specified in the cron expression, there’s also suppo
     - 
 ** schema generation
 [2024-08-04 Sun 03:14]
-** yamllint, schema based yaml files validators, but also customisable
+** yaml/json linters
 [2024-08-25 Sun 00:11]
-- notes:
-  + yamllint: much stricter standard and highly customisable: “yamllint does not only check for syntax validity, but for weirdnesses like key repetition and cosmetic problems such as lines length, trailing spaces, indentation, etc”
+- linters: code/data analyser used to flag programming errors, bugs, stylistic errors, suspicious constructs, etc.
+- yamllint ::
+  + yamllint: much stricter standard than some basic validators (such as ==yq==), and highly customisable: "does not only check for syntax validity, but also for weirdnesses like key repetition, cosmetic problems such as lines length, trailing spaces, indentation, etc."
   + can configure style using rules in a config file to fit needs and standards (perfect for CI/CD pipelines)
-  + yamllint has limits, such as being slower when substantial amount of yaml files and sets of schemas to process, but exists alternatives (but potentially more complex) able to overcome the issue, such as https://github.com/23andMe/Yamale (enforces further rigid rules, and allow parallel yaml processing files and further security checking)
+  + yamllint has limits though, such as being slower when substantial amount of yaml files and sets of schemas to process
+    - exists alternatives (though potentially more complex) able to overcome the issue, such as https://github.com/23andMe/Yamale (enforces further rigid rules, and allow parallel yaml processing files and further security checking)
+    - yamale can also validate yaml files against schemas, which is a plus
+- yamale ::
+  + tool set for yaml files: linter (much stricter than yamllint), schema validator, parallel yaml files processing (perfect when processing lots of files), package importable in python, etc.
+- yaml-validator :: handy when working with node.js
+** yaml/json schema validators linters, schema based yaml files validators, but also customisable
 * git
 [2024-05-31 Fri 22:58]
 ** git worktrees (work with different "branches" at the time)
