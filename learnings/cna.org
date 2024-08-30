@@ -1,0 +1,8 @@
+# -*- mode: org -*-
+#+title: Cloud Native Applications 
+#+SETUPFILE: ~/set-up-files/basic-setups.org
+#+TAGS: Java
+
+
+* OpenAPI standard
+**  
