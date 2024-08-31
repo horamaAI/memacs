@@ -17,7 +17,9 @@
 [2024-03-15 Fri 21:20]
 ** dotfiles
 [2024-06-03 Mon 20:53]
-- DOTF000: dotfiles basic structures, and dotfiles update
+*** TODO DOTF000: dotfiles basic structures, and dotfiles update [0/1]
+  + [ ] implement yaml schema and test validation is working properly (using pajv, eg: ~pajv validate -s configs/basic/schemas/cmds.yaml -d configs/basic/apt.yaml~, doc: [[https://www.npmjs.com/package/pajv][pajv doc]])
+  + [ ] check dotfiles with ansible ([[https://phelipetls.github.io/posts/introduction-to-ansible/][dotfiles and ansible]])
 ** Design
 [2024-03-15 Fri 21:21]
 - DES000: design update; // Generic ticket number for small design tasks that do not need tracing
