@@ -1895,10 +1895,10 @@ In addition to the fields specified in the cron expression, there’s also suppo
 - yamale ::
   + tool set for yaml files: linter (much stricter than yamllint), schema validator, parallel yaml files processor (perfect when processing lots of files), package importable in python, etc.
 - yaml-validator :: handy when working with node.js
-** yaml/json schema validators
-- yamale :: also a schema as seen previously
-- yaml-validator :: handy when working with node.js
-- :: 
+** yaml/json schema validator: pajv
+- some yaml/json schema validators (all for CLI, [[https://json-schema-everywhere.github.io/yaml][source]]) ::
+  - yamale (python, not easy to install on debian, relatively unknown), yaml-validator (JS, only structural validation), Rx (JS, Perl, PHP, Ruby, Python, no recent development activity)
+- 
 * git
 [2024-05-31 Fri 22:58]
 ** git worktrees (work with different "branches" at the time)
