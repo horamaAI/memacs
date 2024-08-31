@@ -913,7 +913,6 @@ In addition to the fields specified in the cron expression, there’s also suppo
         #+end_example
 ** jq and yq (json and yaml files parser, processor, and basic format validation)
 - json and yaml files parsing and processing ::
-  + yaml ::
   + yaml and json processing with jq ::
     - at time of writing this notes, exists 2 versions of yq: in go, and in python
     - yq ::
@@ -1894,9 +1893,12 @@ In addition to the fields specified in the cron expression, there’s also suppo
     - exists alternatives (though potentially more complex) able to overcome the issue, such as https://github.com/23andMe/Yamale (enforces further rigid rules, and allow parallel yaml processing files and further security checking)
     - yamale can also validate yaml files against schemas, which is a plus
 - yamale ::
-  + tool set for yaml files: linter (much stricter than yamllint), schema validator, parallel yaml files processing (perfect when processing lots of files), package importable in python, etc.
+  + tool set for yaml files: linter (much stricter than yamllint), schema validator, parallel yaml files processor (perfect when processing lots of files), package importable in python, etc.
 - yaml-validator :: handy when working with node.js
-** yaml/json schema validators linters, schema based yaml files validators, but also customisable
+** yaml/json schema validators
+- yamale :: also a schema as seen previously
+- yaml-validator :: handy when working with node.js
+- :: 
 * git
 [2024-05-31 Fri 22:58]
 ** git worktrees (work with different "branches" at the time)
