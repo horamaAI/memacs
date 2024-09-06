@@ -2069,12 +2069,11 @@ In addition to the fields specified in the cron expression, there’s also suppo
     - columns output of lsof :: (some)
       + FD :: File descriptor definition
         - when a file is opened, the OS creates an entry to represent that file and store the information about it. So if there are 100 files opened then there will be 100 entries somewhere in the kernel. These entries are represented by integers (...100, 101, 102....) known as "file descriptor". FD is an integer that uniquely represents an opened file for the process
+        - similarly, when one open's a network socket, it is also represented by an integer and is called Socket Descriptor
       + DEVICE :: device number or, in the case of a block device, character or other
       + SIZE/OFF :: dimension of the file or offset (the suffix 0t is the offset)
       + NODE :: node description of the local file; could be the number of the local file, TCP, UDP, or STR (stream)
       + NAME :: the name of the mount point where the file resides
-
-Similarly, when you open a network socket, it is also represented by an integer and it is called Socket Descriptor. I hope you understand.
   + format :: ~lsof -p <process id>~
 - read ::
   + transform string to array of strings (split) :: ~echo "one two three" | read -ra array~, or ~read -ra array <<< "one two three"~ => alo: ["one" "two" "three"]
