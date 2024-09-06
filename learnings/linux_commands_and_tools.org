@@ -2057,7 +2057,7 @@ In addition to the fields specified in the cron expression, there’s also suppo
     - basic use: stow [target_folder_path]/ :: ~cd target_folder_path && stow .~
     - notes ::
       + stow default ignore list :: .git, .gitignore, README.*, etc., or will use content of ==.stow-global-ignore== (see [[https://www.gnu.org/software/stow/manual/html_node/Types-And-Syntax-Of-Ignore-Lists.html][more details]])
-    - clean-up all generated symlinks :: ~~
+    - clean-up all generated symlinks :: ~cd target_folder_path && stow -D .~
 - showkey ::
   + useful for keybindings when whants to get text version of keys from keyboard
   + find mappings :: ~showkey -a~, and then type the key sequence to know its value
