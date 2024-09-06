@@ -2047,6 +2047,17 @@ In addition to the fields specified in the cron expression, there’s also suppo
       + ~screenlog.0~ :: .0 since the detached screen is supposed to be the first
     - ~tail -Fn 0 screenlog.0 | ccze | grep -i error~ :: watch for errors using ccze (logs colorizer)
 * other nice utilities
+- stow ::
+  + usecase :: setting dotfiles located in folder ==~/mydotfiles/==
+    - without stow: one would need to ==cp ~/mydotfiles/.zshrc ~/.zshrc==, or set-up manually an "automatic" symlinks generation (with bash scripts for example)
+    - with stow: every file/folder in the stowed folder has a symlink (not explicitly set) created for an identical file/folder in ==home==
+    - careful :: path is preserved: ==~/mydotfiles/randomfolder/.zshrc== will stow ==~/randomfolder/.zshrc==, and not ==~/.zshrc==
+      + => organise dotfiles in the exact same way you would organise them in the home folder
+  + use ::
+    - basic use: stow [target_folder_path]/ :: ~cd target_folder_path && stow .~
+    - notes ::
+      + stow default ignore list :: .git, .gitignore, README.*, etc., or will use content of ==.stow-global-ignore== (see [[https://www.gnu.org/software/stow/manual/html_node/Types-And-Syntax-Of-Ignore-Lists.html][more details]])
+    - clean-up all generated symlinks :: ~~
 - showkey ::
   + useful for keybindings when whants to get text version of keys from keyboard
   + find mappings :: ~showkey -a~, and then type the key sequence to know its value
@@ -2078,7 +2089,6 @@ In addition to the fields specified in the cron expression, there’s also suppo
 - read ::
   + transform string to array of strings (split) :: ~echo "one two three" | read -ra array~, or ~read -ra array <<< "one two three"~ => alo: ["one" "two" "three"]
     - option -a to specify the array to redirect the split into (may vary with the shell, eg: -A with zsh)
-    
 - time [command] :: times how long a command takes, eg: ~time (find -iname '*.org' | xargs -I {} basename {})~
   + has even formatting options, eg : ~time -f '%E %W %r' [command]~
     - to get a better format for zsh as for bash, set variable TIMEFMT to ~TIMEFMT=$'real\t%E\nuser\t%U\nsys\t%S'~
