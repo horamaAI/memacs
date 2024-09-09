@@ -1724,7 +1724,7 @@ In addition to the fields specified in the cron expression, there’s also suppo
       + value of "properties" MUST be an object, and each value of this object MUST be a valid JSON Schema
     - required properties ::
       + done with object ==required==, eg: ~"required": [ "productId", "productName", "price" ]~ (defined at same level as properties)
-    - arrays ::
+    - arrays' properties ::
       + define item properties in an array property ::
         - ==uniqueItems== :: enforces uniqueness of items in an array
         - ==minItems== :: for example a product can have tags, which can be a list of strings, and when a tag is defined, it has to have at least one tag:
