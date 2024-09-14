@@ -1,0 +1,7 @@
+# -*- mode: org -*-
+#+title: learning open-data and openAPI
+#+SETUPFILE: ~/set-up-files/basic-setups.org
+
+
+* open data
+* open API
