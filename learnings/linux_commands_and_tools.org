@@ -946,7 +946,7 @@ In addition to the fields specified in the cron expression, there’s also suppo
             command: ""
             pkgs:
               - ""
-          jtodo:
+          todo:
             - java jdk (basic one: default-jre), valgrind
           ...
           #+end_example
