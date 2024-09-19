@@ -21,6 +21,12 @@
 - what is reference used for :: for misc, small tasks, updates, etc., everything that don't need tracking (*still need proper commit message and tags*, for references)
 ** Phase 1 (0). MVP, architecture definition, first successful tests (unit, regression, non-reg)
 - YTA001 :: *1A and business centred*: testing the water of the business, make basic successful CRUD requests to 1A (all CRUD), but do not focus on specifics of the response
+  + clearly identify and define what's the target niche ::
+    - what is the proposed product and its benefits (compared to existing)
+    - who are the customers, their needs, their behaviour, etc. (supplier should be 1A in the beginning)
+    - first rough measurement of the effort of building YTA
+    - what does YTA costs (intermediaries such as consolidators, per transactions incurred fees, etc.)
+    - how does it profit (direct fees, commissions, etc.)
   + record cost and risk of a TA, for reporting and business presentations
   + paper work: (country specific) compliance and regulations on the sector
   + visit 1A API, be acquainted to its basic/main functional/technical flow
@@ -183,6 +189,7 @@
       + what are our type of business:
         - intermediary in just one direction ? : 1A consumer, travelling client provider, or can expand to both direction
     - to goal being to be the "middleman" between our local African clients (hotels, touristic places, ), and GDSs
+- YTA-002 :: end-game extension is to make YTA as less dependent from GDSs as possible
 - reminder :: update [[*what's our business position in the travelling market][section: "what's our business position in the travelling market"]], and when done: update planned destination section, and clear draft subsection
 * [DRAFT] Studies findings (various findings, draft version before it is validated and put in specs/documentation pages)
 [2024-08-07 Wed 21:40]j
