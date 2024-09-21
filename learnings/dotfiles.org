@@ -224,41 +224,47 @@
 [2024-06-01 Sat 15:25]
 - draft ::
   + to include ::
-    - ==user, server, common, private, business, work, work-a, etc.==
-    - don't forget adding ppas for additional apt installs (https://github.com/cowboy/dotfiles/blob/master/init/20_ubuntu_apt.sh#L16)
-    - stow ? checkout [[https://brandon.invergo.net/news/2012-05-26-using-gnu-stow-to-manage-your-dotfiles.html][this]], [[https://spin.atomicobject.com/manage-dotfiles-gnu-stow/][this]] and [[https://blog.palcu.net/2014/06/dotfiles-and-dev-tools-provisioned-by.html][this one maybe]] which relies more on ansible ("bash on steroid")
-      + ansible is a more robust alternative to writing your own bash script, it manages checking for example if an action was successful, or if an error occurs, resume where left off
-    - '*.list' ('*.yaml') files for tool specific installations (filed by command to use), eg: ~apt.yaml~ for packages to install with apt, ~npm.yaml~ for npm, ~python2.yaml~, etc.
-      + for packages to install, line starts with:
-        - ==$== : then the line is the command to use for following packages
-        - ==#== comment, skip
-        - all remaining lines are packages to install using current command
-      + setup for installation first some essentials packages that are mandatory (build-essential, emacs, python, npm, etc.) to have before installing other tools
-        - for example in [[https://github.com/rkalis/dotfiles/][this repo]], the main setup is running the [[https://github.com/rkalis/dotfiles/blob/master/bootstrap.sh#L30][main packages install]] (~./packages/setup.sh~ which is [[https://github.com/rkalis/dotfiles/blob/master/packages/setup.sh][here]]), and then locate and run the remaining setup (~find * -name "setup.sh" -not -wholename "packages*"~ and skips ~./packages/setup.sh~ which was run before)
-    - '*.yaml' files for repositories
-    - git bare repo ?
-      + user's home is overflowing with dotfiles ('hidden'), mind it could be tedious if choose git bare and have to go through all the files to add to own dotfiles (https://web.archive.org/web/20171003124306/https://plus.google.com/+RobPikeTheHuman/posts/R58WgWwN9jp)
-    - checkout use of environment variables $XDG_* (https://0x46.net/thoughts/2019/02/01/dotfile-madness/ and https://wiki.gentoo.org/wiki/XDG/Base_Directories)
+    - [ ] add ppas for additional apt installs (https://github.com/cowboy/dotfiles/blob/master/init/20_ubuntu_apt.sh#L16)
+    - [ ] packages and tools installation
+      + setup for installation mandatory essentials packages (build-essential, emacs, python, npm, etc.) before installing other tools
+      + example in [[https://github.com/rkalis/dotfiles/][this repo]], the main setup is running the [[https://github.com/rkalis/dotfiles/blob/master/bootstrap.sh#L30][main packages install]] (~./packages/setup.sh~ which is [[https://github.com/rkalis/dotfiles/blob/master/packages/setup.sh][here]]), and then locate and run the remaining setup (~find * -name "setup.sh" -not -wholename "packages*"~ and skips ~./packages/setup.sh~ which was run before)
+      + [ ] '*.list' ([selected] '*.yaml') files for installation specific commands (filed by +command to use+ :used by function: ~[folder]/packages~, ~[folder]/opt~, etc.), eg: ~apt.yaml~ for packages to install with apt, ~npm.yaml~ for npm, ~python3.yaml~, etc.
+        - [aborted] for packages to install, line starts with:
+          + ==$== : then the line is the command to use for following packages
+          + ==#== comment, skip
+          + all remaining lines are packages to install using current command
+        - [selected] use yaml file and install command content into a schema that validates
+      + [ ] opt
+      + [ ] git repositories
+    - [ ] tools configs: .zshrc, .zshrc_user, oh-my-zsh, .screen, .inputrc, .alias, etc
+    - [ ] emacs ::
+      + add in-terminal settings
+      + split profile for ==common== and ==dmahoro==
+    - [ ] git:
+      + [ ] git ci/cd, eg: git hooks
+      + [ ] git configs with multiple configs (direnv maybe ?: https://direnv.net/)
+        - checkout [[https://github.com/jogendra/dotfiles/blob/master/git/pull_request.sh][these cool git functions]] and [[https://github.com/jogendra/dotfiles/blob/master/git/gitconfig][configs]]
+      + [ ] git bare repo ?
+        - user's home is overflowing with dotfiles ('hidden'), mind it could be tedious if choose git bare and have to go through all the files to add to own dotfiles (https://web.archive.org/web/20171003124306/https://plus.google.com/+RobPikeTheHuman/posts/R58WgWwN9jp)
+    - [ ] checkout use of environment variables $XDG_* (https://0x46.net/thoughts/2019/02/01/dotfile-madness/ and https://wiki.gentoo.org/wiki/XDG/Base_Directories)
       + $XDG_DATA_HOME or $HOME/.local/share for example to store plugins downloaded by the user, databases created by your program, user's input history, bookmarks, emails, and so on
-    - .inputrc, .alias, etc
-    - optimise autocomplete
-    - direnv ? (https://direnv.net/)
-    - git configs with multiple configs (direnv maybe ?)
-      + checkout [[https://github.com/jogendra/dotfiles/blob/master/git/pull_request.sh][these cool git functions]] and [[https://github.com/jogendra/dotfiles/blob/master/git/gitconfig][configs]]
-    - [[https://zellij.dev/documentation/][zellij]] (terminal multiplexer written in rust and made to be a better tool than tmux, which is written in C, and sometimes lacking)
+    - [ ] optimise auto-complete
+    - [ ] vim (learn basics, and tweak configs, seems there is no way to escape from it when working with bare installation or with the terminal)
+    - [ ] IDE ::
+      + add configs for one 'mainstream' IDE too, eg: vscode (settings, format, plugins, etc.)
+    - [ ] ==user, server, common, private, business, work, work-a, etc.==
+    - [ ] stow ?
+      + at first glance yes: build folder ~dotfiles/$user~, so will most probably stow that folder
+      + checkout [[https://brandon.invergo.net/news/2012-05-26-using-gnu-stow-to-manage-your-dotfiles.html][this]], [[https://spin.atomicobject.com/manage-dotfiles-gnu-stow/][this]] and [[https://blog.palcu.net/2014/06/dotfiles-and-dev-tools-provisioned-by.html][this one maybe]] which relies more on ansible ("bash on steroid")
+    - [ ] live updates mechanism:
+      + [ ] preferably add 'uninstall' or remove command
+      + [ ] script for updating target 
+    - [ ] ansible might be a robust alternative to writing custom bash script, for example, could be useful to manage when an action was successful, or when an error occurs, resume where left off
+    - [ ] [[https://zellij.dev/documentation/][zellij]] (terminal multiplexer written in rust and made to be a better tool than tmux, which is written in C, and sometimes lacking)
       + checkout how to create workspaces: https://spin.atomicobject.com/dev-project-workspace-tmux/
       + checkout how to add more functionalities to it:
         - https://jolicode.com/blog/organiser-son-terminal-avec-des-workspaces
         - https://github.com/niflostancu/tmux-workspaces
-    - oh-my-zsh configs and customisation
-    - vim (learn basics, and tweak configs, seems there is no way to escape from it when working with bare installation or with the terminal)
-    - IDE ::
-      + add configs for one 'mainstream' IDE too (settings, format, plugins, etc.)
-    - emacs ::
-      + add in-terminal settings
-    - preferably add 'uninstall' or remove command
-  + "update" ::
-    - script for updating target 
 - dotfiles structure :: source of things to do
   + install.sh ::
     - main entry point for dotfiles installation
