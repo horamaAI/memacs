@@ -120,6 +120,20 @@
   + refactoring of security
   + stress tests on passwords management
 - YTA030 :: preparation for phase 3, studies, exclusively functional, continuity of YTA010, studies on how to strengthen the existing and make the platform sustainable over time
+  + plan a storage format for registering customers' issues tickets (bugs, complaints, refunds, etc.):
+    - find system to avoid duplicates (or at least minimise them)
+    - required attributes:
+      + title, short but clear and succinct, not too generic to catch specificities, but simple and bare enough to understand the issue and apply regex to search/filter
+        - => limit on number of characters
+      + description, where can give more details
+      + number of occurrences
+      + level of impact/urgency/priority
+      + level of complexity: estimated effort (functionally/technically, or level of dependency)j
+    - expected benefits:
+      + fix issues by priority/urgency, occurrences, complexity, etc.
+      + functional/technical debt
+      + contribution to KPIs
+      + better product/features enhancement (fix what lacks/fails in YTA, or from suppliers)
   + how to further take care of prime customers
   + how to attract more customers, based on the potential of available products and the identified needs of the clients found during phase 1 (YTA003)
   + main original customers are those travelling from/to Africa, but can extend that definition to "African" travellers in general
@@ -189,7 +203,7 @@
       + what are our type of business:
         - intermediary in just one direction ? : 1A consumer, travelling client provider, or can expand to both direction
     - to goal being to be the "middleman" between our local African clients (hotels, touristic places, ), and GDSs
-- YTA-002 :: end-game extension is to make YTA as less dependent from GDSs as possible
+- YTA-002 :: end-game extension (goal) is to make YTA as less dependent from GDSs as possible
 - reminder :: update [[*what's our business position in the travelling market][section: "what's our business position in the travelling market"]], and when done: update planned destination section, and clear draft subsection
 * [DRAFT] Studies findings (various findings, draft version before it is validated and put in specs/documentation pages)
 [2024-08-07 Wed 21:40]j
