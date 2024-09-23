@@ -269,13 +269,13 @@
   + install.sh ::
     - main entry point for dotfiles installation
   + configs :: 
+    - any env, 'smthing.yaml', opt, in config other than basic, is an addition to base config: ==basic > common > dmahoro==
     - academic ::
-      + 'smthing.yaml', and 'smthing' file for specific installs and configs
       + decouple config from 'private'
       + latex for emacs
     - basic ::
-      + apt.yaml (file) ::
-        - main tools needed for basic install use
+      + ==packages/*.yaml== ::
+        - used to install tools needed for basic install use
         - others tools to install are to be put in specific "group" of '*.yaml' installation files ('dpkg.yaml', 'pip.yaml', etc.)
         - add some basic tools and default compilers to start with, so can do basic tasks such as running a basic test environment
         - to install ::
