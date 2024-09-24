@@ -117,7 +117,10 @@
   + capital/budget/fund rising needed ?
   + market ? : how to attract customers, who are they, who are the premium customers, how to take care of them
 - YTA020 :: further strengthen technical and security
-  + refactoring of security
+  + complete security-centered refactoring
+    - no secret shared bare anywhere:
+      + use secret scanners such as [[https://docs.github.com/en/code-security/secret-scanning/introduction/about-secret-scanning][github security scanner]], checkout [[https://chpk.medium.com/top-10-secret-scanning-tools-4b97410396f4][related pages]] for more information
+    - set security policies and ensure that the whole development pipeline is compliant: local environment, tests environments, quality assurance, CI/CD, microservices, Paas, business automation (eg: kogito), etc.
   + stress tests on passwords management
 - YTA030 :: preparation for phase 3, studies, exclusively functional, continuity of YTA010, studies on how to strengthen the existing and make the platform sustainable over time
   + plan a storage format for registering customers' issues tickets (bugs, complaints, refunds, etc.):
@@ -144,8 +147,7 @@
     - travel solutions for companies,
     - retailing,
     - etc.
-  + if volume of transactions justifies it, can't we use our position as business providers to demand some more other advantages ?
-  + 
+  + if volume of transactions justifies it, can't we use our position as business providers to negotiate for some more other advantages ?
   + enrich further the [[*Products catalogue][Products catalogue]]
     - hotels, car rental, place to visits, etc.
 - YTA040 :: continuation of YTA010, exclusively technical studies, preparation for phase 3, after previous functional studies (YTA030) and having some functional prospects to enrich YTA product, these technical studies are aiming at finding technical improvements to optimise resources usage, savings on cost, and detect potential of investments
@@ -188,22 +190,28 @@
 - YTA100 ::
 - YTA200 :: 
 ** Phase 4 (YTA-xxx): position is strongly sustained, look for further opportunities (definitely need for change on version release)
-- YTA-000 :: extend to more opportunities: adapt product(s) to market outside of the one originally intended (Africa centred to more regions)
-- YTA-001 :: extend the actual products provision
-  + is it advantageous to expand the pool of providers ? (won't it threaten our position with 1A ?): sabre, travelport, others ?
+- YTA-000 :: extend products provision
+  + prospects:
+    - codeshare:
+      + find ways of marketing [[https://en.wikipedia.org/wiki/Codeshare_agreement][codeshare]] to airline partners (or even pitches to prospective airlines: direct targets: regional airlines -> African airlines)
+        - start with simple types of codeshare (eg: free flow codeshare)
+        - from studies, checkout if can do more than just marketing, eg: build a component(s) (ideally independent) around the product
+  + how advantageous is it to expand the pool of providers ? (won't it threaten our position with 1A ?): sabre, travelport, others ?
     - check out the pros/cons of each: offers catalogue, retailing, travelling in group advantages
-  + is it advantageous to expand the product on top of providers ? (won't it threaten our position with 1A ?) ?
+  + how advantageous is it to expand the product on top of providers ? (won't it threaten our position with 1A ?) ?
     - for example, improving on travelport product of seat automatic allocation
     - google is enriching its position into the travel industry, can't it be worthwhile to plug into its service catalogue ?
-  + is it advantageous to expand the type of clients ? (won't it threaten our position with 1A ?):
+  + how advantageous is it to expand the type of clients ? (won't it threaten our position with 1A ?):
     - for example, can't we use our knowledge of the travel market to negociate products directly with airlines such as rwandair ?
-  + is it advantageous to expand our type of services ? (won't it threaten our position with 1A ?):
+  + how advantageous is it to expand our type of services ? (won't it threaten our position with 1A ?):
     - for example, can't we use our knowledge or those of our contacts/clients to change our position ? not just as a consumer only, but also as new products providers to our own suppliers: add hotels, car rental, places to visit to 1A catalogue for example
       + in other words, being a broker in both direction
       + what are our type of business:
         - intermediary in just one direction ? : 1A consumer, travelling client provider, or can expand to both direction
     - to goal being to be the "middleman" between our local African clients (hotels, touristic places, ), and GDSs
-- YTA-002 :: end-game extension (goal) is to make YTA as less dependent from GDSs as possible
+- YTA-001 :: prospect/extend to more (business) opportunities
+  + adapt product(s) to market outside of the one originally intended (Africa centred to more regions)
+- YTA-002 :: end-game extension (goal): make YTA as less dependent from GDSs as possible (remove intermediaries for more freedom/flexibility)
 - reminder :: update [[*what's our business position in the travelling market][section: "what's our business position in the travelling market"]], and when done: update planned destination section, and clear draft subsection
 * [DRAFT] Studies findings (various findings, draft version before it is validated and put in specs/documentation pages)
 [2024-08-07 Wed 21:40]j
@@ -213,6 +221,7 @@
     - Your Travel agency
     - YTA's a Travel Agency (recursive name as for "GNU")
     - Yawe Travel Agency
+    - Yearning Travel Agency
 ** advantages of having a TA
 [2024-07-06 Sat 01:54]
 ** advantages of using a TA (a "middle man", that can also be used as a selling marketing argument)
