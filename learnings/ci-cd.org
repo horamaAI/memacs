@@ -8,7 +8,7 @@
 ** Notes
 * containerization, docker, and kubernetes
 [2024-01-21 Sun 20:06]
-** Introduction, glossary and notes
+** Introduction and notes
 - why use containers ::
   + instead of one app per server -> many apps on one server
   + VMWare and hypervisor models technology (that allows for many apps to run on one server) are not solving all the issues, and not cheap :
@@ -24,8 +24,7 @@
     - can run on any machine, server, VM, etc.
   + cons ::
     - dependent on the host OS (docker on windows run windows apps, same for linux (still possible to run linux apps on docker windows))
-- docker images :: pre-packed application, has everything needed to run single application wrapped into a single bundle, eg: web server running static/dynamic content, database, etc.
-- workloads :: application running on kubernetes for example
+** Glossary
 - cloud-native microservices design :: instead of a monolith, split the application modules into several parts that can communicate
   + monolith/legacy app ::  everything the app does (web, authentication, search, etc.) is provided within a single binary (computer program)
     - cons :: an issue on a single feature requires taking down whole app, fix the module, recompile the whole app, deploy it, etc.; scaling is harder and needs scaling (almost, but quite) the whole app; etc.
@@ -36,17 +35,20 @@
     - cloud-native :: is like a set of capabilities, such as self-healing, auto-scaling, rolling updates, and more.
     - cloud-native doesn't apply only in the cloud, can do cloud-native capabilities on laptop/pc with docker desktop
     - advantages :: scalable, dynamic, loosely coupled via APIs for example, and more importantly, it can run anywhere with k8s
-- declarative approach ::
-  + describes an application in a configuration file, and use that file to deploy the application
-    - in other words, instead of deploying sets of apps and containers with loads of command line action, just list every step in a configuration file, give the file to the containerization platform, and let the platform do the hard work of deployment/management
-  + compose file :: generally the declarative approach is done using a yaml configuration file called a "compose file"
-- docker hub :: library of pre-existing docker images (need to download and run them in the docker host)
 - container runtime ::
   + also called 'container engine': software component that can run containers on a host operating system
   + sits at the heart of any container service such as Docker
   + are daemon (background) processes responsible for managing container creation tasks such as pulling images from repositories, resource and storage allocation, network creation, etc.
 - containerd :: container runtime originally developed by Docker
   + docker uses containerd as its runtime for creating containers from images. Essentially, it acts as an interface (API) that allows users to use containerd to perform low-level functionality. Simply put, when you run Docker commands in the terminal, Docker relays those commands to its low-level runtime (Containerd) that carries out all the necessary procedures.
+- declarative approach ::
+  + describes an application in a configuration file, and use that file to deploy the application
+    - in other words, instead of deploying sets of apps and containers with loads of command line action, just list every step in a configuration file, give the file to the containerization platform, and let the platform do the hard work of deployment/management
+  + compose file :: generally the declarative approach is done using a yaml configuration file called a "compose file"
+- docker hub :: library of pre-existing docker images (need to download and run them in the docker host)
+- docker images :: pre-packed application, has everything needed to run single application wrapped into a single bundle, eg: web server running static/dynamic content, database, etc.
+- Paas :: Platform as a service, complete development and deployment environment in the cloud, with resources that enable to deliver everything from simple cloud-based apps to sophisticated, cloud-enabled enterprise applications
+- workloads :: application running on kubernetes for example
 ** Docker
 [2024-01-21 Sun 20:51]
 *** Notes
