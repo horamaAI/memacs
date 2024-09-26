@@ -19,14 +19,24 @@
 ** Reference 0 (YTA000): Generic tasks, recurring tasks, all tasks that are repetitive, short-term tasks that don't need tracking
 [2024-08-20 Tue 20:26]
 - what is reference used for :: for misc, small tasks, updates, etc., everything that don't need tracking (*still need proper commit message and tags*, for references)
-** Phase 1 (0). MVP, architecture definition, first successful tests (unit, regression, non-reg)
-- YTA001 :: *1A and business centred*: testing the water of the business, make basic successful CRUD requests to 1A (all CRUD), but do not focus on specifics of the response
+** Phase 1 (0). MVP, architecture definition and design, first successful tests (unit, regression, non-reg)
+- YTA001 :: studies: *1A and business centred*: testing the water of the business, make basic successful CRUD requests to 1A (all CRUD), but do not focus on specifics of the response => trade-off MVP (simple product that generates whatever small benefit) and solid design (sustainable product, open for extensions, with reliable CI/CD, and good documentation for any stakeholder: a customer, or any other user)
   + clearly identify and define what's the target niche ::
     - what is the proposed product and its benefits (compared to existing)
     - who are the customers, their needs, their behaviour, etc. (supplier should be 1A in the beginning)
     - first rough measurement of the effort of building YTA
     - what does YTA costs (intermediaries such as consolidators, per transactions incurred fees, etc.)
     - how does it profit (direct fees, commissions, etc.)
+  + suppliers and intermediaries ::
+    - 1A of course as the main server/broker/intermediary
+    - need for travel agency's consolidators or hosts ?
+      + seems required for ticket validation and issuance (does 1A API act as a consolidator/host ?)
+      + checkout available options, their prices, support, sustainability, trustfulness, etc.
+        - when selecting don't forget taking into account the result of study on the target niche (eg: select consolidator more suited to the region: east Africa, etc.)
+  + what about settlements (settlement strategy phase 1) ::
+    - put in place a basic settlement policy, ideally with extension strategy in mind ::
+      + how to manage complaints:
+        - first should be explicitly express in a written message (automatic/forward?) on refunds/no-show/etc.
   + record cost and risk of a TA, for reporting and business presentations
   + paper work: (country specific) compliance and regulations on the sector
   + visit 1A API, be acquainted to its basic/main functional/technical flow
@@ -35,16 +45,33 @@
   + YTA basic build: very basic structure, architecture, test (automatic preferable)
   + run first CRUD requests successfully (in TEST environment)
   + at this step *no DB management is defined yet*, if need one, use light one for basic CRUD actions
-- YTA001 :: *YTA components centred*, define basic architectures, and technical tools (ci-cd, dotfiles, etc)
+- YTA001 :: *YTA components centred*, design basic architectures, and technical tools (ci-cd, dotfiles, etc)
   + define :
     - YTA components (and sub-components maybe): basic solid architecture tailored for modularity, maintenance, and monitoring
       + ADAP ::
         - RW ::
         - (really no FORM component yet this far)
       + (no OPTI yet this far, but since will)
+  + design and best practices ::
+    - software design and architecture ::
+      + service-oriented architecture (SOA), Event-driven architecture (EDA), Application programming interfaces (APIs), hybrids, etc.
+      + Domain-driven design (DDD), Hexagonal architecture, etc.
+    - clean code ::
+    - testing ::
+      + TDD (Test Driven Development), BDD (Behavior Driven Development), acceptance test–driven development (ATDD), etc.
+    - misc ::
+      + caching and lazy loading, to not frequently fetch data, and avoid ineffective operations
+  + open source and open data ::
+    - find one or more components (internal or existing) to *permanently* put as open-source
+      + preferably one(s) that the broadest public can contribute to (so (sub)components that are not too complex)
+      + component(s) that are generic enough to be plugged to different businesses/services/apps/etc.
+      + but still, ideally one(s) that do some heavy lifting
+    - open-data/source :: open data, source and content that can be freely used, modified, and shared by anyone for any purpose
+      + advantages: anyone can contribute => can be used for training and potential hire evaluation for example
   + tools ::
     - dotfiles
     - openAPI, openAPI state graphs ?
+    - state graphs
     - clean code compliance:
       + format (always standard, independently of platform: windows, mac, linux, etc.): clang format, editorconfig
       + indentation vs spaces
@@ -101,6 +128,8 @@
     - C++ state graphs
   + further technical refactoring on components:
     - 
+  + debt phase 1 :: (technical + functional) define ways of handling debt (design, tools, etc.)
+    - 
 - YTA005 :: *CI/CD oriented*, provide 1A improved "technical for functional" to client with platform stability, security, tools for analytics, surveillance, discussion, issues tracking, delivering, etc.
   + identify improvements for platform stability (not just technical, but also functional: smooth refunds, luggage tracking, etc.), to be used in phase 2 (YTA0x0)
   + put in place monitoring tools and their configurations
@@ -123,20 +152,22 @@
     - set security policies and ensure that the whole development pipeline is compliant: local environment, tests environments, quality assurance, CI/CD, microservices, Paas, business automation (eg: kogito), etc.
   + stress tests on passwords management
 - YTA030 :: preparation for phase 3, studies, exclusively functional, continuity of YTA010, studies on how to strengthen the existing and make the platform sustainable over time
-  + plan a storage format for registering customers' issues tickets (bugs, complaints, refunds, etc.):
-    - find system to avoid duplicates (or at least minimise them)
-    - required attributes:
-      + title, short but clear and succinct, not too generic to catch specificities, but simple and bare enough to understand the issue and apply regex to search/filter
-        - => limit on number of characters
-      + description, where can give more details
-      + number of occurrences
-      + level of impact/urgency/priority
-      + level of complexity: estimated effort (functionally/technically, or level of dependency)j
-    - expected benefits:
-      + fix issues by priority/urgency, occurrences, complexity, etc.
-      + functional/technical debt
-      + contribution to KPIs
-      + better product/features enhancement (fix what lacks/fails in YTA, or from suppliers)
+  + settlement strategy phase 2 ::
+    - plan a storage format for registering customers' issues tickets (bugs, complaints, refunds, etc.):
+      + find system to avoid duplicates (or at least minimise them)
+      + required attributes:
+        - title, short but clear and succinct, not too generic to catch specificities, but simple and bare enough to understand the issue and apply regex to search/filter
+          + => limit on number of characters
+        - description, where can give more details
+        - number of occurrences
+        - level of impact/urgency/priority
+        - level of complexity: estimated effort (functionally/technically, or level of dependency)j
+      + expected benefits:
+        - fix issues by priority/urgency, occurrences, complexity, etc.
+        - functional/technical debt (for debt management phase 2)
+        - contribution to KPIs
+        - better product/features enhancement (fix what lacks/fails in YTA, or from suppliers)
+    - improve settlements based on new tools put in place
   + how to further take care of prime customers
   + how to attract more customers, based on the potential of available products and the identified needs of the clients found during phase 1 (YTA003)
   + main original customers are those travelling from/to Africa, but can extend that definition to "African" travellers in general
@@ -185,6 +216,7 @@
           + OPTI: use each advantages of alliances as weighted variables in objective functions for each alliance => multi-objective problem to solve (pareto)
     - try to patch boarding pass issues when has connections and alliances' practices cannot fix it
   + FinOps
+  + debt phase 2 :: refine design and tools for debt management
 ** Phase 3 (000). maintenance, handovers, professionalisation and division of labour on every main speciality based on effort and knowledge
 [2024-08-17 Sat 17:42]
 - YTA100 ::
@@ -212,6 +244,7 @@
 - YTA-001 :: prospect/extend to more (business) opportunities
   + adapt product(s) to market outside of the one originally intended (Africa centred to more regions)
 - YTA-002 :: end-game extension (goal): make YTA as less dependent from GDSs as possible (remove intermediaries for more freedom/flexibility)
+  + direct link to IATA ? (checkout their services and requirements)
 - reminder :: update [[*what's our business position in the travelling market][section: "what's our business position in the travelling market"]], and when done: update planned destination section, and clear draft subsection
 * [DRAFT] Studies findings (various findings, draft version before it is validated and put in specs/documentation pages)
 [2024-08-07 Wed 21:40]j
