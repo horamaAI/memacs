@@ -1,7 +1,7 @@
 # -*- mode: org -*-
-#+title: Cloud Native Applications 
+#+title: Cloud Native Applications learning
 #+SETUPFILE: ~/set-up-files/basic-setups.org
-#+TAGS: Java
+#+TAGS: Java CNA cloud
 
 * Introduction and notes
 - why use containers ::
@@ -245,7 +245,7 @@
   + remove a stopped container :: docker rm <container_name>
 - running ::
   + run a container in the background :: docker run -d <image_name> // the -d is to detach it from the terminal
-    - run in attached to terminal mode :: docker container run -it --name <app_alias> alpine sh (-it for interactive; 'alpine' to base the container on the minimal Docker image based on Alpine Linux with a complete package index and only 5 MB in size; and 'sh' to run commands in the sh terminal as the container main process)
+    - run in attached to terminal mode :: docker container run -it --name <app_alias> alpine sh (-it for interactive: allocates a virtual terminal session within the container; 'alpine' to base the container on the minimal Docker image based on Alpine Linux with a complete package index and only 5 MB in size; and 'sh' to run commands in the sh terminal as the container main process)
   + run a container and publish the container’s port(s) to the host :: docker run -p <host_port>:<container_port> <image_name> // 'host_port' is the local running port, and 'container_port' is the port the app is listening on in the container: any traffic hitting on 'host_port' will be mapped and sent to the 'container_port'
 - open a shell inside a running container :: docker exec -it <container_name> sh
 - removing images ::
@@ -261,9 +261,41 @@
 * Podman
 [2024-08-15 Thu 12:55]
 ** Notes
-- replacement to docker, with the main difference that it runs daemonless: thus without root rights, more secure, flexible, loosely coupled
-- mainly based on the kubernetes pods strategy: images in clusters, clusters in pods
+[2024-09-28 Sat 22:31]
+- podman (pod manager)) :: open source tool for developing, managing, and running OCI (Open Container Initiative) containers, and containers images
+  + => podman is an OCI management tool to find, build, run, share and deploy applications using OCI containers and container images
+- it manages the entire container ecosystem using the ==libpod== library
+- enhancement to docker, with the main difference that it runs daemonless, and thus is more secure, flexible, and loosely coupled
+  + daemonless :: podman doesn't rely on processes with root privileges to run containers, thus avoiding the risk of third-parties to infiltrate the host system and gain control of the containers
+    - users can create, run, and manage containers as needed, without requiring processes with admin privileges, and interact with ==runc==
+- podman and pods ::
+  + podman is mainly based on kubernetes pods strategy: ==images in clusters, clusters in pods==
+  + Pods :: groups of one or more containers packaged together in as single deployable unit (more details in [[*Pods][Kubernets' Pods]])
+    - with podman can create multi-containers pods locally, and export them as a kubernetes manifest
   + multiple containers join together within a common namespaces
+- podman desktop :: open-source GUI for podman containers and kubernetes management
+** podman toolsets
+*** commands
+- notes :: most of podman commands are similar to docker's, eg: ~podman run -it [image_name]~, same as for docker (~docker container run -it --name <app_alias> alpine sh~) (-it for interactive: allocates a virtual terminal session within the container; 'alpine' to base the container on the minimal Docker image based on Alpine Linux with a complete package index and only 5 MB in size; and 'sh' to run commands in the sh terminal as the container main process)
+- ~podman info~ :: print podman's system information: storage stats, configured container registries, etc.
+- ~podman machine init~ (and ~podman machine start~) :: since containers are linux based, commands needed for non linux hosts (windows, mac) to start their podman's virtual machine
+  + default name of the podman's virtual machine: ==podman-machine-default== (the one run when no specific machine is selected)
+  + no concurrent machine running at the same time, when a VM is already running, podman machine start returns an error
+- ~podman search [image-name]~ :: search/find list of registries with image matching the one given as input
+  + can also use prefix to search specific library, eg: ~podman search docker.io/library/image-name~
+  + by default all ==unqualified-search-registries== are used if no specific given
+- ~podman images~ :: list all local images
+- ~podman pull [image-name]~ :: pull image
+- ~podman run -it [image-name]~ :: run interactively a new container image (no sudo required)
+  + ~podman run -it --rm [image-name]~ :: same as above, but removes container after use (best practice to free filesystem)
+- ~podman ps~, or ~podman ps -a~ (--all) :: lists local running containers (--all also includes non-running containers)
+- ~podman history image:tag~ :: display infos about how an image was built
+*** Podman container registry configuration
+[2024-09-28 Sat 22:58]
+- used to configure registry/library to use for images storage, target registry when pushing/pulling a container's image
+- default configuration file: ~/etc/containers/registries.conf~
+- custom registries configuration file, eg: ~$HOME/.config/containers/registries.conf~
+  1. update your custom 
 * Kubernetes
 [2024-01-21 Sun 20:52]
 ** Notes
@@ -285,7 +317,7 @@
   + k8s cluster is mainly made of ::
     - 1 or more control plane nodes (brains of cluster, the /managers/: do tasks scheduling, monitoring, responding to events, etc.),
     - and a bunch of workers
-  + kubernetes runs workloads by placing containers into 'Pods' (groups of one or more containers packaged together in as single deployable unit) to run on nodes
+  + kubernetes runs workloads by placing containers into =='Pods'== (groups of one or more containers packaged together in as single deployable unit) to run on nodes
     - a 'node' may be a virtual or physical machine, depending on the cluster
     - each node is managed by the control plane and contains the services necessary to run Pods
     - a k8s 'Control Plane' is the container orchestration layer that exposes the API and interfaces to define, deploy, and manage the lifecycle of containers
@@ -813,6 +845,7 @@
 * Acronyms
 [2024-09-28 Sat 12:11]
 - CNA :: Cloud Native Applications
+- OCI :: Open Container Initiative, an open governance structure aiming at creating open industry standards around container formats and runtime
 - Paas :: Platform as a service, complete development and deployment environment in the cloud, with resources that enable to deliver everything from simple cloud-based apps to sophisticated, cloud-enabled enterprise applications
 * Glossary
 - cloud-native applications :: built as a set of microservices that run in /Open Container Initiative/ compliant containers
@@ -831,6 +864,11 @@
   + describes an application in a configuration file, and use that file to deploy the application
     - in other words, instead of deploying sets of apps and containers with loads of command line action, just list every step in a configuration file, give the file to the containerization platform, and let the platform do the hard work of deployment/management
   + compose file :: generally the declarative approach is done using a yaml configuration file called a "compose file"
-- docker hub :: library of pre-existing docker images (need to download and run them in the docker host)
+- docker hub :: container registry, a library of pre-existing docker images that can then be downloaded and run/used on a docker/podman host, other alternatives ::
+  + github container registry
+  + redhat container registry (quay.io)
+  + own private/public container registry
+  + etc.
 - docker images :: pre-packed application, has everything needed to run single application wrapped into a single bundle, eg: web server running static/dynamic content, database, etc.
+- runc :: CLI for spawning and running containers according to OCI specifications
 - workloads :: any application running on kubernetes for example
