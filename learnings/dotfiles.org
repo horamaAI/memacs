@@ -265,6 +265,10 @@
       + checkout how to add more functionalities to it:
         - https://jolicode.com/blog/organiser-son-terminal-avec-des-workspaces
         - https://github.com/niflostancu/tmux-workspaces
+    - [ ] zplugin ? : as a replacement for zplug (https://gist.github.com/laggardkernel/4a4c4986ccdcaf47b91e8227f9868ded)
+- questions ::
+  + target structure ::
+    - should be different than the dotfiles structure ? => how will updates work when wants to change something and push it to dotfiles repo ?
 - dotfiles structure :: source of things to do
   + install.sh ::
     - main entry point for dotfiles installation
@@ -398,7 +402,11 @@
     - "custom" ::
       + alias for "common", but with different $USER value (is it even possible ? $USER is set at installation right ?)
     - can create others whenever needed
-- questions ::
-  + target structure ::
-    - should be different than the dotfiles structure ? => how will updates work when wants to change something and push it to dotfiles repo ?
+- testing ::
+  + required ::
+    - podman
+    - all steps can be found in and run from folder ~configs/common/containers~
+  + steps ::
+    1. pull debian sandbox: ~podman pull docker.io/library/debian:bookworm-slim~
+    2. run debian container: ~podman run -it debian:bookworm-slim~
 
