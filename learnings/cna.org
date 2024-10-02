@@ -286,8 +286,16 @@
   + by default all ==unqualified-search-registries== are used if no specific given
 - ~podman images~ :: list all local images
 - ~podman pull [image-name]~ :: pull image
-- ~podman run -it [image-name]~ :: run interactively a new container image (no sudo required)
-  + ~podman run -it --rm [image-name]~ :: same as above, but removes container after use (best practice to free filesystem)
+- ~podman run~ :: run a process in a new container based on the given container image
+  + format :: ~podman run [options] image [command [arg ...]]~, some options:
+    - ~--detach (-d)~ : run the container in the background and prints the new container ID
+    - ~--attach (-a)~ : run in foreground mode
+    - ~--name (-n)~ : assign name to the container. If no name is assigned with --name, then it generates a random string name. (works for both background and foreground)
+    - ~--rm~ : automatically remove the container when exiting (the container will not be removed when it could not be created or started successfully)
+    - ~--tty (-t)~ : allocate and attach the pseudo-terminal to the standard input of the container
+    - ~--interactive (-i)~ : for interactive processes, use ~-i~ and ~-t~ together to allocate a terminal for the container process. (-i -t is often written as -it)
+  + eg: ~podman run -it [image-name]~ :: run interactively a new container image (by default no sudo required since rootless)
+    - ~podman run -it --rm [image-name]~ :: same as above, but removes container after use (best practice to free filesystem)
 - ~podman ps~, or ~podman ps -a~ (--all) :: lists local running containers (--all also includes non-running containers)
 - ~podman history image:tag~ :: display infos about how an image was built
 *** Podman container registry configuration
