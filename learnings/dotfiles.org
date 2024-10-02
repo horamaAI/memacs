@@ -408,5 +408,15 @@
     - all steps can be found in and run from folder ~configs/common/containers~
   + steps ::
     1. pull debian sandbox: ~podman pull docker.io/library/debian:bookworm-slim~
-    2. run debian container: ~podman run -it debian:bookworm-slim~
+    2. build a Containerfile to configure the image build process:
+       #+begin_example
+       FROM debian:bookworm-slim
+       ARG CONTAINER_USER=sandboxuser
+       # Set the working directory in the container
+       WORKDIR /home/$CONTAINER_USER
+       RUN addgroup -S $CONTAINER_USER && adduser -S $CONTAINER_USER -G $CONTAINER_USER
+       USER $CONTAINER_USER
+       CMD ["whoami"]
+       #+end_example
+    3. run debian container: ~podman run -it debian:bookworm-slim~
 

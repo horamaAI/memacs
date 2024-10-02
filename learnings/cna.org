@@ -44,9 +44,9 @@
 - "containerization" :: buzzword to refer to an app running in a container
 - container image :: a lightweight, standalone, executable package of software that includes everything needed to run an application: code, runtime, system tools, system libraries and settings
 - images, containers, volumes, or custom configuration files on the host are usually installed to ==/var/lib/docker== and ==/var/lib/containerd==
-** Dockerfile
+** Dockerfile (Containerfile)
 [2024-02-01 Thu 17:15]
-- Dockerfile :: contains all the commands a user could call on the command line to assemble an image (set of build instructions for the app and its dependencies)
+- Dockerfile :: contains commands a user could call on the command line to assemble an image (set of build instructions for the app and its dependencies)
 - Docker swarm :: lightweight container orchestrator (compared to kubernetes which is more complete, but also more complex)
 - some instructions ::
   + ~FROM~ :: initializes a new build stage, and sets the Base Image for subsequent instructions. eg: ~FROM node:current-alpine~: build ongoing image by first grabbing image 'node:current-alpine'
@@ -286,6 +286,10 @@
   + by default all ==unqualified-search-registries== are used if no specific given
 - ~podman images~ :: list all local images
 - ~podman pull [image-name]~ :: pull image
+- ~podman build~ :: build a container image from a Containerfile
+  + format :: ~podman build [OPTIONS] <context> [--tag <image_name>:<tag>]~
+    - ~<context>~ : by default, the current directory is the context directory, but can specify other than current
+    - ~[--tag]~ : optional, but can add tag specific versions for better management
 - ~podman run~ :: run a process in a new container based on the given container image
   + format :: ~podman run [options] image [command [arg ...]]~, some options:
     - ~--detach (-d)~ : run the container in the background and prints the new container ID
@@ -298,6 +302,13 @@
     - ~podman run -it --rm [image-name]~ :: same as above, but removes container after use (best practice to free filesystem)
 - ~podman ps~, or ~podman ps -a~ (--all) :: lists local running containers (--all also includes non-running containers)
 - ~podman history image:tag~ :: display infos about how an image was built
+- cleanups ::
+  + clean containers :: ~podman container cleanup [options] container [container …]~: clean up the container’s network and mountpoints
+    - options ::
+      + -a, --all :: all containers
+      + --rm :: after cleanup, remove the container entirely (default: false)
+      + --rmi :: after cleanup, remove the container an image entirely (default: false)
+    - eg: ~podman container cleanup --rm --all~ :: clean up and remove all containers
 *** Podman container registry configuration
 [2024-09-28 Sat 22:58]
 - used to configure registry/library to use for images storage, target registry when pushing/pulling a container's image
