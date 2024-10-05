@@ -298,6 +298,45 @@
         - this allows rootless Podman to be used with sudo and su, but only on [[https://en.wikipedia.org/wiki/Cgroups#Versions][cgroups v1]] systems. Though, it will be necessary to use the ==--login== argument to sudo and su to ensure environment variables are set correctly. On systems using cgroups v2, Podman also requires other aspects of the login session (specifically, access to the user's dbus) to set up cgroups and resource limits for rootless containers
         - additionally, ==/run/user/$UID== removes all user content after a user logs out; Podman places the user's login credentials into registries under the temporary directory, so with ==/run/user/$UID== the credentials will not be retained after the user logs out, improving security
     - important note :: even if one can use rootless Podman with sudo or su on a system, it is not recommended. As cgroups v2 begins to move into the mainstream, Podman will require a login session to be present to run rootless containers, something that cannot be done with sudo and su. A work-around for this is using a method that does create a login session (eg: ssh or ==machinectl login== should work) or enabling a persistent user session for the user in question (==loginctl enable-linger==)
+  + security :: with root containers might be possible to access files into the host's from the containers
+- default podman user ::
+  + by default, rootless Podman containers map the user's user ID (UID) into the container as root of the user namespace
+    - illustration:
+      + currently system UID: ~$id -u~ // eg: 3267
+      + launch uib9 container (Red Hat Universal Base Image 9) and sleep it for 100secs: ~$podman run -d --rm ubi9 sleep 100~ // hashblabla
+      + use ~podman top~ to show the USER within the container and the host user: ~$podman top -l user huser~ // USER | HUSER: root | 3267
+        + the process system's UID (3267) is running inside the container as root
+  + user namespace modes :: possible to change the podman's default UID (host UID as root) with ==-userns==
+    - ==–userns== options ::
+      + Key: "" :: (Unset)
+        - host user: $UID
+        - container user: 0 (default user account mapped to root user in container, default config)
+      + ==keep-id== ::
+        - host user: $UID
+        - container user: $UID (map user account to the same UID within the container)
+        - maps the user as itself into the container: ~$podman top -l user huser~ // USER | HUSER: totouser | totouser
+        - side effects: podman adds an entry for the user into the containers ==/etc/passwd== file:
+          + with keep-id: ~$podman run –rm --userns=keep-id ubi9 grep $UID /etc/passwd~ // dwalsh:*:3267:3267:Daniel Walsh:/:/bin/sh
+          + with "": ~$podman run –rm --userns="" ubi9 grep $UID /etc/passwd~ // [nothing-returned]
+      + ==auto== ::
+        - host user: $UID
+        - container user: nil (host user UID not mapped into the container, a unique UID is selected from the unused UIDs for the root user inside of the container)
+        - selects a range of UIDs to run a container automatically but does NOT add host UID to the container
+          + running with auto might fail: ~$podman run -d --rm --userns=auto ubi9 sleep 100~ // Error: creating container storage: could not find enough available IDs
+          + this is because Podman in auto mode is looking for 1024 or more UIDs that are not currently used within the user's user namespace, but when containers are already run on the system, and Podman defaults to using 65,000 UIDs, all of the UIDs are used
+          + can destroy all of containers that use the entire UID mappings: ~$podman rm --all~, and redo with auto: ~$podman run -d --rm --userns=auto ubi9 sleep 100~, then should work: ~$ podman top -l user huser~ // USER | HUSER: root | 100000
+            - notice: container's root user UID is mapped to content of host's ==/etc/subuid==, eg: on host: ~grep dwalsh /etc/subuid~ // dwalsh:100000:65536 (subuids starts with UID 10000)
+        - by default, ==–userns=auto== only uses 1024 UIDs within the user namespace. Podman is smart enough to examine the image, figure out the minimum UIDs needed to run the image, and automatically increase the number of UIDs, if necessary
+          + demonstration: show range of UIDs mapped within two consecutive containers created with auto mode:
+            1. ~$podman run --userns=auto ubi9 cat /proc/self/uid_map~ // 0 | 1 | 1024
+            2. ~$podman run --userns=auto ubi9 cat /proc/self/uid_map~ // 0 | 1025 | 1024
+          + since auto mode does not map the user's UID into the container, it protects all files in the user's home directory from being accessed from within the container. Auto mode also runs each container with separate UID maps, guaranteeing that no UIDs are shared. Auto mode works much better in rootful mode since there are many more UIDs to share than in rootless mode
+      + ==nomap== ::
+        - host user: $UID
+        - container user: nil (host User UID not mapped into the container, first UID in ==/etc/subuid== range is mapped as the root user inside the container)
+        - like auto mode, does not map the user's UID into the container
+          + root inside of the container is mapped to the first UID in the host's subuid range. Since the container does not map the host's UID into the user namespace, it does not have access to files owned by host's UID except by world access, providing additional security
+      + differences between the modes :: 
 ** podman toolsets
 *** commands
 - notes :: most of podman commands are similar to docker's, eg: ~podman run -it [image_name]~, same as for docker (~docker container run -it --name <app_alias> alpine sh~) (-it for interactive: allocates a virtual terminal session within the container; 'alpine' to base the container on the minimal Docker image based on Alpine Linux with a complete package index and only 5 MB in size; and 'sh' to run commands in the sh terminal as the container main process)
@@ -890,6 +929,7 @@
 - CNA :: Cloud Native Applications
 - OCI :: Open Container Initiative, an open governance structure aiming at creating open industry standards around container formats and runtime
 - Paas :: Platform as a service, complete development and deployment environment in the cloud, with resources that enable to deliver everything from simple cloud-based apps to sophisticated, cloud-enabled enterprise applications
+- UID :: User ID
 * Glossary
 - cloud-native applications :: built as a set of microservices that run in /Open Container Initiative/ compliant containers
   + cloud-native :: is like a set of capabilities, such as self-healing, auto-scaling, rolling updates, and more.
