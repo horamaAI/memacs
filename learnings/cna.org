@@ -235,7 +235,7 @@
   + list currently running containers :: docker ps 
   + list local images :: docker images
 - building image :: build an image (OCI file) from a Dockerfile and a context (the set of files and dependencies located in the specified PATH or URL)
-  + build :: docker build -t <image_name>
+  + build :: docker build -t <image_name> <path-to-containerfile-location-folder>
   + build without the cache :: docker build -t <image_name> . –no-cache
   + build from a docker registry :: ~docker image build -t <registry-username>/<name-of-repository>:<name-of-the-image> .~ // the dot at the end is to specify the files path from which to build the docker image, '-t' is for tag, same as '--tag'
   + build with a different OS architecture (to be able to run it on a different OS architecture) (and push it to a registry) :: ~docker buildx build --platform linux/arm64/v8,linux/amd64 --push --tag <registry-username>/<name-of-repository>:<name-of-the-image> .~
@@ -254,6 +254,8 @@
 - options ::
   + -d :: detached mode
   + -it :: interactive mode
+    - -i :: launch the container in interactive mode
+    - -t :: allocate a pseudo-tty (do not be confused with --tag, the one to chose depends on the running command, eg: build -t <image>)
   + --name :: to give the image an alias
 ** Docker Swarm
 [2024-02-02 Fri 09:11]
