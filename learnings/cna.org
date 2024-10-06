@@ -306,7 +306,7 @@
       + launch uib9 container (Red Hat Universal Base Image 9) and sleep it for 100secs: ~$podman run -d --rm ubi9 sleep 100~ // hashblabla
       + use ~podman top~ to show the USER within the container and the host user: ~$podman top -l user huser~ // USER | HUSER: root | 3267
         + the process system's UID (3267) is running inside the container as root
-  + user namespace modes :: possible to change the podman's default UID (host UID as root) with ==-userns==
+  + user namespace modes :: possible to change the podman's default UID (host UID as root) with ==-userns== (user namespace)
     - ==–userns== options ::
       + Key: "" :: (Unset)
         - host user: $UID
@@ -326,6 +326,11 @@
           + this is because Podman in auto mode is looking for 1024 or more UIDs that are not currently used within the user's user namespace, but when containers are already run on the system, and Podman defaults to using 65,000 UIDs, all of the UIDs are used
           + can destroy all of containers that use the entire UID mappings: ~$podman rm --all~, and redo with auto: ~$podman run -d --rm --userns=auto ubi9 sleep 100~, then should work: ~$ podman top -l user huser~ // USER | HUSER: root | 100000
             - notice: container's root user UID is mapped to content of host's ==/etc/subuid==, eg: on host: ~grep dwalsh /etc/subuid~ // dwalsh:100000:65536 (subuids starts with UID 10000)
+            - podman's default process when dealing with UIDs:
+              + when Podman pulls down an image, it first creates and enters a user namespace. This user namespace usually maps the user's UID to root (UID=0) within the user namespace
+              + it then looks into ==/etc/subuid== for the user and uses the UIDs listed there to populate the rest of UIDs available within the user namespace
+              + it does the same for *groups* via ==/etc/subgid==. If there are no entries in ==/etc/subuid== and ==/etc/subgid==, then the user namespace consists of just the user's UID mapped as root
+              + once the user namespace is set up, Podman extracts the tar content of the image (the image pulled from the registry). If the image has files owned by users other then UID=0, then Podman extracts and attempts to ==chown== the content to the defined user and group. If the user and group are not defined within the user namespace, then the chown fails, and Podman fails
         - by default, ==–userns=auto== only uses 1024 UIDs within the user namespace. Podman is smart enough to examine the image, figure out the minimum UIDs needed to run the image, and automatically increase the number of UIDs, if necessary
           + demonstration: show range of UIDs mapped within two consecutive containers created with auto mode:
             1. ~$podman run --userns=auto ubi9 cat /proc/self/uid_map~ // 0 | 1 | 1024
@@ -336,7 +341,79 @@
         - container user: nil (host User UID not mapped into the container, first UID in ==/etc/subuid== range is mapped as the root user inside the container)
         - like auto mode, does not map the user's UID into the container
           + root inside of the container is mapped to the first UID in the host's subuid range. Since the container does not map the host's UID into the user namespace, it does not have access to files owned by host's UID except by world access, providing additional security
-      + differences between the modes :: 
+      + differences between modes ::
+        - eg: show what a volume mapped into a container looks like: create a directory and a file in home, and mount them into a container, ownership should change depending on the mode:
+          + all results :
+            #+begin_example
+            $ mkdir test
+            $ touch test/foobar
+            $ podman rm --all
+            0a3246bd2b11186830d82b9073510c8e1df46348ba3c743f02aa244d9fbc9c10
+            $ podman run -v ./test:/test:Z --rm –userns=”” ubi9 ls -l /test
+            total 0 -rw-r--r--. 1 root root 0 Dec 29 12:20 foobar
+            $ podman run --userns=keep-id -v ./test:/test:Z --rm ubi9 ls -l /test
+            total 0 -rw-r--r--. 1 dwalsh dwalsh 0 Dec 29 12:20 foobar
+            $ podman run --userns=auto -v ./test:/test:Z --rm ubi9 ls -l /test
+            total 0 -rw-r--r--. 1 nobody nobody 0 Dec 29 12:20 foobar
+            $ podman run --userns=nomap -v ./test:/test:Z --rm ubi9 ls -l /test
+            total 0 -rw-r--r--. 1 nobody nobody 0 Dec 29 12:20 foobar
+            $ ls -l test
+            -rw-r--r--. 1 dwalsh dwalsh 0 Dec 29 07:20 foobar
+            #+end_example
+          + normal mode: the file within the user namespace looks like it is owned by root since system's UID is mapped to root within the user namespace
+          + keep-id: file shows that host system's UID owns it since host UID inside and outside of the user namespace are the same
+          + auto and nomap: file looks like it is owned by user 'nobody' since host UID, 3267, is not mapped inside the user namespace
+            - modifying files in these modes will return permission denied, eg: ~$ podman run --userns=nomap -v ./test:/test:Z --rm ubi9 touch /test/foobar~ // "touch: cannot touch '/test/foobar': Permission denied"
+            - whereas it will work for the others, eg: ~podman run --userns=keep-id -v ./test:/test:Z --rm ubi9 touch /test/foobar~ // ok
+            - to allow the container's user to modify the files, need to add the ==U== option to the volume, which causes podman to change the owner (==chown==) of the files on disk to match the default user inside of the container (eg: UID=100000, the root of the container). While this works, these files can become difficult to manage
+            - ==auto== and ==nomap== modes provide additional security, but it can be difficult to run in these modes: less abilities, less flexibility
+              #+begin_example
+              $ podman run --userns=nomap -v ./test:/test:Z,U --rm ubi9 touch /test/foobar
+              $ ls -l test/
+              total 0
+              -rw-r--r--. 1 100000 100000 0 Dec 29 08:38 foobar
+              #+end_example
+    - override default user namespace mode ::
+      + possible to change the system's default user namespace mode by creating or modifying ==~/.config/containers/containers.conf==, eg:
+        #+begin_example
+        $ cat ~/.config/containers/containers.conf
+        [containers]
+        userns = "keep-id"
+        #+end_example
+      + then when running a container podman will automatically be in keep-id mode:
+        - ~$ podman run -d --rm ubi9 sleep 100~ // prints the container's ID
+        - ~$ podman top -l user huser~ // USER | HUSER : dwalsh | dwalsh
+- investigating UIDs ::
+  + notes ::
+    - rootless and rootful podman each support running with multiple users, and both by default run the initial process as the root of the user namespace they are launched in
+    - when running rootless containers, it launches the first process as the root of the user namespace being used
+      + eg: host UID: 3267
+        #+begin_example
+        $ podman run fedora cat /proc/self/uid_map
+        0    3267      1
+        1    100000    65536
+        #+end_example
+      + user namespace mapping is mapping UID 0 (root) to 3267 (host UID), for a range of 1 UIDs
+      + same with top within the container:
+        #+begin_example
+        $ podman run -d fedora sleep 100
+        41ad82a732526673299d6785105e1b4a0ef4397ed7ceb8b13b9218e2f3a77003
+        $ podman top -l user huser
+        USER HUSER
+        root 3267
+        #+end_example
+      + user namespace capabilities :: even in rootless containers, the container's root user has already lot of "user namespace capabilities"
+        - capabilities that are a subsection of the power of root over the user namespace only. They are not the same as the capabilities one get as root (not container's root): they have full control over the namespaces mapped into the container, but no power on other parts of the operating system
+        - eg:
+          #+begin_example
+          $podman run --rm -d debian:bookworm-slim sleep 30
+          $podman top -l capeff
+          EFFECTIVE CAPS
+          CHOWN,DAC_OVERRIDE,FOWNER,FSETID,KILL,NET_BIND_SERVICE,SETFCAP,SETGID,SETPCAP,SETUID,SYS_CHROOT
+          #+end_example
+        - some caps:
+          + CAP_SETUID (SETUID): allows root process to change its UID to any other UID inside the container
+            - root process can then change the process UID to any UID from 100000 to 165535, as well as back to 3267, but is not allowed to setuid to uid (0) or any other UID on the system
 ** podman toolsets
 *** commands
 - notes :: most of podman commands are similar to docker's, eg: ~podman run -it [image_name]~, same as for docker (~docker container run -it --name <app_alias> alpine sh~) (-it for interactive: allocates a virtual terminal session within the container; 'alpine' to base the container on the minimal Docker image based on Alpine Linux with a complete package index and only 5 MB in size; and 'sh' to run commands in the sh terminal as the container main process)
@@ -364,6 +441,8 @@
   + eg: ~podman run -it [image-name]~ :: run interactively a new container image (by default no sudo required since rootless)
     - ~podman run -it --rm [image-name]~ :: same as above, but removes container after use (best practice to free filesystem)
 - ~podman ps~, or ~podman ps -a~ (--all) :: lists local running containers (--all also includes non-running containers)
+- ~podman top~ :: display the running processes of a container, by default podman-top prints data similar to ~ps -ef~
+  + eg: ~podman top -l capeff~ : display running processes' effective caps (capabilities)
 - ~podman history image:tag~ :: display infos about how an image was built
 - cleanups ::
   + clean containers :: ~podman container cleanup [options] container [container …]~: clean up the container’s network and mountpoints
@@ -520,7 +599,7 @@
       + labels ::
         - everything in k8s gets labeled
         - multi labeling possible, eg for a back-end labels: ==be, Prod, 1.3 (the version)==
-        - if a pod is labeled the same as other managed pods, and this latter pods are serviced by a service object, then the service will also load balance traffic to that mislabeled pod as well. Same if the service is directing traffic based on partial, then pods that match this particular partial label will also be load balanced.  => careful on the labeling and service routing
+        - if a pod is labeled the same as other managed pods, and this latter pods are serviced by a service object, then the service will also load balance traffic to that mislabelled pod as well. Same if the service is directing traffic based on partial, then pods that match this particular partial label will also be load balanced.  => careful on the labeling and service routing
           + on the pro side, restricting traffic on specific labels is easy, just restrict the label on the service routing, eg: remove older versions of a component by specifying the routing in the service to newer versions. They will still exists, but they won't get any traffic 
     - services only send traffic to healthy pods, not healthy pods are dropped from the services' list, and they won't get any traffic
     - services can be used to configure session affinity, can be configured to send traffic to endpoints outside of the cluster, etc.
