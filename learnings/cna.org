@@ -425,6 +425,7 @@
   + can also use prefix to search specific library, eg: ~podman search docker.io/library/image-name~
   + by default all ==unqualified-search-registries== are used if no specific given
 - ~podman images~ :: list all local images
+- ~podman image rm [options] image […]~ :: remove image
 - ~podman pull [image-name]~ :: pull image
 - ~podman build~ :: build a container image from a Containerfile
   + format :: ~podman build [OPTIONS] <context> [--tag <image_name>:<tag>]~
