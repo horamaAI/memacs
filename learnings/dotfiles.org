@@ -419,4 +419,10 @@
        CMD ["whoami"]
        #+end_example
     3. run debian container: ~podman run -it debian:bookworm-slim~
+       - issues:
+         + podman containers are rootless so by default there is no 'sudo' allowed
+         + default user is "root", that can only change the state of the container when run as rootful: ~sudo podman run~
+         + fixes:
+           - still use 'root' as user:
+             + => no environment variables set, eg: "$user"
 
