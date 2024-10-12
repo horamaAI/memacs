@@ -269,6 +269,29 @@
 - questions ::
   + target structure ::
     - should be different than the dotfiles structure ? => how will updates work when wants to change something and push it to dotfiles repo ?
+- issues :: (while working on dotfiles)
+  + testing dotfiles in an isolated (containerised) environment:
+    - podman:
+      + podman is rootless (mainly):
+        - by default, not able to use sudo (from within the container)
+        - to be able to install packages for example, need to run rootful (from host)
+        - no user environment predefined (eg: $USER)
+      + work around: (need for configurations to be added into a Containerfile ?)
+        - run as rootful from host: ~sudo podman run~
+        - manually set $USER since needed for $TARGET_FOLDER
+        - silence out (comment) keep-alive checks for sudo ~if sudo -v; then~
+        - cancel out "sudo": fortunately all dotfiles commands to run go through function ==dotfiles/configs/basic/bin/functions/utils.sh:execute_command==, so can filter out "sudo":
+          #+begin_example
+          if [[ -n "$command_to_run" ]]; then
+            eval "$command_to_run"
+            if [[ "$command_to_run" == *"sudo"* ]]; then
+              thecmd=${command_to_run: 5}
+              echo "the command to run: $thecmd"
+              eval "$thecmd"
+            fi
+            #eval "$command_to_run"
+          fi
+          #+end_example
 - dotfiles structure :: source of things to do
   + install.sh ::
     - main entry point for dotfiles installation
