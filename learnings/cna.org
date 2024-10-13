@@ -300,6 +300,8 @@
     - important note :: even if one can use rootless Podman with sudo or su on a system, it is not recommended. As cgroups v2 begins to move into the mainstream, Podman will require a login session to be present to run rootless containers, something that cannot be done with sudo and su. A work-around for this is using a method that does create a login session (eg: ssh or ==machinectl login== should work) or enabling a persistent user session for the user in question (==loginctl enable-linger==)
   + security :: with root containers might be possible to access files into the host's from the containers
 - default podman user ::
+  + sources ::
+    - https://www.redhat.com/sysadmin/rootless-podman-user-namespace-modes
   + by default, rootless Podman containers map the user's user ID (UID) into the container as root of the user namespace
     - illustration:
       + currently system UID: ~$id -u~ // eg: 3267
@@ -325,7 +327,7 @@
           + running with auto might fail: ~$podman run -d --rm --userns=auto ubi9 sleep 100~ // Error: creating container storage: could not find enough available IDs
           + this is because Podman in auto mode is looking for 1024 or more UIDs that are not currently used within the user's user namespace, but when containers are already run on the system, and Podman defaults to using 65,000 UIDs, all of the UIDs are used
           + can destroy all of containers that use the entire UID mappings: ~$podman rm --all~, and redo with auto: ~$podman run -d --rm --userns=auto ubi9 sleep 100~, then should work: ~$ podman top -l user huser~ // USER | HUSER: root | 100000
-            - notice: container's root user UID is mapped to content of host's ==/etc/subuid==, eg: on host: ~grep dwalsh /etc/subuid~ // dwalsh:100000:65536 (subuids starts with UID 10000)
+            - notice: container's root user UID is mapped to content of host's ==/etc/subuid==, eg: on host: ~grep dwalsh /etc/subuid~ // dwalsh:100000:65536 (subuids starts with UID 10000, and provides 65536 UIDs)
             - podman's default process when dealing with UIDs:
               + when Podman pulls down an image, it first creates and enters a user namespace. This user namespace usually maps the user's UID to root (UID=0) within the user namespace
               + it then looks into ==/etc/subuid== for the user and uses the UIDs listed there to populate the rest of UIDs available within the user namespace
@@ -384,17 +386,19 @@
         - ~$ podman run -d --rm ubi9 sleep 100~ // prints the container's ID
         - ~$ podman top -l user huser~ // USER | HUSER : dwalsh | dwalsh
 - investigating UIDs ::
+  + sources ::
+    - https://blog.christophersmart.com/2021/01/26/user-ids-and-rootless-containers-with-podman/
   + notes ::
     - rootless and rootful podman each support running with multiple users, and both by default run the initial process as the root of the user namespace they are launched in
     - when running rootless containers, it launches the first process as the root of the user namespace being used
-      + eg: host UID: 3267
+      + eg: the host UID being: 3267
         #+begin_example
         $ podman run fedora cat /proc/self/uid_map
         0    3267      1
         1    100000    65536
         #+end_example
-      + user namespace mapping is mapping UID 0 (root) to 3267 (host UID), for a range of 1 UIDs
-      + same with top within the container:
+      + the user namespace mapping is mapping UID 0 (root) to 3267 (host UID), for a range of 1 UIDs
+      + same result can be seen with podman top on the container:
         #+begin_example
         $ podman run -d fedora sleep 100
         41ad82a732526673299d6785105e1b4a0ef4397ed7ceb8b13b9218e2f3a77003
@@ -402,18 +406,77 @@
         USER HUSER
         root 3267
         #+end_example
-      + user namespace capabilities :: even in rootless containers, the container's root user has already lot of "user namespace capabilities"
-        - capabilities that are a subsection of the power of root over the user namespace only. They are not the same as the capabilities one get as root (not container's root): they have full control over the namespaces mapped into the container, but no power on other parts of the operating system
-        - eg:
+    - user namespace capabilities :: even in rootless containers, the container's root user has already lot of "user namespace capabilities"
+      + capabilities that are a subsection of the power of root over the user namespace only. They are not the same as the capabilities one get as root (not container's root): they have full control over the namespaces mapped into the container, but no power on other parts of the operating system
+      + eg:
+        #+begin_example
+        $podman run --rm -d debian:bookworm-slim sleep 30
+        $podman top -l capeff
+        EFFECTIVE CAPS
+        CHOWN,DAC_OVERRIDE,FOWNER,FSETID,KILL,NET_BIND_SERVICE,SETFCAP,SETGID,SETPCAP,SETUID,SYS_CHROOT
+        #+end_example
+      + some examples of caps:
+        - CAP_SETUID (SETUID): allows root process to change its UID to any other UID inside the container
+          + root process can then change the process UID to any UID from 100000 to 165535, as well as back to 3267, but is not allowed to setuid to uid (0) or any other UID on the system
+    - UIDs inside and outside of the container ::
+      + OCI images can have their own entrypoints' users and UIDs defined :: (instead of the default 'root'), eg: grafana images run as entrypoint 'grafana' user with uid 472:
+        #+begin_example
+        # podman run --rm --entrypoint '' docker.io/grafana/grafana id
+        uid=472(grafana) gid=0(root) groups=0(root)
+        #+end_example
+      + UIDs used in the containers are also used on the host system: running a container using a given UID will use that uid to run its process on the host
+        - eg: root UID on container when using grafana is same UID as one running grafana-server on host container (here 472): => host's UID is actually running grafana-server on the host
           #+begin_example
-          $podman run --rm -d debian:bookworm-slim sleep 30
-          $podman top -l capeff
-          EFFECTIVE CAPS
-          CHOWN,DAC_OVERRIDE,FOWNER,FSETID,KILL,NET_BIND_SERVICE,SETFCAP,SETGID,SETPCAP,SETUID,SYS_CHROOT
+          # podman run -d docker.io/grafana/grafana
+          ee275572c8dcb0922722b7d6c3e5ff0bda8c9af3682018c4fc53675d8e189e59
+          # ps -o user $(pidof grafana-server)
+          USER
+          472
           #+end_example
-        - some caps:
-          + CAP_SETUID (SETUID): allows root process to change its UID to any other UID inside the container
-            - root process can then change the process UID to any UID from 100000 to 165535, as well as back to 3267, but is not allowed to setuid to uid (0) or any other UID on the system
+        - eg2: when running ==top== in a busybox container as root, the top process does indeed run as root on the host:
+          #+begin_example
+          # podman run -d docker.io/busybox top
+          478a50a9054b36fc1e1c0f0dc005ae4393d60ecbbd6ba2bf5021b255c5d3d133
+          # ps -o user $(pidof top)
+          USER
+          root
+          #+end_example
+        - => risk of potential conflicts with processes on the hosts, eg: running top on both the container and on the host (when default UID is used in the container)
+        - => better to override container's default UID:
+          + eg: using ==--user== option, run top on the container as uid 1000, a non-root 'toto' user on the host:
+            #+begin_example
+            # podman run --user 1000:1000 -d docker.io/busybox top
+            699449a882b0a6402728176f2773bc87d55ada8115ef55eeca2cba465a70a018
+            # ps -o user $(pidof top)
+            USER
+            toto
+            #+end_example
+        - => for security, better to run rootless containers using host non-root user
+      + ==/etc/subuid== and ==/etc/subgid== for UIDs and group IDs configuration for rootless containerization ::
+        - /etc/subuid and /etc/subgid are config files that set different uid and gid range offsets for each user, so that multiple users can run the same container with the same internal uid, and this UID will get translated to a different uid on the host, thus avoiding conflicts
+        - host's UID and subuid ::
+          + non-root (current, no ==sudo==) user are usually mapped to 1000, and when promoted with privileges (==sudo==) the UID is 0
+            #+begin_example
+            $ id -u
+            1000
+            $sudo id -u
+            0
+            #+end_example
+          + /etc/subuid shows that the host's user has a range of 65536 subuids starting from 100000:
+            #+begin_example
+            $ cat /etc/subuid
+            csmart:100000:65536
+            #+end_example
+          + one can check with ~podman unshare~ (command inside of a modified user namespace) that the user range are applied to the host's users:
+            - ~podman unshare~ ::
+              #+begin_example
+              $ podman unshare cat /proc/self/uid_map
+              0 1000 1
+              1 100000 65536
+              #+end_example
+            - container's "root" account (uid 0) actually maps to the uid 1000 on the host (a non-root user)
+            - then, uid 1 in a container would map to 100000, the host's user (with no privileges), 2 would be 100001 and so on
+              + to use grafana for example, running it in a rootless container with uid of 472 would map to 100471 on the host
 ** podman toolsets
 *** commands
 - notes :: most of podman commands are similar to docker's, eg: ~podman run -it [image_name]~, same as for docker (~docker container run -it --name <app_alias> alpine sh~) (-it for interactive: allocates a virtual terminal session within the container; 'alpine' to base the container on the minimal Docker image based on Alpine Linux with a complete package index and only 5 MB in size; and 'sh' to run commands in the sh terminal as the container main process)
