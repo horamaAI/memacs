@@ -442,8 +442,8 @@
           root
           #+end_example
         - => risk of potential conflicts with processes on the hosts, eg: running top on both the container and on the host (when default UID is used in the container)
-        - => better to override container's default UID:
-          + eg: using ==--user== option, run top on the container as uid 1000, a non-root 'toto' user on the host:
+        - security and rootless :: for security, better to override container's default UID and run rootless containers using host non-root user. 65536 users are available to run as. For that, can use ==--user== option
+          + eg: using ==--user== option, run top on the container as uid 1000 (non root within the container), which usually maps to the non-root user on the host (eg: 'toto'):
             #+begin_example
             # podman run --user 1000:1000 -d docker.io/busybox top
             699449a882b0a6402728176f2773bc87d55ada8115ef55eeca2cba465a70a018
@@ -451,23 +451,22 @@
             USER
             toto
             #+end_example
-        - => for security, better to run rootless containers using host non-root user
       + ==/etc/subuid== and ==/etc/subgid== for UIDs and group IDs configuration for rootless containerization ::
         - /etc/subuid and /etc/subgid are config files that set different uid and gid range offsets for each user, so that multiple users can run the same container with the same internal uid, and this UID will get translated to a different uid on the host, thus avoiding conflicts
         - host's UID and subuid ::
-          + non-root (current, no ==sudo==) user are usually mapped to 1000, and when promoted with privileges (==sudo==) the UID is 0
+          + on host, non-root (current, no ==sudo==) user are usually mapped to 1000, and when promoted with privileges (==sudo==) the UID is 0
             #+begin_example
             $ id -u
             1000
             $sudo id -u
             0
             #+end_example
-          + /etc/subuid shows that the host's user has a range of 65536 subuids starting from 100000:
+          + /etc/subuid shows that the host's user has a range of 65536 subuids available, starting from 100000:
             #+begin_example
             $ cat /etc/subuid
             csmart:100000:65536
             #+end_example
-          + one can check with ~podman unshare~ (command inside of a modified user namespace) that the user range are applied to the host's users:
+          + one can check with ~podman unshare~ (runs a command inside of a modified user namespace) that the user range are applied to the host's users:
             - ~podman unshare~ ::
               #+begin_example
               $ podman unshare cat /proc/self/uid_map
@@ -477,6 +476,33 @@
             - container's "root" account (uid 0) actually maps to the uid 1000 on the host (a non-root user)
             - then, uid 1 in a container would map to 100000, the host's user (with no privileges), 2 would be 100001 and so on
               + to use grafana for example, running it in a rootless container with uid of 472 would map to 100471 on the host
+            - can check the same with ==id== :: non-root user on host, root in container => running a container with user root (uid 0) translates to host's non-root user (uid 1000 in this case)
+              #+begin_example
+              $ id
+              uid=1000(csmart) gid=1000(csmart) groups=1000(csmart)
+              $ podman unshare id
+              uid=0(root) gid=0(root) groups=0(root)
+              #+end_example
+          + as seen previously, it's much safer to force a host's rootless user when the container(s) user(s) is(are) different, using option ==--user==, and achieve some isolation between containers while taking advantage of rootless containers. eg: set grafana's uid 472 as root (non-root user on the host) inside the container by passing option ==--user 0:0==:
+            #+begin_example
+            $ podman run --user 0:0 -d --name grafana docker.io/grafana/grafana
+            d44b5e61d856e585c57ab0922d8f19f7d7eeed6f9a7fbabb149bb344fe20f955
+            $ podman exec -it grafana id
+            uid=0(root) gid=0(root)
+            $ ps -o user $(pidof grafana-server)
+            USER
+            csmart
+            #+end_example
+          + but still, some protection is already put in place with podman, eg: grafana runs as uid 472, and without enforcing options with ==--user==, podman will translate to 100471 on the host's non user uid (uid 1000)
+            #+begin_example
+            $ podman run -d docker.io/grafana/grafana
+            541bef2aea52fa2a45e440bc5bf1d13797b83750405a794c2153af3e61580040
+            $ ps -o user $(pidof grafana-server)
+            USER
+            100471
+            #+end_example
+      + conclusion :: with podman it's possible to run lots of containers as different users and keep them separate both from each other and from any other users’ containers, all without needing root on the host
+        - optionally, podman's ==--user== is available to map container's UIDs to host's subuid space
 ** podman toolsets
 *** commands
 - notes :: most of podman commands are similar to docker's, eg: ~podman run -it [image_name]~, same as for docker (~docker container run -it --name <app_alias> alpine sh~) (-it for interactive: allocates a virtual terminal session within the container; 'alpine' to base the container on the minimal Docker image based on Alpine Linux with a complete package index and only 5 MB in size; and 'sh' to run commands in the sh terminal as the container main process)
