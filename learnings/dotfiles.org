@@ -276,7 +276,7 @@
         - by default, not able to use sudo (from within the container)
         - to be able to install packages for example, need to run rootful (from host)
         - no user environment predefined (eg: $USER)
-      + work around: (need for configurations to be added into a Containerfile ?)
+      + workaround: (need for configurations to be added into a Containerfile ?)
         - run as rootful from host: ~sudo podman run~
         - manually set $USER since needed for $TARGET_FOLDER
         - silence out (comment) keep-alive checks for sudo ~if sudo -v; then~
@@ -291,6 +291,9 @@
             fi
             #eval "$command_to_run"
           fi
+          #+end_example
+        - containerfile for build image:
+          #+begin_example
           #+end_example
 - dotfiles structure :: source of things to do
   + install.sh ::
