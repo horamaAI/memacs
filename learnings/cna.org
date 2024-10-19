@@ -389,6 +389,8 @@
   + sources ::
     - https://blog.christophersmart.com/2021/01/26/user-ids-and-rootless-containers-with-podman/
   + notes ::
+    - UIDs ::
+      + by default, Linux systems automatically assign UIDs and GIDs to new user accounts in numerical order starting at 1000 => if one creates a new user account during installation, it will have UID = 1000 and GID = 1000. The theory behind is that anything below 1000 is reserved for system accounts, services, and other special accounts. So, regular user UIDs and GIDs stay above 1000. This theory is based on the assumption that 999 account numbers minus a few pre-assigned ones will be more than enough to satisfy most systems for many years. "As a Linux administrator for more than 20 years ([[https://www.redhat.com/en/blog/user-account-gid-uid][source]]), I've never personally run out of those first 999 system account numbers".
     - rootless and rootful podman each support running with multiple users, and both by default run the initial process as the root of the user namespace they are launched in
     - when running rootless containers, it launches the first process as the root of the user namespace being used
       + eg: the host UID being: 3267
