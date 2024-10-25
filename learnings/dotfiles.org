@@ -299,6 +299,11 @@
           #+end_example
         - containerfile for build image:
           #+begin_example
+          FROM alpine:latest
+          ARG DOCKER_USER=default_user
+          RUN addgroup -S $DOCKER_USER && adduser -S $DOCKER_USER -G $DOCKER_USER
+          USER $DOCKER_USER
+          CMD ["whoami"]
           #+end_example
 - dotfiles structure :: source of things to do
   + install.sh ::
