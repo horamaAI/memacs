@@ -318,7 +318,7 @@
         - container user: $UID (map user account to the same UID within the container)
         - maps the user as itself into the container: ~$podman top -l user huser~ // USER | HUSER: totouser | totouser
         - side effects: podman adds an entry for the user into the containers ==/etc/passwd== file:
-          + with keep-id: ~$podman run –rm --userns=keep-id ubi9 grep $UID /etc/passwd~ // dwalsh:*:3267:3267:Daniel Walsh:/:/bin/sh
+          + with keep-id: ~$podman run –rm --userns=keep-id ubi9 grep $UID /etc/passwd~ // dwalsh:*:3267:3267:Daniel Walsh:/:/bin/sh (supposing host's $UID is 3267)
           + with "": ~$podman run –rm --userns="" ubi9 grep $UID /etc/passwd~ // [nothing-returned]
       + ==auto== ::
         - host user: $UID
