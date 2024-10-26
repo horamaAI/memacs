@@ -281,11 +281,15 @@
         - no user environment predefined (eg: $USER)
       + workaround: (need for configurations to be added into a Containerfile ?)
         - run as rootful from host: ~sudo podman run~
-        - manually set $USER since needed for $TARGET_FOLDER
-        - silence out (comment) keep-alive checks for sudo ~if sudo -v; then~
+        - containerfile: manually set $USER since needed for $TARGET_FOLDER for example, install git (even though can also use curl or wget), clone dotfiles, and run build image:
+          #+begin_example
+          FROM debian:bookworm
+          ENV USER=root
+          RUN apt update && apt install -y vim git && mkdir repos && cd repos && git clone https://github.com/horamaAI/dotfiles.git
+          #+end_example
+        - silence out (comment) "keep-alive" checks for sudo ~if sudo -v; then etc.~
         - cancel out "sudo": fortunately all dotfiles commands to run go through function ==dotfiles/configs/basic/bin/functions/utils.sh:execute_command==, so can filter out "sudo":
           #+begin_example
-          mkdir -p repos && cd repos
           if [[ -n "$command_to_run" ]]; then
             eval "$command_to_run"
             if [[ "$command_to_run" == *"sudo"* ]]; then
