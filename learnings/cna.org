@@ -55,6 +55,13 @@
   + ~ENTRYPOINT~ :: to specify default executable, eg: ~ENTRYPOINT ["node", "app.js"]~: will run the command 'node app.js' each time the container gets started
   + ~COPY~ :: to copy :-), eg: ~COPY . /usr/src/app~: copy app code (.) to /usr/src/app *of the container image*
   + ~WORKDIR~ :: to change working directory, eg: ~WORKDIR /usr/src/app~: set working directory context (when run together with ~COPY . /usr/src/app~ command, it just basically set the working directory to where the app was installed, on *the container image*)
+  + ~ENV~ :: to set an environment variable ~ENV <key>=<value> ...~, eg: ~ENV USER=toto~
+  + ~ARG~ :: to define variable(s) that users can pass at build-time to the builder with ~docker build~ command using flag ~--build-arg <varname>=<value>~
+    - ARG vs ENV :: ENV is for future running containers, ARG for building Docker image
+      + ARG values are not available after the image is built, a running container won’t have access to an ARG variable value: ARG and ENV overlap during image build (from within the Containerfile(s) both ARG and ENV are available through ~RUN~), but after that, ARG values are not available from the container(s)
+      + ARG can also be provided using ==--build-arg==, eg: ==--build-arg VAR_NAME=6== argument when building image(s), it can also be overridden from the cli
+      + similarly, env can also add an env during image built with ==--env== flag (eg: ==--env=env[=value]==)
+        - but unlike ARG, you can’t override ENV values directly from the commandline when building your image.
 ** Declarative method with compose files
 [2024-02-02 Fri 09:40]
 *** General
@@ -517,7 +524,7 @@
   + can also use prefix to search specific library, eg: ~podman search docker.io/library/image-name~
   + by default all ==unqualified-search-registries== are used if no specific given
 - ~podman images~ :: list all local images
-- ~podman image rm [options] image […]~ :: remove image
+- ~podman image rm [options] image […]~ :: remove image, or just ~podman rmi~
 - ~podman pull [image-name]~ :: pull image
 - ~podman build~ :: build a container image from a Containerfile
   + format :: ~podman build [OPTIONS] <context> [--tag <image_name>:<tag>]~
