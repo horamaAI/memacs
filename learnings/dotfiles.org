@@ -275,10 +275,10 @@
       + not pre-installed, so need to install it first
       + vimrc:
     - podman:
-      + podman is rootless (mainly):
-        - by default, not able to use sudo (from within the container)
+      + podman is rootless (by default):
+        - by default, not able to use sudo (from within the container), even with root user
         - to be able to install packages for example, need to run rootful (from host)
-        - no user environment predefined (eg: $USER)
+        - not many user environment variables predefined (eg: $USER)
       + workaround: (need for configurations to be added into a Containerfile ?)
         - run as rootful from host: ~sudo podman run~
         - containerfile: manually set $USER since needed for $TARGET_FOLDER for example, install git (even though can also use curl or wget), clone dotfiles, and run build image:
