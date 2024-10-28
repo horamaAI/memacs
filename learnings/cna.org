@@ -62,6 +62,7 @@
       + ARG can also be provided using ==--build-arg==, eg: ==--build-arg VAR_NAME=6== argument when building image(s), it can also be overridden from the cli
       + similarly, env can also add an env during image built with ==--env== flag (eg: ==--env=env[=value]==)
         - but unlike ARG, you can’t override ENV values directly from the commandline when building your image.
+  + ~USER~ :: to set user name, UID, and optionally the user group or GID as the default user and group for the remainder of the ongoing stage of the build or the subsequent container. Format : ~USER <user>[:<group>]~, or ~USER <user>[:<group>]~. If not specified, container will run commands as root user
 ** Declarative method with compose files
 [2024-02-02 Fri 09:40]
 *** General
