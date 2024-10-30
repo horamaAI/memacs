@@ -270,7 +270,7 @@
   + target structure ::
     - should be different than the dotfiles structure ? => how will updates work when wants to change something and push it to dotfiles repo ?
 - issues :: (while working on dotfiles)
-  + testing dotfiles in an isolated (containerised) environment:
+  + testing dotfiles in an isolated (containerised, used podman here) environment:
     - vim in containers:
       + not pre-installed, so need to install it first
       + vimrc:
@@ -287,6 +287,7 @@
           ENV USER=root
           RUN apt update && apt install -y vim git && mkdir repos && cd repos && git clone https://github.com/horamaAI/dotfiles.git
           #+end_example
+        - note: if in the containerfile a user other than root is defined (with no further configs such as configuring UIDs and GIDs), still won't be able to run rootful since only root inherits the privileges of the host's UID
         - silence out (comment) "keep-alive" checks for sudo ~if sudo -v; then etc.~
         - cancel out "sudo": fortunately all dotfiles commands to run go through function ==dotfiles/configs/basic/bin/functions/utils.sh:execute_command==, so can filter out "sudo":
           #+begin_example
