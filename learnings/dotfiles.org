@@ -316,6 +316,8 @@
             #+begin_example
             FROM debian:bookworm
             ARG CONTAINER_USER=sandboxuser
+            # for container to know it's one (useful for containerised development and troubleshooting)
+            ENV RUNNING_IN_DOCKER true
             ENV USER $CONTAINER_USER
             ENV HOME /home/$CONTAINER_USER
             WORKDIR $HOME
@@ -326,6 +328,8 @@
             RUN adduser --system --group $CONTAINER_USER \
               && echo "${CONTAINER_USER}:${CONTAINER_USER}" | chpasswd \
               && usermod -aG sudo $CONTAINER_USER
+            # give to defined normal user ownership of the home folder
+            RUN chown -R "${CONTAINER_USER}:${CONTAINER_USER}" $HOME
             USER $USER
             #+end_example
 - dotfiles structure :: source of things to do
