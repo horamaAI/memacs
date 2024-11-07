@@ -586,6 +586,9 @@
   + ~local [option] name[=value] ...~ :: create local variable ==NAME==, and with value ==VALUE==
   + ==...== means that previous argument can be repeated
   + eg: ~local cword words=()~ defines scalar variable ==cword== and empty array ==words==
+- source (~./~) vs ~bash~ ::
+  + source: reads and executes in current shell environment commands from file specified as argument
+  + bash: invoke new shell and execute file given as argument
 - set vs export ::
 - parameter expansion (TODO) ::
   + bash: https://www.gnu.org/software/bash/manual/html_node/Shell-Parameter-Expansion.html
