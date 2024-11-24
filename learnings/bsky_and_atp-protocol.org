@@ -1,0 +1,23 @@
+# -*- mode: org -*-
+#+title: atp protocol mainly for bsky learnings
+#+SETUPFILE: ~/set-up-files/basic-setups.org
+#+TAGS: Bluesky atp apt_protocol bsky
+
+* Glossary
+[2024-11-24 Sun 03:09]
+** General
+- PDS :: Personal Data Server, hosting repo content for atproto accounts
+- DID :: 
+* Feed generator
+** In a nutshell
+- the general flow of providing a custom algorithm to a user is as follows:
+  + A user requests a feed from their server (PDS) using the at-uri of the declared feed
+  + The PDS resolves the at-uri and finds the DID doc of the Feed Generator
+  + The PDS sends a getFeedSkeleton request to the service endpoint declared in the Feed Generator's DID doc
+  + This request is authenticated by a JWT (json web token) signed by the user's repo signing key
+  + The Feed Generator returns a skeleton of the feed to the user's PDS
+  + The PDS hydrates the feed (user info, post contents, aggregates, etc.)
+  + In the future, the PDS will hydrate the feed with the help of an App View, but for now, the PDS handles hydration itself
+  + The PDS returns the hydrated feed to the user
+- for users, this should feel like visiting a page in the app. Once they subscribe to a custom algorithm, it will appear in their home interface as one of their available feeds.
+
