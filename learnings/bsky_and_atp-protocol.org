@@ -3,9 +3,78 @@
 #+SETUPFILE: ~/set-up-files/basic-setups.org
 #+TAGS: Bluesky atp apt_protocol bsky
 
+* [DRAFT] To have a look at first for the project
+[2024-11-25 Mon 20:19]
+** awesome atproto/bsky
+[2024-11-25 Mon 22:44]
+- https://github.com/fishttp/awesome-bluesky
+- https://github.com/beeman/awesome-atproto
+** basic stuff
+[2024-11-25 Mon 23:19]
+- request with curl: ~curl "https://public.api.bsky.app/xrpc/app.bsky.graph.getFollowers?actor=notabenemovies.bsky.social" -H "Accept: application/json"~
+** useful links to go through
+[2024-11-25 Mon 22:48]
+- https://docs.bsky.app/docs/tutorials/user-lists
+- https://docs.bsky.app/docs/api/app-bsky-graph-get-followers
+- https://docs.bsky.app/docs/api/app-bsky-notification-register-push
+- https://docs.bsky.app/docs/api/app-bsky-notification-list-notifications
+- https://docs.bsky.app/docs/api/app-bsky-notification-get-unread-count
+- https://docs.bsky.app/docs/api/com-atproto-sync-notify-of-update
+- https://docs.bsky.app/docs/api/app-bsky-graph-get-list
+- https://www.youtube.com/watch?v=_yp9U-QJgOM
+- https://pipedream.com/
+- https://www.youtube.com/watch?v=Y-4byg2pXL0&t=33s
+** rules (WIP)
+- updates list monitoring/matching the users' followers:
+  + followers, notifications based:
+    - add new follower(s) to the list: seems doable:
+      + regularly, ping notifications list, if list has ==reason== set at ==follow==, then try to fetch those new followers and add them to the list (is it possible that the followers on bsky are ordered per arrival ? It would just need to fetch n last followers, they would supposedly be the new ones?)
+    - stop following: harder, would need to know him/them first
+      + do manual update for example ? limit by invite at some point ?
+      + do script: that once per day will: compare getFollowers count, and compare with local DB numbers ? If do not match then compare diff between list and followers
+** bots
+[2024-11-25 Mon 22:40]
+- sources:
+  + https://github.com/beeman/awesome-atproto
+- questions:
+  + containerised ? YES, easy to deploy anywhere a simple image, while can easily run in local
+- https://docs.bsky.app/docs/starter-templates/bots
+- some bots:
+  + js mainly, but the goal is to leverage github actions, so could be very nice, plus can fork and modify it to our purpose (posting seems to be the current goal): https://github.com/zentered/bluesky-post-action (marketplace: https://github.com/marketplace/actions/bluesky-post-action)
+    - this one even if written in go, could be source of inspiration, not sure about installing it in local though: https://github.com/mattn/bsky/, eg with command list followers: https://github.com/mattn/bsky/blob/main/main.go#L183
+  + rust, seems fun and very simple to start with, but no dockerfile, might need more for package management : https://github.com/ssempervirens/bluesky-haiku
+  + js, seems ok, chose fly.io for deployment: https://github.com/emilyliu7321/bsky-earthquake-bot
+  + go (cloud only hosted?): https://github.com/vvakame/atproto-vvvot
 * Glossary
 [2024-11-24 Sun 03:09]
 ** General
+- identities :: identities in the Bluesky network consist of multiple parts:
+  + DID :: (decentralised identities) persistent, long-term identifiers for every account. Usually look like ==did:plc:ewvi7nxzyoun6zhxrhs64oiz==. Details are in the atproto specs.
+    - DID methods :: currently, atproto supports two DID methods:
+      + ==did:web== :: W3C standard based on HTTPS (and DNS), identifier section is a hostname. This method is supported in atproto to provide independent alternative to ==did:plc==.
+        - the method is inherently tied to the domain name used,
+        - does not provide mechanism for migration or recovering from loss of control of the domain name
+        - in the context of atproto, only hostname-level ==did:web== DIDs are supported: path-based DIDs are not supported
+        - same restrictions on top-level domains that apply to handles (eg, no ==.arpa==) also apply to ==did:web== domains
+        - the special ==localhost== hostname is allowed, but only in testing and development environments
+        - Port numbers (with separating colon hex-encoded) are only allowed for localhost, and only in testing and development
+      + ==did:plc== :: a novel DID method developed by Bluesky. See the did-method-plc GitHub repository for details.
+      + in the future, a small number of additional methods may be supported
+    - DID syntax :: the DID Core specification constraints on DID identifier syntax, regardless of the method used. Some of those constraints:
+      + a reasonable starting-point regex for DIDs in atproto context is: ==[a-z]+:[a-zA-Z0-9._:%-]*[a-zA-Z0-9._-]$/==
+      + entire URI: set of case-sensitive letters (==A-Z, a-z==), digits (==0-9==), period, underscore, colon, percent sign, or hyphen (==._:%-==)
+      + URI starts with lowercase ==did:==
+      + the method segment is one or more lowercase letters (a-z), followed by ==:==
+      + the remainder of the URI (the identifier) may contain any of the previously-presented ASCII characters, except for percent-sign (==%==). The remaining identifier may not end in ==:==
+      + Percent-sign (==%==) is used for "percent encoding" in the identifier section, and must always be followed by two hex characters
+      + Query (==?==) and fragment (==#==) sections are allowed in DID URIs, but not in DID identifiers. In atproto context, the query and fragment parts are not allowed
+      + examples:
+        - valid dids (correct syntax, and supported did method): ==did:plc:z72i7hdynmk6r22z27h6tvur==, ==did:web:blueskyweb.xyz==
+        - valid dids, but unsupported did methods: ==did:method:val:two==, ==did:m:v==, ==did:method::::val==, ==did:method:-:_:.==, ==did:key:zQ3shZc2QzApp2oymGvQbzP8eKheVshBHbU4ZYjeXqwSKEn6N==
+        - invalid dids syntax, regardless of did method: ==did:METHOD:val==, ==did:m123:val==, ==DID:method:val==, ==did:method:==, ==did:method:val/two==, ==did:method:val?two==, ==did:method:val#two==
+  + handles :: updatable, human-readable usernames for accounts, eg: ==atproto.bsky.social==, ==atproto.com==
+  + profile records :: updatable metadata including display name, avatar picture, and description. Lexicon is app.bsky.actor.profile
+ :: 
 - PDS :: Personal Data Server, hosting repo content for atproto accounts
 - DID :: 
 * Feed generator

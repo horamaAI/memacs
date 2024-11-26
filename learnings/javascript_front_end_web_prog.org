@@ -12,6 +12,13 @@
   + TS :: open source, superset to JS (every JS code supported by TS), transpiles to plain JS (TS code must be compiled and converted to comparable JS syntax before the browser executes it)
     - dig further :: https://www.typescriptlang.org/
   + 'let' :: to define local variable
+  + javascript 'template litterals' :: allow use of a placeholder to insert an expression within a string (using backticks ==``==), eg: ~`The rating ${this.rating} was clicked!`~
+- good practices ::
+  + private variables prefixed with underscore :: ~private _something: sometype;~
+- functions, arrow functions, lambdas, etc. ::
+  + arrow function :: compact syntax to define a function, no 'return' keyword ~(param: paramType) => {param.doSomething(); param.doAnotherThing(); }~
+    - arrow functions != lambdas, the later are anonymous functions in Javascript, whereas arrow functions is just modern way of defining function in js
+- JS arrays and iterables ::
   + 'for...of' vs 'for...in' ::
     - for...of :: loops on iterable objects
     - for...in :: loops on properties of an object:
@@ -21,19 +28,14 @@
           console.log(obj); // 0, 1, 2. The array indexes are enumerable properties with integer names
           }
       #+end_src
-  + private variables prefixed with underscore :: ~private _something: sometype;~
-  + arrow function :: compact syntax to define a function, no 'return' keyword ~(param: paramType) => {param.doSomething(); param.doAnotherThing(); }~
-  + javascript 'template litterals' :: allow use of a placeholder to insert an expression within a string (using backticks ==``==), eg: ~`The rating ${this.rating} was clicked!`~
-  + JS arrays ::
-    - filter method :: ~products.filter()~
-      + creates new array by filtering content from previous array :: => use two arrays: one for the base array property, and one for its filtered version. Otherwise you might loose the base array when filtering
-      + 'filter' method needs true/false logic to compare objects (arrow function)
-      #+begin_src javascript
-      performFilter(): IProduct {
-          return products.filter( ( product: IProduct ) => product.productName.includes( filteringParameter ) );
-          }
-      #+end_src
-    
+  + filter method :: ~products.filter()~
+    - creates new array by filtering content from previous array :: => use two arrays: one for the base array property, and one for its filtered version. Otherwise you might loose the base array when filtering
+    - 'filter' method needs true/false logic to compare objects (arrow function)
+    #+begin_src javascript
+    performFilter(): IProduct {
+        return products.filter( ( product: IProduct ) => product.productName.includes( filteringParameter ) );
+        }
+    #+end_src
 * Angular
 ** Notes
 - angular :: JS framework for building client-side applications
@@ -61,7 +63,6 @@
   + 'devDependencies' :: packages only required for development, eg: ~@angular/(compiler|compiler-cli)~
 - some TS types ::
   + any[]: array of any object (eg: ~products: any[];~)
-  
 ** Anatomy of an angular app
 [2023-12-19 Tue 14:04]
 - angular ::
@@ -76,7 +77,7 @@
 *** angular project's folder structure
 - uppermost files and folders (at root of project, also called 'boilerplate files') :: configuration and setup files
   + .browserslistrc :: list of browsers and their versions that the application will support, file used by the build system to build bundles for the supported browsers
-  + .editorconfig :: provides standards settings for the editor
+  + .editorconfig :: provides standards settings for the editor, eg: format
   + angular.json :: cli configuration file for local install
   + karma.config.js :: sets up karma, a javascript test runner
   + .angular :: used by the compiler for caching to improve compiler performance
@@ -88,7 +89,6 @@
     - 'assets' :: for any images or other assets that need to be included in the application
     - 'environments' :: sets up the build environment: one for dev, one for prod
       + cli picks the appropriate environment based on used flags
-    - :: 
   + files ::
     - main.ts :: file that bootstraps the application
     - test.ts :: sets up for testing
@@ -181,14 +181,13 @@
         })
     export class ClassName {
         propertyName: propertyType = assignment; // a property
-    
     }
     #+end_src
   + decorator functions format :: ~@Adecorator({...})~
     - decorators are functions with argument objects (as seen passed as curly braces)
     - decorator object have properties too: eg:
       + 'selector:' :: to find (select) the html elements needed to style; in angular, represents the root directive for the component
-        - convention :: use prefixed value for the selector to reference it as part of the application being implemented (eg: 'pm-root' is the root of the element to be styled, and defined in application for project management ('pm'))
+        - convention :: use prefixed value for the selector to reference it as part of the application being implemented (eg: 'pm-root' is the root of the element to be styled, and defined in application "project management" ('pm'))
         - can cross reference directives from different components :: and insert templates from some components into others:
           + don't forget to declare the source component in the AppModule declarations :: so that the component can be found in the app globally
           #+begin_src javascript
@@ -227,8 +226,8 @@
           #+end_src
       + linked template 'templateUrl' :: define template (view) file (can directly enter the html code with decorator ==template==)
         - inline template ::
-          + one line template with one line (surrounded with quotes, single quotes =='==, or backticks =='==`) :: ~template: '<div><h1>{{myTitle}}</h1></div>'~
-          + one line template multipe lines (surrounded with single quotes =='==, or backticks =='==`) ::
+          + one line template with one line (surrounded with quotes, single quotes ~'~ , or backticks ~`~) :: ~template: '<div><h1>{{myTitle}}</h1></div>'~
+          + one line template multipe lines (surrounded with single quotes ~'~ , or backticks ~`~) ::
       + styleUrls :: for css,
       + etc.
       #+begin_src javascript
