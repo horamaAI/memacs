@@ -29,6 +29,7 @@
   + followers, notifications based:
     - add new follower(s) to the list: seems doable:
       + regularly, ping notifications list, if list has ==reason== set at ==follow==, then try to fetch those new followers and add them to the list (is it possible that the followers on bsky are ordered per arrival ? It would just need to fetch n last followers, they would supposedly be the new ones?)
+        - avoid bots! and adds/booty followers: add "umublip" in description, so that following condition is: umublip in description, and following
     - stop following: harder, would need to know him/them first
       + do manual update for example ? limit by invite at some point ?
       + do script: that once per day will: compare getFollowers count, and compare with local DB numbers ? If do not match then compare diff between list and followers

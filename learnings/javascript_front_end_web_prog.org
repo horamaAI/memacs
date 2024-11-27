@@ -1388,6 +1388,7 @@
 * NVM, Node, NPM
 [2023-12-19 Tue 15:18]
 - what's npm ? :: many things: repository, command line tool, package manager, etc
+  + node.js being a server-side scripting framework (as opposed to Angular.js which is a client-side scripting framework), it is mostly appropriate for backend development, unlike angular.js that is used for frontend development and runs on the client (browser). npm is on the other hand a package manager for node.js
 - what does npm can do ? ::
   + install libraries, packages, dependencies, applications, etc.
   + execute scripts to perform tasks, such as: run JS application
