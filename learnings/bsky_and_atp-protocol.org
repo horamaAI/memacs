@@ -14,6 +14,7 @@
 - request with curl: ~curl "https://public.api.bsky.app/xrpc/app.bsky.graph.getFollowers?actor=notabenemovies.bsky.social" -H "Accept: application/json"~
 ** useful links to go through
 [2024-11-25 Mon 22:48]
+- https://docs.bsky.app/docs/api/com-atproto-identity-resolve-handle (handle to did conversion)
 - https://docs.bsky.app/docs/tutorials/user-lists
 - https://docs.bsky.app/docs/api/app-bsky-graph-get-followers
 - https://docs.bsky.app/docs/api/app-bsky-notification-register-push
@@ -24,15 +25,21 @@
 - https://www.youtube.com/watch?v=_yp9U-QJgOM
 - https://pipedream.com/
 - https://www.youtube.com/watch?v=Y-4byg2pXL0&t=33s
-** rules (WIP)
+- https://docs.bsky.app/docs/starter-templates/custom-feeds
+** Tickets
+[2024-11-30 Sat 18:50]
+*** rules (WIP)
 - updates list monitoring/matching the users' followers:
   + followers, notifications based:
     - add new follower(s) to the list: seems doable:
       + regularly, ping notifications list, if list has ==reason== set at ==follow==, then try to fetch those new followers and add them to the list (is it possible that the followers on bsky are ordered per arrival ? It would just need to fetch n last followers, they would supposedly be the new ones?)
-        - avoid bots! and adds/booty followers: add "umublip" in description, so that following condition is: umublip in description, and following
+        - avoid bots! and adds/booty followers: add "umublip" in description, so that following condition is: umublip in description, an
     - stop following: harder, would need to know him/them first
       + do manual update for example ? limit by invite at some point ?
       + do script: that once per day will: compare getFollowers count, and compare with local DB numbers ? If do not match then compare diff between list and followers
+*** feed abablips likes ?
+[2024-11-30 Sat 18:51]
+- description: since have list of abablip followers, should
 ** bots
 [2024-11-25 Mon 22:40]
 - sources:
