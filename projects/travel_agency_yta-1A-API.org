@@ -1,0 +1,16 @@
+# -*- mode: org -*-
+#+TITLE: project: starting a travel agency, 1A API and 1A for developers
+#+SETUPFILE: ~/set-up-files/basic-setups.org
+#+LANGUAGE: en
+#+OPTIONS: timestamp:t
+#+DESCRIPTION: Java and/or Cpp back-end project for probing *1A* data and APIs
+#+KEYWORDS: YTA 1A org-mode Emacs organization
+
+* Notes
+** General
+- 2 bridges to 1A API:
+  + Self-Service plan :: instant access, pay-as-you-go, open documentation, free monthly requests
+  + Enterprise plan :: advanced and more fine-tuned data and functionalities,
+- 
+* 1A API
+[2025-01-11 Sat 22:36]
