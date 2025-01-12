@@ -222,270 +222,273 @@
 [2024-05-25 Sat 01:13]
 * My dotfiles
 [2024-06-01 Sat 15:25]
-- draft ::
-  + to include ::
-    - [ ] add ppas for additional apt installs (https://github.com/cowboy/dotfiles/blob/master/init/20_ubuntu_apt.sh#L16)
-    - [ ] packages and tools installation
-      + setup for installation mandatory essentials packages (build-essential, emacs, python, npm, etc.) before installing other tools
-      + example in [[https://github.com/rkalis/dotfiles/][this repo]], the main setup is running the [[https://github.com/rkalis/dotfiles/blob/master/bootstrap.sh#L30][main packages install]] (~./packages/setup.sh~ which is [[https://github.com/rkalis/dotfiles/blob/master/packages/setup.sh][here]]), and then locate and run the remaining setup (~find * -name "setup.sh" -not -wholename "packages*"~ and skips ~./packages/setup.sh~ which was run before)
-      + [ ] '*.list' ([selected] '*.yaml') files for installation specific commands (filed by +command to use+ :used by function: ~[folder]/packages~, ~[folder]/opt~, etc.), eg: ~apt.yaml~ for packages to install with apt, ~npm.yaml~ for npm, ~python3.yaml~, etc.
-        - [aborted] for packages to install, line starts with:
-          + ==$== : then the line is the command to use for following packages
-          + ==#== comment, skip
-          + all remaining lines are packages to install using current command
-        - [selected] use yaml file and install command content into a schema that validates
-      + [ ] opt
-      + [ ] git repositories
-    - [ ] tools configs: .zshrc, .zshrc_user, oh-my-zsh, .screen, .inputrc, .alias, etc
-    - [ ] emacs ::
-      + add in-terminal settings
-      + split profile for ==common== and ==dmahoro==
-    - [ ] git:
-      + [ ] git ci/cd, eg: git hooks
-      + [ ] git configs with multiple configs (direnv maybe ?: https://direnv.net/)
-        - checkout [[https://github.com/jogendra/dotfiles/blob/master/git/pull_request.sh][these cool git functions]] and [[https://github.com/jogendra/dotfiles/blob/master/git/gitconfig][configs]]
-      + [ ] git bare repo ?
-        - user's home is overflowing with dotfiles ('hidden'), mind it could be tedious if choose git bare and have to go through all the files to add to own dotfiles (https://web.archive.org/web/20171003124306/https://plus.google.com/+RobPikeTheHuman/posts/R58WgWwN9jp)
-    - [ ] checkout use of environment variables $XDG_* (https://0x46.net/thoughts/2019/02/01/dotfile-madness/ and https://wiki.gentoo.org/wiki/XDG/Base_Directories)
-      + $XDG_DATA_HOME or $HOME/.local/share for example to store plugins downloaded by the user, databases created by your program, user's input history, bookmarks, emails, and so on
-    - [ ] optimise auto-complete
-    - [ ] vim (learn basics, and tweak configs, seems there is no way to escape from it when working with bare installation or with the terminal)
-    - [ ] IDE ::
-      + add configs for one 'mainstream' IDE too, eg: vscode (settings, format, plugins, etc.)
-    - [ ] ==user, server, common, private, business, work, work-a, etc.==
-    - [ ] stow ?
-      + at first glance yes: build folder ~dotfiles/$user~, so will most probably stow that folder
-      + checkout [[https://brandon.invergo.net/news/2012-05-26-using-gnu-stow-to-manage-your-dotfiles.html][this]], [[https://spin.atomicobject.com/manage-dotfiles-gnu-stow/][this]] and [[https://blog.palcu.net/2014/06/dotfiles-and-dev-tools-provisioned-by.html][this one maybe]] which relies more on ansible ("bash on steroid")
-    - [ ] live updates mechanism:
-      + [ ] preferably add 'uninstall' or remove command
-      + [ ] script for updating target 
-    - [ ] ansible might be a robust alternative to writing custom bash script, for example, could be useful to manage when an action was successful, or when an error occurs, resume where left off
-    - [ ] [[https://zellij.dev/documentation/][zellij]] (terminal multiplexer written in rust and made to be a better tool than tmux, which is written in C, and sometimes lacking)
-      + checkout how to create workspaces: https://spin.atomicobject.com/dev-project-workspace-tmux/
-      + checkout how to add more functionalities to it:
-        - https://jolicode.com/blog/organiser-son-terminal-avec-des-workspaces
-        - https://github.com/niflostancu/tmux-workspaces
-    - [ ] zplugin ? : as a replacement for zplug (https://gist.github.com/laggardkernel/4a4c4986ccdcaf47b91e8227f9868ded)
-- questions ::
-  + target structure ::
-    - should be different than the dotfiles structure ? => how will updates work when wants to change something and push it to dotfiles repo ?
-- issues :: (while working on dotfiles)
-  + testing dotfiles in an isolated (containerised, used podman here) environment:
-    - vim in containers:
-      + not pre-installed, so need to install it first
-      + vimrc:
-    - podman specific:
-      + running podman rootless/rootful environment:
-        - by default, podman runs a rootless environment, so no use to run a command that may change the state of the container's system such as ~apt~
-        - to be able to install packages, need to run podman rootful (run podman as root or sudo from host: ~sudo podman run~)
-        - in rootful, sudo is not installed, so might need to install it if needed
-        - not many user environment variables predefined, eg: $USER, that is needed by $TARGET_FOLDER. So, need for a way to do that, by using containerfile for example
-      + prepare podman container environment for dotfiles testing:
-        - commons to available options:
-          + run as rootful from host: (~sudo podman run~), needed since dotfiles configs are installing tools
-        - option 1 :: run as default "root" user, not really adapted to dotfiles testing, need further configs to be ready for dotfiles testing
-          + consequences (good and/or bad):
-            - no need to install sudo, but also need to twitch the dotfiles since their install are mainly sudo-based 
-          + steps to workaround configs issues:
-            - silence out (comment) "keep-alive" checks for sudo ~if sudo -v; then etc.~
-            - cancel out "sudo" wherever defined in the dotfiles: fortunately all dotfiles commands to run go through one function: ==dotfiles/configs/basic/bin/functions/utils.sh:execute_command==, so can filter out "sudo" from there:
-              #+begin_example
-              if [[ -n "$command_to_run" ]]; then
-                eval "$command_to_run"
-                if [[ "$command_to_run" == *"sudo"* ]]; then
-                  # thecmd=${command_to_run: 5} // remove since not specific enough
-                  thecmd=$(echo "$command_to_run" | sed -e 's/[[:space:]]*sudo[[:space:]]*//g')
-                  echo "the command to run: $thecmd"
-                  eval "$thecmd"
-                fi
-                #eval "$command_to_run"
-              fi
-              #+end_example
-          + containerfile:
-            #+begin_example
-            FROM debian:bookworm
-            ENV USER=root
-            RUN apt update && apt install -y vim git && mkdir repos && cd repos && git clone https://github.com/horamaAI/dotfiles.git
-            #+end_example
-        - option 2 :: run as pre-defined user
-          + consequences:
-            - use containerfile to define a user different than default root:
-              + without any further configs such as configuring UIDs and GIDs, even if running in rootful, the user won't still be able to install commands since only root inherits the privileges of the host's UID, and root user is the only one allowed to do so anyway
-              + can overcome issue the issue by installing sudo (from the containerfile), that will allow the default user to switch to root to install tools
-          + containerfile:
-            #+begin_example
-            FROM debian:bookworm
-            ARG CONTAINER_USER=sandboxuser
-            # for container to know it's one (useful for containerised development and troubleshooting)
-            ENV RUNNING_IN_DOCKER true
-            ENV USER $CONTAINER_USER
-            ENV HOME /home/$CONTAINER_USER
-            WORKDIR $HOME
-
-            RUN apt update && apt install -y vim git
-            RUN mkdir -p $HOME/repos && cd $HOME/repos && git clone https://github.com/horamaAI/dotfiles.git
-            RUN apt -y install sudo
-            RUN adduser --system --group $CONTAINER_USER \
-              && echo "${CONTAINER_USER}:${CONTAINER_USER}" | chpasswd \
-              && usermod -aG sudo $CONTAINER_USER
-            # give to defined normal user ownership of the home folder
-            RUN chown -R "${CONTAINER_USER}:${CONTAINER_USER}" $HOME
-            USER $USER
-            #+end_example
+** Draft configuration, organisation, drafts, etc.
+*** Todos, propositions, drafts, etc.
+- to include (suggestions) ::
+  + [ ] add ppas for additional apt installs (https://github.com/cowboy/dotfiles/blob/master/init/20_ubuntu_apt.sh#L16)
+  + [ ] packages and tools installation
+    - setup for installation mandatory essentials packages (build-essential, emacs, python, npm, etc.) before installing other tools
+    - example in [[https://github.com/rkalis/dotfiles/][this repo]], the main setup is running the [[https://github.com/rkalis/dotfiles/blob/master/bootstrap.sh#L30][main packages install]] (~./packages/setup.sh~ which is [[https://github.com/rkalis/dotfiles/blob/master/packages/setup.sh][here]]), and then locate and run the remaining setup (~find * -name "setup.sh" -not -wholename "packages*"~ and skips ~./packages/setup.sh~ which was run before)
+    - [ ] '*.list' ([selected] '*.yaml') files for installation specific commands (filed by +command to use+ :used by function: ~[folder]/packages~, ~[folder]/opt~, etc.), eg: ~apt.yaml~ for packages to install with apt, ~npm.yaml~ for npm, ~python3.yaml~, etc.
+      + [aborted] for packages to install, line starts with:
+        - ==$== : then the line is the command to use for following packages
+        - ==#== comment, skip
+        - all remaining lines are packages to install using current command
+      + [selected] use yaml file and install command content into a schema that validates
+    - [ ] opt
+    - [ ] git repositories
+  + [ ] tools configs: .zshrc, .zshrc_user, oh-my-zsh, .screen, .inputrc, .alias, etc
+  + [ ] emacs ::
+    - add in-terminal settings
+    - split profile for ==common== and ==dmahoro==
+  + [ ] git:
+    - [ ] git ci/cd, eg: git hooks
+    - [ ] git configs with multiple configs (direnv maybe ?: https://direnv.net/)
+      + checkout [[https://github.com/jogendra/dotfiles/blob/master/git/pull_request.sh][these cool git functions]] and [[https://github.com/jogendra/dotfiles/blob/master/git/gitconfig][configs]]
+    - [ ] git bare repo ?
+      + user's home is overflowing with dotfiles ('hidden'), mind it could be tedious if choose git bare and have to go through all the files to add to own dotfiles (https://web.archive.org/web/20171003124306/https://plus.google.com/+RobPikeTheHuman/posts/R58WgWwN9jp)
+  + [ ] checkout use of environment variables $XDG_* (https://0x46.net/thoughts/2019/02/01/dotfile-madness/ and https://wiki.gentoo.org/wiki/XDG/Base_Directories)
+    - $XDG_DATA_HOME or $HOME/.local/share for example to store plugins downloaded by the user, databases created by your program, user's input history, bookmarks, emails, and so on
+  + [ ] optimise auto-complete
+  + [ ] vim (learn basics, and tweak configs, seems there is no way to escape from it when working with bare installation or with the terminal)
+  + [ ] IDE ::
+    - add configs for one 'mainstream' IDE too, eg: vscode (settings, format, plugins, etc.)
+  + [ ] ==user, server, common, private, business, work, work-a, etc.==
+  + [ ] stow ?
+    - at first glance yes: build folder ~dotfiles/$user~, so will most probably stow that folder
+    - checkout [[https://brandon.invergo.net/news/2012-05-26-using-gnu-stow-to-manage-your-dotfiles.html][this]], [[https://spin.atomicobject.com/manage-dotfiles-gnu-stow/][this]] and [[https://blog.palcu.net/2014/06/dotfiles-and-dev-tools-provisioned-by.html][this one maybe]] which relies more on ansible ("bash on steroid")
+  + [ ] live updates mechanism:
+    - [ ] preferably add 'uninstall' or remove command
+    - [ ] script for updating target 
+  + [ ] ansible might be a robust alternative to writing custom bash script, for example, could be useful to manage when an action was successful, or when an error occurs, resume where left off
+  + [ ] [[https://zellij.dev/documentation/][zellij]] (terminal multiplexer written in rust and made to be a better tool than tmux, which is written in C, and sometimes lacking)
+    - checkout how to create workspaces: https://spin.atomicobject.com/dev-project-workspace-tmux/
+    - checkout how to add more functionalities to it:
+      + https://jolicode.com/blog/organiser-son-terminal-avec-des-workspaces
+      + https://github.com/niflostancu/tmux-workspaces
+  + [ ] zplugin ? : as a replacement for zplug (https://gist.github.com/laggardkernel/4a4c4986ccdcaf47b91e8227f9868ded)
+*** Notable files and folders (some)
 - dotfiles structure :: source of things to do
+- install.sh ::
+  + main entry point for dotfiles installation
+- configs :: 
+  + any env, 'smthing.yaml', opt, in config other than basic, is an addition to base config: ==basic > common > dmahoro==
+  + academic ::
+    - decouple config from 'private'
+    - latex for emacs
+  + basic ::
+    - ==packages/*.yaml== ::
+      + used to install tools needed for basic install use
+      + others tools to install are to be put in specific "group" of '*.yaml' installation files ('dpkg.yaml', 'pip.yaml', etc.)
+      + add some basic tools and default compilers to start with, so can do basic tasks such as running a basic test environment
+      + to install ::
+        - build-essential, git, tree, curl, wget, screen (GNU screen, multiplexer), g++, python, java jdk (basic one: default-jre), valgrind, ccze (log files colorizer)
+    - basic.env ::
+      + GNU screen custom configs ::
+        - see complete configs in basic configs ==screenrc== file
+        - change GNU screen's default control sequence prefix ~C-a~, which is used many other places and other commands, to ~C-@~, and its alias ~M-1~ (see [[file:linux_commands_and_tools.org::#screen_configs][see screen (terminal multiplexer)/basics/screen control sequence prefix]])
+        - bind ~[prefix] X~ to close current screen split region: ~bind X remove~ (same as doing into the split screen ~[prefix] ':remove'~)
+    - bin (folder) :: 
+    - opt (file) :: for opt configs
+    - opt.yaml ::
+      + basic 'opt' tools that needs to be cloned (org-contrib ?), or installed specifically in 'opt' folder
+      + to install :: ==opt/elisp/org-contrib==
+    - vim ::
+      + ".vimrc": vim configs
+      + vim.sh: for eventual plugin install
+      + emacs configs to be put in 'common' profile, in basic one just deal with vim terminal
+  + common ::
+    - apt.yaml ::
+      + add to default compilers further debugging, dependencies managers, and optimisation tools (valgrind, ansible, etc.)
+      + to install ::
+        - docker, ansible
+    - opt (file) :: further opt configs
+    - opt.yaml ::
+      + cloning additional elisp stuff, knowing that some are already in 'basic', eg: ==opt/elisp/org-contrib==
+    - dev (folder) ::
+      + contains configs for IDEs, formatting, dev utils, etc.
+      + additional tools/repos/plugins/etc. are either in 'dev' folder, or any other dotfile/**/*.yaml, such as ==./common/some-ide.yaml==
+      + docker ::
+      + podman ::
+      + vscode (folder) ::
+        - vscode (file) :: for configs
+        - vscode.yaml (file) ::
+          + to install extensions through command line, checkout how to do it [[https://code.visualstudio.com/docs/editor/extension-marketplace#_command-line-extension-management][here]]
+        - settings.json ::
+        - *.json :: 
+    - emacs (file) ? :: what to install in basic emacs split from common ?
+      + no 'emacs.yaml' file, emacs packages are installed and set in .el configuration files
+        - or maybe an emacs.sh since script will execute installation instructions
+      + basic emacs configs
+      + undo-tree, global-undo-tree-mode, emacs multiplexer
+      + do not forget to adapt emacs to windows, for example when enabling flyspell/ispell, one needs to install the dictionary first (here hunspell aspell is used in place of usual ispell):
+        #+begin_example
+        ;; add the path of the aspell exec to your emacs exec-path (absolute path required)
+        ;; but better use a generic path: ==~/opt/Hunspell== instead of "c:/Program Files (x86)/Hunspell/bin/"
+        (add-to-list 'exec-path "c:/Program Files (x86)/Hunspell/bin/")
+          
+        ;; tell emacs to use aspell in place of ispell
+        (setq ispell-program-name "hunspell")
+          
+        ;; from any file, one can select a different language dictionary with ==M-x ispell-change-dictionary==
+        (setq ispell-local-dictionary "en_US")
+          
+        ;; For saving new words to the personal dictionary, don't infer it from the locale, otherwise it will be saved to the default
+        (setq ispell-personal-dictionary "~/.hunspell_personal")
+          
+        (require 'ispell)
+        #+end_example
+    - emacs (folder) ? ::
+      + clone of ==~/.emacs.d/== ? :: should contain emacs.d content, ones that can't be installed
+    - git ::
+      + advanced configs, such as direnv
+      + preferably use git submodules when dealing with embedded repos, and maybe use subtree and worktrees when appropriate
+  + private ::
+    - added as a private repo with git submodules
+- profiles ::
+  + allows easy selection of given profile: suppose one needs to configure a very light basic environment (==basic==), an more heavier environment that is still missing personal stuff, but with a working docker environment: (==basic+common==), or a full personal profile that contains all "dmahoro" environment (==basic+common+private+academic==), etc.
+  + when a profile is configured meaning the structure is there, the env set, bin, etc. then one can stow that profile, for example ~stow common~
   + install.sh ::
-    - main entry point for dotfiles installation
-  + configs :: 
-    - any env, 'smthing.yaml', opt, in config other than basic, is an addition to base config: ==basic > common > dmahoro==
-    - academic ::
-      + decouple config from 'private'
-      + latex for emacs
-    - basic ::
-      + ==packages/*.yaml== ::
-        - used to install tools needed for basic install use
-        - others tools to install are to be put in specific "group" of '*.yaml' installation files ('dpkg.yaml', 'pip.yaml', etc.)
-        - add some basic tools and default compilers to start with, so can do basic tasks such as running a basic test environment
-        - to install ::
-          + build-essential, git, tree, curl, wget, screen (GNU screen, multiplexer), g++, python, java jdk (basic one: default-jre), valgrind, ccze (log files colorizer)
-      + basic.env ::
-        - GNU screen custom configs ::
-          + see complete configs in basic configs ==screenrc== file
-          + change GNU screen's default control sequence prefix ~C-a~, which is used many other places and other commands, to ~C-@~, and its alias ~M-1~ (see [[file:linux_commands_and_tools.org::#screen_configs][see screen (terminal multiplexer)/basics/screen control sequence prefix]])
-          + bind ~[prefix] X~ to close current screen split region: ~bind X remove~ (same as doing into the split screen ~[prefix] ':remove'~)
-      + bin (folder) :: 
-      + opt (file) :: for opt configs
-      + opt.yaml ::
-        - basic 'opt' tools that needs to be cloned (org-contrib ?), or installed specifically in 'opt' folder
-        - to install :: ==opt/elisp/org-contrib==
-      + vim ::
-        - ".vimrc": vim configs
-        - vim.sh: for eventual plugin install
-        - emacs configs to be put in 'common' profile, in basic one just deal with vim terminal
-    - common ::
-      + apt.yaml ::
-        - add to default compilers further debugging, dependencies managers, and optimisation tools (valgrind, ansible, etc.)
-        - to install ::
-          + docker, ansible
-      + opt (file) :: further opt configs
-      + opt.yaml ::
-        - cloning additional elisp stuff, knowing that some are already in 'basic', eg: ==opt/elisp/org-contrib==
-      + dev (folder) ::
-        - contains configs for IDEs, formatting, dev utils, etc.
-        - additional tools/repos/plugins/etc. are either in 'dev' folder, or any other dotfile/**/*.yaml, such as ==./common/some-ide.yaml==
-        - docker ::
-        - podman ::
-        - vscode (folder) ::
-          + vscode (file) :: for configs
-          + vscode.yaml (file) ::
-            - to install extensions through command line, checkout how to do it [[https://code.visualstudio.com/docs/editor/extension-marketplace#_command-line-extension-management][here]]
-          + settings.json ::
-          + *.json :: 
-      + emacs (file) ? :: what to install in basic emacs split from common ?
-        - no 'emacs.yaml' file, emacs packages are installed and set in .el configuration files
-          + or maybe an emacs.sh since script will execute installation instructions
-        - basic emacs configs
-        - undo-tree, global-undo-tree-mode, emacs multiplexer
-        - do not forget to adapt emacs to windows, for example when enabling flyspell/ispell, one needs to install the dictionary first (here hunspell aspell is used in place of usual ispell):
-          #+begin_example
-          ;; add the path of the aspell exec to your emacs exec-path (absolute path required)
-          ;; but better use a generic path: ==~/opt/Hunspell== instead of "c:/Program Files (x86)/Hunspell/bin/"
-          (add-to-list 'exec-path "c:/Program Files (x86)/Hunspell/bin/")
-          
-          ;; tell emacs to use aspell in place of ispell
-          (setq ispell-program-name "hunspell")
-          
-          ;; from any file, one can select a different language dictionary with ==M-x ispell-change-dictionary==
-          (setq ispell-local-dictionary "en_US")
-          
-          ;; For saving new words to the personal dictionary, don't infer it from the locale, otherwise it will be saved to the default
-          (setq ispell-personal-dictionary "~/.hunspell_personal")
-          
-          (require 'ispell)
-          #+end_example
-      + emacs (folder) ? ::
-        - clone of ==~/.emacs.d/== ? :: should contain emacs.d content, ones that can't be installed
-      + git ::
-        - advanced configs, such as direnv
-        - preferably use git submodules when dealing with embedded repos, and maybe use subtree and worktrees when appropriate
+    - so that can setup the selected profile, and also have the same basic folders organisation for all profiles  ::
+      + all profiles have the same basic folder organisation, and each content will expand from it:
+        - opt ::
+        - emacs ::
+        - repos ::
+        - etc. ::
+    - other profiles have this basic files structure, plus further customisation
+    - "custom" profile ::
+      - if select a specific profile, it might install others:
+        + common :: basic+common
+        + academic :: dmahoro-private
+        + private :: dmahoro-academic
+        + dmahoro :: all
+  + basic ::
+    - default environment installed if no particular one specified
+    - basic profile to bootstrap a lightweight and ready-to-go environment, eg: for a docker environment to use for tests
+  + common ::
+    - less lightweight than basic and close to full working environment, but still not too cluttered to be described as a "light" environment
+  + dmahoro ::
+    - "configs": ==basic + common + academic + private== (all)
+    - env :: 
+    - opt :: add further full profile for dmahoro "dev" for example, with c++/cmake/java/docker/etc.
+    - repos :: add complete list of repos
+      + org :: memacs
     - private ::
-      + added as a private repo with git submodules
-  + profiles ::
-    - allows easy selection of given profile: suppose one needs to configure a very light basic environment (==basic==), an more heavier environment that is still missing personal stuff, but with a working docker environment: (==basic+common==), or a full personal profile that contains all "dmahoro" environment (==basic+common+private+academic==), etc.
-    - when a profile is configured meaning the structure is there, the env set, bin, etc. then one can stow that profile, for example ~stow common~
-    - install.sh ::
-      + so that can setup the selected profile, and also have the same basic folders organisation for all profiles  ::
-        - all profiles have the same basic folder organisation, and each content will expand from it:
-          + opt ::
-          + emacs ::
-          + repos ::
-          + etc. ::
-      + other profiles have this basic files structure, plus further customisation
-      + "custom" profile ::
-        - if select a specific profile, it might install others:
-          + common :: basic+common
-          + academic :: dmahoro-private
-          + private :: dmahoro-acade
-          + dmahoro :: all
-    - basic ::
-      + default environment installed if no particular one specified
-      + basic profile to bootstrap a lightweight and ready-to-go environment, eg: for a docker environment to use for tests
-    - common ::
-      + less lightweight than basic and close to full working environment, but still not too cluttered to be described as a "light" environment
-    - dmahoro ::
-      + "configs": ==basic + common + academic + private== (all)
-      + env :: 
-      + opt :: add further full profile for dmahoro "dev" for example, with c++/cmake/java/docker/etc.
-      + repos :: add complete list of repos
-        - org :: memacs
-      + private ::
-        - set through profile 'private'
-        - folder containing private submodules, some with different remote links (direnv ?), but in any case need to set a ==gitignore== to adapt git configs to target different remotes for example
-        - see private for content structure pro
-        - work ::
-          + company_a ::
-          + company_b ::
-          + etc. :: 
-    - private ::
-      + profile for private stuff =>
-        - *DON'T commit keys/tokens/passwords and create SECURITY BREACHES*
-        - *DON'T push on public profile*
-        - dev-repos ::
-      + repos-private ::
-        - bizz ::
-          + for private projects with "for-profit" intent
-          + proj-a ::
-            - dev :: for repos
-            - org :: for org stuff
-          + proj-b ::
-          + etc.
-        - work ::
-          + company_a ::
-            - dev :: for repos
-            - org :: for org stuff
-    - "custom" ::
-      + alias for "common", but with different $USER value (is it even possible ? $USER is set at installation right ?)
-    - can create others whenever needed
-- testing ::
-  + required ::
-    - podman
-    - all steps can be found in and run from folder ~configs/common/containers~
-  + steps ::
-    1. pull debian sandbox: ~podman pull docker.io/library/debian:bookworm-slim~
-    2. build a Containerfile to configure the image build process:
-       #+begin_example
-       FROM debian:bookworm-slim
-       ARG CONTAINER_USER=sandboxuser
-       # Set the working directory in the container
-       WORKDIR /home/$CONTAINER_USER
-       RUN addgroup -S $CONTAINER_USER && adduser -S $CONTAINER_USER -G $CONTAINER_USER
-       USER $CONTAINER_USER
-       CMD ["whoami"]
-       #+end_example
-    3. run debian container: ~podman run -it debian:bookworm-slim~
-       - issues:
-         + podman containers are rootless so by default there is no 'sudo' allowed
-         + default user is "root", that can only change the state of the container when run as rootful: ~sudo podman run~
-         + fixes:
-           - still use 'root' as user:
-             + => no environment variables set, eg: "$user"
+      + set through profile 'private'
+      + folder containing private submodules, some with different remote links (direnv ?), but in any case need to set a ==gitignore== to adapt git configs to target different remotes for example
+      + see private for content structure pro
+      + work ::
+        - company_a ::
+        - company_b ::
+        - etc. :: 
+  + private ::
+    - profile for private stuff =>
+      + *DON'T commit keys/tokens/passwords and create SECURITY BREACHES*
+      + *DON'T push on public profile*
+      + dev-repos ::
+    - repos-private ::
+      + bizz ::
+        - for private projects with "for-profit" intent
+        - proj-a ::
+          + dev :: for repos
+          + org :: for org stuff
+        - proj-b ::
+        - etc.
+      + work ::
+        - company_a ::
+          + dev :: for repos
+          + org :: for org stuff
+  + "custom" ::
+    - alias for "common", but with different $USER value (is it even possible ? $USER is set at installation right ?)
+  + can create others whenever needed
+*** questions
+- target structure ::
+  + should be different than the dotfiles structure ? => how will updates work when wants to change something and push it to dotfiles repo ?
+** issues (while working on dotfiles)
+*** issues when testing dotfiles in an isolated (containerised) environment (podman here):
+- vim in containers ::
+  + not pre-installed, so need to install it first
+  + vimrc:
+- running podman in rootless/rootful environment ::
+  + by default, podman runs a rootless environment, so no use to run a command that may change the state of the container's system such as ~apt~
+  + to be able to install packages, need to run podman rootful (run podman as root or sudo from host: ~sudo podman run~)
+  + in rootful, sudo is not installed, so might need to install it if needed
+  + not many user environment variables predefined, eg: $USER, that is needed by $TARGET_FOLDER. So, need for a way to do that, by using containerfile for example
+- podman related ::
+  + zsh and podman issue ::
+    - when running sandbox, theme loading gets stucked, eg: stucked in "Installing spaceship-prompt/spaceship-prompt!"
+    - no definitive fix found so far, but workaround ::
+      1. in zsh shell, remove spaceship-prompt/spaceship-prompt using antigen: ~antigen purge spaceship-prompt/spaceship-prompt~
+      2. still in zsh shell, update antigen plugins: ~antigen update~
+      3. should do the trick
+- missing environment variables in container :: eg: "$user"
+  + use containerfile to set environment variables
+- podman container environment for dotfiles testing :: default root user, or custom user
+  + required options:
+    - run as rootful from host: (~sudo podman run~), since dotfiles configs install tools and change the state of the container
+  + option 1 :: run as default "root" user
+    - consequences (good and bad):
+      + no need to install sudo, which is not good since these dotfiles are oriented to usual linux user environment, which is sudo-based
+    - steps to workaround configs issues:
+      + silence out (comment) "keep-alive" part which is using sudo (~if sudo -v; then etc.~)
+      + cancel out "sudo" wherever defined in the dotfiles: fortunately all dotfiles commands to run go through one function: ==dotfiles/configs/basic/bin/functions/utils.sh:execute_command==, so can filter out "sudo" from there:
+        #+begin_example
+        if [[ -n "$command_to_run" ]]; then
+          eval "$command_to_run"
+          if [[ "$command_to_run" == *"sudo"* ]]; then
+            # thecmd=${command_to_run: 5} // remove since not specific enough
+            thecmd=$(echo "$command_to_run" | sed -e 's/[[:space:]]*sudo[[:space:]]*//g')
+            echo "the command to run: $thecmd"
+            eval "$thecmd"
+          fi
+          #eval "$command_to_run"
+        fi
+        #+end_example
+    - install required through containerfile:
+      #+begin_example
+      FROM debian:bookworm
+      ENV USER=root
+      RUN apt update && apt install -y vim git && mkdir repos && cd repos && git clone https://github.com/horamaAI/dotfiles.git
+      #+end_example
+  + option 2 [PREFERRED] :: run as pre-defined user
+    - consequences:
+      + use containerfile to define a user different than default root:
+        - without any further configs such as configuring UIDs and GIDs, even if running in rootful, the user won't still be able to install commands since only root inherits the privileges of the host's UID, and root user is the only one allowed to do so anyway
+        - can overcome issue by installing sudo (from the containerfile), that will allow the default user to switch to root to install tools
+    - containerfile:
+      #+begin_example
+      FROM debian:bookworm
+      ARG CONTAINER_USER=sandboxuser
+      # for container to know it's one (useful for containerised development and troubleshooting)
+      ENV RUNNING_IN_DOCKER true
+      ENV USER $CONTAINER_USER
+      ENV HOME /home/$CONTAINER_USER
+      WORKDIR $HOME
 
+      RUN apt update && apt install -y vim git
+      RUN mkdir -p $HOME/repos && cd $HOME/repos && git clone https://github.com/horamaAI/dotfiles.git
+      RUN apt -y install sudo
+      RUN adduser --system --group $CONTAINER_USER \
+        && echo "${CONTAINER_USER}:${CONTAINER_USER}" | chpasswd \
+        && usermod -aG sudo $CONTAINER_USER
+      # give to defined normal user ownership of the home folder
+      RUN chown -R "${CONTAINER_USER}:${CONTAINER_USER}" $HOME
+      USER $USER
+      #+end_example
+** Test/emulate/simulate
+- required ::
+  + podman
+  + all steps should be found in and run from folder ~configs/common/containers~ (TODO)
+- steps ::
+  1. pull debian sandbox: ~podman pull docker.io/library/debian:bookworm-slim~
+  2. build a Containerfile to configure the image build process, eg:
+     #+begin_example
+     FROM debian:bookworm-slim
+     ARG CONTAINER_USER=sandboxuser
+     # Set the working directory in the container
+     WORKDIR /home/$CONTAINER_USER
+     RUN addgroup -S $CONTAINER_USER && adduser -S $CONTAINER_USER -G $CONTAINER_USER
+     USER $CONTAINER_USER
+     CMD ["whoami"]
+     #+end_example
+  3. run debian container: ~podman run -it debian:bookworm-slim~
