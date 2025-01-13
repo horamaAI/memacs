@@ -273,21 +273,19 @@
   + main entry point for dotfiles installation
 - configs :: 
   + any env, 'smthing.yaml', opt, in config other than basic, is an addition to base config: ==basic > common > dmahoro==
-  + academic ::
-    - decouple config from 'private'
-    - latex for emacs
-  + basic ::
+  + basic :: configs and tools for basic environment
     - ==packages/*.yaml== ::
       + used to install tools needed for basic install use
       + others tools to install are to be put in specific "group" of '*.yaml' installation files ('dpkg.yaml', 'pip.yaml', etc.)
       + add some basic tools and default compilers to start with, so can do basic tasks such as running a basic test environment
       + to install ::
         - build-essential, git, tree, curl, wget, screen (GNU screen, multiplexer), g++, python, java jdk (basic one: default-jre), valgrind, ccze (log files colorizer)
-    - basic.env ::
-      + GNU screen custom configs ::
-        - see complete configs in basic configs ==screenrc== file
-        - change GNU screen's default control sequence prefix ~C-a~, which is used many other places and other commands, to ~C-@~, and its alias ~M-1~ (see [[file:linux_commands_and_tools.org::#screen_configs][see screen (terminal multiplexer)/basics/screen control sequence prefix]])
-        - bind ~[prefix] X~ to close current screen split region: ~bind X remove~ (same as doing into the split screen ~[prefix] ':remove'~)
+    - env :: 
+      + basic.env :: for lightweight basic configs
+        - GNU screen custom configs ::
+          + complete configs in ==screenrc==
+          + change GNU screen's default control sequence prefix ~C-a~, which is used many other places and other commands, to ~C-@~, and its alias ~M-1~ (see [[file:linux_commands_and_tools.org::#screen_configs][see screen (terminal multiplexer)/basics/screen control sequence prefix]])
+          + bind ~[prefix] X~ to close current screen split region: ~bind X remove~ (same as doing into the split screen ~[prefix] ':remove'~)
     - bin (folder) :: 
     - opt (file) :: for opt configs
     - opt.yaml ::
@@ -297,6 +295,9 @@
       + ".vimrc": vim configs
       + vim.sh: for eventual plugin install
       + emacs configs to be put in 'common' profile, in basic one just deal with vim terminal
+  + academic ::
+    - decouple config from 'private'
+    - latex for emacs
   + common ::
     - apt.yaml ::
       + add to default compilers further debugging, dependencies managers, and optimisation tools (valgrind, ansible, etc.)
@@ -409,18 +410,17 @@
 - vim in containers ::
   + not pre-installed, so need to install it first
   + vimrc:
+- zsh and podman ::
+  + when running sandbox, theme loading gets stucked, eg: stucked in "Installing spaceship-prompt/spaceship-prompt!"
+  + no definitive fix found so far, but workaround ::
+    1. in zsh shell, remove spaceship-prompt/spaceship-prompt using antigen: ~antigen purge spaceship-prompt/spaceship-prompt~
+    2. still in zsh shell, update antigen plugins: ~antigen update~
+    3. should do the trick
 - running podman in rootless/rootful environment ::
   + by default, podman runs a rootless environment, so no use to run a command that may change the state of the container's system such as ~apt~
   + to be able to install packages, need to run podman rootful (run podman as root or sudo from host: ~sudo podman run~)
   + in rootful, sudo is not installed, so might need to install it if needed
   + not many user environment variables predefined, eg: $USER, that is needed by $TARGET_FOLDER. So, need for a way to do that, by using containerfile for example
-- podman related ::
-  + zsh and podman issue ::
-    - when running sandbox, theme loading gets stucked, eg: stucked in "Installing spaceship-prompt/spaceship-prompt!"
-    - no definitive fix found so far, but workaround ::
-      1. in zsh shell, remove spaceship-prompt/spaceship-prompt using antigen: ~antigen purge spaceship-prompt/spaceship-prompt~
-      2. still in zsh shell, update antigen plugins: ~antigen update~
-      3. should do the trick
 - missing environment variables in container :: eg: "$user"
   + use containerfile to set environment variables
 - podman container environment for dotfiles testing :: default root user, or custom user
