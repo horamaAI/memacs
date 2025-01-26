@@ -475,6 +475,26 @@
       RUN chown -R "${CONTAINER_USER}:${CONTAINER_USER}" $HOME
       USER $USER
       #+end_example
+*** Miscs
+[2025-01-26 Sun 20:28]
+- why, how: (add bash tests using [[https://github.com/bats-core/bats-core?tab=readme-ov-file][bats]])
+  + to test that installations, other stuff and everything went well
+  + super global variable: for those tests purpose, one needs for example to collect installed tools/apps from various subscripts, and use them where the tests are defined, eg: ~configs/basic/tests/test.bats~
+  + hurdle: per any subscript that installs anything, it needs to return what was installed to parent (recursive too: collect everything installed by sub-subscripts, and return all to parent)
+  + files structure reminder
+    #+begin_example
+    + call to 'execute_install_command' // configs/basic/bin/functions/utils.sh
+    + profiles/basic/basic.sh
+    +   execute_install_command "apt" "sudo apt install ${apt_essentials[*]}"
+    +   execute_install_command "npm" "sudo npm install -g" "${npm_essentials[*]}"
+    +   configs/basic/packages/setup.sh
+    +     process_commands_in_yamls yamlscmds // configs/basic/bin/functions/utils.sh
+    +       for cmd_file in "${yamls_cmds[@]}"; do
+    +         parse_command_entries_in_yaml and add apps to install into $commands_list
+    +       for cmd in "${commands_list[@]}"; do
+    +         execute_install_command "read from yaml" "$cmd"
+    + // same for other profiles: ~profiles/*~
+    #+end_example
 ** Test/emulate/simulate
 - required ::
   + podman
