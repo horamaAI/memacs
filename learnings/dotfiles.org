@@ -483,11 +483,14 @@
   + hurdle: per any subscript that installs anything, it needs to return what was installed to parent (recursive too: collect everything installed by sub-subscripts, and return all to parent)
   + files structure reminder
     #+begin_example
-    + call to 'execute_install_command' // configs/basic/bin/functions/utils.sh
     + profiles/basic/basic.sh
+    +   // call to 'execute_install_command' (configs/basic/bin/functions/utils.sh)
+    +   // => can run execute_install_command, and if runs into an error, then WARN, or ERROR, otherwise store installed in the associated list
     +   execute_install_command "apt" "sudo apt install ${apt_essentials[*]}"
     +   execute_install_command "npm" "sudo npm install -g" "${npm_essentials[*]}"
-    +   configs/basic/packages/setup.sh
+    +   source configs/basic/packages/setup.sh
+    +     // sourced, so since in current shell, then can theoretically update associated list of installed tools
+    +     // otherwise, if setup.sh is run as bashed into a subshell, in that case to update content in this parent script, one can return from subshell, and retrieve values from parent shell
     +     process_commands_in_yamls yamlscmds // configs/basic/bin/functions/utils.sh
     +       for cmd_file in "${yamls_cmds[@]}"; do
     +         parse_command_entries_in_yaml and add apps to install into $commands_list
