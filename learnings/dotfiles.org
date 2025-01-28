@@ -498,6 +498,8 @@
     +         execute_install_command "read from yaml" "$cmd"
     + // same for other profiles: ~profiles/*~
     #+end_example
+  + how ::
+    - in schema, add field "command_for_test" that is run to test that installation of referenced package finished properly
 ** Test/emulate/simulate
 - required ::
   + podman
