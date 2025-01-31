@@ -481,7 +481,7 @@
   + to test that installations, other stuff and everything went well
   + super global variable: for those tests purpose, one needs for example to collect installed tools/apps from various subscripts, and use them where the tests are defined, eg: ~configs/basic/tests/test.bats~
   + hurdle: per any subscript that installs anything, it needs to return what was installed to parent (recursive too: collect everything installed by sub-subscripts, and return all to parent)
-  + files structure reminder
+  + files structure:
     #+begin_example
     + profiles/basic/basic.sh
     +   // call to 'execute_install_command' (configs/basic/bin/functions/utils.sh)
@@ -498,6 +498,8 @@
     +         execute_install_command "read from yaml" "$cmd"
     + // same for other profiles: ~profiles/*~
     #+end_example
+  + structure of test:
+    - ==for each pkg in packages, do if 'command_for_test pkg', then returns/print OK/check; otherwise KO/cross==
   + how ::
     - in schema, add field "command_for_test" that is run to test that installation of referenced package finished properly
 ** Test/emulate/simulate
