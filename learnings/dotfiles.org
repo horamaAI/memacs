@@ -475,9 +475,23 @@
       RUN chown -R "${CONTAINER_USER}:${CONTAINER_USER}" $HOME
       USER $USER
       #+end_example
+*** stowing is kinda ugly though, and maybe prone to bugs ?
+[2025-02-01 Sat 18:48]
+- what if ::
+  + proposition 1 ::
+    - keep list of generated dotfiles (eg: .zshrc),
+    - back-up existing one (by moving to name: original name, and appending: ==.original-backup==, eg: .zshrc.original-backup)
+    - copy file to target (eg: HOME)
+    - advantage (alleged):
+      + when comparing current state of environment with committed one (for example when added a tool, but didn't add it yet on dotfiles repo), one can compare the dotfiles in the stored list: ~diff local_dotfile VS dotfile_repo_counterpart~
+      + in that way, can for example implement a weekly verification of repo's required updates
 *** Miscs
 [2025-01-26 Sun 20:28]
 - why, how: (add bash tests using [[https://github.com/bats-core/bats-core?tab=readme-ov-file][bats]])
+  + chosen solution:
+    - global associative array of ==command->[packages]== is exported at superscript level,
+      + and for subscripts prefer sourcing than running in an independent shell
+    - ==execute_install_command== takes a 3rd optional argument, which is the associative array of ==command->[packages]==
   + to test that installations, other stuff and everything went well
   + super global variable: for those tests purpose, one needs for example to collect installed tools/apps from various subscripts, and use them where the tests are defined, eg: ~configs/basic/tests/test.bats~
   + hurdle: per any subscript that installs anything, it needs to return what was installed to parent (recursive too: collect everything installed by sub-subscripts, and return all to parent)
