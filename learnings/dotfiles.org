@@ -487,35 +487,51 @@
       + in that way, can for example implement a weekly verification of repo's required updates
 *** Miscs
 [2025-01-26 Sun 20:28]
-- why, how: (add bash tests using [[https://github.com/bats-core/bats-core?tab=readme-ov-file][bats]])
-  + chosen solution:
-    - global associative array of ==command->[packages]== is exported at superscript level,
-      + and for subscripts prefer sourcing than running in an independent shell
-    - ==execute_install_command== takes a 3rd optional argument, which is the associative array of ==command->[packages]==
-  + to test that installations, other stuff and everything went well
-  + super global variable: for those tests purpose, one needs for example to collect installed tools/apps from various subscripts, and use them where the tests are defined, eg: ~configs/basic/tests/test.bats~
-  + hurdle: per any subscript that installs anything, it needs to return what was installed to parent (recursive too: collect everything installed by sub-subscripts, and return all to parent)
-  + files structure:
-    #+begin_example
-    + profiles/basic/basic.sh
-    +   // call to 'execute_install_command' (configs/basic/bin/functions/utils.sh)
-    +   // => can run execute_install_command, and if runs into an error, then WARN, or ERROR, otherwise store installed in the associated list
-    +   execute_install_command "apt" "sudo apt install ${apt_essentials[*]}"
-    +   execute_install_command "npm" "sudo npm install -g" "${npm_essentials[*]}"
-    +   source configs/basic/packages/setup.sh
-    +     // sourced, so since in current shell, then can theoretically update associated list of installed tools
-    +     // otherwise, if setup.sh is run as bashed into a subshell, in that case to update content in this parent script, one can return from subshell, and retrieve values from parent shell
-    +     process_commands_in_yamls yamlscmds // configs/basic/bin/functions/utils.sh
-    +       for cmd_file in "${yamls_cmds[@]}"; do
-    +         parse_command_entries_in_yaml and add apps to install into $commands_list
-    +       for cmd in "${commands_list[@]}"; do
-    +         execute_install_command "read from yaml" "$cmd"
-    + // same for other profiles: ~profiles/*~
-    #+end_example
-  + structure of test:
-    - ==for each pkg in packages, do if 'command_for_test pkg', then returns/print OK/check; otherwise KO/cross==
-  + how ::
-    - in schema, add field "command_for_test" that is run to test that installation of referenced package finished properly
+- while adding bash tests for proper installation verification (using [[https://github.com/bats-core/bats-core?tab=readme-ov-file][bats]]) ::
+  + store installed components to test if everything went well ::
+    - solutions (proposed):
+      + storage ::
+        - [OK] global associative array :: of ==command->[packages]== is exported at superscript level,
+        - to allow adding to this super global variable, need to source subscripts, than running it in an independent shell
+      + ==execute_install_command== ? ::
+        - prop1: takes as 1st *mandatory* argument the associative array of ==command->[packages]==, and add to it the new installed elements
+        - prop2: same as prop1, but as 3rd optional argument (possible to do if arguments are grouped using quotes, eg: ~execute_install_command "arg1" "arg2_1 arg2_2" "arg3" "etc"~)
+          + pros: since optional, can just skip storage
+          + cons:
+            - ~if $# -gt 3, then~;
+            - does subscripts handling always proper and modify the right array ?;
+            - concats or overwrites ?
+        - [OK???] prop3 :: return what installed this turn
+          + pros:
+            - no additional if-then, or arguments for that matter;
+            - always returns, up to you to use or not
+          + cons ::
+            - key of associative array when concatenating ? :: ~asso_array[akey]+="a new value"~ seems to work
+      + ==execute_install_command== ? ::, takes a 1st *mandatory* argument, which is the associative array of ==command->[packages]== to add new elements to
+    - to test that installations, other stuff and everything went well
+    - super global variable: for those tests purpose, one needs for example to collect installed tools/apps from various subscripts, and use them where the tests are defined, eg: ~configs/basic/tests/test.bats~
+    - hurdle: per any subscript that installs anything, it needs to return what was installed to parent (recursive too: collect everything installed by sub-subscripts, and return all to parent)
+    - files structure:
+      #+begin_example
+      + profiles/basic/basic.sh
+      +   // call to 'execute_install_command' (configs/basic/bin/functions/utils.sh)
+      +   // => can run execute_install_command, and if runs into an error, then WARN, or ERROR, otherwise store installed in the associated list
+      +   execute_install_command "apt" "sudo apt install ${apt_essentials[*]}"
+      +   execute_install_command "npm" "sudo npm install -g" "${npm_essentials[*]}"
+      +   source configs/basic/packages/setup.sh
+      +     // sourced, so since in current shell, then can theoretically update associated list of installed tools
+      +     // otherwise, if setup.sh is run as bashed into a subshell, in that case to update content in this parent script, one can return from subshell, and retrieve values from parent shell
+      +     process_commands_in_yamls yamlscmds // configs/basic/bin/functions/utils.sh
+      +       for cmd_file in "${yamls_cmds[@]}"; do
+      +         parse_command_entries_in_yaml and add apps to install into $commands_list
+      +       for cmd in "${commands_list[@]}"; do
+      +         execute_install_command "read from yaml" "$cmd"
+      + // same for other profiles: ~profiles/*~
+      #+end_example
+    - structure of test:
+      - ==for each pkg in packages, do if 'command_for_test pkg', then returns/print OK/check; otherwise KO/cross==
+    - how ::
+      - in schema, add field "command_for_test" that is run to test that installation of referenced package finished properly
 ** Test/emulate/simulate
 - required ::
   + podman
