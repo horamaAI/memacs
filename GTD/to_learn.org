@@ -331,7 +331,7 @@
 ** TODO optional
      - 
 
-* CMAKE (file emacs_learnings.org)
+* Build systems: CMAKE, Maven, Gradle, etc. (file emacs_learnings.org)
   :PROPERTIES:
   :TAGS: To-learn_CMAKE
   :END:
