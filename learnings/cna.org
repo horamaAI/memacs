@@ -1111,27 +1111,30 @@
 - Paas :: Platform as a service, complete development and deployment environment in the cloud, with resources that enable to deliver everything from simple cloud-based apps to sophisticated, cloud-enabled enterprise applications
 - UID :: User ID
 * Glossary
-- cloud-native applications :: built as a set of microservices that run in /Open Container Initiative/ compliant containers
++ cloud-native applications :: built as a set of microservices that run in /Open Container Initiative/ compliant containers
   + cloud-native :: is like a set of capabilities, such as self-healing, auto-scaling, rolling updates, and more.
   + cloud-native doesn't apply only in the cloud, can do cloud-native capabilities on laptop/pc with docker desktop
   + advantages :: scalable, dynamic, loosely coupled via APIs for example, and more importantly, it can run anywhere with k8s
-- containers ::
-  + slices of the OS on which the apps are run
-- container runtime ::
++ containerization ::
+  + images, clusters, pods, etc. :: (recap: ==image -> container -> node -> pod -> cluster==)
+    - cluster :: (or 'swarm') set of machines or 'nodes', where node can be any type of node:  physical, virtual machines, cloud instances, etc.
+    - containers :: slices of the OS on which the apps are run
+    - pod :: logical wrapper for container(s)
++ container runtime ::
   + also called 'container engine': software component that can run containers on a host operating system
   + sits at the heart of any container service such as Docker
   + are daemon (background) processes responsible for managing container creation tasks such as pulling images from repositories, resource and storage allocation, network creation, etc.
-- containerd :: container runtime originally developed by Docker
++ containerd :: container runtime originally developed by Docker
   + docker uses containerd as its runtime for creating containers from images. Essentially, it acts as an interface (API) that allows users to use containerd to perform low-level functionality. Simply put, when you run Docker commands in the terminal, Docker relays those commands to its low-level runtime (Containerd) that carries out all the necessary procedures.
-- declarative approach ::
++ declarative approach ::
   + describes an application in a configuration file, and use that file to deploy the application
     - in other words, instead of deploying sets of apps and containers with loads of command line action, just list every step in a configuration file, give the file to the containerization platform, and let the platform do the hard work of deployment/management
   + compose file :: generally the declarative approach is done using a yaml configuration file called a "compose file"
-- docker hub :: container registry, a library of pre-existing docker images that can then be downloaded and run/used on a docker/podman host, other alternatives ::
++ docker hub :: container registry, a library of pre-existing docker images that can then be downloaded and run/used on a docker/podman host, other alternatives ::
   + github container registry
   + redhat container registry (quay.io)
   + own private/public container registry
   + etc.
-- docker images :: pre-packed application, has everything needed to run single application wrapped into a single bundle, eg: web server running static/dynamic content, database, etc.
-- runc :: CLI for spawning and running containers according to OCI specifications
-- workloads :: any application running on kubernetes for example
++ docker images :: pre-packed application, has everything needed to run single application wrapped into a single bundle, eg: web server running static/dynamic content, database, etc.
++ runc :: CLI for spawning and running containers according to OCI specifications
++ workloads :: any application running on kubernetes for example
