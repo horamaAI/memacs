@@ -485,7 +485,7 @@
     - advantage (alleged):
       + when comparing current state of environment with committed one (for example when added a tool, but didn't add it yet on dotfiles repo), one can compare the dotfiles in the stored list: ~diff local_dotfile VS dotfile_repo_counterpart~
       + in that way, can for example implement a weekly verification of repo's required updates
-*** Miscs
+*** Testing dotfiles environment
 [2025-01-26 Sun 20:28]
 - while adding bash tests for proper installation verification (using [[https://github.com/bats-core/bats-core?tab=readme-ov-file][bats]]) ::
   + store installed components to test if everything went well ::
