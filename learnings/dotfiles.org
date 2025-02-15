@@ -492,7 +492,8 @@
     - solutions (proposed):
       + storage ::
         - [OK] global associative array :: of ==command->[packages]== is exported at superscript level,
-        - to allow adding to this super global variable, need to source subscripts, than running it in an independent shell
+          + to allow adding to this super global variable, need to source subscripts, than running it in an independent shell
+        - could be a simple 1D associative array (element is a space separated string of packages) instead of a 2D one (associative array of array of packages) ? 
       + ==execute_install_command== ? ::
         - prop1: takes as 1st *mandatory* argument the associative array of ==command->[packages]==, and add to it the new installed elements
         - prop2: same as prop1, but as 3rd optional argument (possible to do if arguments are grouped using quotes, eg: ~execute_install_command "arg1" "arg2_1 arg2_2" "arg3" "etc"~)
