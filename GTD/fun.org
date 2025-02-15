@@ -14,6 +14,10 @@
 #+EXPORT_EXCLUDE_TAGS: noexport
 #+TODO: TODO(t) WAIT(w@/!) | DONE(d!) CANCELED(c@)
 
+* Dwarf fortress
+** To remember
+** Work order
+
 * Warhammer 40k
 ** primarchs by preferences (might change over time)
 1. ==Perturabo (T)==
