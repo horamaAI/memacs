@@ -32,7 +32,7 @@
   :PROPERTIES:
   :TAGS: To-learn_cpp
   :END:
-** TODO videos cpp [0/13]
+** TODO videos (and sometimes other material) cpp [0/13]
     SCHEDULED: <2023-01-18 Wed>
     1) [-] back to basics sessions ::
        + [X] cppcon2022 just Enough Assembly for Compiler Explorer :: https://www.youtube.com/watch?v=_sSFtJwgVYQ
@@ -57,6 +57,7 @@
        + [ ] cppcon2021 reaching aims of c++, bjarne stroustrup :: https://www.youtube.com/watch?v=15QF2q66NhU
        + [ ] cppcon2022 an C++ be 10x Simpler & Safer?, Herb Sutter :: https://www.youtube.com/watch?v=ELeZAKCN4tY
        + [ ] code europe 2023, C++hatGPT and AI tools' impact :: https://www.youtube.com/watch?v=trGJsOcA4hY
+       + [ ] cppcon2024 Building Safe and Reliable Surgical Robotics with C++ :: https://www.youtube.com/watch?v=Lnr75tbeYyA
        + [ ] intro to c++ : Modern C++ Quick Start Tutorial - 90 Topics in 20 Minutes :: https://www.youtube.com/watch?v=VpqwCDSfgz0
          - [ ] 5 Step Plan For Deeper C++ Knowledge :: https://www.youtube.com/watch?v=287_oG4CNMc
        + [ ] embrace no paradigm programming :: https://www.youtube.com/watch?v=fwXaRH5ffJM
@@ -76,7 +77,8 @@
        + [ ] dive into c++11, vittorio romeo (see also : http://vittorioromeo.info) :: https://www.youtube.com/watch?v=_4K3tsKa1Uc&list=PLTEcWGdSiQenl4YRPvSqW7UPC6SiGNN7e&index=1
          - [ ] git sources :: https://github.com/vittorioromeo/Tutorials
        + [ ] cppcon2019 compile time Regular Expressions :: https://www.youtube.com/watch?v=8dKWdJzPwHw
-    4) [ ] building c++ ::
+    4) [ ] building c++ with cmake (and others sometimes) ::
+       + [ ] cppcon2024 import CMake; // Mastering C++ Modules :: https://youtu.be/7WK42YSfE9s
        + [ ] cppcon2017 Using Modern CMake Patterns to Enforce a Good Modular Design :: https://www.youtube.com/watch?v=eC9-iRN2b04
        + [ ] cppcon2022 import CMake, CMake and C++20 Modules :: TBC (see : https://www.youtube.com/watch?v=5X803cXe02Y)
        + [ ] cppcon2021 Modern CMake Modules :: https://www.youtube.com/watch?v=IZXNsim9TWI
@@ -113,10 +115,13 @@
        + [ ] cppcon2015 gdb :: https://www.youtube.com/watch?v=PorfLSr3DDI
        + [ ] cpu caches :: https://youtu.be/WDIkqP4JbkE
        + [ ] cache friendly :: https://www.youtube.com/watch?v=yyNWKHoDtMs
+       + [ ] Linux User/Kernel ABI (application binary interface) Detail :: https://www.youtube.com/watch?v=4annFXzCTNk
        + [ ] cppcon2017 compilers, matt godbolt :: https://www.youtube.com/watch?v=bSkpMdDe4g4
        + [ ] cppcon2016 high performance code 201: hybrid data structures :: https://www.youtube.com/watch?v=vElZc6zSIXM
        + [ ] cppcon2018 more powerful and simpler c++, herb sutter (thoughts) :: https://www.youtube.com/watch?v=80BZxujhY38
        + [ ] cppcon2021 type-and-resource safety, bjarne :: https://www.youtube.com/watch?v=l3rvjWfBzZI
+       + [ ] miscs ::
+         - [ ] https://devblogs.microsoft.com/oldnewthing/20250214-00/?p=110868
     7) [ ] cppcon2021 package management ::
        + [ ] cppcon2021 lessons Learned from Packaging 10,000+ C++ Projects :: https://www.youtube.com/watch?v=R1E1tmeqxBY
     8) [ ] best practices ::
@@ -124,6 +129,8 @@
        + [ ] cppp2019 design, kate gregory :: https://www.youtube.com/watch?v=zjH2d5VhTD8
        + [ ] worst best practices, jason turner :: https://www.youtube.com/watch?v=KeI03tv9EKE
        + [ ] cppcon2021 reporting and handling errors :: https://www.youtube.com/watch?v=dQaRLmM7KKk
+       + [ ] Testing ::
+         - [ ] cppcon2024 Build Safe Modern C++ Application: Mix Assertion, Logging, Unit Testing and Fuzzing with ZeroErr :: https://www.youtube.com/watch?v=otSPZyXqY_M
     9) [ ] algorithms ::
        + [ ] cppcon2021 sums, products, exponents, functors, etc :: https://www.youtube.com/watch?v=FrPzW8U7O6o
        + [ ] cppcon2019 sorting algorithms, andrei alexandrescu :: https://www.youtube.com/watch?v=FJJTYQYB1JQ
@@ -133,9 +140,11 @@
        + [ ] cppcon2018 stl algorithms :: https://www.youtube.com/watch?v=2olsGf6JIkU
        + [ ] "art of code" :: https://www.youtube.com/watch?v=6avJHaC3C2U
     10) [ ] c++ performance and optimisation ::
+        + [ ] cppcon2024 Writing Portable C++ Programs for CPU and GPU :: https://youtu.be/7zfROx6KWAI
         + [ ] c++ performance and optimisation :: https://www.youtube.com/watch?v=eICYHA-eyXM
         + [ ] c++ performance and optimisation 2 :: https://www.youtube.com/watch?v=G6IYBY-ZyLI
         + [ ] cppcon2017 c++ performance "going nowhere faster" :: https://www.youtube.com/watch?v=2EWejmkKlxs
+        + [ ] cppcon2024 Performance Optimization in Software Development :: https://www.youtube.com/watch?v=kv6yqNjCjMM
         + [ ] cppcon2021 analyzing and improving build times :: https://www.youtube.com/watch?v=Iybb9wnpF00
         + [ ] cppcon2021 making the most of your compiler :: https://www.youtube.com/watch?v=tckHl8M3VXM
         + [ ] 'return x' optimisation ::
@@ -336,27 +345,21 @@
   :TAGS: To-learn_CMAKE
   :END:
 ** TODO current
-     - https://gist.github.com/GuillaumeDua/a2e9cdeaf1a26906e2a92ad07137366f
-     - https://www.youtube.com/watch?v=5FQwQ0QWBTU
-     - https://www.youtube.com/watch?v=4K9C83ZNNAg
-
-** TODO videos
-     - 
-     - 
-
+- https://gist.github.com/GuillaumeDua/a2e9cdeaf1a26906e2a92ad07137366f
+- https://www.youtube.com/watch?v=5FQwQ0QWBTU
+- https://www.youtube.com/watch?v=4K9C83ZNNAg
 **  TODO links
-     - https://www.emacswiki.org/emacs/CompileCommand
-     - https://stackoverflow.com/questions/2123669/configuring-emacs-for-cmake
-     - https://cmake.org/cmake/help/latest/variable/CMAKE_EXPORT_COMPILE_COMMANDS.html
-     - https://cmake.org/cmake/help/latest/guide/tutorial/index.html
-     - https://gcc.gnu.org/onlinedocs/gcc-4.1.0/gcc/Optimize-Options.html
-     - https://valgrind.org/docs/manual/manual.html
-     - https://www.gnu.org/software/make/manual/html_node/index.html#SEC_Contents
-     - https://www.hiroom2.com/2016/09/03/makefile-header-dependencies/
-     - https://github.com/torvalds/linux/blob/master/Documentation/dev-tools/gdb-kernel-debugging.rst
-
+- https://www.emacswiki.org/emacs/CompileCommand
+- https://stackoverflow.com/questions/2123669/configuring-emacs-for-cmake
+- https://cmake.org/cmake/help/latest/variable/CMAKE_EXPORT_COMPILE_COMMANDS.html
+- https://cmake.org/cmake/help/latest/guide/tutorial/index.html
+- https://gcc.gnu.org/onlinedocs/gcc-4.1.0/gcc/Optimize-Options.html
+- https://valgrind.org/docs/manual/manual.html
+- https://www.gnu.org/software/make/manual/html_node/index.html#SEC_Contents
+- https://www.hiroom2.com/2016/09/03/makefile-header-dependencies/
+- https://github.com/torvalds/linux/blob/master/Documentation/dev-tools/gdb-kernel-debugging.rst
 ** TODO optional
-     - 
+- 
 
 * hledger, emacs finance and accounting (file emacs_finance_hledger_learnings.org)
   :PROPERTIES:
