@@ -19,7 +19,6 @@
   :PROPERTIES:
   :TAGS: To-learn_todos
   :END:
-
 ** TODO Mooc: Recherche reproductible : principes méthodologiques pour une science transparente (org-mode in research)
   + link :: https://lms.fun-mooc.fr/courses/course-v1:inria+41016+self-paced/courseware/4ab137e597734d239618e813ff3287c9/
   + connection :: rurayi@, ma*7
@@ -108,7 +107,7 @@
        + [ ] cppcon2022 debugging :: https://www.youtube.com/watch?v=YzIBwqWC6EM
          - [ ] cppcon2018 :: https://www.youtube.com/watch?v=V1t6faOKjuQ
        + [ ] cppcon2017 linker :: https://www.youtube.com/watch?v=xVT1y0xWgww
-       + [ ] cpp performance tricks :: https://www.youtube.com/watch?v=tD4xRNB0M_Q
+       + [ ] cpp performance tricks (and profiling) :: https://www.youtube.com/watch?v=tD4xRNB0M_Q
        + [ ] cppcon2016 arguing about undefined behaviour :: https://www.youtube.com/watch?v=yG1OZ69H_-o
        + [ ] cppcon2016 leak-freedom in c++, herb :: https://www.youtube.com/watch?v=JfmTagWcqoE
        + [ ] cppcon2016 gdb :: https://www.youtube.com/watch?v=-n9Fkq1e6sg
@@ -116,6 +115,7 @@
        + [ ] cpu caches :: https://youtu.be/WDIkqP4JbkE
        + [ ] cache friendly :: https://www.youtube.com/watch?v=yyNWKHoDtMs
        + [ ] Linux User/Kernel ABI (application binary interface) Detail :: https://www.youtube.com/watch?v=4annFXzCTNk
+       + [ ] Debug Linux multi threaded code :: https://www.youtube.com/watch?v=KhcbRC8LDvo
        + [ ] cppcon2017 compilers, matt godbolt :: https://www.youtube.com/watch?v=bSkpMdDe4g4
        + [ ] cppcon2016 high performance code 201: hybrid data structures :: https://www.youtube.com/watch?v=vElZc6zSIXM
        + [ ] cppcon2018 more powerful and simpler c++, herb sutter (thoughts) :: https://www.youtube.com/watch?v=80BZxujhY38
