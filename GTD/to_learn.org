@@ -70,12 +70,13 @@
        + [ ] cppcon2017 tools and techniques to stay up-to-date with modern c++ :: https://www.youtube.com/watch?v=xDEGpKJ62lI
        + [ ] cppcon2014 essentials of modern c++ style, herb sutter :: https://www.youtube.com/watch?v=xnqTKD8uD64
        + [ ] cppcon2017 modern c++ c++17 and above, joel :: https://www.youtube.com/watch?v=gPj90zwLphw
+       + [ ] dive into c++11, vittorio romeo (see also : http://vittorioromeo.info) :: https://www.youtube.com/watch?v=_4K3tsKa1Uc&list=PLTEcWGdSiQenl4YRPvSqW7UPC6SiGNN7e&index=1
+         - [ ] git sources :: https://github.com/vittorioromeo/Tutorials
        + [ ] cppcon2022 what’s New in C++23, sy brand :: https://www.youtube.com/watch?v=vbHWDvY59SQ
        + [ ] cppcon2022 what's In It For You?, Marc Gregoire :: https://www.youtube.com/watch?v=b0NkuoUkv0M
        + [ ] cppcon2017 practical C++17, jason turner :: https://www.youtube.com/watch?v=nnY4e4faNp0
-       + [ ] dive into c++11, vittorio romeo (see also : http://vittorioromeo.info) :: https://www.youtube.com/watch?v=_4K3tsKa1Uc&list=PLTEcWGdSiQenl4YRPvSqW7UPC6SiGNN7e&index=1
-         - [ ] git sources :: https://github.com/vittorioromeo/Tutorials
        + [ ] cppcon2019 compile time Regular Expressions :: https://www.youtube.com/watch?v=8dKWdJzPwHw
+       + [ ] the many variants of std::variant :: https://youtu.be/GrCAb1RShxE
     4) [ ] building c++ with cmake (and others sometimes) ::
        + [ ] cppcon2024 import CMake; // Mastering C++ Modules :: https://youtu.be/7WK42YSfE9s
        + [ ] cppcon2017 Using Modern CMake Patterns to Enforce a Good Modular Design :: https://www.youtube.com/watch?v=eC9-iRN2b04
