@@ -492,6 +492,7 @@
     - solutions (proposed):
       + storage ::
         - [OK] global associative array :: of ==command->[packages]== is exported at superscript level,
+          + ==command== is the command to test if *installation went properly*, not the command that was used to install
           + to allow adding to this super global variable, need to source subscripts, than running it in an independent shell
         - could be a simple 1D associative array (element is a space separated string of packages) instead of a 2D one (associative array of array of packages) ? 
       + ==execute_install_command== ? ::
@@ -533,6 +534,12 @@
       - ==for each pkg in packages, do if 'command_for_test pkg', then returns/print OK/check; otherwise KO/cross==
     - how ::
       - in schema, add field "command_for_test" that is run to test that installation of referenced package finished properly
+  + install commands and their validation counterparts ::
+    - apt :: use apt-mark and grep on tested package name. Nice to utilise sequentially on the list of installed packages
+      + ~apt-mark showinstall | grep -q "^bats" && echo "installed" || echo "not"~
+    - npm :: test only globally installed. For local ones can check folder packages.
+      + ~npm list -g | grep pajv~
+
 ** Test/emulate/simulate
 - required ::
   + podman
