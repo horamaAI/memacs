@@ -77,11 +77,16 @@
        + [ ] cppcon2017 practical C++17, jason turner :: https://www.youtube.com/watch?v=nnY4e4faNp0
        + [ ] cppcon2019 compile time Regular Expressions :: https://www.youtube.com/watch?v=8dKWdJzPwHw
        + [ ] the many variants of std::variant :: https://youtu.be/GrCAb1RShxE
-    4) [ ] building c++ with cmake (and others sometimes) ::
-       + [ ] cppcon2024 import CMake; // Mastering C++ Modules :: https://youtu.be/7WK42YSfE9s
+    4) [ ] building c++ with cmake (and others dependencies managers sometimes) ::
        + [ ] cppcon2017 Using Modern CMake Patterns to Enforce a Good Modular Design :: https://www.youtube.com/watch?v=eC9-iRN2b04
-       + [ ] cppcon2022 import CMake, CMake and C++20 Modules :: TBC (see : https://www.youtube.com/watch?v=5X803cXe02Y)
-       + [ ] cppcon2021 Modern CMake Modules :: https://www.youtube.com/watch?v=IZXNsim9TWI
+       + [ ] c++ modules :: 
+         - [ ] cppcon2021 A (Short) Tour of C++ Modules, Daniela Engert :: https://www.youtube.com/watch?v=nP8QcvPpGeM
+         - [ ] using C++ Modules cross platform, Daniela Engert :: https://www.youtube.com/watch?v=iMNML689qlU
+         - [ ] cppcon2024 import CMake; // Mastering C++ Modules :: https://youtu.be/7WK42YSfE9s
+         - [ ] cppcon2022 import CMake, CMake and C++20 Modules :: TBC (see : https://www.youtube.com/watch?v=5X803cXe02Y)
+         - [ ] cppcon2021 Modern CMake Modules :: https://www.youtube.com/watch?v=IZXNsim9TWI
+         - [ ] cppcon2021 c++ modules :: https://www.youtube.com/watch?v=9OWGgkuyFV8
+       + [ ] clean CMake for C++ (library) developers, Kerstin Keller :: https://www.youtube.com/watch?v=k76LN8dSxx4
        + [ ] cppcon2019 deep CMake for Library :: https://www.youtube.com/watch?v=m0DwB4OvDXk
     5) [ ] design ::
        + [ ] cppcon2022 Back to Basics: Templates in C++ :: https://www.youtube.com/watch?v=HqsEHG0QJXU
@@ -95,7 +100,6 @@
        + [ ] cppp2021 classes design ::  https://www.youtube.com/watch?v=X1J-f4LpQ_4
        + [ ] cppcon2018 concepts the future of generic programming :: https://www.youtube.com/watch?v=HddFGPTAmtU
        + [ ] cppcon2017 design : concepts for customization points :: https://www.youtube.com/watch?v=WsUnnYEKPnI
-       + [ ] cppcon2021 c++ modules :: https://www.youtube.com/watch?v=9OWGgkuyFV8
        + [ ] cppcon2021 metaprogramming :: https://www.youtube.com/watch?v=FXfrojjIo80
        + [ ] cppcon2017 generative c++ :: https://www.youtube.com/watch?v=4AfRAVcThyA
        + [ ] cppcon2021 branchless programming :: https://www.youtube.com/watch?v=g-WPhYREFjk
