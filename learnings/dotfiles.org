@@ -530,6 +530,8 @@
       +         execute_install_command "read from yaml" "$cmd"
       + // same for other profiles: ~profiles/*~
       #+end_example
+    - other functions used:
+      + process_commands_in_yamls: as in ~process_commands_in_yamls yamlscmds~, used to read from yaml and execute install commands read from it
     - structure of test:
       - ==for each pkg in packages, do if 'command_for_test pkg', then returns/print OK/check; otherwise KO/cross==
     - how ::
