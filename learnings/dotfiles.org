@@ -559,3 +559,11 @@
      CMD ["whoami"]
      #+end_example
   3. run debian container: ~podman run -it debian:bookworm-slim~
+- podman commands :: (some, most used ones)
+  + ~sudo podman images -a~
+  + ~sudo podman ps -a~
+  + ~sudo podman run --rm -it test:latest~
+  + ~sudo podman rmi --all~
+  + ~sudo podman rmi a66502a66ac3~
+  + ~sudo podman build -t test:latest .~
+  + ~sudo podman top~
