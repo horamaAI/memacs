@@ -47,6 +47,8 @@
        + [ ] cppcon2014 type deduction and why you care :: https://www.youtube.com/watch?v=wQxj20X-tIU
     2) [ ] general c++ related talks ::
        + [ ] c++weekly, can AI And ChatGPT Replace C++ Programmers ? :: https://www.youtube.com/watch?v=TIDA6pvjEE0
+       + [ ] c++ Legacy Design Trends: Newer Isn’t Always Better! :: https://www.youtube.com/watch?v=ffz4oTMGh5E
+       + [ ] high-performance web applications with WebAssembly and WebGPU :: https://www.youtube.com/watch?v=TwsS6YJ6Mbw
        + [ ] Kate Gregory, "Am I A Good Programmer?" :: https://www.youtube.com/watch?v=pdHvC8fDC5E
        + [ ] Hiring in C++ :: https://www.youtube.com/watch?v=uqO8y81_RJI
        + [ ] essence of c++, bjarne stroustrup :: https://www.youtube.com/watch?v=86xWVb4XIyE
