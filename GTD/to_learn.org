@@ -110,6 +110,7 @@
        + [ ] cppcon2021 pattern matching :: https://www.youtube.com/watch?v=raB_289NxBk
     6) [ ] debugging and profiling ::
        + [ ] cppcon2021 basics of Profiling :: https://www.youtube.com/watch?v=dToaepIXW4s
+       + [ ] cppcon2024 Why C++ Build Slow? Compilation Profiling and Visualization :: https://www.youtube.com/watch?v=Oih3K-3eZ4Y
        + [ ] cppcon2018 how c++ debuggers work :: https://www.youtube.com/watch?v=0DDrseUomfU
        + [ ] cppcon2022 debugging :: https://www.youtube.com/watch?v=YzIBwqWC6EM
          - [ ] cppcon2018 :: https://www.youtube.com/watch?v=V1t6faOKjuQ
