@@ -487,6 +487,42 @@
       + in that way, can for example implement a weekly verification of repo's required updates
 *** Testing dotfiles environment
 [2025-01-26 Sun 20:28]
+- using jq and yq when formating data read/written from/to json/yaml ::
+  + ~yq '.' configs/basic/packages/apt.yaml | jq --arg buff '""' '.command_entries[] | .command + "=" + (.command_for_test // $buff)'~ :: fucking hell, do I really have to use a buffer variable to use quotes inside single quotes ????
+    #+begin_example
+    ```
+    "apt install=apt list --installed | grep -q"
+    "dpkg -i=\"\""
+    ```
+    #+end_example
+  + ~yq '.' ../configs/basic/packages/apt.yaml | jq '.command_entries[] | {(.command): (.command_for_test // "")} | to_entries'~
+    #+begin_example
+    ```
+    [
+      {
+        "key": "apt install",
+        "value": "apt list --installed | grep -q"
+      }
+    ]
+    [
+      {
+        "key": "dpkg -i",
+        "value": ""
+      }
+    ]
+    ```
+    #+end_example
+  + ~yq '.' ../configs/basic/packages/apt.yaml | jq '.command_entries[] | {(.command): (.command_for_test // "")} | to_entries | map("\(.key)=\(.value)")'~
+    #+begin_example
+    ```
+    [
+      "apt install=apt list --installed | grep -q"
+    ]
+    [
+      "dpkg -i="
+    ]
+    ```
+    #+end_example
 - while adding bash tests for proper installation verification (using [[https://github.com/bats-core/bats-core?tab=readme-ov-file][bats]]) ::
   + store installed components to test if everything went well ::
     - solutions (proposed):
