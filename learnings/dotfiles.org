@@ -488,6 +488,13 @@
 *** Testing dotfiles environment
 [2025-01-26 Sun 20:28]
 - using jq and yq when formating data read/written from/to json/yaml ::
+  + ~yq --arg buff 'xoxo' '.command_entries[] | [.command, .command_for_test // $buff, .description] | @tsv' configs/basic/packages/apt.yaml~ :: less manual parsing, and iterates in one go
+    #+begin_example
+    ```
+    "apt install\tapt list --installed | grep -q \tinstall via debian Advanced Package Tool"
+    "dpkg -i\txoxo\tdebian package manager"
+    ```
+    #+end_example
   + ~yq '.' configs/basic/packages/apt.yaml | jq --arg buff '""' '.command_entries[] | .command + "=" + (.command_for_test // $buff)'~ :: fucking hell, do I really have to use a buffer variable to use quotes inside single quotes ????
     #+begin_example
     ```
