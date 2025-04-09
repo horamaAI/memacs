@@ -495,6 +495,7 @@
     "dpkg -i\txoxo\tdebian package manager"
     ```
     #+end_example
+    - can also use @sh in place of @tsv to output shell that can interpret the data : ~yq --arg buff 'xoxo' '.command_entries[] | [.command, .command_for_test // $buff, .description] | @sh' configs/basic/packages/apt.yaml~
   + ~yq '.' configs/basic/packages/apt.yaml | jq --arg buff '""' '.command_entries[] | .command + "=" + (.command_for_test // $buff)'~ :: fucking hell, do I really have to use a buffer variable to use quotes inside single quotes ????
     #+begin_example
     ```
