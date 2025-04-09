@@ -496,6 +496,16 @@
     ```
     #+end_example
     - can also use @sh in place of @tsv to output shell that can interpret the data : ~yq --arg buff 'xoxo' '.command_entries[] | [.command, .command_for_test // $buff, .description] | @sh' configs/basic/packages/apt.yaml~
+      + however, still not comfortable with the tool, generates strings and spaces where not wanted
+      + tried: generate array with ~@sh~, replace (temporarily) needed spaces with underscores, remove quotes, replace new lines with spaces, trim trailing spaces, store in array (read array option for zsh is ~-A~, whereas for bash is ~-a~): ~read -A allo <<< $(yq --arg buff '' '.command_entries[] | [.command, .command_for_test // $buff, .description] | @sh' configs/basic/packages/apt.yaml | tr -d \'\" | tr ' ' '_' | tr '\n' ' ' | sed 's/[ \t]*$//')~
+        #+begin_example
+        ```
+        /apt_install_apt_list_--installed_|_grep_-q__install_via_debian_Advanced_Package_Tool/
+        /dpkg_-i__debian_package_manager/
+        ```
+        #+end_example
+        
+        
   + ~yq '.' configs/basic/packages/apt.yaml | jq --arg buff '""' '.command_entries[] | .command + "=" + (.command_for_test // $buff)'~ :: fucking hell, do I really have to use a buffer variable to use quotes inside single quotes ????
     #+begin_example
     ```
