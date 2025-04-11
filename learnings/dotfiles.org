@@ -503,9 +503,7 @@
         /apt_install_apt_list_--installed_|_grep_-q__install_via_debian_Advanced_Package_Tool/
         /dpkg_-i__debian_package_manager/
         ```
-        #+end_example
-        
-        
+        #+end_example    
   + ~yq '.' configs/basic/packages/apt.yaml | jq --arg buff '""' '.command_entries[] | .command + "=" + (.command_for_test // $buff)'~ :: fucking hell, do I really have to use a buffer variable to use quotes inside single quotes ????
     #+begin_example
     ```
