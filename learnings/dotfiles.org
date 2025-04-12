@@ -488,6 +488,7 @@
 *** Testing dotfiles environment
 [2025-01-26 Sun 20:28]
 - using jq and yq when formating data read/written from/to json/yaml ::
+  + did it finally work ? :: ~declare -A ffs="($(yq '.' configs/basic/packages/apt.yaml | jq --arg buff '' '.command_entries[] | "[" + (.command | @sh) + "]=" + (.command_for_test // $buff | @sh)' | tr -d \"))"~ (here, can use ~local~ in place of ~declare~ if inside function)
   + ~yq --arg buff 'xoxo' '.command_entries[] | [.command, .command_for_test // $buff, .description] | @tsv' configs/basic/packages/apt.yaml~ :: less manual parsing, and iterates in one go
     #+begin_example
     ```
