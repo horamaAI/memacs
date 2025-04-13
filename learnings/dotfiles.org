@@ -488,60 +488,68 @@
 *** Testing dotfiles environment
 [2025-01-26 Sun 20:28]
 - parsing json/yaml using jq and yq ::
-  + fetch content from multiple fields :: eg, fields: ~{ .command, .command_for_test }~
-  + wrapped into double quotes (jq returns a string) :: 
-  + did it finally work ? :: ~declare -A ffs="($(yq '.' configs/basic/packages/apt.yaml | jq --arg buff '' '.command_entries[] | "[" + (.command | @sh) + "]=" + (.command_for_test // $buff | @sh)' | tr -d \"))"~ (here, can use ~local~ in place of ~declare~ if inside function)
-  + ~yq --arg buff 'xoxo' '.command_entries[] | [.command, .command_for_test // $buff, .description] | @tsv' configs/basic/packages/apt.yaml~ :: less manual parsing, and iterates in one go
-    #+begin_example
-    ```
-    "apt install\tapt list --installed | grep -q \tinstall via debian Advanced Package Tool"
-    "dpkg -i\txoxo\tdebian package manager"
-    ```
-    #+end_example
-    - can also use @sh in place of @tsv to output shell that can interpret the data : ~yq --arg buff 'xoxo' '.command_entries[] | [.command, .command_for_test // $buff, .description] | @sh' configs/basic/packages/apt.yaml~
-      + however, still not comfortable with the tool, generates strings and spaces where not wanted
-      + tried: generate array with ~@sh~, replace (temporarily) needed spaces with underscores, remove quotes, replace new lines with spaces, trim trailing spaces, store in array (read array option for zsh is ~-A~, whereas for bash is ~-a~): ~read -A allo <<< $(yq --arg buff '' '.command_entries[] | [.command, .command_for_test // $buff, .description] | @sh' configs/basic/packages/apt.yaml | tr -d \'\" | tr ' ' '_' | tr '\n' ' ' | sed 's/[ \t]*$//')~
-        #+begin_example
-        ```
-        /apt_install_apt_list_--installed_|_grep_-q__install_via_debian_Advanced_Package_Tool/
-        /dpkg_-i__debian_package_manager/
-        ```
-        #+end_example    
-  + ~yq '.' configs/basic/packages/apt.yaml | jq --arg buff '""' '.command_entries[] | .command + "=" + (.command_for_test // $buff)'~ :: fucking hell, do I really have to use a buffer variable to use quotes inside single quotes ????
-    #+begin_example
-    ```
-    "apt install=apt list --installed | grep -q"
-    "dpkg -i=\"\""
-    ```
-    #+end_example
-  + ~yq '.' ../configs/basic/packages/apt.yaml | jq '.command_entries[] | {(.command): (.command_for_test // "")} | to_entries'~
-    #+begin_example
-    ```
-    [
-      {
-        "key": "apt install",
-        "value": "apt list --installed | grep -q"
-      }
-    ]
-    [
-      {
-        "key": "dpkg -i",
-        "value": ""
-      }
-    ]
-    ```
-    #+end_example
-  + ~yq '.' ../configs/basic/packages/apt.yaml | jq '.command_entries[] | {(.command): (.command_for_test // "")} | to_entries | map("\(.key)=\(.value)")'~
-    #+begin_example
-    ```
-    [
-      "apt install=apt list --installed | grep -q"
-    ]
-    [
-      "dpkg -i="
-    ]
-    ```
-    #+end_example
+  + fetch content from multiple fields :: eg, fetch content of fields: ~{ .command, .command_for_test }~
+    1. simplest way: ~jq '.command_entries[] | .command, .command_for_test'~, but then how to transform the result into an associated array
+    2. feedback on experimented commands:
+       - main issues:
+         + if transformed directly as an associative array directly from jq, then results are wrapped into double quotes (jq returns a string)
+         + in case data is missing, for example for .command_for_test which is nullable, how to replace 'null' into empty string
+       - what finally worked ::
+         + pipe each field to @sh (wraps in single quotes), and then trim double quotes at the edge: ~declare -A ffs="($(yq '.' configs/basic/packages/apt.yaml | jq --arg buff '' '.command_entries[] | "[" + (.command | @sh) + "]=" + (.command_for_test // $buff | @sh)' | tr -d \"))"~
+       - things tried:
+         + use default replacement when null or empty: ~(.nullable_field // [replacement])~, eg: ~yq '.command_entries[] | .command_for_test // "toto"' configs/basic/packages/apt.yaml~
+           - if need special formatting, for eg insert empty quotes as replacement, then better to use args definition with jq:  ~yq --arg buff '' '.command_entries[] | .command_for_test // $buff' configs/basic/packages/apt.yaml~, will replace with empty string, including the single quotes
+         + return results that are interpretable by the shell, eg: array of tab separated data (not raw string): ~yq --arg buff 'xoxo' '.command_entries[] | [.command, .command_for_test // $buff, .description] | @tsv' configs/basic/packages/apt.yaml~ -> pro: less manual parsing, big con: flat array, not formatted as associated array
+           #+begin_example
+           ```
+           "apt install\tapt list --installed | grep -q \tinstall via debian Advanced Package Tool"
+           "dpkg -i\txoxo\tdebian package manager"
+           ```
+           #+end_example
+         + can also use ~@sh~ in place of ~@tsv~ to return shell interpretable data: ~yq --arg buff 'xoxo' '.command_entries[] | [.command, .command_for_test // $buff, .description] | @sh' configs/basic/packages/apt.yaml~, will wrap the piped data into single quotes directly usable by the shell. -> has no con in itself really, just that if one is not careful, the result can still be encased into a string and thus be hard to parse again into an associative array
+           - eg: this complex parsing is trying to tweak a result from jq to be formatted as we want (array) ~read -A allo <<< $(yq --arg buff '' '.command_entries[] | [.command, .command_for_test // $buff, .description] | @sh' configs/basic/packages/apt.yaml | tr -d \'\" | tr ' ' '_' | tr '\n' ' ' | sed 's/[ \t]*$//')~
+             + however, the issue is jq that returns a faulty array from the beginning (single quote separated array, which is also considered as a single string), and can be hard to parse again if the starting result is already wrong (hard then to know which space is from original array's items, or is one used to separates items)
+             #+begin_example
+             ```
+             /apt_install_apt_list_--installed_|_grep_-q__install_via_debian_Advanced_Package_Tool/
+             /dpkg_-i__debian_package_manager/
+             ```
+             #+end_example    
+         + other more example of very complex jq formatting tweaks that still landed strings, or other unwanted results:
+           #+begin_example
+           $ yq '.' configs/basic/packages/apt.yaml | jq --arg buff '""' '.command_entries[] | .command + "=" + (.command_for_test // $buff)'
+           ```
+           "apt install=apt list --installed | grep -q"
+           "dpkg -i=\"\""
+           ```
+
+           # wtf, why ? just why ? xD
+           $ yq '.' configs/basic/packages/apt.yaml | jq '.command_entries[] | {(.command): (.command_for_test // "")} | to_entries | map("\(.key)=\(.value)")'
+           ```
+           [
+             "apt install=apt list --installed | grep -q"
+           ]
+           [
+             "dpkg -i="
+           ]
+           ```
+
+           $ yq '.' configs/basic/packages/apt.yaml | jq '.command_entries[] | {(.command): (.command_for_test // "")} | to_entries'
+           ```
+           [
+             {
+               "key": "apt install",
+               "value": "apt list --installed | grep -q"
+             }
+           ]
+           [
+             {
+               "key": "dpkg -i",
+               "value": ""
+             }
+           ]
+           ```
+           #+end_example
 - while adding bash tests for proper installation verification (using [[https://github.com/bats-core/bats-core?tab=readme-ov-file][bats]]) ::
   + store installed components to test if everything went well ::
     - solutions (proposed):
