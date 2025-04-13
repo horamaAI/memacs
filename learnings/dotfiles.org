@@ -487,7 +487,9 @@
       + in that way, can for example implement a weekly verification of repo's required updates
 *** Testing dotfiles environment
 [2025-01-26 Sun 20:28]
-- using jq and yq when formating data read/written from/to json/yaml ::
+- parsing json/yaml using jq and yq ::
+  + fetch content from multiple fields :: eg, fields: ~{ .command, .command_for_test }~
+  + wrapped into double quotes (jq returns a string) :: 
   + did it finally work ? :: ~declare -A ffs="($(yq '.' configs/basic/packages/apt.yaml | jq --arg buff '' '.command_entries[] | "[" + (.command | @sh) + "]=" + (.command_for_test // $buff | @sh)' | tr -d \"))"~ (here, can use ~local~ in place of ~declare~ if inside function)
   + ~yq --arg buff 'xoxo' '.command_entries[] | [.command, .command_for_test // $buff, .description] | @tsv' configs/basic/packages/apt.yaml~ :: less manual parsing, and iterates in one go
     #+begin_example
@@ -594,7 +596,6 @@
       + ~apt-mark showinstall | grep -q "^bats" && echo "installed" || echo "not"~
     - npm :: test only globally installed. For local ones can check folder packages.
       + ~npm list -g | grep pajv~
-
 ** Test/emulate/simulate
 - required ::
   + podman
