@@ -234,7 +234,7 @@
         - ==$== : then the line is the command to use for following packages
         - ==#== comment, skip
         - all remaining lines are packages to install using current command
-      + [selected] use yaml file and install command content into a schema that validates
+      + [selected] :: use yaml file and install command content into a schema that validates
     - [ ] opt
     - [ ] git repositories
   + [ ] tools configs: .zshrc, .zshrc_user, oh-my-zsh, .screen, .inputrc, .alias, etc
@@ -405,8 +405,8 @@
 *** questions
 - target structure ::
   + should be different than the dotfiles structure ? => how will updates work when wants to change something and push it to dotfiles repo ?
-** issues (while working on dotfiles)
-*** issues when testing dotfiles in an isolated (containerised) environment (podman here):
+** Issues (encountered while working on dotfiles)
+*** issues specific to testing dotfiles in an isolated (containerised) environment (podman):
 - vim in containers ::
   + not pre-installed, so need to install it first
   + vimrc:
@@ -488,7 +488,7 @@
 *** Testing dotfiles environment
 [2025-01-26 Sun 20:28]
 - parsing json/yaml using jq and yq ::
-  + fetch content from multiple fields :: eg, fetch content of fields: ~{ .command, .command_for_test }~
+  + fetch content from json multiple fields :: eg, fetch content of fields: ~{ .command, .command_for_test }~
     1. simplest way: ~jq '.command_entries[] | .command, .command_for_test'~, but then how to transform the result into an associated array
     2. feedback on experimented commands:
        - main issues:
@@ -496,7 +496,7 @@
          + in case data is missing, for example for .command_for_test which is nullable, how to replace 'null' into empty string
        - what finally worked ::
          + pipe each field to @sh (wraps in single quotes), and then trim double quotes at the edge: ~declare -A ffs="($(yq '.' configs/basic/packages/apt.yaml | jq --arg buff '' '.command_entries[] | "[" + (.command | @sh) + "]=" + (.command_for_test // $buff | @sh)' | tr -d \"))"~
-       - things tried:
+       - things tried ::
          + use default replacement when null or empty: ~(.nullable_field // [replacement])~, eg: ~yq '.command_entries[] | .command_for_test // "toto"' configs/basic/packages/apt.yaml~
            - if need special formatting, for eg insert empty quotes as replacement, then better to use args definition with jq:  ~yq --arg buff '' '.command_entries[] | .command_for_test // $buff' configs/basic/packages/apt.yaml~, will replace with empty string, including the single quotes
          + return results that are interpretable by the shell, eg: array of tab separated data (not raw string): ~yq --arg buff 'xoxo' '.command_entries[] | [.command, .command_for_test // $buff, .description] | @tsv' configs/basic/packages/apt.yaml~ -> pro: less manual parsing, big con: flat array, not formatted as associated array
@@ -550,61 +550,69 @@
            ]
            ```
            #+end_example
-- while adding bash tests for proper installation verification (using [[https://github.com/bats-core/bats-core?tab=readme-ov-file][bats]]) ::
-  + store installed components to test if everything went well ::
-    - solutions (proposed):
+- adding bash tests to verify proper installation (using [[https://github.com/bats-core/bats-core?tab=readme-ov-file][bats]]) ::
+  + store installed components, and use them later to test if everything went well ::
+    - to test that installations, and other stuff and everything went well
+    - solution presentation ::
       + storage ::
-        - [OK] global associative array :: of ==command->[packages]== is exported at superscript level,
-          + ==command== is the command to test if *installation went properly*, not the command that was used to install
-          + to allow adding to this super global variable, need to source subscripts, than running it in an independent shell
-        - could be a simple 1D associative array (element is a space separated string of packages) instead of a 2D one (associative array of array of packages) ? 
-      + ==execute_install_command== ? ::
-        - prop1: takes as 1st *mandatory* argument the associative array of ==command->[packages]==, and add to it the new installed elements
-        - prop2: same as prop1, but as 3rd optional argument (possible to do if arguments are grouped using quotes, eg: ~execute_install_command "arg1" "arg2_1 arg2_2" "arg3" "etc"~)
-          + pros: since optional, can just skip storage
-          + cons:
-            - ~if $# -gt 3, then~;
-            - does subscripts handling always proper and modify the right array ?;
-            - concats or overwrites ?
-        - [OK???] prop3 :: return what installed this turn
-          + pros:
-            - no additional if-then, or arguments for that matter;
-            - always returns, up to you to use or not
-          + cons ::
-            - key of associative array when concatenating ? :: ~asso_array[akey]+="a new value"~ seems to work
-      + ==execute_install_command== ? ::, takes a 1st *mandatory* argument, which is the associative array of ==command->[packages]== to add new elements to
-    - to test that installations, other stuff and everything went well
-    - super global variable (eg: ==INSTALLED_APPS==): for those tests purpose, one needs for example to collect installed tools/apps from various subscripts, and use them where the tests are defined, eg: ~configs/basic/tests/test.bats~
-    - hurdle: per any subscript that installs anything, it needs to return what was installed to parent (recursive too: collect everything installed by sub-subscripts, and return all to parent)
-    - files structure:
+        - 2 global associative arrays :: one for storing installed packages ('INSTALLED_APPS'), another to store commands to use for testing ('INSTALLED_APPS_TEST_CMDS')
+          + both arrays share keys '==command==', the command to test if installation went properly, *but also* the command that was used to install the packages:
+            1. values of each entry is the list of installed packages (space separated string), eg: ~["apt" -> "pkg1 pkg2 etc."]~
+            2. values of each entry is the command to use for testing, eg: ~["apt" -> "command to use for testing"]~
+        - both are simple 1D associative array (elements are space separated strings, of packages for example)
+          + instead of a 2D one (associative array of array of packages) ~["apt" -> [pkg1, pkg2, etc.]]~, too complicated, especially in bash
+      + pass those stored values between functions and subscripts :: eg.: pass them to function 'execute_install_command'
+        - both: exported at superscript level, and either sourced in subscripts, or passed as arguments to functions
+          + => careful! when running in independent shells and not using function arguments
+        - hurdles:
+          + for any subscript that installs anything, it needs to return what was installed to parent (recursive too: collect everything installed by subscripts, to return to root)
+        - things tried ::
+          + [selected] :: have as functions' *mandatory* arguments those associative array (propagate to subscripts with sourcing for the others)
+          + same as above, but optional instead (which is possible to achieve when arguments are grouped using quotes, eg: ~execute_install_command "arg1" "arg2_1 arg2_2" "arg3" "etc"~, and counting)
+            - pros: since optional, could be skipped
+              + check if meets number of mandatory arguments ~if $# -gt 3, then~;
+            - cons:
+              + counting => additional ifs
+          + return values to caller: (instead of passing argument as nameref)
+            - pros:
+              + no additional if-then, or arguments for that matter;
+              + always returns, up to you to use or not
+            - cons ::
+              + complex to use with associative arrays, eg when concatenating (though ~asso_array[akey]+="a new value"~ seems to work)
+                - not shell universal: when returning with ~echo "${installed_pkgs[@]@K}"~ for example, it expands (with ~@K~ parameter) the associative array as a string, which might not work the same on all shells, for example zsh
+      + test script :: where stored test data is used
+        - ~configs/basic/tests/test.bats~
+    - process example:
       #+begin_example
-      + profiles/basic/basic.sh // declares global variable 'INSTALLED_APPS'
+      + profiles/basic/basic.sh // declares global variable 'INSTALLED_APPS' and 'INSTALLED_APPS_TEST_CMDS'
       +   // call to 'execute_install_command' (configs/basic/bin/functions/utils.sh)
-      +   // => can run execute_install_command, and if runs into an error, then WARN, or ERROR, otherwise store installed in the associated list
-      +   execute_install_command "apt" "sudo apt install ${apt_essentials[*]}"
-      +   execute_install_command "npm" "sudo npm install -g" "${npm_essentials[*]}"
+      +   // - if runs into an error, then WARN, or ERROR, otherwise store installed in the associated list
+      +   execute_install_command "apt" "sudo apt install ${apt_essentials[*]}" INSTALLED_APPS_TEST_CMDS
+      +   execute_install_command "npm" "sudo npm install -g" "${npm_essentials[*]}" INSTALLED_APPS_TEST_CMDS
       +   source configs/basic/packages/setup.sh
-      +     // sourced, so since in current shell, then can theoretically update associated list of installed tools
-      +     // otherwise, if setup.sh is run as bashed into a subshell, in that case to update content in this parent script, one can return from subshell, and retrieve values from parent shell
-      +     process_commands_in_yamls yamlscmds // configs/basic/bin/functions/utils.sh
+      +     // sourced, so exported variables will be propagated to subscripts, and can update those
+      +     // otherwise, if setup.sh is run as bashed into a subshell, then to update content from caller script then better to chose functions arguments instead of returning from subshell, and retrieve values from parent shell, seems to complex
+      +     process_commands_in_yamls yamlscmds INSTALLED_APPS INSTALLED_APPS_TEST_CMDS // configs/basic/bin/functions/utils.sh
       +       for cmd_file in "${yamls_cmds[@]}"; do
       +         parse_command_entries_in_yaml and add apps to install into $commands_list
       +       for cmd in "${commands_list[@]}"; do
       +         execute_install_command "read from yaml" "$cmd"
-      + // same for other profiles: ~profiles/*~
+      + // implement same (or similar) for other profiles: ~profiles/*~
       #+end_example
     - other functions used:
-      + process_commands_in_yamls: as in ~process_commands_in_yamls yamlscmds~, used to read from yaml and execute install commands read from it
-    - structure of test:
-      - ==for each pkg in packages, do if 'command_for_test pkg', then returns/print OK/check; otherwise KO/cross==
-    - how ::
-      - in schema, add field "command_for_test" that is run to test that installation of referenced package finished properly
-  + install commands and their validation counterparts ::
-    - apt :: use apt-mark and grep on tested package name. Nice to utilise sequentially on the list of installed packages
-      + ~apt-mark showinstall | grep -q "^bats" && echo "installed" || echo "not"~
-    - npm :: test only globally installed. For local ones can check folder packages.
-      + ~npm list -g | grep pajv~
-** Test/emulate/simulate
+      + process_commands_in_yamls: as in ~process_commands_in_yamls yamlscmds~, used to read from yaml, execute install commands read from it, store them and the commands to use for testing (optional)
+    - testing ::
+      + required ::
+        - in schema, add field "command_for_test" that is run to test that installation of referenced package finished properly
+      + structure of test:
+      + how ::
+        - ==for each pkg in pkgs, if 'command_for_test pkg' returns ok, then print OK/check; otherwise KO/cross==
+        - suggestions for 'command_for_test' ::
+          - 'apt' :: use apt-mark and grep on tested package name. Nice to utilise sequentially on the list of installed packages
+            + ~apt-mark showinstall | grep -q "^bats" && echo "installed" || echo "not"~
+          - 'npm' :: test only globally installed. For local ones can check folder packages.
+            - ~npm list -g | grep pajv~
+** Test architecture and tool
 - required ::
   + podman
   + all steps should be found in and run from folder ~configs/common/containers~ (TODO)
