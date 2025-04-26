@@ -36,6 +36,7 @@
     1) [-] back to basics sessions ::
        + [X] cppcon2022 just Enough Assembly for Compiler Explorer :: https://www.youtube.com/watch?v=_sSFtJwgVYQ
        + [ ] cppcon2019 Matt godbolt, Compiler explorer behind the scenes :: https://www.youtube.com/watch?v=kIoZDUd5DKw
+         - [ ] What Every Programmer Should Know about How CPUs Work, Matt Godbolt :: https://www.youtube.com/watch?v=-HNpim5x-IE
        + [ ] cppcon2019 non-conforming cpp :: https://www.youtube.com/watch?v=IAdLwUXRUvg
        + [ ] cppcon2022 back to basics :: https://www.youtube.com/watch?v=G9MxNwUoSt0&list=RDCMUCMlGfpWw-RUdWX_JbLCukXg
        + [ ] cppcon2021 back to basics :: https://www.youtube.com/watch?v=Bt3zcJZIalk&list=PLHTh1InhhwT4TJaHBVWzvBOYhp27UO7mI
