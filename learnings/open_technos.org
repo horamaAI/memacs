@@ -6,6 +6,12 @@
 * open data
 * open API
 ** open API standard
+* openStack
+[2025-04-27 Sun 16:06]
+** general
+- notes ::
+  + OpenStack is a set of software components that provide common services for cloud infrastructure, and has proven as production at scale
+    - eg: grafana and openstack: https://grafana.com/docs/grafana-cloud/monitor-infrastructure/integrations/integration-reference/integration-openstack/
 * open containers
 [2024-10-11 Fri 23:11]
 * json and yaml
