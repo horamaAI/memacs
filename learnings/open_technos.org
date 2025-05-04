@@ -4,8 +4,11 @@
 
 
 * open data
-* open API
-** open API standard
+* APIs and open APIs
+** APIs
+[2025-05-04 Sun 19:49]
+** open APIs
+*** open APIs standard
 * openStack
 [2025-04-27 Sun 16:06]
 ** general

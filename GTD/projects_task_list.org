@@ -52,8 +52,9 @@
 ** NEXT WB API parser
 - characteristics ::
   + Java library; inversion of control framework: quarkus; dependency manager: gradle
-- tasks to complete [1/3] ::
+- tasks to complete [1/4] ::
   + [X] collect information on world bank API official page (https://datahelpdesk.worldbank.org/knowledgebase/topics/125589-developer-information)
+  + [ ] test further WB API: checkout advanced capabilities of WB API: advanced requests, using metadata/metatypes operations, searches, and requests, SDMX queries, etc.
   + [ ] learn Quarkus
   + [ ] learn java frameworks for big data: kafka, spark, hadoop, cassandra
 ** TODO WB API prober

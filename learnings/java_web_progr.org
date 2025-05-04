@@ -1803,6 +1803,7 @@
 [2024-03-15 Fri 21:04]
 *** Introduction
 - notes ::
+  + quarkus is slowly taking the lead over spring, due to its active evolution, but also to its advances in cloud native applications development
   + quarkus vs spring/spring boot ::
     - spring boot :: connects all Spring projects and helps accelerate developer productivity by offering many production-ready integrations, and thus reduces the amount of configuration and boilerplate. And thanks to its convention over configuration approach, which automatically registers default configurations based on the dependencies available at the classpath in the runtime, Spring Boot considerably reduces the time-to-market for many Java applications.
     - quarkus :: similar approach as Spring Boot, but with an additional promise of delivering smaller artifacts with fast boot time, better resource utilization, and efficiency. It’s optimized for cloud, serverless, and containerized environments. But despite this slightly different focus, Quarkus also integrates well with the most popular Java frameworks.
@@ -1828,6 +1829,7 @@
 *** standalone gradle
 [2024-02-21 Wed 22:48]
 **** Notes
+- better integration than maven ? (eg: is it easier to build embedded projects with gradle <=> is gradle more appropriate for multi builds projects, ie: where one "super" project is building multiple smaller project ?)
 - gradle comes with a built-in task, called ==init==, that initializes a new Gradle project (~gradle init~). The ==init== task uses the (also built-in) wrapper task to create a Gradle wrapper script, ==gradlew==.
 - ~gradle init~ prompts various options to select: the type of project to generate (basic, application, library, etc.), the implementation language, the build script DSL (kotlin, or groovy), and the test framework.
 **** Basics

@@ -3,11 +3,12 @@
 #+SETUPFILE: ~/set-up-files/basic-setups.org
 #+LANGUAGE: en
 #+OPTIONS: timestamp:t
-#+DESCRIPTION: Java and/or Cpp back-end project for probing *1A* data and APIs
+#+DESCRIPTION: Java and/or Cpp back-end project for probing *1A* data and APIs. A complement to [[file:./travel_agency_yta.org]], but more specific to 1A than YTA.
 #+KEYWORDS: YTA 1A org-mode Emacs organization
 
 * Notes
 ** General
+- a complement to [[file:./travel_agency_yta.org]], but more specific to 1A than YTA
 - 2 bridges to 1A API:
   + Self-Service plan :: instant access, pay-as-you-go, open documentation, free monthly requests
   + Enterprise plan :: advanced and more fine-tuned data and functionalities,

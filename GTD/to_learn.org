@@ -25,6 +25,7 @@
 ** TODO install ssh server (on myfirstdebianpc), and clients on other machines when needed : https://devconnected.com/how-to-install-and-enable-ssh-server-on-debian-10/
 ** TODO dependencies management : https://www.youtube.com/watch?v=7ZdMRLPZhFs
 ** TODO others
+  + [ ] state graphs (state machines) with modern c++
   + [ ] saas, ansible vs jenkins, spring batch, multi agent system starcraft 2
 
 * Cpp modern learning (file : cpp_learnings.org) [0/3]
