@@ -23,6 +23,8 @@
 [2025-05-05 Mon 21:40]
 - [ ] add properties and drawers to org-files
 - [ ] assign tags to "tasks_list" org-files
+- [ ] complete export setup, finish for example ==org-publish-project-alist==
+- [ ] set repeating tasks with checklists that automatically reset when lap/tour is done, checkout for example ==org-checklist==
 - [ ] find a way to use tags with hierarchies, for eg, checkout ==:startgrouptag==, ==:grouptags== and ==:endgrouptag== used within ==org-tag-alist==
 - [ ] dependencies/packages management : https://www.youtube.com/watch?v=7ZdMRLPZhFs
 - [ ] plan ==habits== and add them to org-mode/org-agenda file(s)
