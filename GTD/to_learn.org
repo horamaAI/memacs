@@ -21,6 +21,7 @@
   :END:
 ** TODO emacs and org-mode
 [2025-05-05 Mon 21:40]
+- [ ] split emacs configs to load a basic light version that can run fast on a lightweight environment, eg: a docker instance
 - [ ] add properties and drawers to org-files
 - [ ] assign tags to "tasks_list" org-files
 - [ ] complete export setup, finish for example ==org-publish-project-alist==
@@ -35,6 +36,8 @@
 ** TODO others
   + [ ] state graphs (state machines) with modern c++
   + [ ] saas, ansible vs jenkins, spring batch, multi agent system starcraft 2
+  + [ ] [design and architecture]: practice designing with diagrams, i.e.: practice using usecase, sequences, class, errors and errors handling representation, etc.
+  + [ ] [fun] : running API/app: check if can't connect to mapmyrun application API and play with it, with their data, with more data provided (training plan, diet, etc.)
 * Cpp modern learning (file : cpp_learnings.org) [0/3]
   :PROPERTIES:
   :TAGS: To-learn_cpp
