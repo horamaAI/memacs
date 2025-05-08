@@ -33,11 +33,16 @@
 - [ ] link :: https://lms.fun-mooc.fr/courses/course-v1:inria+41016+self-paced/courseware/4ab137e597734d239618e813ff3287c9/
 - [ ] connection :: rurayi@, ma*7
 ** TODO install ssh server (on myfirstdebianpc), and clients on other machines when needed : https://devconnected.com/how-to-install-and-enable-ssh-server-on-debian-10/
+** TODO cloud, devops
+[2025-05-08 Thu 21:15]
+- [ ] exercise: build cloud system, using docker or podman, with for example: kubernetes as the orchestrator (add openshift on top of it ?), and:
+  + cluster(s) with at least 3 managers each, and as many workers and pods as needed for the exercise/app
+  + checkout ubuntu multipass VMs for lightweight resources to play with
 ** TODO others
-  + [ ] state graphs (state machines) with modern c++
-  + [ ] saas, ansible vs jenkins, spring batch, multi agent system starcraft 2
-  + [ ] [design and architecture]: practice designing with diagrams, i.e.: practice using usecase, sequences, class, errors and errors handling representation, etc.
-  + [ ] [fun] : running API/app: check if can't connect to mapmyrun application API and play with it, with their data, with more data provided (training plan, diet, etc.)
+- [ ] state graphs (state machines) with modern c++
+- [ ] saas, ansible vs jenkins, spring batch, multi agent system starcraft 2
+- [ ] [design and architecture]: practice designing with diagrams, i.e.: practice using usecase, sequences, class, errors and errors handling representation, etc.
+- [ ] [fun] : running API/app: check if can't connect to mapmyrun application API and play with it, with their data, with more data provided (training plan, diet, etc.)
 * Cpp modern learning (file : cpp_learnings.org) [0/3]
   :PROPERTIES:
   :TAGS: To-learn_cpp
