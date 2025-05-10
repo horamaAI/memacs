@@ -23,7 +23,9 @@
 [2025-05-05 Mon 21:40]
 - [ ] split emacs configs to load a basic light version that can run fast on a lightweight environment, eg: a docker instance
 - [ ] split org-files contributing to org-agenda, and label/tag them, i.e.:
-  + by default: 
+  + by default: learning to this org-file, with tag ==[LEARNING]== for example; and for other general tasks, use [[file:./projects_task_list.org]], with tag ==[PROJECT]==
+  + for each task, add estimate of a threshold for accumulated clocking time, a limit within which a task is supposed to last
+    - define metrics to use: subject complexity, utility of the task, feasibility, etc.
 - [ ] add properties and drawers to org-files
 - [ ] assign tags to "tasks_list" org-files
 - [ ] complete export setup, finish for example ==org-publish-project-alist==
