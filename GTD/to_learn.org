@@ -22,6 +22,8 @@
 ** TODO emacs and org-mode
 [2025-05-05 Mon 21:40]
 - [ ] split emacs configs to load a basic light version that can run fast on a lightweight environment, eg: a docker instance
+- [ ] split org-files contributing to org-agenda, and label/tag them, i.e.:
+  + by default: 
 - [ ] add properties and drawers to org-files
 - [ ] assign tags to "tasks_list" org-files
 - [ ] complete export setup, finish for example ==org-publish-project-alist==
