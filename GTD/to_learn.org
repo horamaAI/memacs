@@ -19,7 +19,7 @@
 - [ ] MVP Dotfiles *(1)*
 - [ ] Norang.ca *(2)*
 - [ ] emacs from scratch *(3)*
-- [ ] next should be ==FUN MOOCS: emacs + org-mode==, and from there, allowed to pursue other topics
+- [ ] next should be ==FUN MOOCS: emacs + org-mode==, and from there, allowed to pursue other topics, such as: https://www.emacslife.com/baby-steps-org.html
 * Todos tasks related to learning
   :PROPERTIES:
   :TAGS: To-learn_todos
