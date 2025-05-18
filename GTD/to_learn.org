@@ -20,10 +20,19 @@
 - [ ] Norang.ca *(2)*
 - [ ] emacs from scratch *(3)*
 - [ ] from there, allowed to pursue other topics, but next should be:
-  + [ ] have a look at: https://www.emacslife.com/baby-steps-org.html, https://sachachua.com/blog/2007/12/how-to-use-emacs-org-as-a-basic-day-planner/
-  + [ ] and then visit: ==FUN MOOCS: emacs + org-mode==: "Recherche reproductible : principes méthodologiques pour une science transparente"
+  + [ ] have a better look at org-agenda:
+    - https://www.emacslife.com/baby-steps-org.html,
+    - https://cachestocaches.com/2016/9/my-workflow-org-agenda/
+    - https://blog.aaronbieber.com/2016/09/24/an-agenda-for-life-with-org-mode.html
+    - https://sachachua.com/blog/2007/12/how-to-use-emacs-org-as-a-basic-day-planner/
+    - https://orgmode.org/worg/org-contrib/babel/languages/ob-doc-plantuml.html
+  + [ ] and then:
+    - ==FUN MOOCS: emacs + org-mode==: "Recherche reproductible : principes méthodologiques pour une science transparente": https://gitlab.inria.fr/learninglab/mooc-rr/mooc-rr-ressources/blob/master/module2/ressources/emacs_orgmode.org, https://gitlab.inria.fr/learninglab/mooc-rr/mooc-rr-ressources/-/blob/master/module2/ressources/rr_org/init.org
+    - https://github.com/novoid/Memacs, https://github.com/novoid/dot-emacs/blob/master/config.org
     - https://lms.fun-mooc.fr/courses/course-v1:inria+41016+self-paced/courseware/fa3d3b7b336143beb6d1a3fd4c6c5686/
     - https://gitlab.inria.fr/learninglab/mooc-rr/mooc-rr-ressources/blob/master//module2/ressources/emacs_orgmode.org
+    - https://karl-voit.at/tagstore/downloads/Voit2012b.pdf
+    - https://www.youtube.com/watch?v=74zOY-vgkyw&list=PLEoMzSkcN8oPH1au7H6B7bBJ4ZO7BXjSZ
 * Todos tasks related to learning
   :PROPERTIES:
   :TAGS: To-learn_todos
