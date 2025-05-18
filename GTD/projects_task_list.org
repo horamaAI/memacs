@@ -13,6 +13,22 @@
 #+EXPORT_SELECT_TAGS: export
 #+EXPORT_EXCLUDE_TAGS: noexport
 
+* Notes
+[2025-05-18 Sun 14:30]
+- generic goals ::
+  + excellent advices from Clement Uwajeneza :: (source: https://www.youtube.com/watch?v=0zyh-5tnWYQ)
+    - tldr ::
+      1. focus on the problem expertise than the technical, highlight your understanding of the problematic
+      2. from start :: set-up goals/definitions/specs, and build metrics to incrementally evaluate closeness to goal(s)
+      3. selling your solution should be stated as: "given these sets of functional issues, and ease of adoption by the end-users, our solution is providing this improvement..., but also given that..., etc."
+    - ask yourself : what do you want to achieve :: focus on the *service* and the *needs*
+      + forget about the techno from the get-go :: don't provide the latest apps/technos/product/means for the sake of selling your technical expertise,
+      + instead, learn from the identified needs, gather information, and use the technical knowledge to provide a product adapted to the need, for its improvement, but also that can be easily adopted
+      + avoid too complex solutions, that can be too complicated to deploy, complicated to communicate and used by the user
+    - set up metrics :: from the start, even when knows that they will be subject to change later on, be able to fix metrics criteria,
+      + helps to further improve the understanding of the problematic,
+      + also helps ease communication with the customers
+    - remember, technos are not products, they are tools
 * Placeholder for misc project tickets
 [2024-03-15 Fri 21:20]
 ** dotfiles

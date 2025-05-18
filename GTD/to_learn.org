@@ -19,13 +19,54 @@
 - [ ] MVP Dotfiles *(1)*
 - [ ] Norang.ca *(2)*
 - [ ] emacs from scratch *(3)*
-- [ ] next should be ==FUN MOOCS: emacs + org-mode==, and from there, allowed to pursue other topics, such as: https://www.emacslife.com/baby-steps-org.html
+- [ ] from there, allowed to pursue other topics, but next should be:
+  + [ ] have a look at: https://www.emacslife.com/baby-steps-org.html, https://sachachua.com/blog/2007/12/how-to-use-emacs-org-as-a-basic-day-planner/
+  + [ ] and then visit: ==FUN MOOCS: emacs + org-mode==: "Recherche reproductible : principes méthodologiques pour une science transparente"
+    - https://lms.fun-mooc.fr/courses/course-v1:inria+41016+self-paced/courseware/fa3d3b7b336143beb6d1a3fd4c6c5686/
+    - https://gitlab.inria.fr/learninglab/mooc-rr/mooc-rr-ressources/blob/master//module2/ressources/emacs_orgmode.org
 * Todos tasks related to learning
   :PROPERTIES:
   :TAGS: To-learn_todos
   :END:
 ** TODO emacs and org-mode
 [2025-05-05 Mon 21:40]
+- [ ] find a way to use tags with hierarchies, https://www.gnu.org/software/emacs/manual/html_node/org/Tag-Hierarchy.html, for eg, checkout ==:startgrouptag==, ==:grouptags== and ==:endgrouptag== used within ==org-tag-alist==
+  + the goal is to have a tag taxonomy per folders/files/topics: (or even within org-mode configuration file, eg: [[file:../init_configs.org]])
+    - US.es ::
+      + -> LP
+      + -> MIP
+      + -> MOP (Multi-objective programming)
+      + -> MMOP (Metaheuristics in MOP)
+      + -> etc.
+    - or with a more descriptive way: US.es ::
+      + thesis :: ==thesis== being a tag, but not its components (chap1, biblio, etc.), which are just a structured view, or a description, of the content
+        - chap1
+        - chap2
+        - etc.
+        - biblio
+      + method :: here ==method== *and* its components ==LP==, ==MIP==, etc., *are all* tags, to ease even further retrieval. The constraint being that a component such as ==LP==, cannot be used without it's parent ==method==
+        - LP (Linear programming)
+        - MIP (Mixed integer programming)
+        - MOP (Multi-objective programming)
+        - GA (Genetic Algorithms)
+        - MMOP (Metaheuristics in MOP)
+        - etc.
+      + data :: here, components are also views/description into the content
+        - "results of implementation of MIP model 'toto' on benchmark 6 of complex datasets representing scenario 2"
+        - etc.
+      + language :: (all tags)
+        - C++
+        - JAVA
+        - LISP
+        - bash
+        - etc.
+      + framework :: (all tags)
+        - quarkus
+        - spring
+      + dependency manager :: (all tags)
+        - cmake
+        - gradle
+        - maven
 - [ ] split emacs configs to load a basic light version that can run fast on a lightweight environment, eg: a docker instance
 - [ ] split org-files contributing to org-agenda, and label/tag them, i.e.:
   + by default: learning to this org-file, with tag ==[LEARNING]== for example; and for other general tasks, use [[file:./projects_task_list.org]], with tag ==[PROJECT]==
@@ -35,7 +76,6 @@
 - [ ] assign tags to "tasks_list" org-files
 - [ ] complete export setup, finish for example ==org-publish-project-alist==
 - [ ] set repeating tasks with checklists that automatically reset when lap/tour is done, checkout for example ==org-checklist==
-- [ ] find a way to use tags with hierarchies, for eg, checkout ==:startgrouptag==, ==:grouptags== and ==:endgrouptag== used within ==org-tag-alist==
 - [ ] dependencies/packages management : https://www.youtube.com/watch?v=7ZdMRLPZhFs
 - [ ] plan ==habits== and add them to org-mode/org-agenda file(s)
 ** TODO Mooc: Recherche reproductible : principes méthodologiques pour une science transparente (org-mode in research)
