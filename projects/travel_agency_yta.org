@@ -315,7 +315,11 @@
 - entry point of the overall platform, the orchestrator that receives and send all requests to/from YTA platform
 * Architectures and workflows
 [2024-08-07 Wed 21:41]
-- 
+- HLS services ::
+  + Overall ::
+    #+begin_src plantuml :file ../images/yta_services.png :cache yes
+    Bob -> Alice : Hello World!
+    #+end_src
 * Glossary
 [2024-08-23 Fri 22:09]
 ** Per product level
@@ -350,3 +354,6 @@ Hello World, we are YTA, Your Travel agency, as in GNU's own tradition: YTA's a 
 [2024-08-24 Sat 18:34]
 * Prospects (potential improvements)
 [2024-08-07 Wed 21:37]
+* Acronyms
+[2025-05-24 Sat 21:26]
+- HLS :: High Level Solution

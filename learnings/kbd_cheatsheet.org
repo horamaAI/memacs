@@ -510,13 +510,12 @@
       to check if specific need occurs
 
 *** Publishing and exporting
-    - publish single file :: 'C-c C-e' + key of export type needed
-    - publish graphics with plantuml and ditaa ::
-      1. create source block within #+begin_src ... #+end_src
-      2. build the picture with 'C-c C-c'
-	 - toggle display of inline images with 'C-c C-x C-v'
-    - publishing projects (or multiple files) :: TO_COMPLETE      
-
+- publish single file :: 'C-c C-e' + key of export type needed
+- publish graphics with plantuml and ditaa ::
+  1. create source block within #+begin_src ... #+end_src
+  2. build the picture with 'C-c C-c'
+- toggle display of inline images :: 'C-c C-x C-v'
+- publishing projects (or multiple files) :: TO_COMPLETE
 ** hledger
   + 
 * vim
