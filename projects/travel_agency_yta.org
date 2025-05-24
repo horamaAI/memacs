@@ -317,9 +317,38 @@
 [2024-08-07 Wed 21:41]
 - HLS services ::
   + Overall ::
-    #+begin_src plantuml :file ../images/yta_services.png :cache yes
-    Bob -> Alice : Hello World!
+    #+begin_src dot :file ../images/yta_services.png :cmdline -Kdot -Tpng :exports both :cache yes
+    digraph G {
+      rankdir="LR"; // position left to right
+      subgraph cluster_0 {
+        style=filled;
+        color=lightgrey;
+        edge [dir="both"];
+        node [style=filled,color=white];
+        buff [label="",style=invis];
+        YTAPI -> ADAP;
+        // ugly trick using hidden elements to improve display
+        YTAPI -> buff -> ADAP [style=invis];
+        YTAPI -> OPT -> ADAP;
+        label = "YTA";
+      }
+      subgraph cluster_1 {
+        ama [label="1A API"];
+        label = "1A";
+      }
+      subgraph cluster_2 {
+        style=dashed
+        additionalgds [label="?",style=dashed];
+        label = "?";
+      }
+      ADAP -> ama;
+      ADAP -> additionalgds [style="dotted"];
+    }
     #+end_src
+
+    #+results[aa7bba1d80a7d8ade56619c1ec3a67c25c02f5d4]:
+    [[file:../images/yta_services.png]]
+
 * Glossary
 [2024-08-23 Fri 22:09]
 ** Per product level
