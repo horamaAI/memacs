@@ -288,6 +288,9 @@
 [2024-08-07 Wed 22:03]
 - notes ::
   + ADAP for "Adaptor", a bridge to 1A API, the interface to amadeus public API
+    - should completely be data and model oriented, and split into two:
+      + *RW*: one part *only* just gathering and maybe adding some decorators specific to the provider:
+      + *FORM*: the other part adapting the data from the providers to YTAPI, and, if necessary, also the one adapting specific models into more generic ones that can be agnostically be used by YTA
   + ADAP: a compound of components, one service that can be considered as a global group of microservices performing one business objective: providing an adapted API that links to 1A API
   + components in ADAP:
     - FORM :: a formatter/wrapper of data that are exchanged with 1A (data from/to *RW* really)
@@ -348,7 +351,7 @@
 
     #+results[aa7bba1d80a7d8ade56619c1ec3a67c25c02f5d4]:
     [[file:../images/yta_services.png]]
-  + ADAP :: FORM (formatter/wrapper of data that exchanged with provider (data from/to *RW*) + RW ("Reader-Writer", the actual proxy to 1A, or any other provider)
+  + ADAP :: an adaptor of a provider GDS data models, consists (so far) of: FORM (formatter/wrapper of data that exchanged with provider (data from/to *RW*) + RW ("Reader-Writer", the actual proxy to 1A, or any other provider)
     #+begin_src dot :file ../images/adap_libs.png :cmdline -Kdot -Tpng :exports both :cache yes
     digraph G {
       rankdir="LR"; // position left to right
@@ -362,7 +365,9 @@
         edge [dir="both"];
         node [style=filled,color=white];
         buff [label="",style=invis];
-        FORM -> RW;
+        FORM -> RW_1A;
+        RW_x [style="dashed,filled",color=white];
+        FORM -> RW_x [style="dotted"];
         label = "ADAP";
       }
       subgraph cluster_1 {
@@ -377,12 +382,12 @@
         label = "?";
       }
       emptynode -> FORM [dir="both",label="OPT,YTAPI"];
-      RW -> ama;
-      RW -> additionalgds [style="dotted"];
+      RW_1A -> ama;
+      RW_x -> additionalgds [style="dotted"];
     }
     #+end_src
 
-    #+results[835d49ef151e3f3b29d60f049f54b1ff5d75b895]:
+    #+results[a57c17d4a60b63f3f8e71dcdc8b6d437a62598d9]:
     [[file:../images/adap_libs.png]]
 
 * Glossary
