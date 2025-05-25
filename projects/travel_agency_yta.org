@@ -348,6 +348,42 @@
 
     #+results[aa7bba1d80a7d8ade56619c1ec3a67c25c02f5d4]:
     [[file:../images/yta_services.png]]
+  + ADAP :: FORM (formatter/wrapper of data that exchanged with provider (data from/to *RW*) + RW ("Reader-Writer", the actual proxy to 1A, or any other provider)
+    #+begin_src dot :file ../images/adap_libs.png :cmdline -Kdot -Tpng :exports both :cache yes
+    digraph G {
+      rankdir="LR"; // position left to right
+      subgraph cluster_dummy {
+        style=invis;
+        emptynode [label="",style=invis];
+      }
+      subgraph cluster_0 {
+        style=filled;
+        color=lightblue;
+        edge [dir="both"];
+        node [style=filled,color=white];
+        buff [label="",style=invis];
+        FORM -> RW;
+        label = "ADAP";
+      }
+      subgraph cluster_1 {
+        color=lightgrey;
+        ama [label="1A API"];
+        label = "1A";
+      }
+      subgraph cluster_2 {
+        color=lightgrey;
+        style=dashed
+        additionalgds [label="?",style=dashed];
+        label = "?";
+      }
+      emptynode -> FORM [dir="both",label="OPT,YTAPI"];
+      RW -> ama;
+      RW -> additionalgds [style="dotted"];
+    }
+    #+end_src
+
+    #+results[835d49ef151e3f3b29d60f049f54b1ff5d75b895]:
+    [[file:../images/adap_libs.png]]
 
 * Glossary
 [2024-08-23 Fri 22:09]
