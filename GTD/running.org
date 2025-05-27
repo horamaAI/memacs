@@ -15,15 +15,36 @@
 #+TODO: TODO(t) WAIT(w@/!) | DONE(d!) CANCELED(c@)
 
 
-* Important elements
+* Important
 [2024-03-12 Tue 21:47]
-- cadence
+- cadence ::
 - stride length/angle :: goal: land foot beneath a *flexing* knee, but don't overstride. As cadence increases, so should the stride angle. Stride angle: as one leg backward (maximum extension of leg backward) how high is the knee drive on the forward leg (angle between backward and forward leg when backward leg is extended the most)
 - posture :: should run in a bending forward lean push, instead of just bending forward at the waist: focus on holding hips high, up, and forward: maintain an aligned posture from top to toe
 - arm movements :: swing arms in relaxed and rhythmic coordination with stride, and motion should originate from shoulders
+-  :: 
 
 * Training
-- my usual levels of training :: 5Km -> 10Km -> 15Km -> 20Km
+- my usual levels of training :: 5Km/10Km/15Km; maybe sometimes do an attempt on 20Km
+- types of trainings ::
+  + strength/muscles: (S)
+  + usual/normal/easy: (E)
+  + fartlek: (F)
+  + speed: (S)
+  + length/Endurance: (L)
+  + rest: X
+- try to plan a mix per week ::
+  | M   | T | W   | T | F | S   | S   |
+  |-----+---+-----+---+---+-----+-----|
+  | (E) | X | (L) | X | X | (E) | (S) |
+  
+- sketch of plan :: try to stick to program/month, but can mix/alternate between options, eg: opt1, and then one of 2, 3, 4
+  |                         |  M | T |  W | T |  F |  S |  S | per month (~4weeks) |
+  |-------------------------+----+---+----+---+----+----+----+---------------------|
+  | opt1: 65k/week          | 10 |   | 15 |   | 15 | 10 | 15 | ~260k               |
+  | opt2: 60k/week          | 15 |   | 15 |   | 15 | 15 |    | ~240k               |
+  | opt3: (variant of opt2) | 15 |   | 15 |   |  6 | 18 |  6 | "                   |
+  | opt4: (variant of opt2) | 15 |   |  5 |   | 10 | 10 | 10 | "                   |
+  
 - fartlek
 - strength
 
