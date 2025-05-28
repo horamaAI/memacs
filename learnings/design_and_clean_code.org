@@ -5,64 +5,66 @@
 
 * Architectures
 ** General
-- software architectures ::
-  + EDA :: event-driven architecture, uses events to trigger and communicate between decoupled services and is common in
-    modern applications built with microservices. eg of event: change in state, update, item being placed in a shopping
-    cart on an e-commerce website, etc.
-  + SOA :: service oriented architecture that focuses on discrete services instead of a monolithic design
-    - microservices vs SOA ::
-      + the main distinction between the two approaches comes down to scope. To put it simply, service-oriented
-        architecture (SOA) has an enterprise scope, while the microservices architecture has an application scope. And
-        in microservices, applications are decoupled and each service can have independent data storage, unlike SOA
-      + other differences ::
-        - on dependency :: SOA is more business units dependent, while for microservices each microservice is
-          independent and they don't usually share a data layer
-        - design :: SOA focuses on application service reusability, while microservices focus on decoupling
-        - software size :: usually larger than in any other architecture, while microservices consist of small
-          independent serice
-        - architecture :: SOA: fine-grained or centralized, microservices: coarse-grained or decentralized
-        - services :: SOA: business, entreprise or infrastructure, microservices: functional and infrastructure
-
+*** software architectures types
+- EDA :: event-driven architecture, uses events to trigger and communicate between decoupled services and is common in
+  modern applications built with microservices. eg of event: change in state, update, item being placed in a shopping
+  cart on an e-commerce website, etc.
+- SOA :: service oriented architecture that focuses on discrete services instead of a monolithic design
+  + microservices vs SOA ::
+    - the main distinction between the two approaches comes down to scope. To put it simply, service-oriented
+      architecture (SOA) has an enterprise scope, while the microservices architecture has an application scope. And
+      in microservices, applications are decoupled and each service can have independent data storage, unlike SOA
+    - other differences ::
+      + dependencies :: SOA is more business units dependent, while for microservices each microservice is
+        independent and they don't usually share a data layer
+      + design :: SOA focuses on application service reusability, while microservices focus on decoupling
+      + software size :: usually larger than in any other architecture, while microservices consist of small
+        independent serice
+      + architecture :: SOA: fine-grained or centralized, microservices: coarse-grained or decentralized
+      + services :: SOA: business, entreprise or infrastructure, microservices: functional and infrastructure
 ** Microservices
-- services/applications data exchange/communication with REST, RPC, GraphQL, Soap, message brokers, etc. ::
-  + general ::
-    - REST works based on a blocking request-response mechanism => not always appropriate for microservices
-      communication, check instead gRPC or message brokers for example
-    - gRPC cannot always be used when memory is required to be allocated on the receiving end to handle response,
-      because it always needs one
-    - gRPC is usually more suited for inter-service calls while message brokers are more suited for task queueing
-  + some protocols used ::
-    - REST: http1
-    - gRPC: http2 (faster than one for REST, but still http), which enforces binary format by default => gRPC needs to
-      serialize the data to binary before sending (gRPC uses protobuf binary serialization format)
-  + deployment method ::
-    - gRPC is a protocol based on HTTP 2.0 and works at runtime layer of software stack. Many language runtimes
-      (Node.js, Java, etc.) already have implemented HTTP 2.0 and so, support gRPC. A library is usually used to enable
-      gRPC connections within a language runtime
-    - a message broker on the other hand is an executable, installed on a server and uses memory and disk space to
-      function. Many can be run on software containers or on Kubernetes, and clients that connect to a message broker
-      can use REST or gRPC. An SDK in most cases is needed to ease the process of interacting with a message broker
-  + message broker :: server that contains a persistent, append-only log that stores messages; a kind of server
-    containing different log files that get updated as new data comes in
-    - same as gRPC, message brokers usually allow data streaming, and are usually language agnostic (mostly, can be
-      unavailable to some languages)
-    - some differences message brokers - gRPC:
-      + message broker typically stores data on a disk (since persistent), while gRPC operates on the RAM (since it
-        operates at source code layer). However, can persist gRPC data by combining gRPC with messages brokers if
-        transactions tracking is fundamental
-      + and a message broker is installed as an executable on a server while gRPC depends on HTTP 2.0
-    - some message brokers: Apache Kafka, Redis, RabbitMQ, Nats
-  + data streaming :: allows single request to return lot more data than would typically be, eg: REST doesn't allow data
-    streaming since 1 request only gets 1 response
-    - data streaming is also bi-direction (server -> client, and client -> server, since the client is really any
-      service that makes the initial request); and data can be sent from server to client as soon as the data is produced
-  + stream buffering :: (preloading and storing portions of a media file in a buffer or temporary memory of a device)
-    - gRPC being a messaging protocol can't buffer streaming data, unlike message brokers that can store millions of
-      streamed messages as they are produced
-    - example: streaming temperature data from a thermometer in a factory might require real-time processing, and some
-      server processing the data as it comes. This streaming process is heavy on the server, and so, there is a need to
-      process streams in real-time without overwhelming it. Message brokers are ideal to handle this scenario
-
+*** services/applications data exchange/communication with REST, RPC, GraphQL, Soap, message brokers, etc. ::
+- general ::
+  + REST works based on a blocking request-response mechanism => not always appropriate for microservices communication,
+    check instead gRPC or message brokers for example
+  + gRPC cannot always be used when memory is required to be allocated on the receiving end to handle response, because
+    it always needs one
+  + gRPC is usually more suited for inter-service calls while message brokers are more suited for task queueing
+- some protocols used per architectures ::
+  + REST: http1
+  + gRPC: http2 (faster than one for REST, but still http), which enforces binary format by default => gRPC needs to
+    serialize the data to binary before sending (gRPC uses protobuf binary serialization format)
+- deployment method ::
+  + gRPC is a protocol based on HTTP 2.0 and works at runtime layer of software stack. Many language runtimes (Node.js,
+    Java, etc.) already have implemented HTTP 2.0 and so, support gRPC. A library is usually used to enable gRPC
+    connections within a language runtime
+  + a message broker on the other hand is an executable, installed on a server and uses memory and disk space to
+    function. Many can be run on software containers or on Kubernetes, and clients that connect to a message broker can
+    use REST or gRPC. An SDK in most cases is needed to ease the process of interacting with a message broker
+- message broker :: server that contains a persistent, append-only log that stores messages; a kind of server
+  containing different log files that get updated as new data comes in
+  + same as gRPC, message brokers usually allow data streaming, and are usually language agnostic (mostly, can be
+    unavailable to some languages)
+  + some differences message brokers - gRPC:
+    - message broker typically stores data on a disk (since persistent), while gRPC operates on the RAM (since it
+      operates at source code layer). However, can persist gRPC data by combining gRPC with messages brokers if
+      transactions tracking is fundamental
+    - and a message broker is installed as an executable on a server while gRPC depends on HTTP 2.0
+  + some message brokers: Apache Kafka, Redis, RabbitMQ, Nats
+- data streaming :: allows single request to return lot more data than would typically be, eg: REST doesn't allow data
+  streaming since 1 request only gets 1 response
+  + data streaming is also bi-direction (server -> client, and client -> server, since the client is really any service
+    that makes the initial request); and data can be sent from server to client as soon as the data is produced
+- stream buffering :: (preloading and storing portions of a media file in a buffer or temporary memory of a device)
+  + gRPC being a messaging protocol can't buffer streaming data, unlike message brokers that can store millions of
+    streamed messages as they are produced
+  + example: streaming temperature data from a thermometer in a factory might require real-time processing, and some
+    server processing the data as it comes. This streaming process is heavy on the server, and so, there is a need to
+    process streams in real-time without overwhelming it. Message brokers are ideal to handle this scenario
+*** Software modelling/designing tools
+[2025-05-28 Wed 22:47]
+**** UML
+- UML diagrams: 2 mains: Behaviour diagrams, Structure diagrams
 * Conventions and best practices
 [2023-12-06 Wed 09:39]
 ** Notes
