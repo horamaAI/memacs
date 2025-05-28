@@ -3,7 +3,7 @@
 #+SETUPFILE: ~/set-up-files/basic-setups.org
 #+TAGS: Cpp C++ Java Craft
 
-* Architecture related
+* Architectures
 ** General
 - software architectures ::
   + EDA :: event-driven architecture, uses events to trigger and communicate between decoupled services and is common in modern applications built with microservices. eg of event: change in state, update, item being placed in a shopping cart on an e-commerce website, etc.
@@ -16,6 +16,11 @@
         - software size :: usually larger than in any other architecture, while microservices consist of small independent serice
         - architecture :: SOA: fine-grained or centralized, microservices: coarse-grained or decentralized
         - services :: SOA: business, entreprise or infrastructure, microservices: functional and infrastructure
+
+** Microservices
+- REST, RPC, GraphQL, Soap, etc. ::
+  + general ::
+    - REST works based on a blocking request-response mechanism => not always appropriate for microservices communication
 
 * Conventions and best practices
 [2023-12-06 Wed 09:39]
