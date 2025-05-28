@@ -1,5 +1,5 @@
-# -*- mode: org -*-
 #+title: Software crafting in general, careful though, some topics not available on all programming languages
+# -*- mode: org -*-
 #+SETUPFILE: ~/set-up-files/basic-setups.org
 #+TAGS: Cpp C++ Java Craft
 
@@ -20,13 +20,17 @@
 ** Microservices
 - REST, RPC, GraphQL, Soap, etc. ::
   + general ::
-    - REST works based on a blocking request-response mechanism => not always appropriate for microservices communication
+    - REST works based on a blocking request-response mechanism => not always appropriate for microservices communication, check instead gRPC or message brokers for example
+    - gRPC cannot always be used when memory is required to be allocated on the receiving end to handle response, because it always needs one
+  + used protocols ::
+    - REST: http1
+    - gRPC: http2 (faster than one for REST, but still http), which enforces binary format by default => gRPC needs to
+      serialize the data to binary before sending (gRPC uses protobuf binary serialization format)
 
 * Conventions and best practices
 [2023-12-06 Wed 09:39]
 ** Notes
 [2023-12-07 Thu 14:30]
-[2023-12-06 Wed 09:52]
 - QAs should also review their own codes for quality
 - DRY vs WET: avoid duplications <=> avoid WET (Write Every Time), always seek DRY (don't repeat yourself), basically avoid boilerplates and duplications (as much as one can, some are inevitable)
 - avoid abbreviations (not all abbreviations are used everywhere, eg: km not recognized in the us)
