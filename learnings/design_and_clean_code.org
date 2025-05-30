@@ -6,40 +6,78 @@
 * Architectures
 ** General
 - software architectures ::
-  + EDA :: event-driven architecture, uses events to trigger and communicate between decoupled services and is common in modern applications built with microservices. eg of event: change in state, update, item being placed in a shopping cart on an e-commerce website, etc.
+  + EDA :: event-driven architecture, uses events to trigger and communicate between decoupled services and is common in
+    modern applications built with microservices. eg of event: change in state, update, item being placed in a shopping
+    cart on an e-commerce website, etc.
   + SOA :: service oriented architecture that focuses on discrete services instead of a monolithic design
     - microservices vs SOA ::
-      + the main distinction between the two approaches comes down to scope. To put it simply, service-oriented architecture (SOA) has an enterprise scope, while the microservices architecture has an application scope. And in microservices, applications are decoupled and each service can have independent data storage — unlike SOA.
+      + the main distinction between the two approaches comes down to scope. To put it simply, service-oriented
+        architecture (SOA) has an enterprise scope, while the microservices architecture has an application scope. And
+        in microservices, applications are decoupled and each service can have independent data storage, unlike SOA
       + other differences ::
-        - on dependency :: SOA is more business units dependent, while for microservices each microservice is independent and they don't usually share a data layer
+        - on dependency :: SOA is more business units dependent, while for microservices each microservice is
+          independent and they don't usually share a data layer
         - design :: SOA focuses on application service reusability, while microservices focus on decoupling
-        - software size :: usually larger than in any other architecture, while microservices consist of small independent serice
+        - software size :: usually larger than in any other architecture, while microservices consist of small
+          independent serice
         - architecture :: SOA: fine-grained or centralized, microservices: coarse-grained or decentralized
         - services :: SOA: business, entreprise or infrastructure, microservices: functional and infrastructure
 
 ** Microservices
-- REST, RPC, GraphQL, Soap, etc. ::
+- services/applications data exchange/communication with REST, RPC, GraphQL, Soap, message brokers, etc. ::
   + general ::
-    - REST works based on a blocking request-response mechanism => not always appropriate for microservices communication, check instead gRPC or message brokers for example
-    - gRPC cannot always be used when memory is required to be allocated on the receiving end to handle response, because it always needs one
-  + used protocols ::
+    - REST works based on a blocking request-response mechanism => not always appropriate for microservices
+      communication, check instead gRPC or message brokers for example
+    - gRPC cannot always be used when memory is required to be allocated on the receiving end to handle response,
+      because it always needs one
+    - gRPC is usually more suited for inter-service calls while message brokers are more suited for task queueing
+  + some protocols used ::
     - REST: http1
     - gRPC: http2 (faster than one for REST, but still http), which enforces binary format by default => gRPC needs to
       serialize the data to binary before sending (gRPC uses protobuf binary serialization format)
+  + deployment method ::
+    - gRPC is a protocol based on HTTP 2.0 and works at runtime layer of software stack. Many language runtimes
+      (Node.js, Java, etc.) already have implemented HTTP 2.0 and so, support gRPC. A library is usually used to enable
+      gRPC connections within a language runtime
+    - a message broker on the other hand is an executable, installed on a server and uses memory and disk space to
+      function. Many can be run on software containers or on Kubernetes, and clients that connect to a message broker
+      can use REST or gRPC. An SDK in most cases is needed to ease the process of interacting with a message broker
+  + message broker :: server that contains a persistent, append-only log that stores messages; a kind of server
+    containing different log files that get updated as new data comes in
+    - same as gRPC, message brokers usually allow data streaming, and are usually language agnostic (mostly, can be
+      unavailable to some languages)
+    - some differences message brokers - gRPC:
+      + message broker typically stores data on a disk (since persistent), while gRPC operates on the RAM (since it
+        operates at source code layer). However, can persist gRPC data by combining gRPC with messages brokers if
+        transactions tracking is fundamental
+      + and a message broker is installed as an executable on a server while gRPC depends on HTTP 2.0
+    - some message brokers: Apache Kafka, Redis, RabbitMQ, Nats
+  + data streaming :: allows single request to return lot more data than would typically be, eg: REST doesn't allow data
+    streaming since 1 request only gets 1 response
+    - data streaming is also bi-direction (server -> client, and client -> server, since the client is really any
+      service that makes the initial request); and data can be sent from server to client as soon as the data is produced
+  + stream buffering :: (preloading and storing portions of a media file in a buffer or temporary memory of a device)
+    - gRPC being a messaging protocol can't buffer streaming data, unlike message brokers that can store millions of
+      streamed messages as they are produced
+    - example: streaming temperature data from a thermometer in a factory might require real-time processing, and some
+      server processing the data as it comes. This streaming process is heavy on the server, and so, there is a need to
+      process streams in real-time without overwhelming it. Message brokers are ideal to handle this scenario
 
 * Conventions and best practices
 [2023-12-06 Wed 09:39]
 ** Notes
 [2023-12-07 Thu 14:30]
 - QAs should also review their own codes for quality
-- DRY vs WET: avoid duplications <=> avoid WET (Write Every Time), always seek DRY (don't repeat yourself), basically avoid boilerplates and duplications (as much as one can, some are inevitable)
+- DRY vs WET: avoid duplications <=> avoid WET (Write Every Time), always seek DRY (don't repeat yourself), basically
+  avoid boilerplates and duplications (as much as one can, some are inevitable)
 - avoid abbreviations (not all abbreviations are used everywhere, eg: km not recognized in the us)
 - careful with typos and spelling (can affect searching the method with misspelling with the right keyword)
   
 *** Clean code concepts
 - cyclomatic complexity (CYC) :: software metric to indicate the complexity of a program
   + basically, the more there are: ifs, for, while, or, etc. the complexity grows => aim for a low CYC
-- signal vs noise :: signal: clean, useful code; noise: what prevents from understanding the code (CYC, poor names, bad comments, duplications, etc.). noise to signal ratio should be lowest as possible (ideally closest to 0)
+- signal vs noise :: signal: clean, useful code; noise: what prevents from understanding the code (CYC, poor names, bad
+  comments, duplications, etc.). noise to signal ratio should be lowest as possible (ideally closest to 0)
   
 ** Naming conventions and best practices
 *** java
@@ -49,29 +87,41 @@
   + bool prefixed with "is" (isValid, isActive)
   + constants :: all caps, and with underscores (ALL_CAPS)
 - class ::
-  + *noun*, *specific* and detailed in order to adhere to SRP solid principle. Even for helper classes, should try to be as specific as possible
+  + *noun*, *specific* and detailed in order to adhere to SRP solid principle. Even for helper classes, should try to be
+    as specific as possible
   + eg ::
-    - class CommonUtils shouldn't contain every helper of the program (countOccurences(String stringToSearch, char charToFind) that works on strings, printNewYorkTime on dates, generateRandomNumberBetween(int low, int high) on ints, etc.). solution 1: rename class to 'StringAndTimeAndNumberUtils' (nooope), solution 2: split helpers into smaller utils: TimeUtils, StringUtils, NumberUtils
-  + can refine class name by having a look at the methods it implements: 'Client' is too vague, if it has a method that sends http requests, then it should be renamed to 'WebHttpClient'
-  + avoid using catch-all or vague terms (Coordinator, Manager, Runner, etc). Those can be used to name a higher scope tool (eg: ApplicationManager)
+    - class CommonUtils shouldn't contain every helper of the program (countOccurences(String stringToSearch, char
+      charToFind) that works on strings, printNewYorkTime on dates, generateRandomNumberBetween(int low, int high) on
+      ints, etc.). solution 1: rename class to 'StringAndTimeAndNumberUtils' (nooope), solution 2: split helpers into
+      smaller utils: TimeUtils, StringUtils, NumberUtils
+  + can refine class name by having a look at the methods it implements: 'Client' is too vague, if it has a method that
+    sends http requests, then it should be renamed to 'WebHttpClient'
+  + avoid using catch-all or vague terms (Coordinator, Manager, Runner, etc). Those can be used to name a higher scope
+    tool (eg: ApplicationManager)
     - prefer or narrow down the scope by adding a qualifier: Builder, Writer, Reader, Handler, Container (eg: Filepath)
   + if class implements a design pattern role, manifest it in the name of the class (StringBuilder, CarFactory, etc.)
   + keep the names short though, *don't overdo* it and clutter the code eg (SingletonCarFactoryProxyHandler)
   + tips on fixing bad class names: split class, rename, use 
 - methods ::
   + if one needs to look inside the method to know what it does,
-  + should reveal intent: do what (verb), to what (noun): eg 1: load (do what) page (to what) => loadPage, 2: set (do what) price (to what) => setPrice, 3: convert (do what) currency (to what) => convertCurrency
+  + should reveal intent: do what (verb), to what (noun): eg 1: load (do what) page (to what) => loadPage, 2: set (do
+    what) price (to what) => setPrice, 3: convert (do what) currency (to what) => convertCurrency
     - *attention*, same as classes, avoid too vague terms: data, value, request, calculate, etc., eg:
       - loadData (NOPE) => loadCustomerDetails;
       - setValue (NOPE) => setPrice;
-      - sendRequest (NOPE) => sendHttpRequest (or if more details can be found in the class name, just the type of the request then: if class name is WebHttpClient, then can just name the method 'setGet' for get methods requests)
+      - sendRequest (NOPE) => sendHttpRequest (or if more details can be found in the class name, just the type of the
+        request then: if class name is WebHttpClient, then can just name the method 'setGet' for get methods requests)
       - preCalculate (NOPE) => convertToLocalCurrency
   + exceptions to the rule ::
-    - if specificity and clarity are better than suggested rules, then can apply them, eg of methods not following the rules: endsWith, concat, append, charAt, etc.
-    - static factory methods, builder patterns, "fluent interface" patterns, method chaining :: for which focus is more on readability than the rule "verb + noun", eg: stream(), andThen(), orElseThrow(), etc.
-      + static factory methods :: eg: Optional.empty(), String.valueOf(1), etc. none of those respect the naming rule (but some those)
+    - if specificity and clarity are better than suggested rules, then can apply them, eg of methods not following the
+      rules: endsWith, concat, append, charAt, etc.
+    - static factory methods, builder patterns, "fluent interface" patterns, method chaining :: for which focus is more
+      on readability than the rule "verb + noun", eg: stream(), andThen(), orElseThrow(), etc.
+      + static factory methods :: eg: Optional.empty(), String.valueOf(1), etc. none of those respect the naming rule
+        (but some those)
   + Anti-patterns (what to avoid) ::
-    - method does more than what its name says :: no 'convertCurrency' but also changes the state of an unrelated object, then the name is not correct 
+    - method does more than what its name says :: no 'convertCurrency' but also changes the state of an unrelated
+      object, then the name is not correct
     - no use of: "and", "or", "if" :: checkout single responsibility principle SRP
 *** cpp
 
@@ -80,8 +130,10 @@
 *** java
 **** Implementing constructors
 [2023-12-06 Wed 17:49]
-- static factory methods :: static factory methods encapsulate the construction logic, so they can be a good alternative for constructors replacement
-- constructor chaining :: cascading constructors to avoid duplicating codes (go up from smallest constructor, and propagate up until reach the biggest one that will be the one doing the field assignment logic)
+- static factory methods :: static factory methods encapsulate the construction logic, so they can be a good alternative
+  for constructors replacement
+- constructor chaining :: cascading constructors to avoid duplicating codes (go up from smallest constructor, and
+  propagate up until reach the biggest one that will be the one doing the field assignment logic)
     #+begin_src java
     public class A {
     int i, j, k;
@@ -100,7 +152,8 @@
     #+end_src
 
   + builder pattern :: 
-- constructor telescoping anti-pattern :: drawback of constructor chaining when there are too many fields to assign, and lots of combinations need to have its own constructor
+- constructor telescoping anti-pattern :: drawback of constructor chaining when there are too many fields to assign, and
+  lots of combinations need to have its own constructor
   + possible solution: use a builder pattern, downside:
     #+begin_src java
     // eg: select which ingredients to put in a pizza
@@ -145,13 +198,18 @@
 
 **** Implementing methods
 - things to not return ::
-  + avoid to ever have to return null value :: 1. not everyone knows the internal implementation, and might end up with null instance; 2. they know about the return null, and they have to implement an if to check if the variables are not null (at least +1 of CYC, but will increase anytime the method returning null is called). So avoid as much as possible to return null
+  + avoid to ever have to return null value :: 1. not everyone knows the internal implementation, and might end up with
+    null instance; 2. they know about the return null, and they have to implement an if to check if the variables are
+    not null (at least +1 of CYC, but will increase anytime the method returning null is called). So avoid as much as
+    possible to return null
     - eg: instead of returning null for object of type List<String>, prefer returning Collections.emptyList()
-  + special values (magic numbers) :: numbers whose purpose isn't obvious, eg: -1, 0, 1, etc.: they might mean something to you, but not to everyone (particularly client code)
+  + special values (magic numbers) :: numbers whose purpose isn't obvious, eg: -1, 0, 1, etc.: they might mean something
+    to you, but not to everyone (particularly client code)
     - prefer to create expressive variables, or throw exceptions
 - method parameters ::
   + methods with too many arguments ::
-    - have higher CYC, are difficult to read and understand, do too many things (split), use too many primitive types when could be using objects
+    - have higher CYC, are difficult to read and understand, do too many things (split), use too many primitive types
+      when could be using objects
     - take a boolean flag (remove, for example with splitting) ::
       #+begin_src java
       void switchLights(room, true);
@@ -167,7 +225,9 @@
     |0-2 args | 3                                 | 4+                |
     +---------+-----------------------------------+-------------------+
 - prefer "fail fast" over "fail safe" ::
-  + fail fast: immediately report any failure asap (toward the beginning of the method, perfect for debugging), vs fail safe: try to keep the program running (the system will crash anyway, but in a weird state that is difficult to analyze)
+  + fail fast: immediately report any failure asap (toward the beginning of the method, perfect for debugging), vs fail
+    safe: try to keep the program running (the system will crash anyway, but in a weird state that is difficult to
+    analyze)
   + fail fast eg: checking if list/string is empty before resuming with the remainder of the method
   + some available preconditions libraries ::
     - native java :: Objects.isNull();
@@ -183,7 +243,8 @@
       return getSomeOtherMetric()/secondIntermediateResult; // if fails here it's fail safe (divide by 0)
       }
   #+end_src
-- return asap :: in case there are many embedded ifs to determine which result to return, it can be easy to forget about the previous conditions and get mixed up in reading the code
+- return asap :: in case there are many embedded ifs to determine which result to return, it can be easy to forget about
+  the previous conditions and get mixed up in reading the code
   + suggested solution :: try to convert it so that results can be returned asap, much better for readability
   + eg ::
     #+begin_src java
@@ -209,7 +270,8 @@
         }
     #+end_src
 - fine tune conditions ::
-  + eg: from ~if(!doorClosed==false)~ (1. doorClosed already boolean, no need for equality check; 2. boolean variable starts with 'is'; 3. !isDoorClosed makes less sense than isDoorOpen) => ~if(isDoorOpen)~
+  + eg: from ~if(!doorClosed==false)~ (1. doorClosed already boolean, no need for equality check; 2. boolean variable
+    starts with 'is'; 3. !isDoorClosed makes less sense than isDoorOpen) => ~if(isDoorOpen)~
   + check if not better to change conditions into a more expressive method ::
     #+begin_src java
     // bad
@@ -243,7 +305,9 @@
 *** java
 - Note ::
   + don't catch ::
-    - too high level exceptions, might catch exceptions we're not supposed to manage (eg: 'Throwable' catches: out of memory, internal error; 'Exception' catches runtime exception, particularly 'null pointer runtime exception' which are usually programming errors, and when caught it's just basically covering up programming mistakes)
+    - too high level exceptions, might catch exceptions we're not supposed to manage (eg: 'Throwable' catches: out of
+      memory, internal error; 'Exception' catches runtime exception, particularly 'null pointer runtime exception' which
+      are usually programming errors, and when caught it's just basically covering up programming mistakes)
   + 'catch' block ::
     - instead of multiple catch statements, can just use ==|== :: (NO, NEVER use ifs in catch statements)
       #+begin_src java
@@ -271,8 +335,11 @@
 
 ** Class Organization
 [2023-12-06 Wed 09:57]
-- Notes :: overall, apply first conventions, best practices, solid, design patterns, etc. and then have a better look at the code for further improvements
-- cohesion (better when high) :: degree to which elements inside a class or a module (package, system, etc.) belong together (put together fields and methods that are related and co-dependent). class with proper amount of fields (not too many, not too few) has more cohesion than class with just one. SRP != cohesion, but goes together
+- Notes :: overall, apply first conventions, best practices, solid, design patterns, etc. and then have a better look at
+  the code for further improvements
+- cohesion (better when high) :: degree to which elements inside a class or a module (package, system, etc.) belong
+  together (put together fields and methods that are related and co-dependent). class with proper amount of fields (not
+  too many, not too few) has more cohesion than class with just one. SRP != cohesion, but goes together
   + eg of cohesive but not SRP ::
     #+begin_src java
     User user;
@@ -285,7 +352,10 @@
         // ...
         }
     #+end_src
-- coupling (better when low) :: be careful of abiding by solid principles, set coupling as loose as possible: adhere to SRP, DIP, ISP, etc. (basically all solid principles); increase cohesion; and try to maintain strong encapsulation (keep things as private as possible: to avoid methods/fields being used when not needing to be exposed thus creating unnecessary coupling. Don't make methods just because, particularly with getters and setters)
+- coupling (better when low) :: be careful of abiding by solid principles, set coupling as loose as possible: adhere to
+  SRP, DIP, ISP, etc. (basically all solid principles); increase cohesion; and try to maintain strong encapsulation
+  (keep things as private as possible: to avoid methods/fields being used when not needing to be exposed thus creating
+  unnecessary coupling. Don't make methods just because, particularly with getters and setters)
   #+begin_src java
   public class CoupledExample {
       LinkedList<String> list = new LinkedList<>(); // what if need to use ArrayList instead ? will have to replace all occurences of type LinkedList, and potentially will not compile if class doesn't have methods getFirst, getLast
@@ -303,7 +373,9 @@
   // better solution: ISP
   // use core interface 'List' that abstracts method 'get': aList.get(0) for getfirst; aList.get(aList.size() - 1) for getlast
   #+end_src
-- principle of proximity (or priximity rule) :: organize code as a way of a book or an article (from top to bottom, don't make reader keep scrolling between messed up and organization mixed to find methods: structure code with respect to the way the call to other methods are done. place related methods close)
+- principle of proximity (or priximity rule) :: organize code as a way of a book or an article (from top to bottom,
+  don't make reader keep scrolling between messed up and organization mixed to find methods: structure code with respect
+  to the way the call to other methods are done. place related methods close)
   #+begin_src java
   class ProximityPrinciple {
       void methodA() {
@@ -323,29 +395,45 @@
   
 ** Writing comments
 [2023-12-08 Fri 11:36]
-- writing comments can be just a way to patch poorly written code. If code is well written, comments can be unnecessary, which is good
+- writing comments can be just a way to patch poorly written code. If code is well written, comments can be unnecessary,
+  which is good
 - avoid ::
-  + redundant comments :: that doesn't add any information (~String name; // customer name~), basically comment for code with well defined names
-  + misleading comments :: remember to update comment when method is, don't always believe outdated comments, fix them or even remove them
-  + useless and misplaced comments :: for example using comments as a history for all the changes done on a method, which is not interesting, there are other ways for that (fix/release notes, version control tools, etc.); or todos
-  + TODOs comments (~// TODO~ :: be more detailed and concise on what to do (what needs to be done, why, when, by whom; or if using issue tracking then use issue number and add those information in the ticket), ~// TODO: fix this~ are not acceptable either
-  + commented out comments :: actual part of code that is commented to cancel it, usually done for later fix that almost never happens
+  + redundant comments :: that doesn't add any information (~String name; // customer name~), basically comment for code
+    with well defined names
+  + misleading comments :: remember to update comment when method is, don't always believe outdated comments, fix them
+    or even remove them
+  + useless and misplaced comments :: for example using comments as a history for all the changes done on a method,
+    which is not interesting, there are other ways for that (fix/release notes, version control tools, etc.); or todos
+  + TODOs comments (~// TODO~ :: be more detailed and concise on what to do (what needs to be done, why, when, by whom;
+    or if using issue tracking then use issue number and add those information in the ticket), ~// TODO: fix this~ are
+    not acceptable either
+  + commented out comments :: actual part of code that is commented to cancel it, usually done for later fix that almost
+    never happens
 - best practices ::
   + use JavaDoc (with ~/** [new line] ... */~)
-  + use comments to compensate for factors outside of your control (third-parties softwares, unstable environments, etc.), eg (paraphrasing): ~// yes, this is weird, but otherwise it's impossible due to other software that does this thing as not expected~
+  + use comments to compensate for factors outside of your control (third-parties softwares, unstable environments,
+    etc.), eg (paraphrasing): ~// yes, this is weird, but otherwise it's impossible due to other software that does this
+    thing as not expected~
   + TODOs with explainer and/or issue tracker number
 ** Improving tests
 [2023-12-08 Fri 12:49]
 - clean your tests as you would clean your application code
 *** DAMP tests
-- find right balance between DRY and DAMP (Descriptive and Meaningful Phrases): strive for max readability (even if it means some code duplication) :: tests may test the same function (for example, how it integrates with other methods, using different inputs, etc.), so better to keep it isolated in single test class => minimal duplication and obvious (very DRY tests are poorly tested, complex, and less readable)
+- find right balance between DRY and DAMP (Descriptive and Meaningful Phrases): strive for max readability (even if it means some code duplication) :: tests
+  may test the same function (for example, how it integrates with other methods, using different inputs, etc.), so
+  better to keep it isolated in single test class => minimal duplication and obvious (very DRY tests are poorly tested,
+  complex, and less readable)
 - focused tests ::
-  + SRP :: so that methods are easy to test and the method easy to debug (not test this *and* that), eg: basicMathTest shouldn't test division and multiplication and modulo; better to have one test for each
+  + SRP :: so that methods are easy to test and the method easy to debug (not test this *and* that), eg: basicMathTest
+    shouldn't test division and multiplication and modulo; better to have one test for each
   + no if else branching :: split into two different test logic
-  + should have a CYC of one, fewer points of failure (one assertion => one point of failure, one reason to fail), and stability :: fewer points of failures lead to tests with higher stability, and thus, less time investigating the test than trying to fix the bug => reliable tests, and better overall maintainability
+  + should have a CYC of one, fewer points of failure (one assertion => one point of failure, one reason to fail), and stability :: fewer
+    points of failures lead to tests with higher stability, and thus, less time investigating the test than trying to
+    fix the bug => reliable tests, and better overall maintainability
     - For example, tests with 5 assertions have 5 reasons to fail => more unstable tests, harder to debug
 - use tests templates :: tests usually follow some patterns, and some already are available
-  - AAA :: Arrange (Setup and initialize objects and environment) - Act (Exercise functionality to be tested) - Assert. Can even comment each group to easily locate what’s the testing step being processed
+  - AAA :: Arrange (Setup and initialize objects and environment) - Act (Exercise functionality to be tested) -
+    Assert. Can even comment each group to easily locate what’s the testing step being processed
     #+begin_src java
     @Test
     public void testFunctionality() {
@@ -364,9 +452,11 @@
     + AAA vs BDD ::
       - GWT can be mapped directly to specs of a feature file in BDD frameworks
       - GWT is easier for non-developers to understand by encouraging use of plain English, and short descriptions of what each part is doing
-      - GWT is useful to communicate in a business environment, where work needs to be mapped to business value (business value is mapped by features through requirements)
+      - GWT is useful to communicate in a business environment, where work needs to be mapped to business value
+        (business value is mapped by features through requirements)
       - Given When and Then are keywords in various BDD frameworks such as SpecFlow, and Cucumber
-      - AAA is simpler for unit tests, some higher user tests (browser interaction testing), and when testing own code or library (setup and just test)
+      - AAA is simpler for unit tests, some higher user tests (browser interaction testing), and when testing own code
+        or library (setup and just test)
         #+begin_src java
         [Given(@"a customer previously bought a black sweater from me")]
         public void GivenACustomerPreviouslyBoughtABlackSweaterFromMe()
@@ -387,7 +477,8 @@
 ** Maintaining clean code
 [2023-12-06 Wed 09:58]
 - tips ::
-  + process :: define rules -> write code (in line with defined rules) -> use static code checker -> submit for code review (with preferably tests) -> merge
+  + process :: define rules -> write code (in line with defined rules) -> use static code checker -> submit for code
+    review (with preferably tests) -> merge
   + static code analysis :: some basics included in some IDEs, but can add third party ones: +FindBugs+ (outdated), SonarLint
   + 'boyscout' rule :: "leave the campground cleaner than you found it": if task not too time consuming and time allows, then fix
   + code review :: needs both technical and functional requirement understanding
@@ -398,18 +489,24 @@
 - SOLID :: design principles 
 - dangers of not using SOLID :: (main cause of technical debt)
   + code fragility :: tendency of software to break in many places every time it is changed
-  + code rigidity :: tendency of software to be difficult to change even in simple ways: every change causes a cascade of subsequent changes in dependent modules
-  + technical debt :: cost of prioritizing fast delivery (which is not time consuming) over code quality (takes longer, but maintainable) for long periods of time
-    - loop through continuous improvement to minimize technical debt :: write code (fast delivery) <--> refactor (to reduce technical debt)
+  + code rigidity :: tendency of software to be difficult to change even in simple ways: every change causes a cascade
+    of subsequent changes in dependent modules
+  + technical debt :: cost of prioritizing fast delivery (which is not time consuming) over code quality (takes longer,
+    but maintainable) for long periods of time
+    - loop through continuous improvement to minimize technical debt :: write code (fast delivery) <--> refactor (to
+      reduce technical debt)
 - Pyramid of clean code :: (from foundational to advanced): SOLID, design patterns, TDD, continuous refactoring
       
 ** Single-responsibility principle (SRP)
-- SRP :: every function/class/module, have one and only one reason to change (responsabilities examples: UI, logging, a business logic, orchestration, persistence, end users, networking, IO, error handling, etc.)
-- pros :: makes code easy to read and understand, fix, maintain; less coupling, more resilient to change; more testable design, thus avoid side effects
+- SRP :: every function/class/module, have one and only one reason to change (responsabilities examples: UI, logging, a
+  business logic, orchestration, persistence, end users, networking, IO, error handling, etc.)
+- pros :: makes code easy to read and understand, fix, maintain; less coupling, more resilient to change; more testable
+  design, thus avoid side effects
 - symptoms :: hardly readable, low maintainability and evolution, hard to test, high coupling
 - trick on identifying multiple reasons to change ::
   + if else statements :: usually logics into if else statements can be changed into different methods/classes
-    - note that not all if/else, switch cases are bad. As long that there is no logic or algorithm with changes apply, they're ok.
+    - note that not all if/else, switch cases are bad. As long that there is no logic or algorithm with changes apply,
+      they're ok.
     #+begin_src java
     // bad
     public double isSeparationSafe(Aircraft otherAirCraft, Airspace airSpace) { // has lots of reason to change
@@ -429,7 +526,8 @@
     // better: move calculation of safe separation in a separate class or specialized service to handle the rules. Thus, the aircraft will call the service to check if separation is safe, but won't be burdened with internal details on how the calculations are made
     #+end_src
   + switch case statements :: each case represent a logic => can be split into different methods/classes
-  + "Monster methods" and "God classes" :: usually have large number of lines of codes, and/or mix levels of abstraction within the implementation. The methods and/or classes are not focused and very specialized, examples:
+  + "Monster methods" and "God classes" :: usually have large number of lines of codes, and/or mix levels of abstraction
+    within the implementation. The methods and/or classes are not focused and very specialized, examples:
     #+begin_src java
     // eg 0
     // bad
@@ -528,7 +626,9 @@
 
     }
     #+end_src
-  + People or roles :: the responsibilities seem related at first sight, but when looked into details, some roles imply different behavior or parameters (usually done by adding if/else/switch). In that case better to duplicate code, sometimes code duplication is exactly what's needed
+  + People or roles :: the responsibilities seem related at first sight, but when looked into details, some roles imply
+    different behavior or parameters (usually done by adding if/else/switch). In that case better to duplicate code,
+    sometimes code duplication is exactly what's needed
     #+begin_src java
     // bad
     FlightReport generate() {
@@ -545,7 +645,8 @@
         // ...
         }
     #+end_src
-  + orchestration :: components responsible for handling coordination and orchestration have a habits of needing too many dependencies, thus resulting in RSP violations
+  + orchestration :: components responsible for handling coordination and orchestration have a habits of needing too
+    many dependencies, thus resulting in RSP violations
     #+begin_src java
     // bad-ish
     public class FlightPlanScheduler {
@@ -598,17 +699,26 @@
   + move responsibilities to separate methods, classes, packages, but the structure has to stay coherent 
   + for more complex processes, can help to use events to limit coupling between components
 
-** Open–closed principle (OCP)
-- OCP :: classes/methods/modules should be open for extension (component should be extendable to make it behave in new ways), but closed for modification (each new feature should not modify existing code)
-- pros :: easier to add new features and test, minimizes risk of regression bugs, enforces decoupling by isolating changes in specific components (which is good too for SRP)
-- OCP implementation strategies :: inheritance (but still exists couplings between base and derived class), and/or design pattern: strategy pattern
-  + eg :: context: add feature for international money transfers when national already existed with method tranferMoney of class BankAccount
+** Open-closed principle (OCP)
+- OCP :: classes/methods/modules should be open for extension (component should be extendable to make it behave in new
+  ways), but closed for modification (each new feature should not modify existing code)
+- pros :: easier to add new features and test, minimizes risk of regression bugs, enforces decoupling by isolating
+  changes in specific components (which is good too for SRP)
+- OCP implementation strategies :: inheritance (but still exists couplings between base and derived class), and/or
+  design pattern: strategy pattern
+  + eg :: context: add feature for international money transfers when national already existed with method tranferMoney
+    of class BankAccount
     - problematic :: international and national transfers are not processed the same way due to: fees, currency rate, etc.
     - solution 1 :: create class InternationalBankAccount that extends BankAccount
-    - con of solution 1 :: tight coupling, InternationalBankAccount depends on BankAccount, whereas InternationalBankAccount might have its own specificity that is not shared with BankAccount
-    - solution 2, better :: use strategy pattern: create an interface for the feature transferMoney, and make both BankAccount and InternationBankAccount implement it => no coupling between the two, each can compute transferMoney in its own way
+    - con of solution 1 :: tight coupling, InternationalBankAccount depends on BankAccount, whereas
+      InternationalBankAccount might have its own specificity that is not shared with BankAccount
+    - solution 2, better :: use strategy pattern: create an interface for the feature transferMoney, and make both
+      BankAccount and InternationBankAccount implement it => no coupling between the two, each can compute transferMoney
+      in its own way
 - Tips ::
-  + start small, improve progressively when needed. When fixing bugs it is safe to make small changes as long as they are covered by tests. When big changes are needed and runtime decisions seems to be needed, consider interfaces and patterns like decorator and strategy
+  + start small, improve progressively when needed. When fixing bugs it is safe to make small changes as long as they
+    are covered by tests. When big changes are needed and runtime decisions seems to be needed, consider interfaces and
+    patterns like decorator and strategy
   + the main idea is implement components that can be extended easily
   + bug fixes don't always need applying OCP, so fix them without necessarily applying OCP
   + strategy and decorator design patterns can be a great way to effectively implement OCP
@@ -638,7 +748,8 @@
         }
 
     #+end_src
-  + if area of code likely to change a lot over time, prefer to start with inheritance, and if strategy pattern could greatly improve the code, then do it. Strategy pattern helps the algorithm behavior to be decided at runtime
+  + if area of code likely to change a lot over time, prefer to start with inheritance, and if strategy pattern could
+    greatly improve the code, then do it. Strategy pattern helps the algorithm behavior to be decided at runtime
     #+begin_src java
     // how to add a new requirement for planes that are flying at more than 3000 meters, it's safer-ish 
     public class SeparationCalculator {
@@ -699,8 +810,10 @@
         }
 
     #+end_src
-  + when creating APIs, be aware of retro compatibility when changing methods signatures, clients tools/applications might fail otherwise => use OCP and make the API open for extensions, closed for modifications
-  + OCP can also allow APIs clients to extend your libraries with their own implementations: declare an abstract interface for an unsuitable class, and the client can implement the class in their own class
+  + when creating APIs, be aware of retro compatibility when changing methods signatures, clients tools/applications
+    might fail otherwise => use OCP and make the API open for extensions, closed for modifications
+  + OCP can also allow APIs clients to extend your libraries with their own implementations: declare an abstract
+    interface for an unsuitable class, and the client can implement the class in their own class
     #+begin_src java
     // Library side
     public interface AnOpenForExtensionClass {
@@ -715,16 +828,27 @@
   + best practices when changing APIs ::
     - DON'T change existing public contracts
     - expose abstractions to customer so they can add new features on top of the framework
-    - if a breaking change is inevitable, give time for client to prepare :: notify the clients, mark the feature as ==deprecated==, and overload the deprecated method with the new one
+    - if a breaking change is inevitable, give time for client to prepare :: notify the clients, mark the feature as
+      ==deprecated==, and overload the deprecated method with the new one
       
 ** Liskov substitution principle (LSP)
-- LSP :: any object of a type must be substitutable by objects of a derived type without altering the correctness of the program. Functions that use pointers or references to base classes must be able to use objects of derived classes without knowing it.
-- wrong relationship between types can cause lots of issues, so inheritance should not be seen as a relationship of type 'is a' (an ostrich is a bird), but rather as *'is substitutable by'* (is a rectangle substitutable by a square?). In the case of the ostrich it is biologically a bird, but in inheritance context an ostrich cannot bu fully substituted to a bird since it cannot implement the function 'fly' (an ostrich cannot fly)
+- LSP :: any object of a type must be substitutable by objects of a derived type without altering the correctness of the
+  program. Functions that use pointers or references to base classes must be able to use objects of derived classes
+  without knowing it.
+- wrong relationship between types can cause lots of issues, so inheritance should not be seen as a relationship of type
+  'is a' (an ostrich is a bird), but rather as *'is substitutable by'* (is a rectangle substitutable by a square?). In
+  the case of the ostrich it is biologically a bird, but in inheritance context an ostrich cannot bu fully substituted
+  to a bird since it cannot implement the function 'fly' (an ostrich cannot fly)
 - detecting LSP violations :: (some symptoms)
   + violating "not substitutable by" relationship :: examples:
-    - a rectangle is not substitutable by a square :: unless setWidth and setHeight reset both height and width at the same time, which is not really efficient. So, a rectangle is not substitutable by a square and should not inherit from each other
-    - an 2d point is not substitutable by a 3d point :: the distance implemented between two points doesn't yield the same result if the height coordinates is not taken into account
-  + violating LSP with partially implemented interfaces :: also possible to violate LSP with interfaces if not paid attention to, if for example some class implements some of the interface methods, but not all (in that case better to break down the interface into smaller pieces)
+    - a rectangle is not substitutable by a square :: unless setWidth and setHeight reset both height and width at the
+      same time, which is not really efficient. So, a rectangle is not substitutable by a square and should not inherit
+      from each other
+    - an 2d point is not substitutable by a 3d point :: the distance implemented between two points doesn't yield the
+      same result if the height coordinates is not taken into account
+  + violating LSP with partially implemented interfaces :: also possible to violate LSP with interfaces if not paid
+    attention to, if for example some class implements some of the interface methods, but not all (in that case better
+    to break down the interface into smaller pieces)
     #+begin_src java
     // bad
     public interface Aircraft {
@@ -759,11 +883,14 @@
         public void takeoff() {/*...*/}
         }
     #+end_src
-  + violating LSP with type checking :: if not all types can be substituted properly, eg: by filtering out some cases with if/else
+  + violating LSP with type checking :: if not all types can be substituted properly, eg: by filtering out some cases
+    with if/else
 - tricks to eliminate LSP violations ::
   + move out incorrect relations between objects
   + for type checking violations, use the "tell don't ask" principle to eliminate type checking and casting
-    - "tell don't ask": instead of checking types with if/else (asking), it's better to "tell" by creating a class that extends (inherits) the "normal" class, override the method that comes after the usual case, and move the additional part of the code that is done in the type checking
+    - "tell don't ask": instead of checking types with if/else (asking), it's better to "tell" by creating a class that
+      extends (inherits) the "normal" class, override the method that comes after the usual case, and move the
+      additional part of the code that is done in the type checking
       #+begin_src java
       // Bad
       for (Task task: tasks) {
@@ -792,11 +919,17 @@
 ** Interface segregation principle (ISP)
 - ISP :: don't try to force clients to depend on methods that they don't need
 - understand "interface" in general :: interfaces, abstract classes, any public method the classes depend upon
-- pros :: gives lean and focused interfaces that minimize tight couplings, provides more composable interfaces with more flexibility, and reinforce LSP and SRP
-- identigying "fat" interfaces :: too many methods in the interface, methods that throw exceptions (or empty methods) when used because they extend/implement classes/interfaces that are not really needed, interfaces with low cohesion or not granular enough (eg: adding payment related methods in a class 'ShoppingCart')
+- pros :: gives lean and focused interfaces that minimize tight couplings, provides more composable interfaces with more
+  flexibility, and reinforce LSP and SRP
+- identigying "fat" interfaces :: too many methods in the interface, methods that throw exceptions (or empty methods)
+  when used because they extend/implement classes/interfaces that are not really needed, interfaces with low cohesion or
+  not granular enough (eg: adding payment related methods in a class 'ShoppingCart')
 - tricks ::
-  + reduce as much as possible the interfaces size (not number) and break tight couplings by creating interfaces that are lean and focused
-  + on external or legacy code where one doesn't have a way to control the code, better to use the design pattern 'Adapter' (basically create a set of classes that will translate the transactions between your interface that is exposed to the client, and the legacy framework)
+  + reduce as much as possible the interfaces size (not number) and break tight couplings by creating interfaces that
+    are lean and focused
+  + on external or legacy code where one doesn't have a way to control the code, better to use the design pattern
+    'Adapter' (basically create a set of classes that will translate the transactions between your interface that is
+    exposed to the client, and the legacy framework)
 - eg ::
   #+begin_src java
   // bad
@@ -827,22 +960,39 @@
   #+end_src
   
 ** Dependency inversion principle (DIP)
-- DIP :: "Depend upon abstractions, not concretions.": high level modules (features that are mapped to business domain, what the software should do, not how they should do it) should not depend on low level ones (implementation details, how the software should do the tasks: logging, network, data access, UI, IO, etc.), both should depend on abstractions. Abstractions should not depend on details, details should depend on abstractions
-- by dictating that both high-level and low-level objects must depend on the same abstraction, DIP inverts the way some people may think about object-oriented programming
-- pros :: minimize coupling, the high level should not depend on the low level and vice-versa, otherwise one could find that changing any of the concrete level will induce changes on other levels
-- Dependency Injection (DI) :: pattern different than DIP, but often used together. It's a technique that makes a class independent of its dependencies. It allows the creation of dependent objects outside of a class and provides those objects to the class. Note: Using setters not efficient since might leave the object in uninitialized state
+- DIP :: "Depend upon abstractions, not concretions.": high level modules (features that are mapped to business domain,
+  what the software should do, not how they should do it) should not depend on low level ones (implementation details,
+  how the software should do the tasks: logging, network, data access, UI, IO, etc.), both should depend on
+  abstractions. Abstractions should not depend on details, details should depend on abstractions
+- by dictating that both high-level and low-level objects must depend on the same abstraction, DIP inverts the way some
+  people may think about object-oriented programming
+- pros :: minimize coupling, the high level should not depend on the low level and vice-versa, otherwise one could find
+  that changing any of the concrete level will induce changes on other levels
+- Dependency Injection (DI) :: pattern different than DIP, but often used together. It's a technique that makes a class
+  independent of its dependencies. It allows the creation of dependent objects outside of a class and provides those
+  objects to the class. Note: Using setters not efficient since might leave the object in uninitialized state
   + DI approach ::
     - declare dependencies as abstractions in the constructor
     - have a component that creates and passes them in the constructor
   + Note ::
-    - in example above, PaymentProcessor is still dependent of ProductRepoFactory. Dependencies are inevitable, but rather than instantiating within methods and classes, which creates tight coupling, one can pass the dependencies as arguments to constructors and assign them to local members. That reduces the coupling, and makes it easier to use the dependencies outside of the method/class, for example by mocking with tests
+    - in example above, PaymentProcessor is still dependent of ProductRepoFactory. Dependencies are inevitable, but
+      rather than instantiating within methods and classes, which creates tight coupling, one can pass the dependencies
+      as arguments to constructors and assign them to local members. That reduces the coupling, and makes it easier to
+      use the dependencies outside of the method/class, for example by mocking with tests
   + we've seen above that setters are not the ideal for dependency injection, but there is other solutions ::
     - declaring dependencies in constructor (most used DI) :: eg: ~PaymentProcessor(ProductRepo productRepo)~
-      + however, can be tiresome if done manually and have lots of dependencies injections (lots of parameters to pass to a class constructor), of some dependencies need to be singletons => use design pattern "inversion of control"
-    - Inversion of control design pattern (IOP) :: takes away the responsibility to create objects manually. IOC is a design principle in which the control of object creation, configuration, and lifecycle is passed to a container or a framework (no 'new'). The process of creating new objects is left to the "IOC container".
-      + control of object is "inverted" (as in *inversion* of control) :: it's not the programmer but something else that controls the objects
-      + makes sense to use IOC for some objects in the application (service, data access, controllers), *however* for some other entities it should still be left to the coder (entities, values objects, etc.), don't use it for all objects
-      + pros of IOC :: easy to switch between different implementations at runtime, increase program modularity, manages objects lifecycle and their configuration
+      + however, can be tiresome if done manually and have lots of dependencies injections (lots of parameters to pass
+        to a class constructor), of some dependencies need to be singletons => use design pattern "inversion of control"
+    - Inversion of control design pattern (IOP) :: takes away the responsibility to create objects manually. IOC is a
+      design principle in which the control of object creation, configuration, and lifecycle is passed to a container or
+      a framework (no 'new'). The process of creating new objects is left to the "IOC container".
+      + control of object is "inverted" (as in *inversion* of control) :: it's not the programmer but something else
+        that controls the objects
+      + makes sense to use IOC for some objects in the application (service, data access, controllers), *however* for
+        some other entities it should still be left to the coder (entities, values objects, etc.), don't use it for all
+        objects
+      + pros of IOC :: easy to switch between different implementations at runtime, increase program modularity, manages
+        objects lifecycle and their configuration
       + some popular IOC containers :: spring, google guice, dagger
 - eg ::
   #+begin_src java
@@ -900,14 +1050,19 @@
 * Design patterns
 ** Creational patterns :: all about class instantiation
 - Notes ::
-  + deals with object creation mechanisms, trying to create objects in a manner suitable to the situation. The basic form of object creation could result in design problems or added complexity to the design. Creational design patterns solve this problem by somehow controlling this object creation
-  + often, designs start out using Factory Method (less complicated, more customizable, subclasses proliferate) and evolve toward Abstract Factory, Prototype, or Builder (more flexible, more complex) as the designer discovers where more flexibility is needed.
+  + deals with object creation mechanisms, trying to create objects in a manner suitable to the situation. The basic
+    form of object creation could result in design problems or added complexity to the design. Creational design
+    patterns solve this problem by somehow controlling this object creation
+  + often, designs start out using Factory Method (less complicated, more customizable, subclasses proliferate) and
+    evolve toward Abstract Factory, Prototype, or Builder (more flexible, more complex) as the designer discovers where
+    more flexibility is needed.
 - can be further divided into two parts ::
   + class-creation patterns :: use inheritance effectively in the instantiation process
   + object-creation patterns :: use delegation effectively to get the job done
 - main :: builder, factory, factory method, abstract factory, prototype, singleton
 - builder :: separates object construction from its representation
-  + pattern allows a client object to construct a complex object by specifying only its type and content, not its details
+  + pattern allows a client object to construct a complex object by specifying only its type and content, not its
+    details
   + separates object construction from its representation
   + this way the construction process can be used to create different representations.
   + eg ::
@@ -916,30 +1071,37 @@
       + // hawaiianpizzabuilder and spicypizzabuilder inherits of Pizzabuilder
       + // they are also associated to Pizza since in Pizzabuilder from which they inherit they contain the object Pizza
     - Cook (also called Director): PizzaBuilder* m_pizzaBuilder; // calls the builder
-    - Client: Use cook to create and open pizza :: HawaiianPizzaBuilder hawaiianPizzaBuilder; cook.createPizza(&hawaiianPizzaBuilder); etc.
+    - Client: Use cook to create and open pizza :: HawaiianPizzaBuilder hawaiianPizzaBuilder;
+      cook.createPizza(&hawaiianPizzaBuilder); etc.
 - abstract factory :: creates instance of several families of classes
   + provides an interface for creating families of related or dependent objects without specifying their concrete classes.
   + provides hierarchy that encapsulates: many possible "platforms", and the construction of a suite of "products".
   + 'new' operator considered harmful.
   + Abstract Factory classes are often implemented with Factory Methods, but they can be implemented using Prototype.
 - factory :: creates an instance of a class from a family of derived classes.
-  + problem :: once added new concrete product call, should also modify the Factory class. Not very flexible and violates open-close principle.
-- factory method :: defines interface for creating an object, but leaves choice of its type to the subclasses, creation being deferred at run-time.
+  + problem :: once added new concrete product call, should also modify the Factory class. Not very flexible and
+    violates open-close principle.
+- factory method :: defines interface for creating an object, but leaves choice of its type to the subclasses, creation
+  being deferred at run-time.
   + use of 'static' and avoiding 'new' => object re-use
   + it refers to the newly created object through a common interface.
   + similar to Abstract Factory but without the emphasis on families.
   + Factory Method: creation through inheritance. Prototype: creation through delegation.
 - object pool :: avoid expensive acquisition and release of resources by recycling objects that are no longer in use
   + used to manage the object caching.
-  + good option when cost of initializing class instance high, rate of instantiation of class is high, and number of instantiations in use at any one time is low
+  + good option when cost of initializing class instance high, rate of instantiation of class is high, and number of
+    instantiations in use at any one time is low
 - prototype :: fully initialized instance to be copied or cloned
   + specify the kinds of objects to create using a prototypical instance, and create new objects by copying this prototype.
   + 'new' operator considered harmful
   + whereas factory methods are created through inheritance, prototypes are created through delegation
-  + prototype doesn't require subclassing, but does require "initialize" operation. Factory Method requires subclassing, but doesn't require Initialize
+  + prototype doesn't require subclassing, but does require "initialize" operation. Factory Method requires subclassing,
+    but doesn't require Initialize
   + designs that make heavy use of Composite and Decorator patterns often can benefit from Prototype
   + prototype co-opts one instance of a class for use as a breeder of all future instances
-  + prototypes are useful when object initialization is expensive, and one anticipates few variations on the initialization parameters. In this context, Prototype can avoid expensive "creation from scratch", and support cheap cloning of a pre-initialized prototype
+  + prototypes are useful when object initialization is expensive, and one anticipates few variations on the
+    initialization parameters. In this context, Prototype can avoid expensive "creation from scratch", and support cheap
+    cloning of a pre-initialized prototype
   + prototype is unique among others creational patterns in that it doesn't require a class – only an object.
 - singleton :: class of which only a single instance can exist, global scope
   + declare instance as private static data member
@@ -956,8 +1118,10 @@
 - adapter :: match interfaces of different classes
   + can be implemented either with inheritance or with aggregation
   + adapter makes things work after they're designed; Bridge makes them work before they are.
-  + adapter provides a different interface to its subject, proxy provides the same interface, decorator provides an enhanced interface
-  + adapter is meant to change the interface of an existing object. Decorator enhances another object without changing its interface
+  + adapter provides a different interface to its subject, proxy provides the same interface, decorator provides an
+    enhanced interface
+  + adapter is meant to change the interface of an existing object. Decorator enhances another object without changing
+    its interface
   + facade defines a new interface, whereas adapter reuses an old interface
   + // in my opinion :: VERY UGLY, workaround to avoid refactoring (but refactoring VERY HEAVY though...)
 - bridge :: separates an object's interface from its implementation
@@ -970,11 +1134,13 @@
 - proxy :: object representing another object
   
 ** Behavioral patterns
-- Note :: design patterns that identify common communication patterns between objects and realize these patterns. By doing so, these patterns increase flexibility in carrying out this communication
+- Note :: design patterns that identify common communication patterns between objects and realize these patterns. By
+  doing so, these patterns increase flexibility in carrying out this communication
 - observer :: way of notifying change to a number of classes
 - chain of responsibility :: way of passing a request between a chain of objects
 - interpreter :: way to include language elements in a program
-- strategy :: encapsulates an algorithm inside a class or interface, enables the methods/classes behavior to be decided at runtime
+- strategy :: encapsulates an algorithm inside a class or interface, enables the methods/classes behavior to be decided
+  at runtime
 - state :: alter object's behavior when its state changes
 - visitor :: defines new operation to a class without change
 - iterator :: sequentially access the elements of a collection
@@ -992,15 +1158,20 @@
 - Coupling :: level of inter-dependency between the various software components
 - "Chaining" ::
   + constructor chaining :: cascading constructors
-  + method chaining :: syntax for invoking multiple method calls, where each method returns an object, allowing the calls to be chained together in a single statement without requiring variables to store the intermediate results
+  + method chaining :: syntax for invoking multiple method calls, where each method returns an object, allowing the
+    calls to be chained together in a single statement without requiring variables to store the intermediate results
     #+begin_src java
     somethings
         .filter(x => x.count > 10)
         .sort((a, b) => a.count - b.count)
         .map(x => x.name)
     #+end_src
-- Refactoring :: systematic process of improving code without creating new functionality that can transform a mess into clean code and simple design (solid principles, design patterns, decouple components, tests, etc.)
-- Separation of concerns (SoC) :: design principle for separating a computer program into distinct sections. Each section addresses a separate concern, a set of information that affects the code of a computer program. A concern can be as general as "the details of the hardware for an application", or as specific as "the name of which class to instantiate". A program that embodies SoC well is called a modular program
+- Refactoring :: systematic process of improving code without creating new functionality that can transform a mess into
+  clean code and simple design (solid principles, design patterns, decouple components, tests, etc.)
+- Separation of concerns (SoC) :: design principle for separating a computer program into distinct sections. Each
+  section addresses a separate concern, a set of information that affects the code of a computer program. A concern can
+  be as general as "the details of the hardware for an application", or as specific as "the name of which class to
+  instantiate". A program that embodies SoC well is called a modular program
 - Static Factory Methods ::
 - fluent interface patterns :: 
   

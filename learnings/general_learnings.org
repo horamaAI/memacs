@@ -6,13 +6,6 @@
 [2024-01-27 Sat 23:08]
 - deserialization :: process of reconstructing a data structure/object from a series of bytes/string in order to
   instantiate the object for consumption
-- services/applications communication ::
-  + data streaming :: allows single request to return lot more data than would typically be, eg: REST doesn't allow data
-    streaming since 1 request only gets 1 response
-    - data streaming is bi-direction: server -> client, client -> server; since the client is really any service that
-      makes the initial request
-  + message broker :: server that contains a persistent, append-only log that stores messages (can be seen as a kind of
-    server that contains different log files that get updated as new data comes in)
 - DDL :: for "data description language", which, in a SQL context, is a syntax for creating and modifying database
   objects such as tables, indices, and users. DDL statements are similar to a computer programming language for defining
   data structures, especially database schemas. Common examples of DDL statements include ==CREATE==, ==ALTER==, and
