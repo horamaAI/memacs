@@ -588,15 +588,16 @@
     - insert files :: https://www.reddit.com/r/emacs/comments/6aqsj8/insert_content_from_another_file/
     - include files :: https://orgmode.org/manual/Include-Files.html
 ** TODO optional
-     - https://training.linuxfoundation.org/training/introduction-to-kubernetes/
-     - https://docs.docker.com/engine/install/debian/
-     - https://training.linuxfoundation.org/training/introduction-to-linux/
-     - https://dl.acm.org/profile/81311486357
-     - https://dblp.org/pid/24/4642.html
-     - https://www.guillaume-bouffard.com/
-     - https://medium.com/@ankit.sinhal/mvc-mvp-and-mvvm-design-pattern-6e169567bbad
-     - https://training.linuxfoundation.org/training/a-beginners-guide-to-linux-kernel-development-lfd103/
-     - https://training.linuxfoundation.org/training/introduction-to-cloud-infrastructure-technologies/
-     - https://training.linuxfoundation.org/training/beginners-guide-open-source-software-development/
-     - https://www.coursera.org/learn/real-time-systems
+- https://datascientest.com/en/power-bi-vs-tableau
+- https://training.linuxfoundation.org/training/introduction-to-kubernetes/
+- https://docs.docker.com/engine/install/debian/
+- https://training.linuxfoundation.org/training/introduction-to-linux/
+- https://dl.acm.org/profile/81311486357
+- https://dblp.org/pid/24/4642.html
+- https://www.guillaume-bouffard.com/
+- https://medium.com/@ankit.sinhal/mvc-mvp-and-mvvm-design-pattern-6e169567bbad
+- https://training.linuxfoundation.org/training/a-beginners-guide-to-linux-kernel-development-lfd103/
+- https://training.linuxfoundation.org/training/introduction-to-cloud-infrastructure-technologies/
+- https://training.linuxfoundation.org/training/beginners-guide-open-source-software-development/
+- https://www.coursera.org/learn/real-time-systems
 

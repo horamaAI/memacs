@@ -4,6 +4,39 @@
 #+TAGS: Cpp C++ Java Craft
 
 * Architectures
+** Drafts, exercises
+[2025-06-04 Wed 23:44]
+- exercises:
+  + exercise 1: simple SOA
+    #+begin_src dot :file ../images/exe1.png :cmdline -Kdot -Tpng :exports both :cache yes
+    digraph G {
+      rankdir="LR"; // position left to right
+      subgraph cluster_0 {
+        style=filled;
+        color=lightgrey;
+        edge [dir="both"];
+        node [style=filled,color=white];
+        buff [label="",style=invis];
+        YTAPI -> ADAP;
+        // ugly trick using hidden elements to improve display
+        YTAPI -> buff -> ADAP [style=invis];
+        YTAPI -> OPT -> ADAP;
+        label = "YTA";
+      }
+      subgraph cluster_1 {
+        ama [label="1A API"];
+        label = "1A";
+      }
+      subgraph cluster_2 {
+        style=dashed
+        additionalgds [label="?",style=dashed];
+        label = "?";
+      }
+      ADAP -> ama;
+      ADAP -> additionalgds [style="dotted"];
+    }
+    #+end_src
+
 ** General
 *** software architectures types
 - EDA :: event-driven architecture, uses events to trigger and communicate between decoupled services and is common in
