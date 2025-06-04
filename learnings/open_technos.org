@@ -70,6 +70,9 @@
         avoid information compromise
   + 
 ** open APIs
+*** General
+[2025-06-04 Wed 23:53]
+- how open API is amazing ::
 *** open APIs standard
 * openStack
 [2025-04-27 Sun 16:06]
