@@ -7,35 +7,82 @@
 ** Drafts, exercises
 [2025-06-04 Wed 23:44]
 - exercises:
-  + exercise 1: simple SOA
+  + exercise 1: simple SOA example
     #+begin_src dot :file ../images/exe1.png :cmdline -Kdot -Tpng :exports both :cache yes
-    digraph G {
-      rankdir="LR"; // position left to right
+    graph G {
+      compound = true;
+      rankdir = "LR";  // position left to right
+      nodesep = 0.7;
       subgraph cluster_0 {
-        style=filled;
-        color=lightgrey;
-        edge [dir="both"];
-        node [style=filled,color=white];
-        buff [label="",style=invis];
-        YTAPI -> ADAP;
-        // ugly trick using hidden elements to improve display
-        YTAPI -> buff -> ADAP [style=invis];
-        YTAPI -> OPT -> ADAP;
-        label = "YTA";
+        style = filled;
+        color = lightgrey;
+        // edge [dir="both"];
+        api0 [label = "API.gateway"];
+        api1 [label = "rest/proto.processor"];
+        api0 -- api1;
+        label = "API orchestrator";
+        labeljust = "l";
       }
       subgraph cluster_1 {
-        ama [label="1A API"];
-        label = "1A";
+        label = "accounting";
+        labeljust = "l";
+        a0 [label = "accounting.service"];
+        a1 [label = "account.DB"];
+        a0 -- a1;
       }
       subgraph cluster_2 {
-        style=dashed
-        additionalgds [label="?",style=dashed];
-        label = "?";
+        color = lightblue;
+        style = filled;
+        label = "inventory.manager";
+        labeljust = "l";
+        i0 [label = "inventory.orchestrator"];
+        i1 [label = "inventory.DB"];
+        i0 -- i1;
       }
-      ADAP -> ama;
-      ADAP -> additionalgds [style="dotted"];
+      subgraph cluster_4 {
+        color = lightblue;
+        newrank = true;
+        label = "order.manager";
+        labeljust = "l";
+        o0 [label = "price.calc"];
+        o1 [label = "tax.calc"];
+        o2 [label = "opti.calc"];
+        o0 -- o1 -- o2 -- o0;
+      }
+      subgraph cluster_5 {
+        color = lightblue;
+        label = "documents.generator (input: documents content; output: link to generated document)";
+        labeljust = "l";
+        d0 [label = "doc.generator.entry.point"];
+        d1 [label = "docs.DB"];
+        d0 -- d1;
+      }
+      subgraph cluster_3 {
+        color = lightblue;
+        style = filled;
+        label = "messages.manager.broadcaster";
+        labeljust = "l";
+        m0 [label = "msg.processor"];
+        m1 [label = "msg.router"];
+        m0 -- m1;
+      }
+      o2 -- i0 [ltail = cluster_4, lhead = cluster_2];
+      o2 -- d0 [ltail = cluster_4, lhead = cluster_5];
+      o2 -- m0 [ltail = cluster_4, lhead = cluster_3];
+      a1 -- d0 [ltail = cluster_1, lhead = cluster_5];
+      a1 -- m0 [ltail = cluster_1, lhead = cluster_3];
+      m1 -- d0 [ltail = cluster_3, lhead = cluster_5, style = invis];
+      s0 [label = "", style = invis];
+      s0 -- api0;
+      api1 -- o0 [ltail = cluster_0, lhead = cluster_4];
+      api1-- a0 [ltail = cluster_0, lhead = cluster_1];
+      { rank = same; o0; m0; a0 };
+      { rank = same; o2; d0; a1 };
     }
     #+end_src
+
+    #+results[1a9462b251482cfde878a8922797fc6b2db91049]:
+    [[file:../images/exe1.png]]
 
 ** General
 *** software architectures types
