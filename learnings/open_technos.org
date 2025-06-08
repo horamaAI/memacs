@@ -73,6 +73,40 @@
 *** General
 [2025-06-04 Wed 23:53]
 - how open API is amazing ::
+  + "API first": define the model, use it. And it's still even possible to specialise it as needed: either through the model, or with a specific need within the implementation (prefer model-first design though, easier to use, by a larger audience, not just devs):
+    #+begin_src dot :file ../images/openAPI_ex1.png :cmdline -Kdot -Tpng :exports both :cache yes
+    digraph G {
+      label = "use and plug-in open-api";
+      labeljust="l";
+      op0 [label="open-api"];
+      op1 [label="soa implements open-api"];
+      op2 [label="soa extends open-api"];
+      op0 -> op1 [dir="back"];
+      op1 -> op2 [dir="back"];
+    }
+    #+end_src
+
+    #+results[f2518656b8c049bdc2c97feb84340cf6f40769d0]:
+    [[file:../images/openAPI_ex1.png]]
+
+  + pipeline eg, through 3 levels:
+    #+begin_src dot :file ../images/openAPI_ex2.png :cmdline -Kdot -Tpng :exports both :cache yes
+    digraph G {
+      rankdir = "LR";
+      subgraph cluster_0 {
+        style = invis;
+        op0 [label="UI (Angular generated OpenAPI)", shape=none];
+        op1 [label="exposed backend SDK\n[extended with model specific implementation]", shape=none];
+        op2 [label="base open-api model (yaml/json)\n[data model]", shape=none];
+        op0 -> op1 [dir="back"];
+        op1 -> op2 [dir="back"];
+      }
+    }
+    #+end_src
+
+    #+results[3da96689ccbcfa094d047641ccd2d996539cb941]:
+    [[file:../images/openAPI_ex2.png]]
+
 *** open APIs standard
 * openStack
 [2025-04-27 Sun 16:06]
