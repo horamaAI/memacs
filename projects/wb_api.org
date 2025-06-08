@@ -318,4 +318,7 @@
 
 * Tickets
 [2024-02-25 Sun 23:21]
- - WBAPI001: basic structure
+ - WBAPI001: basic structure and architecture
+   + WBI parser -> processing -> rendering (find separation within component/service/library)
+ - WBAPI002: basic improvements build/product/service
+   + toolset: filtering, formatting/wrapping for easier processing/presentation/interpretation/analysis
