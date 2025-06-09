@@ -19,7 +19,7 @@
 ** Reference 0 (YTA000): Generic tasks, recurring tasks, all tasks that are repetitive, short-term tasks that don't need tracking
 [2024-08-20 Tue 20:26]
 - what is reference used for :: for misc, small tasks, updates, etc., everything that don't need tracking (*still need proper commit message and tags*, for references)
-** Phase 1 (0). MVP, architecture definition and design, first successful tests (unit, regression, non-reg)
+** Phase 1 (0). MVP, architecture definition and design, first successful tests (unit, regression, non-reg), and first booking
 - YTA001 :: studies: *1A and business centred*: testing the water of the business, make basic successful CRUD requests to 1A (all CRUD), but do not focus on specifics of the response => trade-off MVP (simple product that generates whatever small benefit) and solid design (sustainable product, open for extensions, with reliable CI/CD, and good documentation for any stakeholder: a customer, or any other user)
   + clearly identify and define what's the target niche ::
     - what is the proposed product and its benefits (compared to existing)
@@ -116,8 +116,11 @@
     - RW :: should only be completed with more requests
     - FORM :: unless really necessary due to some reason (genericity and modularity requirements, internal components requirements, etc.) do not diverge too much from 1A API data model, they know what they're doing
   + OPTI :: start the design of OPTI, now that have a better functional understanding to detect optimisation improvements, simple design, not yet use of optimisation algorithms
-    - OPTI interface provided as an API (REST API or internal gRPC calls (remote procedure calls) ?)
+    - build OPTI interface (provided as REST API or internal gRPC calls (remote procedure calls) ?)
     - OPTI as C++ component, not ?
+    - OPTI implemented as plugging solvers, or using libraries ?
+    - add concept of ranking criteria, to handle multi-objective optimisation, eg: rank offers based on price, luggage, duration, number of stops, available upgrades, etc.
+      + known impediment: further computation (and thus wait time) needed when first rank/results/guess don't meet customer's expectation
 - YTA004 :: *code oriented*, review *YTA overall components* (including OPTI) for code cleaning, specialisation and optimisation, and based on observations and assessments collected from previous phase (YTA003: design and functional)
   + clean code
   + fine-tune workflow, and all tests according to feedback
@@ -273,9 +276,15 @@
     - analysis tools for potential track of enhancement/improvement
       + => need for professional analysts
   + support and training ::
-** generating revenue with an OTA, but first through a traditional TA
+** YTA revenue
 [2025-06-04 Wed 23:48]
-- 
+- generating revenues with a TA :: (an OTA, or any other TA)
+  + type of revenues ::
+    - direct fees :: customer pays fees
+    - provider fees :: the provider is paying fees over the volume of sold products
+- YTA revenue :: 
+  + 1st phase :: generate revenue through the built OTA, at first through a traditional TA. The goal is to give value to YTA API
+  + later phases :: ?, unknown for now, maybe use knowledge gathered to built services that integrate to PSS and Nevio, i.e. native single record, the "order model"
 ** what's our business position in the travelling market
 [2024-08-24 Sat 18:45]
 ** Miscellaneous
@@ -312,8 +321,12 @@
 [2024-08-18 Sun 19:03]
 *** RW
 ** OPTI
-- OPTI for "Optimiser", a set of libraries (or framework?) to optimise and perform efficient search in data returned by ADAP
-- OPTI: is provided as a micro-service, so still means an interface that wraps external input/output, calls, or requests for optimisation
+- OPTI for "Optimiser": a set of libraries (or framework?) to optimise and perform efficient search in data returned by ADAP
+- OPTI: is provided as a micro-service (can a library be more
+  efficient even through gRPC communication ?). So, still means that
+  interface (within/without OPTI) that communicates
+  ((de-)serialisation ?) -- i.e. exchange external inputs/outputs,
+  calls/requests, from/to OPTI -- has to be implemented
   + [TODO] : interface provided as a REST API or internal gRPC calls (remote procedure calls) ?
 - c++ component
 ** YTAPI (orchestrator, YTA entry point)
