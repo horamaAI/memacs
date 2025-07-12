@@ -147,6 +147,7 @@
        + [ ] cppcon2021 new mental model of constexpr :: https://www.youtube.com/watch?v=MdrfPSUtMVM
        + [ ] Functional Programming in C++ :: https://www.youtube.com/watch?v=ynfZLa27F9s
        + [ ] cppcon2021 lambdas :: https://www.youtube.com/watch?v=IgNUBw3vcO4
+       + [ ] cppcon2021 process operations in bulk with coroutines :: https://www.youtube.com/watch?v=XVZpTaYahdE
        + [ ] cppcon2017 learning and teaching modern c++, bjarne :: https://www.youtube.com/watch?v=fX2W3nNjJIo
        + [ ] cppcon2017 tools and techniques to stay up-to-date with modern c++ :: https://www.youtube.com/watch?v=xDEGpKJ62lI
        + [ ] cppcon2014 essentials of modern c++ style, herb sutter :: https://www.youtube.com/watch?v=xnqTKD8uD64
