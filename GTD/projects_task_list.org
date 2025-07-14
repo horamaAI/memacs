@@ -67,6 +67,28 @@
 - MINPROJ001: small emacs project 
 - MINPROJ002: small C++ project 
 - MINPROJ003: small Java project 
+* TODO RPC-257: Reseau "PC 257", network of computer related professionals, amateurs, students, etc. from Burundi
+[2025-07-14 Mon 14:38]
+** TODO Link-up and put in place foundations
+[2025-07-14 Mon 14:43]
+- tasks [0/3] ::
+  + [ ] Burundi We Want
+  + [ ] Website => domain name, host, 
+  + [ ] add resources to website, restricted to authorised users
+- find "Burundi we want", the main proxy/front for linking up with companies, practitioners, students, anyone from Burundi or somehow related to burundi
+- goals, rules, regulations, conditions ::
+  + goals ::
+    - ideal one :: democratise use of automation and computer science to ease every Burundian life
+    - pragmatic one :: help companies and computer scientist to match their needs
+    - means :: free, sponsored mainly by companies, to provide a network and knowledge repository in order to improve relations between companies and computer scientists (*NOT A SUBSTITUTE TO FORMAL EDUCATION*)
+    - dos and donts ::
+      + not a substitute to formal education, but rather a complement, a culture instead of a tool to navigate life
+      + a safe place for all computer scientists from all parts of Burundi to come meet and share latest updates, free, and with no conflicting interests from competing companies
+      + "a safe place to advertise companies"
+- contacts ::
+  + Burundi :: Honore, Nobel, Universite du Lac (), Mediabox, iHela ?, Asyst, 
+  + France :: Honore, Nobel, Maso, Steve, Association Collectif Ubuntu (See also Dan Freeman Mahoro)
+  + Canada :: Burundi We Want, Michou, 
 * TODO WB API prober application
 ** NEXT WB API parser
 - characteristics ::
